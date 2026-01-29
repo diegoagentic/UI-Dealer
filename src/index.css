@@ -1,0 +1,35 @@
+@import './styles/theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .scrollbar-minimal::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .scrollbar-minimal::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollbar-minimal::-webkit-scrollbar-thumb {
+        @apply bg-zinc-300 dark:bg-zinc-700 rounded-full transition-colors;
+        background-clip: padding-box;
+        border: 2px solid transparent;
+    }
+
+    .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+        @apply bg-zinc-400 dark:bg-zinc-600;
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
