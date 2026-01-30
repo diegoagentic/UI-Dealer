@@ -484,6 +484,9 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                     <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
                         <SparklesIcon className="w-5 h-5" />
                         <h3 className="font-semibold text-lg font-brand text-foreground">AI Copilot</h3>
+                        <span className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                            Essential
+                        </span>
                     </div>
                 </div>
 

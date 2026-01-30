@@ -9,6 +9,7 @@ export interface Feature {
     description: string;
     enabled: boolean;
     category: 'core' | 'analytics' | 'operations' | 'support';
+    required?: boolean;
 }
 
 interface FeatureManagerProps {
@@ -66,7 +67,7 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                     </button>
                                 </div>
 
-                                <div className="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                                <div className="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full">
                                     {['core', 'operations', 'analytics', 'support'].map((category) => {
                                         const categoryFeatures = features.filter(f => f.category === category);
                                         if (categoryFeatures.length === 0) return null;
@@ -86,18 +87,27 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                                                 }`}
                                                         >
                                                             <div className="flex-1 mr-4">
-                                                                <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                                                                    {feature.title}
-                                                                </h5>
+                                                                <div className="flex items-center gap-2">
+                                                                    <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                                        {feature.title}
+                                                                    </h5>
+                                                                    {feature.required && (
+                                                                        <span className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                                                            Essential
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                                                     {feature.description}
                                                                 </p>
                                                             </div>
                                                             <Switch
                                                                 checked={feature.enabled}
-                                                                onChange={(checked) => onToggleFeature(feature.id, checked)}
+                                                                onChange={(checked) => !feature.required && onToggleFeature(feature.id, checked)}
+                                                                disabled={feature.required}
                                                                 className={`${feature.enabled ? 'bg-primary' : 'bg-zinc-200 dark:bg-zinc-700'}
-                                          relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
+                                          ${feature.required ? 'opacity-80 cursor-not-allowed' : 'cursor-pointer'}
+                                          relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
                                                             >
                                                                 <span className="sr-only">Use setting</span>
                                                                 <span

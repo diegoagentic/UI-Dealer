@@ -41,6 +41,11 @@ import Navbar from './components/Navbar'
 import Select from './components/Select'
 import ChatWidget from './components/ChatWidget'
 import FeatureManager, { type Feature } from './components/FeatureManager'
+import ProjectTrackerWidget from './components/widgets/ProjectTrackerWidget'
+import InventoryForecastWidget from './components/widgets/InventoryForecastWidget'
+import InstallationSchedulerWidget from './components/widgets/InstallationSchedulerWidget'
+import WarrantyClaimsWidget from './components/widgets/WarrantyClaimsWidget'
+import POVerificationWidget from './components/widgets/POVerificationWidget'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -280,9 +285,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [isFeatureManagerOpen, setIsFeatureManagerOpen] = useState(false)
     const [features, setFeatures] = useState<Feature[]>([
         // Core (Existing)
-        { id: 'ai_copilot', title: 'AI Copilot', description: 'Intelligent assistant for analysis, insights, and quick actions.', enabled: true, category: 'core' },
+        { id: 'ai_copilot', title: 'AI Copilot', description: 'Intelligent assistant for analysis, insights, and quick actions.', enabled: true, category: 'core', required: true },
         { id: 'recent_orders', title: 'Recent Orders', description: 'Track active, completed, and pending orders at a glance.', enabled: true, category: 'core' },
-        { id: 'quick_quote', title: 'Quick Quote', description: 'Start quotes manually or via ERP upload.', enabled: true, category: 'core' },
+        { id: 'quick_quote', title: 'Quick Quote', description: 'Start quotes manually or via ERP upload.', enabled: true, category: 'core', required: true },
 
         // Operations (New B2B Proposals)
         { id: 'project_tracker', title: 'Project Tracker', description: 'Monitor status of large fit-outs (Mfg, Ship, Install).', enabled: false, category: 'operations' },
@@ -293,7 +298,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
         // Support
         { id: 'warranty_claims', title: 'Warranty & Claims', description: 'Streamlined process for reporting damaged goods.', enabled: false, category: 'support' },
-        { id: 'quote_builder', title: 'Quote Builder', description: 'Rapid assembly of bulk furniture quotes.', enabled: false, category: 'operations' },
+
+        // Operations (Advanced)
+        { id: 'po_verification', title: 'PO vs Acknowledgement', description: 'AI verification of POs against factory acks.', enabled: false, category: 'operations' },
     ])
 
     // Filter toolsOrder based on enabled features
@@ -1476,7 +1483,12 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                 <DocumentPlusIcon className="w-6 h-6" />
                                                             </div>
                                                             <div>
-                                                                <h3 className="text-lg font-brand font-semibold text-foreground">Quick Quote</h3>
+                                                                <div className="flex items-center gap-2">
+                                                                    <h3 className="text-lg font-brand font-semibold text-foreground">Quick Quote</h3>
+                                                                    <span className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                                                        Essential
+                                                                    </span>
+                                                                </div>
                                                                 <p className="text-sm text-muted-foreground">Upload files or start from scratch</p>
                                                             </div>
                                                         </div>
@@ -1549,6 +1561,16 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 </div>
                                             ) : toolId === 'ai_copilot' ? (
                                                 <ChatWidget className="w-full" />
+                                            ) : toolId === 'project_tracker' ? (
+                                                <ProjectTrackerWidget />
+                                            ) : toolId === 'inventory_forecast' ? (
+                                                <InventoryForecastWidget />
+                                            ) : toolId === 'installation_scheduler' ? (
+                                                <InstallationSchedulerWidget />
+                                            ) : toolId === 'warranty_claims' ? (
+                                                <WarrantyClaimsWidget />
+                                            ) : toolId === 'po_verification' ? (
+                                                <POVerificationWidget />
                                             ) : (
                                                 /* Placeholder for New B2B Widgets */
                                                 <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -8,15 +8,17 @@ import {
     EllipsisHorizontalIcon, ListBulletIcon, SunIcon, MoonIcon,
     ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
     CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon,
-    ShoppingCartIcon, ClipboardDocumentCheckIcon
+    ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
+    FunnelIcon, ArrowRightIcon
 } from '@heroicons/react/24/outline'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
 import { useTheme } from './useTheme'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Select from './components/Select'
+import CreateOrderModal from './components/CreateOrderModal'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -47,11 +49,48 @@ const trackingSteps = [
 ]
 
 const recentOrders = [
-    { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Pending Review", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700" },
-    { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20" },
-    { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Shipped", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20" },
-    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700" },
+    { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Order Received", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
+    { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20", location: "London" },
+    { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Ready to Ship", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20", location: "Austin" },
+    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700", location: "Berlin" },
+    { id: "#ORD-2051", customer: "City Builders", client: "City Builders", project: "City Center", amount: "$120,000", status: "Order Received", date: "Jan 05, 2026", initials: "CB", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
+    { id: "#ORD-2050", customer: "Modern Homes", client: "Modern Homes", project: "Residential A", amount: "$85,000", status: "Acknowledgement", date: "Jan 02, 2026", initials: "MH", statusColor: "bg-blue-50 text-blue-700", location: "Austin" },
+    { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-purple-50 text-purple-700", location: "London" },
+    { id: "#ORD-2048", customer: "Valley Homes", client: "Valley Homes", project: "Mountain Retreat", amount: "$95,000", status: "Ready to Ship", date: "Nov 20, 2025", initials: "VH", statusColor: "bg-indigo-50 text-indigo-700", location: "Berlin" },
+    { id: "#ORD-2047", customer: "Elite Builders", client: "Elite Builders", project: "Sky V", amount: "$450,000", status: "In Transit", date: "Nov 05, 2025", initials: "EB", statusColor: "bg-orange-50 text-orange-700", location: "New York" },
 ]
+
+// Pipeline stages
+const pipelineStages = ['Order Received', 'In Production', 'Ready to Ship', 'In Transit', 'Delivered']
+
+
+// Color Mapping for Status Icons
+const colorStyles: Record<string, string> = {
+    blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
+    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
+    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
+    pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
+    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+}
+
+const solidColorStyles: Record<string, string> = {
+    blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
+    purple: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm shadow-purple-500/20 border-purple-500',
+    orange: 'bg-orange-600 hover:bg-orange-700 text-white shadow-sm shadow-orange-500/20 border-orange-500',
+    green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
+    pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
+    indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
+}
+
+// Summary Data matching Wireframe
+const ordersSummary = {
+    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
+    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
+    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple' },
+    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
+    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green' },
+}
 
 // Define props interface if not heavily inferred or complex
 interface TransactionsProps {
@@ -62,37 +101,37 @@ interface TransactionsProps {
 }
 
 export default function Transactions({ onLogout, onNavigateToDetail, onNavigateToWorkspace, onNavigate }: TransactionsProps) {
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
+    const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
     const { theme, toggleTheme } = useTheme()
     const { currentTenant } = useTenant()
 
+    // Refs for scrolling
+    const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const expandedScrollRef = useRef<HTMLDivElement>(null)
+
+    const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+        if (ref.current) {
+            const scrollAmount = 320;
+            ref.current.scrollBy({
+                left: direction === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    }
+
     const [searchQuery, setSearchQuery] = useState('')
-    const [selectedClient, setSelectedClient] = useState('All Clients')
-    const [selectedProject, setSelectedProject] = useState('All Projects')
+    const [selectedStatus, setSelectedStatus] = useState('All Statuses')
+    const [selectedLocation, setSelectedLocation] = useState('All Locations')
 
     const [activeTab, setActiveTab] = useState<'metrics' | 'active' | 'completed' | 'all'>('active')
     const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments'>('orders')
 
-    const clients = ['All Clients', ...Array.from(new Set(recentOrders.map(o => o.client)))]
+    const statuses = ['All Statuses', ...Array.from(new Set(recentOrders.map(o => o.status)))]
+    const locations = ['All Locations', ...Array.from(new Set(recentOrders.map(o => o.location)))]
+    const availableProjects = ['All Projects', ...Array.from(new Set(recentOrders.map(o => o.project)))]
 
-    // Filter projects based on selected client
-    const availableProjects = useMemo(() => {
-        if (selectedClient === 'All Clients') {
-            return ['All Projects', ...Array.from(new Set(recentOrders.map(o => o.project)))]
-        }
-        return ['All Projects', ...Array.from(new Set(recentOrders.filter(o => o.client === selectedClient).map(o => o.project)))]
-    }, [selectedClient])
-
-    // Update selectedProject when selectedClient changes
-    useEffect(() => {
-        if (selectedClient !== 'All Clients' && availableProjects.length > 1) {
-            // Auto-select first specific project as requested
-            setSelectedProject(availableProjects[1])
-        } else {
-            setSelectedProject('All Projects')
-        }
-    }, [selectedClient, availableProjects])
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
     const [trackingOrder, setTrackingOrder] = useState<any>(null)
 
@@ -106,12 +145,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         setExpandedIds(newExpanded)
     }
 
-    // Dynamic Metrics Data based on current filters (Client/Project)
+    // Dynamic Metrics Data based on current filters (Status/Location)
     const metricsData = useMemo(() => {
         const dataToAnalyze = recentOrders.filter(order => {
-            const matchesProject = selectedProject === 'All Projects' || order.project === selectedProject
-            const matchesClient = selectedClient === 'All Clients' || order.client === selectedClient
-            return matchesProject && matchesClient
+            const matchesStatus = selectedStatus === 'All Statuses' || order.status === selectedStatus
+            const matchesLocation = selectedLocation === 'All Locations' || order.location === selectedLocation
+            return matchesStatus && matchesLocation
         })
 
         const totalValue = dataToAnalyze.reduce((sum, order) => {
@@ -127,15 +166,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             completedOrders: completedCount,
             efficiency: dataToAnalyze.length > 0 ? Math.round((completedCount / dataToAnalyze.length) * 100) : 0
         }
-    }, [selectedProject, selectedClient])
+    }, [selectedStatus, selectedLocation])
 
     const filteredOrders = useMemo(() => {
         return recentOrders.filter(order => {
             const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 order.customer.toLowerCase().includes(searchQuery.toLowerCase())
 
-            const matchesProject = selectedProject === 'All Projects' || order.project === selectedProject
-            const matchesClient = selectedClient === 'All Clients' || order.client === selectedClient
+            const matchesStatus = selectedStatus === 'All Statuses' || order.status === selectedStatus
+            const matchesLocation = selectedLocation === 'All Locations' || order.location === selectedLocation
 
             let matchesTab = true;
             if (activeTab === 'active') {
@@ -146,9 +185,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 matchesTab = true // Metrics view handles its own data, this filter is for the table if shown
             }
 
-            return matchesSearch && matchesProject && matchesClient && matchesTab
+            return matchesSearch && matchesStatus && matchesLocation && matchesTab
         })
-    }, [searchQuery, selectedProject, selectedClient, activeTab])
+    }, [searchQuery, selectedStatus, selectedLocation, activeTab])
 
     const counts = useMemo(() => {
         return {
@@ -237,7 +276,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Orders Content (Existing) */}
                 {lifecycleTab === 'orders' && (
                     <>
-                        {/* KPI Cards */}
+                        {/* KPI Cards / Summary Panel */}
                         {showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
@@ -245,67 +284,32 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         Hide Details <ChevronUpIcon className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in zoom-in duration-300">
-                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Inventory</p>
-                                                <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">$1.2M</p>
+                                <div className="relative">
+                                    <div
+                                        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4"
+                                        ref={expandedScrollRef}
+                                    >
+                                        {Object.entries(ordersSummary).map(([key, data]) => (
+                                            <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
+                                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
+                                                    </div>
+                                                    <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
+                                                        data.color === 'orange' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' :
+                                                            data.color === 'purple' ? 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400' :
+                                                                data.color === 'indigo' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
+                                                                    'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
+                                                        }`}>
+                                                        {data.icon}
+                                                    </div>
+                                                </div>
+                                                <div className="mt-4 flex items-center text-sm text-muted-foreground">
+                                                    <span className="font-medium">{data.sub}</span>
+                                                </div>
                                             </div>
-                                            <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                                                <CurrencyDollarIcon className="w-6 h-6" />
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 flex items-center text-sm text-green-600">
-                                            <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
-                                            <span className="font-medium">+0.2%</span> <span className="text-muted-foreground ml-1">vs last month</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Efficiency</p>
-                                                <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">88%</p>
-                                            </div>
-                                            <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl text-purple-600 dark:text-purple-400">
-                                                <ChartBarIcon className="w-6 h-6" />
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 flex items-center text-sm text-green-600">
-                                            <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
-                                            <span className="font-medium">+3.5%</span> <span className="text-muted-foreground ml-1">vs last month</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Orders</p>
-                                                <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">142</p>
-                                            </div>
-                                            <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-xl text-orange-600 dark:text-orange-400">
-                                                <ClipboardDocumentListIcon className="w-6 h-6" />
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                                            <span className="font-medium">-12</span> <span className="ml-1">vs yesterday</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                        <div className="flex items-center justify-between">
-                                            <div>
-                                                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Low Stock</p>
-                                                <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">15</p>
-                                            </div>
-                                            <div className="p-3 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-600 dark:text-red-400">
-                                                <ExclamationCircleIcon className="w-6 h-6" />
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 flex items-center text-sm text-red-500">
-                                            <span className="font-medium">Requires attention</span>
-                                        </div>
+                                        ))}
                                     </div>
                                 </div>
                                 {/* Quick Actions below grid when expanded */}
@@ -325,48 +329,78 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                             </>
                         ) : (
-                            <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div className="flex items-center gap-6 overflow-x-auto w-full scrollbar-minimal">
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">Inventory:</span>
-                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">$1.2M</span>
-                                        <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+0.2%</span>
-                                    </div>
-                                    <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">Efficiency:</span>
-                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">88%</span>
-                                        <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+3.5%</span>
-                                    </div>
-                                    <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">Pending:</span>
-                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">142</span>
-                                    </div>
-                                    <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                        <span className="text-sm text-gray-500 dark:text-gray-400">Low Stock:</span>
-                                        <span className="text-lg font-semibold text-gray-900 dark:text-white">15</span>
-                                        <span className="text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded-md self-center">Alert</span>
-                                    </div>
-                                </div>
-                                <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
-                                {/* Quick Actions Integrated */}
-                                <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
-                                    {[
-                                        { icon: <PlusIcon className="w-4 h-4" />, label: "New" },
-                                        { icon: <DocumentDuplicateIcon className="w-4 h-4" />, label: "Copy" },
-                                        { icon: <DocumentTextIcon className="w-4 h-4" />, label: "PDF" },
-                                        { icon: <EnvelopeIcon className="w-4 h-4" />, label: "Email" },
-                                    ].map((action, i) => (
-                                        <button key={i} className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors">
-                                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                                {action.icon}
+                            <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                {/* Collapsed Ticker View - Carousel */}
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    {/* Left Scroll Button */}
+                                    <button
+                                        onClick={() => scroll(scrollContainerRef, 'left')}
+                                        className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                    >
+                                        <ChevronLeftIcon className="w-4 h-4" />
+                                    </button>
+
+                                    <div
+                                        ref={scrollContainerRef}
+                                        className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
+                                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                                    >
+                                        {Object.entries(ordersSummary).map(([key, data]) => (
+                                            <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
+                                                {/* Icon with Floating Tooltip */}
+                                                <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-zinc-800'}`}>
+                                                    {data.icon}
+                                                    {/* Tooltip */}
+                                                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-zinc-800 text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
+                                                        {data.label}
+                                                        {/* Arrow */}
+                                                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900 dark:border-t-zinc-800"></div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Stacked Value & Change */}
+                                                <div className="flex flex-col">
+                                                    <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                    <span className="text-[10px] text-muted-foreground mt-1 font-medium">
+                                                        {data.label}
+                                                    </span>
+                                                </div>
+
+                                                {/* Divider (except last) */}
+                                                <div className="h-8 w-px bg-border/50 ml-4 hidden md:block lg:hidden xl:block opacity-50"></div>
                                             </div>
-                                            <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">{action.label}</span>
+                                        ))}
+                                    </div>
+
+                                    {/* Right Scroll Button */}
+                                    <button
+                                        onClick={() => scroll(scrollContainerRef, 'right')}
+                                        className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                    >
+                                        <ChevronRightIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+
+                                {/* Quick Actions Integrated - Compact */}
+                                <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                                    {[
+                                        { icon: <DocumentPlusIcon className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
+                                        { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock", color: "text-orange-500" },
+                                        { icon: <ChartBarIcon className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
+                                        { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "ERP Sync", color: "text-purple-500" },
+                                    ].map((action, i) => (
+                                        <button key={i} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                            {action.icon}
                                         </button>
                                     ))}
+                                    <div className="w-px h-6 bg-border/50 mx-1"></div>
+                                    <button className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-purple-500 transition-colors relative group" title="View All & Manage">
+                                        <Squares2X2Icon className="w-5 h-5" />
+                                    </button>
                                 </div>
+
                                 <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
                                 <button
                                     onClick={() => setShowMetrics(true)}
@@ -388,107 +422,129 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden">
                                     {/* Header for Orders */}
                                     <div className="p-6 border-b border-border">
-                                        <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2 mb-4">
-                                            Recent Orders
-                                        </h3>
-                                        <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                                            {/* Tabs */}
-                                            <div className="flex gap-1 bg-muted p-1 rounded-lg w-fit">
-                                                {[
-                                                    { id: 'active', label: 'Active', count: counts.active },
-                                                    { id: 'completed', label: 'Completed', count: counts.completed },
-                                                    { id: 'all', label: 'All', count: counts.all },
-                                                    { id: 'metrics', label: 'Metrics', count: null }
-                                                ].map((tab) => (
-                                                    <button
-                                                        key={tab.id}
-                                                        onClick={() => setActiveTab(tab.id as any)}
-                                                        className={cn(
-                                                            "px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 outline-none",
-                                                            activeTab === tab.id
-                                                                ? "bg-primary text-primary-foreground shadow-sm"
-                                                                : "text-muted-foreground hover:text-foreground"
-                                                        )}
-                                                    >
-                                                        {tab.id === 'metrics' && <ChartBarIcon className="w-4 h-4" />}
-                                                        {tab.label}
-                                                        {tab.count !== null && (
-                                                            <span className={cn(
-                                                                "text-xs px-1.5 py-0.5 rounded-full transition-colors",
+                                        <div className="flex flex-col gap-6">
+                                            {/* Top Row: Title + Tabs */}
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                                <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2 whitespace-nowrap">
+                                                    Recent Orders
+                                                </h3>
+                                                <div className="hidden sm:block w-px h-6 bg-border mx-2"></div>
+                                                {/* Tabs */}
+                                                <div className="flex gap-1 bg-muted p-1 rounded-lg w-fit overflow-x-auto max-w-full">
+                                                    {[
+                                                        { id: 'active', label: 'Active', count: counts.active },
+                                                        { id: 'completed', label: 'Completed', count: counts.completed },
+                                                        { id: 'all', label: 'All', count: counts.all },
+                                                        { id: 'metrics', label: 'Metrics', count: null }
+                                                    ].map((tab) => (
+                                                        <button
+                                                            key={tab.id}
+                                                            onClick={() => setActiveTab(tab.id as any)}
+                                                            className={cn(
+                                                                "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 outline-none whitespace-nowrap",
                                                                 activeTab === tab.id
-                                                                    ? "bg-primary-foreground/10 text-primary-foreground"
-                                                                    : "bg-background text-muted-foreground group-hover:bg-muted"
-                                                            )}>
-                                                                {tab.count}
-                                                            </span>
-                                                        )}
-                                                    </button>
-                                                ))}
+                                                                    ? "bg-primary text-primary-foreground shadow-sm"
+                                                                    : "text-muted-foreground hover:text-foreground"
+                                                            )}
+                                                        >
+                                                            {tab.id === 'metrics' && <ChartBarIcon className="w-4 h-4" />}
+                                                            {tab.label}
+                                                            {tab.count !== null && (
+                                                                <span className={cn(
+                                                                    "text-xs px-1.5 py-0.5 rounded-full transition-colors",
+                                                                    activeTab === tab.id
+                                                                        ? "bg-primary-foreground/10 text-primary-foreground"
+                                                                        : "bg-background text-muted-foreground group-hover:bg-muted"
+                                                                )}>
+                                                                    {tab.count}
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </div>
                                             </div>
 
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <div className="relative group">
-                                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                                    <input
-                                                        type="text"
-                                                        placeholder="Search orders..."
-                                                        className="pl-9 pr-4 py-2 bg-background border border-input rounded-lg text-sm text-foreground w-full sm:w-64 focus:ring-2 focus:ring-primary outline-none placeholder:text-muted-foreground"
-                                                        value={searchQuery}
-                                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                                    />
+                                            {/* Bottom Row: Filters + Actions */}
+                                            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 w-full">
+                                                {/* Filters Container */}
+                                                <div className="flex flex-col sm:flex-row items-center gap-2 w-full xl:w-auto">
+                                                    <div className="relative group w-full sm:w-auto">
+                                                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Search orders..."
+                                                            className="pl-9 pr-4 py-2 bg-background border border-input rounded-lg text-sm text-foreground w-full sm:w-48 lg:w-64 focus:ring-2 focus:ring-primary outline-none placeholder:text-muted-foreground transition-all"
+                                                            value={searchQuery}
+                                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {/* Status Filter */}
+                                                    <div className="w-full sm:w-40">
+                                                        <Select
+                                                            value={selectedStatus}
+                                                            onChange={setSelectedStatus}
+                                                            options={statuses}
+                                                        />
+                                                    </div>
+
+                                                    {/* Location Filter */}
+                                                    <div className="w-full sm:w-40">
+                                                        <Select
+                                                            value={selectedLocation}
+                                                            onChange={setSelectedLocation}
+                                                            options={locations}
+                                                        />
+                                                    </div>
                                                 </div>
 
-                                                {/* Client Filter */}
-                                                <div className="w-48">
-                                                    <Select
-                                                        value={selectedClient}
-                                                        onChange={setSelectedClient}
-                                                        options={clients}
-                                                    />
-                                                </div>
+                                                {/* Actions Group: View Mode + Create Button */}
+                                                <div className="flex items-center gap-4 self-start xl:self-auto">
+                                                    {/* View Mode Toggle */}
+                                                    <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
+                                                        <button
+                                                            onClick={() => setViewMode('list')}
+                                                            className={cn(
+                                                                "p-1.5 rounded-md transition-all",
+                                                                viewMode === 'list' ? "bg-white dark:bg-zinc-800 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50"
+                                                            )}
+                                                            title="List View"
+                                                        >
+                                                            <ListBulletIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <div className="w-px h-4 bg-border mx-1"></div>
+                                                        <button
+                                                            onClick={() => setViewMode('pipeline')}
+                                                            className={cn(
+                                                                "p-1.5 rounded-md transition-all",
+                                                                viewMode === 'pipeline' ? "bg-white dark:bg-zinc-800 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50"
+                                                            )}
+                                                            title="Pipeline View"
+                                                        >
+                                                            <FunnelIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
 
-                                                {/* Project Filter */}
-                                                <div className="w-48">
-                                                    <Select
-                                                        value={selectedProject}
-                                                        onChange={setSelectedProject}
-                                                        options={availableProjects}
-                                                    />
-                                                </div>
+                                                    <div className="w-px h-8 bg-border hidden xl:block mx-1"></div>
 
-                                                <div className="h-6 w-px bg-border mx-1 hidden sm:block"></div>
-
-                                                <div className="flex bg-muted p-1 rounded-lg">
                                                     <button
-                                                        onClick={() => setViewMode('list')}
-                                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                                        onClick={() => setIsCreateOrderOpen(true)}
+                                                        className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
                                                     >
-                                                        <ListBulletIcon className="h-4 w-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setViewMode('grid')}
-                                                        className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                                                    >
-                                                        <Squares2X2Icon className="h-4 w-4" />
+                                                        <PlusIcon className="w-4 h-4" />
+                                                        <span>Create Order</span>
                                                     </button>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
 
-                                    {/* Content */}
-                                    <div className="p-6 bg-muted/30 min-h-[300px]">
+                                    {/* Main Content Area */}
+                                    <div className="p-6 bg-zinc-50/50 dark:bg-black/20 min-h-[500px]">
+                                        {/* Metrics View special handling */}
                                         {activeTab === 'metrics' ? (
                                             <div className="space-y-8">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <h3 className="text-lg font-semibold text-foreground">Performance Metrics</h3>
-                                                        <p className="text-sm text-muted-foreground">
-                                                            {selectedClient === 'All Clients' ? 'Overview across all clients' : `Showing analytics for ${selectedClient}`}
-                                                        </p>
-                                                    </div>
-                                                </div>
-
                                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
                                                     {/* Revenue Card */}
                                                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-6 border border-green-200 dark:border-green-800/20 shadow-sm">
@@ -557,289 +613,244 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 </div>
                                             </div>
                                         ) : viewMode === 'list' ? (
-                                            <div className="overflow-x-auto">
-                                                <table className="min-w-full divide-y divide-border">
-                                                    <thead>
-                                                        <tr>
-                                                            <th className="px-3 py-3.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Order ID</th>
-                                                            <th className="px-3 py-3.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Customer</th>
-                                                            <th className="px-3 py-3.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
-                                                            <th className="px-3 py-3.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                                                            <th className="px-3 py-3.5 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
-                                                            <th className="relative px-3 py-3.5"><span className="sr-only">Actions</span></th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-border bg-transparent">
-                                                        {filteredOrders.map((order) => (
-                                                            <Fragment key={order.id}>
-                                                                <tr
-                                                                    className={`hover:bg-muted/50 transition-colors cursor-pointer ${expandedIds.has(order.id) ? 'bg-primary/5' : ''}`}
-                                                                    onClick={() => toggleExpand(order.id)}
-                                                                >
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-foreground flex items-center gap-2">
-                                                                        {expandedIds.has(order.id) ? <ChevronDownIcon className="h-4 w-4 text-foreground" /> : <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />}
-                                                                        {order.id}
-                                                                    </td>
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-foreground/80">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">{order.initials}</div>
-                                                                            {order.customer}
-                                                                        </div>
-                                                                    </td>
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-foreground/80">{order.amount}</td>
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-sm">
-                                                                        <span className={cn("inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
-                                                                            {order.status}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-sm text-foreground/80">{order.date}</td>
-                                                                    <td className="whitespace-nowrap px-3 py-4 text-right text-sm font-medium">
-                                                                        <Menu as="div" className="relative inline-block text-left">
-                                                                            <MenuButton onClick={(e) => e.stopPropagation()} className="bg-transparent p-1 rounded-full text-muted-foreground hover:text-foreground">
-                                                                                <EllipsisHorizontalIcon className="h-5 w-5" />
-                                                                            </MenuButton>
-                                                                            <Transition
-                                                                                as={Fragment}
-                                                                                enter="transition ease-out duration-100"
-                                                                                enterFrom="transform opacity-0 scale-95"
-                                                                                enterTo="transform opacity-100 scale-100"
-                                                                                leave="transition ease-in duration-75"
-                                                                                leaveFrom="transform opacity-100 scale-100"
-                                                                                leaveTo="transform opacity-0 scale-95"
-                                                                            >
-                                                                                <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-popover shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-border">
-                                                                                    <div className="py-1">
-                                                                                        <MenuItem>
-                                                                                            {({ active }) => (
-                                                                                                <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className={`${active ? 'bg-muted' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
-                                                                                                    <span className="w-4 h-4 mr-2" ><DocumentTextIcon /></span> View Details
-                                                                                                </button>
-                                                                                            )}
-                                                                                        </MenuItem>
-                                                                                        <MenuItem>
-                                                                                            {({ active }) => (
-                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
-                                                                                                    <span className="w-4 h-4 mr-2" ><PencilSquareIcon /></span> Edit
-                                                                                                </button>
-                                                                                            )}
-                                                                                        </MenuItem>
-                                                                                        <MenuItem>
-                                                                                            {({ active }) => (
-                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                                    <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
-                                                                                                </button>
-                                                                                            )}
-                                                                                        </MenuItem>
-                                                                                        <MenuItem>
-                                                                                            {({ active }) => (
-                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
-                                                                                                    <span className="w-4 h-4 mr-2" ><EnvelopeIcon /></span> Contact
-                                                                                                </button>
-                                                                                            )}
-                                                                                        </MenuItem>
-                                                                                    </div>
-                                                                                </MenuItems>
-                                                                            </Transition>
-                                                                        </Menu>
-                                                                    </td>
-                                                                </tr>
-                                                                {/* Details Row */}
-                                                                {expandedIds.has(order.id) && (
-                                                                    <tr>
-                                                                        <td colSpan={6} className="px-0 py-0 border-b border-gray-200 dark:border-white/10">
-                                                                            <div className="p-4 bg-gray-50 dark:bg-black/40 pl-12">
-                                                                                <div className="flex items-start gap-4">
-                                                                                    <div className="flex-1 space-y-4">
-                                                                                        <div className="flex items-center gap-3">
-                                                                                            <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-gray-500" /></div>
-                                                                                            <div>
-                                                                                                <p className="text-sm font-medium text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                                                <p className="text-xs text-gray-500">Project Manager</p>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                        <div className="h-px bg-gray-200 dark:bg-white/10 w-full"></div>
-                                                                                        {/* Progress Bar Simple */}
-                                                                                        <div className="relative">
-                                                                                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 -translate-y-1/2"></div>
-                                                                                            <div className="relative flex justify-between">
-                                                                                                {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
-                                                                                                    <div key={i} className={`flex flex-col items-center gap-2 ${i < 2 ? 'text-zinc-900 dark:text-white' : 'text-gray-400'}`}>
-                                                                                                        <div className={`w-3 h-3 rounded-full ${i < 2 ? 'bg-primary ring-4 ring-brand-100 dark:ring-brand-900/30' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
-                                                                                                        <span className="text-xs font-medium">{step}</span>
-                                                                                                    </div>
-                                                                                                ))}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                    <div className="w-64">
-                                                                                        <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
-                                                                                            <p className="text-xs font-medium text-gray-500 uppercase">Alert</p>
-                                                                                            <div className="mt-2 flex items-start gap-2">
-                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 flex-shrink-0" />
-                                                                                                <div>
-                                                                                                    <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Customs Delay</p>
-                                                                                                    <p className="text-xs text-gray-500 mt-1">Shipment held at port. ETA +24h.</p>
-                                                                                                    <button onClick={() => setTrackingOrder(order)} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">Track Shipment</button>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
+                                            /* List View */
+                                            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border overflow-hidden">
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-left">
+                                                        <thead className="bg-muted/50 border-b border-border">
+                                                            <tr>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Order Details</th>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Project & Location</th>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                                                                <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider text-right">Actions</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-border">
+                                                            {filteredOrders.map((order) => (
+                                                                <Fragment key={order.id}>
+                                                                    <tr
+                                                                        className="group hover:bg-muted/50 transition-colors cursor-pointer"
+                                                                        onClick={() => toggleExpand(order.id)}
+                                                                    >
+                                                                        <td className="p-4">
+                                                                            <div className="flex items-center gap-3">
+                                                                                <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                                                                    {order.initials}
+                                                                                </div>
+                                                                                <div>
+                                                                                    <div className="font-medium text-foreground">{order.customer}</div>
+                                                                                    <div className="text-xs text-muted-foreground">{order.id}</div>
                                                                                 </div>
                                                                             </div>
                                                                         </td>
+                                                                        <td className="p-4">
+                                                                            <div className="flex flex-col">
+                                                                                <span className="text-sm text-foreground">{order.project}</span>
+                                                                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                                                    <MapPinIcon className="w-3 h-3" /> {order.location}
+                                                                                </div>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td className="p-4">
+                                                                            <span className="font-semibold text-foreground">{order.amount}</span>
+                                                                        </td>
+                                                                        <td className="p-4">
+                                                                            <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
+                                                                                {order.status}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td className="p-4 text-sm text-muted-foreground">
+                                                                            {order.date}
+                                                                        </td>
+                                                                        <td className="p-4 text-right">
+                                                                            <div className="flex items-center justify-end gap-1">
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }}
+                                                                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                                                                                >
+                                                                                    <DocumentTextIcon className="h-4 w-4" />
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
+                                                                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-blue-500 hover:bg-blue-50/50 transition-colors"
+                                                                                    title="Track Order"
+                                                                                >
+                                                                                    <MapPinIcon className="h-4 w-4" />
+                                                                                </button>
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); toggleExpand(order.id); }}
+                                                                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                                                                                >
+                                                                                    {expandedIds.has(order.id) ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
                                                                     </tr>
-                                                                )}
-                                                            </Fragment>
-                                                        ))}
-                                                    </tbody>
-                                                </table>
+                                                                    {expandedIds.has(order.id) && (
+                                                                        <tr className="bg-muted/30">
+                                                                            <td colSpan={6} className="p-4">
+                                                                                <div className="grid grid-cols-3 gap-6 text-sm">
+                                                                                    <div>
+                                                                                        <p className="font-medium text-muted-foreground mb-1">Contact Details</p>
+                                                                                        <p className="text-foreground">Sarah Johnson</p>
+                                                                                        <p className="text-muted-foreground text-xs">sarah.j@example.com</p>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <p className="font-medium text-muted-foreground mb-1">Items</p>
+                                                                                        <ul className="list-disc list-inside text-muted-foreground text-xs space-y-1">
+                                                                                            <li>Office Chair Ergonomic x12</li>
+                                                                                            <li>Standing Desk Motorized x5</li>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                    <div className="flex items-center gap-2">
+                                                                                        <button className="px-3 py-1.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg hover:bg-primary/90 transition-colors">
+                                                                                            View Full Order
+                                                                                        </button>
+                                                                                        <button className="px-3 py-1.5 border border-border text-foreground text-xs font-medium rounded-lg hover:bg-muted transition-colors">
+                                                                                            Download Invoice
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </td>
+                                                                        </tr>
+                                                                    )}
+                                                                </Fragment>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         ) : (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                                {filteredOrders.map((order) => (
-                                                    <div
-                                                        key={order.id}
-                                                        className={`group relative bg-white dark:bg-zinc-900 rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
-                                                        onClick={() => toggleExpand(order.id)}
-                                                    >
-                                                        <div className="p-5">
-                                                            <div className="flex items-center justify-between mb-4">
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
-                                                                        {order.initials}
-                                                                    </div>
-                                                                    <div>
-                                                                        <h4 className="text-sm font-bold text-gray-900 dark:text-white">{order.customer}</h4>
-                                                                        <p className="text-xs text-gray-500">{order.id}</p>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="flex items-center gap-1">
-                                                                    <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                        <DocumentTextIcon className="h-5 w-5" />
-                                                                    </button>
-                                                                    <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                        <PencilSquareIcon className="h-5 w-5" />
-                                                                    </button>
-                                                                    <Menu as="div" className="relative inline-block text-left">
-                                                                        <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 dark:hover:text-zinc-900">
-                                                                            <EllipsisHorizontalIcon className="h-5 w-5" />
-                                                                        </MenuButton>
-                                                                        <Transition
-                                                                            as={Fragment}
-                                                                            enter="transition ease-out duration-100"
-                                                                            enterFrom="transform opacity-0 scale-95"
-                                                                            enterTo="transform opacity-100 scale-100"
-                                                                            leave="transition ease-in duration-75"
-                                                                            leaveFrom="transform opacity-100 scale-100"
-                                                                            leaveTo="transform opacity-0 scale-95"
-                                                                        >
-                                                                            <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 dark:border-white/10">
-                                                                                <div className="py-1">
-                                                                                    <MenuItem>
-                                                                                        {({ active }) => (
-                                                                                            <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                                <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
-                                                                                            </button>
-                                                                                        )}
-                                                                                    </MenuItem>
-                                                                                </div>
-                                                                            </MenuItems>
-                                                                        </Transition>
-                                                                    </Menu>
-                                                                </div>
+                                            /* Pipeline View */
+                                            <div className="flex gap-6 overflow-x-auto pb-4 scale-y-[-1] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200/50 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800/50 dark:hover:[&::-webkit-scrollbar-thumb]:bg-zinc-800">
+                                                {pipelineStages.map((stage) => {
+                                                    const stageOrders = filteredOrders.filter(o => o.status === stage);
+                                                    return (
+                                                        <div key={stage} className="min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col h-full scale-y-[-1] pt-4">
+                                                            <div className="flex items-center justify-between mb-4 px-2">
+                                                                <h4 className="font-medium text-foreground flex items-center gap-2">
+                                                                    {stage}
+                                                                    <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{stageOrders.length}</span>
+                                                                </h4>
+                                                                <button className="text-muted-foreground hover:text-foreground">
+                                                                    <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                                </button>
                                                             </div>
 
-                                                            <div className="space-y-3">
-                                                                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                                    <span className="text-xs text-gray-500">Amount</span>
-                                                                    <span className="text-sm font-semibold text-gray-900 dark:text-white">{order.amount}</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                                    <span className="text-xs text-gray-500">Date</span>
-                                                                    <span className="text-sm text-gray-700 dark:text-gray-300">{order.date}</span>
-                                                                </div>
-                                                                <div className="flex justify-between items-center pt-2">
-                                                                    <span className={cn("inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
-                                                                        {order.status}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        {expandedIds.has(order.id) && (
-                                                            <div className="mt-4 pt-4 px-5 border-t border-gray-100 dark:border-white/5">
-                                                                <div className="flex flex-col md:flex-row gap-8">
-                                                                    <div className="flex-1 space-y-6">
-                                                                        <div className="flex items-center gap-3">
-                                                                            <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-500">
-                                                                                <UserIcon className="h-4 w-4" />
-                                                                            </div>
-                                                                            <div>
-                                                                                <p className="text-sm font-bold text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                                <p className="text-xs text-gray-500">Project Manager</p>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div className="relative py-2">
-                                                                            <div className="absolute top-3 left-0 w-full h-0.5 bg-gray-200 dark:bg-zinc-700" />
-                                                                            <div className="relative z-10 flex justify-between">
-                                                                                {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
-                                                                                    <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1">
-                                                                                        <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-gray-200 dark:bg-zinc-700 text-gray-400'}`}>
-                                                                                            {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
-                                                                                        </div>
-                                                                                        <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-gray-500'}`}>{step}</span>
+                                                            <div className="bg-muted/30 rounded-2xl p-3 h-full min-h-[500px] border border-border/50 space-y-3">
+                                                                {stageOrders.map(order => (
+                                                                    <div
+                                                                        key={order.id}
+                                                                        className={`group relative bg-white dark:bg-zinc-900 rounded-2xl border ${expandedIds.has(order.id) ? 'border-brand-400/50 ring-1 ring-brand-400/20 shadow-lg' : 'border-zinc-200 dark:border-white/10 shadow-sm hover:shadow-md'} transition-all duration-200 overflow-hidden flex flex-col`}
+                                                                    >
+                                                                        <div className="p-4">
+                                                                            <div className="flex items-center justify-between mb-3">
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                                                                                        {order.initials}
                                                                                     </div>
-                                                                                ))}
+                                                                                    <div className="space-y-0.5">
+                                                                                        <h4 className="text-sm font-semibold text-foreground transition-colors">{order.customer}</h4>
+                                                                                        <p className="text-[10px] text-muted-foreground font-mono">{order.id}</p>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    </div>
 
-                                                                    <div className="w-full md:w-[280px]">
-                                                                        <div className="rounded-xl border border-orange-200 dark:border-orange-500/20 bg-orange-50 dark:bg-orange-500/10 p-4">
-                                                                            <div className="flex gap-3">
-                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 shrink-0" />
-                                                                                <div>
-                                                                                    <h5 className="text-sm font-bold text-orange-700 dark:text-orange-400">Alert: Customs Delay</h5>
-                                                                                    <p className="mt-1 text-xs text-orange-600/80 dark:text-orange-400/70">Held at port. ETA +24h.</p>
-                                                                                    <button onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">
-                                                                                        Track Shipment
-                                                                                    </button>
+                                                                            <div className="space-y-2">
+                                                                                <div className="flex justify-between items-center text-xs">
+                                                                                    <span className="text-muted-foreground">Amount</span>
+                                                                                    <span className="font-semibold text-foreground">{order.amount}</span>
+                                                                                </div>
+                                                                                <div className="flex justify-between items-center text-xs">
+                                                                                    <span className="text-muted-foreground">Date</span>
+                                                                                    <span className="text-foreground">{order.date}</span>
+                                                                                </div>
+
+                                                                                {/* Use a simple divider */}
+                                                                                <div className="h-px bg-border w-full my-2" />
+
+                                                                                {/* Inline Actions Row */}
+                                                                                <div className="flex items-center justify-between">
+                                                                                    {/* Status Badge */}
+                                                                                    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
+                                                                                        colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                                                                                    )}>
+                                                                                        {order.status}
+                                                                                    </span>
+
+                                                                                    <div className="flex items-center gap-1">
+                                                                                        <button
+                                                                                            onClick={(e) => { e.stopPropagation(); toggleExpand(order.id); }}
+                                                                                            className="text-xs font-bold text-zinc-800 bg-primary hover:bg-primary/90 px-3 py-1.5 rounded-md transition-shadow shadow-sm"
+                                                                                        >
+                                                                                            {expandedIds.has(order.id) ? 'Close' : 'Details'}
+                                                                                        </button>
+                                                                                        <button
+                                                                                            onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }}
+                                                                                            className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                                                                                            title="View Full Details"
+                                                                                        >
+                                                                                            <ArrowRightIcon className="h-4 w-4" />
+                                                                                        </button>
+                                                                                    </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+
+                                                                        {/* Internal Accordion Content */}
+                                                                        {expandedIds.has(order.id) && (
+                                                                            <div className="bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-white/5 animate-in slide-in-from-top-2 duration-200">
+                                                                                <div className="p-5 space-y-5">
+                                                                                    <div className="grid grid-cols-2 gap-x-4 gap-y-4">
+                                                                                        <div className="space-y-1.5">
+                                                                                            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Project</p>
+                                                                                            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 truncate">{order.project}</p>
+                                                                                        </div>
+                                                                                        <div className="space-y-1.5">
+                                                                                            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Location</p>
+                                                                                            <div className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200">
+                                                                                                <MapPinIcon className="h-4 w-4 text-zinc-400" />
+                                                                                                <span className="truncate">{order.location}</span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div className="space-y-1.5">
+                                                                                            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Date Placed</p>
+                                                                                            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 font-mono">{order.date}</p>
+                                                                                        </div>
+                                                                                        <div className="space-y-1.5">
+                                                                                            <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Items</p>
+                                                                                            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-200">12 Units</p>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    <div className="flex flex-col gap-3 pt-2">
+                                                                                        <button className="w-full py-2.5 text-xs font-bold text-zinc-700 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 hover:text-zinc-900 transition-colors shadow-sm">
+                                                                                            View Full Order Details
+                                                                                        </button>
+                                                                                        <button
+                                                                                            onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
+                                                                                            className="w-full py-3 text-sm font-bold text-zinc-950 bg-brand-400 hover:bg-brand-300 rounded-lg shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
+                                                                                        >
+                                                                                            <MapPinIcon className="h-4 w-4" />
+                                                                                            Track Shipment
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
-                                                                </div>
+                                                                ))}
+                                                                {stageOrders.length === 0 && (
+                                                                    <div className="flex flex-col items-center justify-center h-32 text-muted-foreground opacity-50 border-2 border-dashed border-border rounded-xl">
+                                                                        <span className="text-xs">No orders</span>
+                                                                    </div>
+                                                                )}
                                                             </div>
-                                                        )}
-
-                                                        {expandedIds.has(order.id) && (
-                                                            <div className="mt-6 bg-gray-50 dark:bg-white/5 p-4 border-t border-gray-200 dark:border-white/10">
-                                                                <div className="flex items-center gap-2 mb-3">
-                                                                    <ShoppingBagIcon className="h-4 w-4 text-gray-400" />
-                                                                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Order Items (3)</span>
-                                                                </div>
-                                                                <div className="space-y-2">
-                                                                    {['Office Chair Ergonomic', 'Standing Desk Motorized'].map((item, i) => (
-                                                                        <div key={i} className="flex justify-between text-xs">
-                                                                            <span className="text-gray-500">{item}</span>
-                                                                            <span className="text-gray-900 dark:text-white font-medium">x1</span>
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        )}
-
-                                                        <div className="p-4 pt-0 mt-auto">
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
-                                                                className="w-full py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-xs font-medium shadow-sm transition-all flex items-center justify-center gap-2"
-                                                            >
-                                                                <MapPinIcon className="h-3 w-3" /> Track Shipment
-                                                            </button>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    )
+                                                })}
                                             </div>
                                         )}
                                     </div>
