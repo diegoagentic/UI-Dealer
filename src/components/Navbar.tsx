@@ -6,8 +6,15 @@ import {
     UserIcon, DocumentTextIcon, ChartBarIcon, ExclamationCircleIcon,
     CalendarIcon, EllipsisHorizontalIcon, ArrowRightOnRectangleIcon, BriefcaseIcon, CheckIcon,
     BookOpenIcon, TruckIcon, TagIcon, UsersIcon,
-    CalculatorIcon, WrenchScrewdriverIcon, PhotoIcon, CreditCardIcon, BanknotesIcon
-} from '@heroicons/react/24/outline'
+    CalculatorIcon, CubeTransparentIcon,
+    BanknotesIcon,
+    UserGroupIcon,
+    CurrencyDollarIcon,
+    FolderIcon,
+    WrenchScrewdriverIcon,
+    PhotoIcon,
+    CreditCardIcon
+} from '@heroicons/react/24/outline';
 import { useTheme } from '../useTheme'
 import { useTenant } from '../TenantContext'
 
@@ -44,15 +51,14 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
     const { theme, toggleTheme } = useTheme()
     const { currentTenant, tenants, setTenant } = useTenant()
 
-    const navItems = [
-        { label: 'Overview', icon: <HomeIcon className="w-4 h-4" /> },
-        { label: 'Inventory', icon: <CubeIcon className="w-4 h-4" /> },
-        { label: 'Catalogs', icon: <BookOpenIcon className="w-4 h-4" /> },
-        { label: 'MAC', icon: <TruckIcon className="w-4 h-4" /> },
-        { label: 'Transactions', icon: <ClipboardDocumentListIcon className="w-4 h-4" /> },
-        { label: 'CRM', icon: <UsersIcon className="w-4 h-4" /> },
-        { label: 'Pricing', icon: <TagIcon className="w-4 h-4" /> },
-    ]
+    const navigation = [
+        { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+        { name: 'Catalogs', page: 'catalogs', icon: BookOpenIcon },
+        { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
+        { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
+        { name: 'CRM', page: 'crm', icon: UserGroupIcon },
+        { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
+    ];
 
     return (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 min-w-[60vw] max-w-fit lg:min-w-0 lg:max-w-7xl lg:w-[80vw]">
@@ -111,13 +117,13 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
 
                 {/* Center Group (Nav Items) - Absolutely Centered on Desktop */}
                 <div className="hidden lg:flex items-center gap-1 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    {navItems.map(item => (
+                    {navigation.map(item => (
                         <NavItem
-                            key={item.label}
-                            icon={item.icon}
-                            label={item.label}
-                            active={activeTab === item.label} // Case sensitive match based on type
-                            onClick={() => onNavigate(item.label.toLowerCase())}
+                            key={item.name}
+                            icon={<item.icon className="w-4 h-4" />}
+                            label={item.name}
+                            active={activeTab === item.page}
+                            onClick={() => onNavigate(item.page)}
                         />
                     ))}
                 </div>
@@ -149,14 +155,14 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                     {/* Mobile Navigation List - Hidden on Desktop */}
                                     <div className="lg:hidden space-y-1">
                                         <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">Navigation</h3>
-                                        {navItems.map((item, i) => (
+                                        {navigation.map((item, i) => (
                                             <button
                                                 key={i}
-                                                onClick={() => onNavigate(item.label.toLowerCase())}
-                                                className={`flex items-center gap-3 w-full p-2 rounded-xl text-sm font-medium transition-colors ${activeTab === item.label ? 'bg-primary text-primary-foreground shadow-sm dark:bg-primary/10 dark:text-primary dark:shadow-none' : 'hover:bg-muted text-foreground'}`}
+                                                onClick={() => onNavigate(item.page)}
+                                                className={`flex items-center gap-3 w-full p-2 rounded-xl text-sm font-medium transition-colors ${activeTab === item.page ? 'bg-primary text-primary-foreground shadow-sm dark:bg-primary/10 dark:text-primary dark:shadow-none' : 'hover:bg-muted text-foreground'}`}
                                             >
-                                                {item.icon}
-                                                {item.label}
+                                                <item.icon className="w-4 h-4" />
+                                                {item.name}
                                             </button>
                                         ))}
                                         <div className="h-px bg-border my-2 mx-1"></div>

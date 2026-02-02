@@ -1,5 +1,183 @@
-import Navbar from './components/Navbar'
-import { useTenant } from './TenantContext'
+import React, { useState, useMemo, useRef } from 'react';
+import InventoryMovements from './components/InventoryMovements';
+import InventoryMaintenance from './components/InventoryMaintenance';
+import RelocateAssetModal from './components/RelocateAssetModal';
+import MaintenanceModal from './components/MaintenanceModal';
+import SmartAddAssetModal from './components/SmartAddAssetModal';
+import InventoryLocations from './components/InventoryLocations';
+import ChangeStatusModal from './components/ChangeStatusModal';
+import { useTenant } from './TenantContext';
+import {
+    MagnifyingGlassIcon,
+    AdjustmentsHorizontalIcon,
+    Squares2X2Icon,
+    ListBulletIcon,
+    PlusIcon,
+    EllipsisHorizontalIcon,
+    MapPinIcon,
+    WrenchScrewdriverIcon,
+    TrashIcon,
+    ArrowPathRoundedSquareIcon,
+    TagIcon,
+    BuildingOfficeIcon,
+    CubeIcon,
+    BoltIcon,
+    CheckCircleIcon,
+    ExclamationTriangleIcon,
+    ClockIcon,
+    FunnelIcon,
+    ChevronUpIcon,
+    ChevronDownIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    QrCodeIcon,
+    ClipboardDocumentCheckIcon,
+    TruckIcon,
+    ChartBarIcon,
+    CurrencyDollarIcon,
+    PhotoIcon
+} from '@heroicons/react/24/outline';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: (string | undefined | null | false)[]) {
+    return twMerge(clsx(inputs));
+}
+
+// --- Mock Data ---
+
+interface InventoryItem {
+    id: string;
+    assetName: string;
+    description: string;
+    category: string;
+    location: string;
+    locationType: 'Project' | 'Warehouse' | 'Office' | 'Consignment';
+    status: 'Available' | 'Under Maintenance' | 'In Use' | 'Reserved' | 'In Consignment' | 'Sold' | 'Write-off';
+    value: number;
+    carbonImpact: 'Low Impact' | 'Medium Impact' | 'High Impact';
+    image?: string;
+}
+
+const MOCK_INVENTORY: InventoryItem[] = [
+    {
+        id: '1',
+        assetName: 'LED Desk Lamp',
+        description: 'Lighting • Desk Lamp',
+        category: 'Lighting',
+        location: 'Office Renovation Project',
+        locationType: 'Project',
+        status: 'Under Maintenance',
+        value: 85.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1534073828943-ef801083f9f9?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '2',
+        assetName: 'Executive Office Chair',
+        description: 'Furniture • Chair',
+        category: 'Furniture',
+        location: 'Reception Area',
+        locationType: 'Office',
+        status: 'Available',
+        value: 450.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '3',
+        assetName: 'LED Ceiling Panel 40W #2',
+        description: 'Lighting • LED Panel',
+        category: 'Lighting',
+        location: 'Main Warehouse',
+        locationType: 'Warehouse',
+        status: 'Available',
+        value: 192.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1563456075-8ec9338274d8?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '4',
+        assetName: 'Glass Office Partition',
+        description: 'Partitions • Partition',
+        category: 'Partitions',
+        location: 'Main Warehouse',
+        locationType: 'Warehouse',
+        status: 'Available',
+        value: 689.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '5',
+        assetName: 'LED Ceiling Panel 40W #1',
+        description: 'Lighting • LED Panel',
+        category: 'Lighting',
+        location: 'Main Warehouse',
+        locationType: 'Warehouse',
+        status: 'Available',
+        value: 192.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1563456075-8ec9338274d8?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '6',
+        assetName: 'Standing Desk (Motorized)',
+        description: 'Furniture • Desk',
+        category: 'Furniture',
+        location: 'Floor 3 Open Plan',
+        locationType: 'Office',
+        status: 'In Use',
+        value: 850.00,
+        carbonImpact: 'Medium Impact',
+        image: 'https://images.unsplash.com/photo-1595515106967-160bf288e7a8?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '7',
+        assetName: 'Conference Table (Oak)',
+        description: 'Furniture • Table',
+        category: 'Furniture',
+        location: 'Main Warehouse',
+        locationType: 'Warehouse',
+        status: 'Reserved',
+        value: 1200.00,
+        carbonImpact: 'Medium Impact',
+        image: 'https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?auto=format&fit=crop&q=80&w=800'
+    },
+    {
+        id: '8',
+        assetName: 'Ergonomic Mesh Chair',
+        description: 'Furniture • Chair',
+        category: 'Furniture',
+        location: 'Floor 2',
+        locationType: 'Office',
+        status: 'Available',
+        value: 350.00,
+        carbonImpact: 'Low Impact',
+        image: 'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?auto=format&fit=crop&q=80&w=800'
+    },
+];
+
+// Summary Data adapted for Inventory
+const inventorySummary = {
+    total_assets: { label: 'Total Assets', value: '1,248', sub: '+12 this week', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
+    total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green' },
+    low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange' },
+    utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple' },
+    pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
+};
+
+// Color Mapping for Status Icons (from Transactions)
+const colorStyles: Record<string, string> = {
+    blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
+    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
+    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
+    pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
+    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+};
+
+// --- Components ---
 
 interface PageProps {
     onLogout: () => void;
@@ -9,24 +187,645 @@ interface PageProps {
 }
 
 export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWorkspace, onNavigate }: PageProps) {
-    const { currentTenant } = useTenant()
+    const { currentTenant } = useTenant();
+
+    // State
+    const [inventoryData, setInventoryData] = useState<InventoryItem[]>(MOCK_INVENTORY);
+    const [activeTab, setActiveTab] = useState<'inventory' | 'locations' | 'movements' | 'maintenance'>('inventory');
+    const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [showMetrics, setShowMetrics] = useState(false); // Collapsible status
+
+    // Modal State
+    const [isRelocateModalOpen, setIsRelocateModalOpen] = useState(false);
+    const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
+    const [isAddAssetModalOpen, setIsAddAssetModalOpen] = useState(false);
+    const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+
+    // Refs for scrolling
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    const scroll = (ref: React.RefObject<HTMLDivElement | null>, direction: 'left' | 'right') => {
+        if (ref.current) {
+            const scrollAmount = 300;
+            ref.current.scrollBy({
+                left: direction === 'right' ? scrollAmount : -scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    // Filters
+    const [filterStatus, setFilterStatus] = useState('All Statuses');
+    const [filterLocation, setFilterLocation] = useState('All Locations');
+    const [filterType, setFilterType] = useState('All Types');
+
+    // Derived Data
+    const uniqueLocations = useMemo(() => Array.from(new Set(inventoryData.map(i => i.location))), [inventoryData]);
+    const uniqueTypes = useMemo(() => Array.from(new Set(inventoryData.map(i => i.locationType))), [inventoryData]);
+
+    const filteredData = useMemo(() => {
+        return inventoryData.filter(item => {
+            const matchesSearch = item.assetName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                item.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesStatus = filterStatus === 'All Statuses' || item.status === filterStatus;
+            const matchesLocation = filterLocation === 'All Locations' || item.location === filterLocation;
+            const matchesType = filterType === 'All Types' || item.locationType === filterType;
+
+            return matchesSearch && matchesStatus && matchesLocation && matchesType;
+        });
+    }, [inventoryData, searchQuery, filterStatus, filterLocation, filterType]);
+
+    // Handlers
+    const toggleSelection = (id: string) => {
+        const newSet = new Set(selectedIds);
+        if (newSet.has(id)) {
+            newSet.delete(id);
+        } else {
+            newSet.add(id);
+        }
+        setSelectedIds(newSet);
+    };
+
+    const toggleAll = () => {
+        if (selectedIds.size === filteredData.length) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(filteredData.map(i => i.id)));
+        }
+    };
+
+    // Action Handlers
+    const handleRelocateConfirm = (data: any) => {
+        if (data.targetLocation) {
+            setInventoryData(prev => prev.map(item => {
+                if (selectedIds.has(item.id)) {
+                    return {
+                        ...item,
+                        location: data.targetLocation,
+                        // Optionally update locationType if we had a mapping, but for now just location.
+                    };
+                }
+                return item;
+            }));
+
+            setSelectedIds(new Set());
+        }
+
+        console.log('Relocation Requested:', data);
+        setActiveTab('movements');
+    };
+
+    const handleMaintenanceConfirm = (data: any) => {
+        console.log('Maintenance Scheduled:', data);
+        setActiveTab('maintenance');
+    };
+
+    const handleAddAssetConfirm = (newData: any) => {
+        const newItems = Array.isArray(newData) ? newData : [newData];
+
+        // Transform form data to InventoryItem type
+        const formattedItems = newItems.map((item: any) => ({
+            id: item.id || `new-${Math.random().toString(36).substr(2, 9)}`,
+            assetName: item.assetName,
+            description: `${item.category} • ${item.subCategory || item.category}`,
+            category: item.category,
+            location: item.location || 'Unassigned',
+            locationType: 'Warehouse' as 'Project' | 'Warehouse' | 'Office' | 'Consignment',
+            status: item.status || 'Available',
+            value: parseFloat(item.value) || 0,
+            carbonImpact: 'Low Impact' as 'Low Impact' | 'Medium Impact' | 'High Impact',
+            image: item.image // Pass through custom image if any
+        }));
+
+        setInventoryData(prev => [...formattedItems, ...prev]);
+        console.log('Assets Added:', formattedItems);
+    };
+
+    const handleStatusConfirm = (data: any) => {
+        setInventoryData(prev => prev.map(item => {
+            if (selectedIds.has(item.id)) {
+                const updates: any = { status: data.status };
+
+                // Handle Consignment Logic
+                if (data.status === 'In Consignment' && data.consignmentLocation) {
+                    updates.location = data.consignmentLocation;
+                    updates.locationType = 'Consignment';
+                } else if (data.status === 'Available' && item.status === 'In Consignment') {
+                    updates.location = 'Main Warehouse';
+                    updates.locationType = 'Warehouse';
+                }
+
+                return { ...item, ...updates };
+            }
+            return item;
+        }));
+        setSelectedIds(new Set());
+        console.log('Status Updated:', data);
+    };
+
+    // Helper for Status Badge
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'Available': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+            case 'Under Maintenance': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+            case 'In Use': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+            case 'Reserved': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
+            case 'In Consignment': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+            case 'Sold': return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 line-through opacity-75';
+            case 'Write-off': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+            default: return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400';
+        }
+    };
+
+    const getImpactBadge = (impact: string) => {
+        return impact === 'Low Impact'
+            ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10'
+            : 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/10';
+    };
 
     return (
-        <div className="min-h-screen bg-background font-sans text-foreground pb-10">
-            <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate} />
+        <div className="min-h-screen bg-background font-sans text-foreground pb-24 relative">
             <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+
+                {/* Header Container */}
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-brand font-bold tracking-tight text-foreground">
-                            {currentTenant} Inventory
-                        </h1>
-                        <p className="text-muted-foreground mt-1">Manage your stock and assets.</p>
+                        {/* Pill-style Tabs (Matching Transactions) */}
+                        <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
+                            {[
+                                { id: 'inventory', label: 'Inventory', count: MOCK_INVENTORY.length },
+                                { id: 'locations', label: 'Locations', count: 4 },
+                                { id: 'movements', label: 'Movements', count: 4 },
+                                { id: 'maintenance', label: 'Maintenance', count: 3 }
+                            ].map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id as any)}
+                                    className={cn(
+                                        "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 outline-none whitespace-nowrap",
+                                        activeTab === tab.id
+                                            ? "bg-primary text-primary-foreground shadow-sm"
+                                            : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-700/50"
+                                    )}
+                                >
+                                    {tab.label}
+                                    {tab.count !== null && (
+                                        <span className={cn(
+                                            "text-xs px-1.5 py-0.5 rounded-full transition-colors",
+                                            activeTab === tab.id
+                                                ? "bg-primary-foreground/20 text-primary-foreground"
+                                                : "bg-background text-muted-foreground group-hover:bg-muted font-medium"
+                                        )}>
+                                            {tab.count}
+                                        </span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
-                <div className="p-10 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-400">
-                    Inventory Content Placeholder
-                </div>
+
+                {/* Collapsible Summary Section */}
+                {showMetrics ? (
+                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                        <div className="flex justify-end mb-2">
+                            <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+                                Hide Details <ChevronUpIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
+                            {Object.entries(inventorySummary).map(([key, data]) => (
+                                <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
+                                            <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
+                                        </div>
+                                        <div className={cn("p-3 rounded-xl", colorStyles[data.color] || 'bg-zinc-50 text-zinc-600')}>
+                                            {data.icon}
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 flex items-center text-sm text-muted-foreground">
+                                        <span className="font-medium">{data.sub}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Expanded Quick Actions Row */}
+                        <div className="flex flex-wrap items-center gap-4 mt-2 animate-in fade-in slide-in-from-top-3 duration-500 delay-100">
+                            <span className="text-sm font-medium text-muted-foreground">Quick Actions:</span>
+                            {[
+                                { icon: <PlusIcon className="w-4 h-4" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
+                                { icon: <ArrowPathRoundedSquareIcon className="w-4 h-4" />, label: "Transfer", onClick: () => setIsRelocateModalOpen(true) },
+                                { icon: <WrenchScrewdriverIcon className="w-4 h-4" />, label: "Maintenance", onClick: () => setIsMaintenanceModalOpen(true) },
+                                { icon: <ChartBarIcon className="w-4 h-4" />, label: "Export Report", onClick: () => { } },
+                            ].map((action, i) => (
+                                <button
+                                    key={i}
+                                    onClick={action.onClick}
+                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-sm font-medium text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm"
+                                >
+                                    {action.icon}
+                                    {action.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                        {/* Collapsed Ticker View - Carousel */}
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <button
+                                onClick={() => scroll(scrollContainerRef, 'left')}
+                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                            >
+                                <ChevronLeftIcon className="w-4 h-4" />
+                            </button>
+
+                            <div
+                                ref={scrollContainerRef}
+                                className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
+                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                            >
+                                {Object.entries(inventorySummary).map(([key, data]) => (
+                                    <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
+                                        <div className={cn("relative flex items-center justify-center w-10 h-10 rounded-full transition-colors", colorStyles[data.color])}>
+                                            {data.icon}
+                                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-zinc-800 text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
+                                                {data.label}
+                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900 dark:border-t-zinc-800"></div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                            <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
+                                        </div>
+                                        <div className="h-8 w-px bg-zinc-200 dark:bg-zinc-700/50 ml-4 hidden md:block lg:hidden xl:block opacity-50"></div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => scroll(scrollContainerRef, 'right')}
+                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                            >
+                                <ChevronRightIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-800 hidden xl:block mx-2"></div>
+
+                        {/* Quick Actions (Product Owner Context) */}
+                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-800 xl:border-none xl:pl-0">
+                            {[
+                                { icon: <QrCodeIcon className="w-5 h-5" />, label: "Scan Item" },
+                                { icon: <ArrowPathRoundedSquareIcon className="w-5 h-5" />, label: "Quick Transfer" },
+                                { icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, label: "Start Audit" },
+                                { icon: <PlusIcon className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
+                            ].map((action, i) => (
+                                <button key={i} onClick={action.onClick} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                    {action.icon}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-800 hidden xl:block mx-2"></div>
+
+                        <button
+                            onClick={() => setShowMetrics(true)}
+                            className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
+                        >
+                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
+                                <ChevronDownIcon className="w-4 h-4" />
+                            </div>
+                            <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Details</span>
+                        </button>
+                    </div>
+                )}
+
+
+                {/* Main Content (Tabs Logic) */}
+                {activeTab === 'inventory' && (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+
+                        {/* Filters & View Toggle Bar */}
+                        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+
+                            {/* Left: Search & Filters */}
+                            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                <div className="relative w-full sm:w-64">
+                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                    <input
+                                        type="text"
+                                        placeholder="Search assets..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                    <div className="relative">
+                                        <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                                        <select
+                                            value={filterType}
+                                            onChange={(e) => setFilterType(e.target.value)}
+                                            className="pl-9 pr-8 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none"
+                                        >
+                                            <option value="All Types">All Types</option>
+                                            {uniqueTypes.map(type => (
+                                                <option key={type} value={type}>{type}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                                    </div>
+
+                                    <div className="relative">
+                                        <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                                        <select
+                                            value={filterLocation}
+                                            onChange={(e) => setFilterLocation(e.target.value)}
+                                            className="pl-9 pr-8 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none max-w-[200px] truncate"
+                                        >
+                                            <option value="All Locations">All Locations</option>
+                                            {uniqueLocations.map(loc => (
+                                                <option key={loc} value={loc}>{loc}</option>
+                                            ))}
+                                        </select>
+                                        <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: View Toggle */}
+                            <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
+                                <button
+                                    onClick={() => setViewMode('list')}
+                                    className={cn("p-1.5 rounded-md transition-all", viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                >
+                                    <ListBulletIcon className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('grid')}
+                                    className={cn("p-1.5 rounded-md transition-all", viewMode === 'grid' ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
+                                >
+                                    <Squares2X2Icon className="w-5 h-5" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* List View */}
+                        {viewMode === 'list' && (
+                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left text-sm">
+                                        <thead className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
+                                            <tr>
+                                                <th className="p-4 w-12">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="rounded border-zinc-300 text-primary focus:ring-primary"
+                                                        checked={filteredData.length > 0 && selectedIds.size === filteredData.length}
+                                                        onChange={toggleAll}
+                                                    />
+                                                </th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Asset</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Category</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Location</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Status</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Value</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider">Carbon Impact</th>
+                                                <th className="p-4 font-medium text-muted-foreground uppercase text-xs tracking-wider text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                                            {filteredData.map((item) => (
+                                                <tr key={item.id} className={cn("group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors", selectedIds.has(item.id) ? "bg-primary/5 hover:bg-primary/10" : "")}>
+                                                    <td className="p-4">
+                                                        <input
+                                                            type="checkbox"
+                                                            className="rounded border-zinc-300 text-primary focus:ring-primary"
+                                                            checked={selectedIds.has(item.id)}
+                                                            onChange={() => toggleSelection(item.id)}
+                                                        />
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-3">
+                                                            {item.image ? (
+                                                                <img src={item.image} alt={item.assetName} className="w-10 h-10 rounded-lg object-cover border border-zinc-200 dark:border-zinc-700" />
+                                                            ) : (
+                                                                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-lg border border-zinc-200 dark:border-zinc-700">
+                                                                    📦
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                <p className="font-semibold text-foreground">{item.assetName}</p>
+                                                                <p className="text-xs text-muted-foreground">{item.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 text-muted-foreground">{item.category}</td>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-1.5 text-muted-foreground">
+                                                            <MapPinIcon className="w-3.5 h-3.5 text-zinc-400" />
+                                                            <span>{item.location}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4">
+                                                        <span className={cn("px-2.5 py-1 rounded-full text-xs font-medium border", getStatusBadge(item.status), "border-transparent")}>
+                                                            {item.status}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-4 font-medium">${item.value.toFixed(2)}</td>
+                                                    <td className="p-4">
+                                                        <span className={cn("px-2 py-0.5 rounded text-xs font-medium", getImpactBadge(item.carbonImpact))}>
+                                                            {item.carbonImpact}
+                                                        </span>
+                                                    </td>
+                                                    <td className="p-4 text-right">
+                                                        <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                                                            <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Grid View */}
+                        {viewMode === 'grid' && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {filteredData.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        onClick={() => toggleSelection(item.id)}
+                                        className={cn(
+                                            "group bg-white dark:bg-zinc-900 rounded-2xl border shadow-sm hover:shadow-lg transition-all cursor-pointer relative overflow-hidden flex flex-col h-[340px]",
+                                            selectedIds.has(item.id) ? "border-primary ring-1 ring-primary" : "border-zinc-200 dark:border-zinc-800 hover:border-primary/50"
+                                        )}
+                                    >
+                                        {/* Image Section */}
+                                        <div className="h-44 w-full relative bg-zinc-100 dark:bg-zinc-800">
+                                            {item.image ? (
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.assetName}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex flex-col items-center justify-center text-zinc-300 dark:text-zinc-600">
+                                                    <PhotoIcon className="w-12 h-12 mb-2" />
+                                                    <span className="text-xs font-medium">No Image</span>
+                                                </div>
+                                            )}
+
+                                            {/* Overlay Gradient */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                                            {/* Selection Checkbox */}
+                                            <div className="absolute top-3 left-3 z-10">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedIds.has(item.id)}
+                                                    readOnly
+                                                    className="rounded border-zinc-300 text-primary focus:ring-primary shadow-sm w-5 h-5 cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    onChange={() => toggleSelection(item.id)}
+                                                />
+                                            </div>
+
+                                            {/* Kebab Menu */}
+                                            <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <button className="p-1.5 bg-white/90 dark:bg-black/80 backdrop-blur rounded-lg text-foreground hover:bg-white dark:hover:bg-zinc-800 shadow-sm" onClick={(e) => e.stopPropagation()}>
+                                                    <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                </button>
+                                            </div>
+
+                                            {/* Status Badge (On Image) */}
+                                            <div className="absolute bottom-3 right-3 z-10">
+                                                <span className={cn(
+                                                    "px-2.5 py-1 rounded-lg text-[10px] font-bold shadow-sm backdrop-blur-md border border-white/10",
+                                                    getStatusBadge(item.status)
+                                                )}>
+                                                    {item.status}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Content Section */}
+                                        <div className="p-4 flex-1 flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex justify-between items-start gap-2 mb-1.5">
+                                                    <h3 className="font-semibold text-foreground truncate text-base" title={item.assetName}>{item.assetName}</h3>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground mb-3 truncate">{item.description}</p>
+
+                                                <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+                                                    <MapPinIcon className="w-3.5 h-3.5 shrink-0" />
+                                                    <span className="truncate">{item.location}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-end">
+                                                <div>
+                                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mb-0.5">Value</p>
+                                                    <p className="text-sm font-bold text-foreground">${item.value.toLocaleString()}</p>
+                                                </div>
+                                                <span className={cn("px-2 py-1 rounded text-[10px] font-medium border border-transparent", getImpactBadge(item.carbonImpact))}>
+                                                    {item.carbonImpact === 'Low Impact' ? '🌿 ' : '⚠️ '} {item.carbonImpact.split(' ')[0]}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Movements Tab */}
+                {activeTab === 'movements' && <InventoryMovements />}
+
+                {/* Maintenance Tab */}
+                {activeTab === 'maintenance' && <InventoryMaintenance />}
+
+                {/* Locations Tab */}
+                {activeTab === 'locations' && <InventoryLocations />}
+
             </div>
+
+            {/* Sticky Bulk Actions Footer */}
+            {selectedIds.size > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-xl rounded-full px-6 py-3 flex items-center gap-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+                    <div className="flex items-center gap-2 border-r border-zinc-200 dark:border-zinc-700 pr-6">
+                        <div className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                            {selectedIds.size}
+                        </div>
+                        <span className="text-sm font-medium text-foreground">Selected</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsStatusModalOpen(true)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                        >
+                            <ArrowPathRoundedSquareIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                            Change Status
+                        </button>
+                        <button
+                            onClick={() => setIsRelocateModalOpen(true)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                        >
+                            <MapPinIcon className="w-4 h-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                            Move
+                        </button>
+                        <button
+                            onClick={() => setIsMaintenanceModalOpen(true)}
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                        >
+                            <WrenchScrewdriverIcon className="w-4 h-4 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                            Maintenance
+                        </button>
+                        <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 transition-colors group">
+                            <TrashIcon className="w-4 h-4" />
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Modals */}
+            <RelocateAssetModal
+                isOpen={isRelocateModalOpen}
+                onClose={() => setIsRelocateModalOpen(false)}
+                selectedCount={selectedIds.size || 1}
+                onConfirm={handleRelocateConfirm}
+            />
+
+            <MaintenanceModal
+                isOpen={isMaintenanceModalOpen}
+                onClose={() => setIsMaintenanceModalOpen(false)}
+                selectedCount={selectedIds.size || 1}
+                onConfirm={handleMaintenanceConfirm}
+            />
+
+            <SmartAddAssetModal
+                isOpen={isAddAssetModalOpen}
+                onClose={() => setIsAddAssetModalOpen(false)}
+                onConfirm={handleAddAssetConfirm}
+            />
+
+            <ChangeStatusModal
+                isOpen={isStatusModalOpen}
+                onClose={() => setIsStatusModalOpen(false)}
+                selectedCount={selectedIds.size || 1}
+                onConfirm={handleStatusConfirm}
+            />
         </div>
-    )
+    );
 }

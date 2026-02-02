@@ -37,7 +37,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 
 import { useTheme } from './useTheme'
 import { useTenant } from './TenantContext'
-import Navbar from './components/Navbar'
 import Select from './components/Select'
 import ChatWidget from './components/ChatWidget'
 import FeatureManager, { type Feature } from './components/FeatureManager'
@@ -48,6 +47,10 @@ import WarrantyClaimsWidget from './components/widgets/WarrantyClaimsWidget'
 import POVerificationWidget from './components/widgets/POVerificationWidget'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import CommandCenter from './components/gen-ui/CommandCenter'
+import StreamFeed from './components/gen-ui/StreamFeed'
+import SmartQuoteHub from './components/widgets/SmartQuoteHub';
+import { useGenUI } from './context/GenUIContext'
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -260,6 +263,13 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
     const { theme, toggleTheme } = useTheme()
     const { currentTenant } = useTenant()
+    const { sendMessage, setStreamOpen, setShowTriggers } = useGenUI()
+
+    const handleGenUIAction = (prompt: string) => {
+        setStreamOpen(true);
+        setShowTriggers(false);
+        sendMessage(prompt);
+    };
 
     const scrollContainerRef = useRef<HTMLDivElement>(null)
     const expandedScrollRef = useRef<HTMLDivElement>(null)
@@ -404,10 +414,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
     return (
         <div className="min-h-screen bg-background font-sans text-foreground pb-10">
-            {/* Floating Info Navbar */}
-            {/* Floating Info Navbar */}
-            <Navbar onLogout={onLogout} activeTab="Overview" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate} />
-
+            <CommandCenter />
+            <StreamFeed />
             {/* Main Content Content - Padded top to account for floating nav */}
             <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6">
                 {/* Page Title & Search */}
@@ -534,38 +542,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 </button>
                             </div>
 
-                            {/* Right Column: Quick Actions Sidebar */}
-                            <div className="w-full xl:w-[400px] shrink-0 flex flex-col h-[200px]">
-                                <div className="bg-white/60 dark:bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 border border-border shadow-sm flex-1 flex flex-col h-full">
-                                    <h3 className="text-xs font-semibold text-foreground mb-3 flex items-center gap-1.5">
-                                        <SparklesIcon className="w-3.5 h-3.5 text-purple-500" />
-                                        Quick Actions
-                                    </h3>
-
-                                    <div className="grid grid-cols-2 gap-2 flex-1 content-start">
-                                        {[
-                                            { icon: <DocumentPlusIcon className="w-4 h-4" />, label: "New Quote", color: "text-blue-500", tooltip: "Create a new sales quote" },
-                                            { icon: <CubeIcon className="w-4 h-4" />, label: "Check Stock", color: "text-orange-500", tooltip: "Check product availability" },
-                                            { icon: <ChartBarIcon className="w-4 h-4" />, label: "Gen. Report", color: "text-green-500", tooltip: "Generate sales report" },
-                                            { icon: <CloudArrowUpIcon className="w-4 h-4" />, label: "ERP Sync", color: "text-purple-500", tooltip: "Sync with ERP system" },
-                                        ].map((action, i) => (
-                                            <button key={i} className="flex flex-row items-center justify-start gap-2.5 p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all group/action text-left border border-transparent hover:border-border/50" title={action.tooltip}>
-                                                <div className={`p-1.5 rounded-md bg-white dark:bg-zinc-800 shadow-sm border border-gray-100 dark:border-zinc-700 group-hover/action:border-primary/20 transition-colors ${action.color}`}>
-                                                    {action.icon}
-                                                </div>
-                                                <span className="text-[10px] font-medium text-muted-foreground group-hover/action:text-foreground line-clamp-1">
-                                                    {action.label}
-                                                </span>
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <div className="mt-auto pt-3 border-t border-border/50">
-                                        <button className="w-full py-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground border border-dashed border-border hover:border-foreground/20 rounded-lg transition-all flex items-center justify-center gap-1 group">
-                                            <Squares2X2Icon className="w-3 h-3 group-hover:text-primary transition-colors" /> View All & Manage
-                                        </button>
-                                    </div>
-                                </div>
+                            {/* Right Column: Smart Quote Hub (Replaces Quick Actions) */}
+                            <div className="w-full xl:w-[400px] shrink-0 flex flex-col h-[320px]">
+                                <SmartQuoteHub />
                             </div>
                         </div>
                     </>
@@ -752,7 +731,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         <button className="text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 transition-colors">
                                                             Dismiss
                                                         </button>
-                                                        <button className="text-xs font-bold bg-primary text-zinc-900 px-4 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5">
+                                                        <button
+                                                            onClick={() => handleGenUIAction(`${action.action} ${action.title}`)}
+                                                            className="text-xs font-bold bg-primary text-zinc-900 px-4 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
+                                                        >
                                                             {action.action}
                                                             <ArrowRightIcon className="w-3 h-3" />
                                                         </button>
@@ -853,9 +835,18 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">
                                                                             AI Insight
                                                                         </p>
-                                                                        <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 leading-relaxed">
+                                                                        <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 leading-relaxed mb-2">
                                                                             {item.aiSuggestion}
                                                                         </p>
+                                                                        <button
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleGenUIAction(`Resolve ${item.title} for ${item.related}`);
+                                                                            }}
+                                                                            className="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-500/30 transition-colors flex items-center gap-1"
+                                                                        >
+                                                                            Resolve Issue <SparklesIcon className="w-3 h-3" />
+                                                                        </button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -902,7 +893,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                                                             {suggestion.description}
                                                         </p>
-                                                        <button className="mt-3 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1 group/btn">
+                                                        <button
+                                                            onClick={() => handleGenUIAction(`Apply Suggestion: ${suggestion.title}`)}
+                                                            className="mt-3 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1 group/btn"
+                                                        >
                                                             Apply Suggestion <ArrowRightIcon className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
                                                         </button>
                                                     </div>

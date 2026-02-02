@@ -16,7 +16,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 
 import { useTheme } from './useTheme'
 import { useTenant } from './TenantContext'
-import Navbar from './components/Navbar'
 import Select from './components/Select'
 import CreateOrderModal from './components/CreateOrderModal'
 import { clsx } from 'clsx'
@@ -199,9 +198,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
     return (
         <div className="min-h-screen bg-background font-sans text-foreground pb-10">
-            {/* Floating Info Navbar */}
-            {/* Floating Info Navbar */}
-            <Navbar onLogout={onLogout} activeTab="Transactions" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate} />
 
             {/* Main Content Content - Padded top to account for floating nav */}
             <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6">
