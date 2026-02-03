@@ -253,7 +253,7 @@ export default function CatalogLibrary() {
                             className={cn(
                                 "flex items-center gap-2 px-3 py-2 border rounded-lg transition-colors text-sm font-medium shadow-sm",
                                 showFilters || activeFilterCount > 0
-                                    ? "bg-primary/10 border-primary text-primary"
+                                    ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-900 dark:text-zinc-100"
                                     : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-foreground"
                             )}
                         >
@@ -368,7 +368,7 @@ export default function CatalogLibrary() {
                                         ))}
                                     </div>
                                     <div className="pt-2 mt-auto text-center border-t border-zinc-100 dark:border-zinc-800">
-                                        <button className="text-xs text-primary font-medium hover:underline">
+                                        <button className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-200 font-medium hover:underline transition-colors">
                                             View Full Audit Trail
                                         </button>
                                     </div>
@@ -399,7 +399,7 @@ export default function CatalogLibrary() {
                                         {/* Last Sync Text */}
                                         <div className="text-[10px] text-zinc-400 h-4">
                                             {syncingId === catalog.id ? (
-                                                <span className="text-primary animate-pulse font-medium">{syncStatus}</span>
+                                                <span className="text-zinc-700 dark:text-zinc-300 animate-pulse font-medium">{syncStatus}</span>
                                             ) : (
                                                 `Last synced ${catalog.lastSync}`
                                             )}
@@ -454,7 +454,7 @@ export default function CatalogLibrary() {
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); handleSync(catalog.id); }}
                                                 disabled={syncingId === catalog.id}
-                                                className={`p-2 rounded-lg transition-colors ${syncingId === catalog.id ? 'animate-spin text-primary' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-primary'}`}
+                                                className={`p-2 rounded-lg transition-colors ${syncingId === catalog.id ? 'animate-spin text-zinc-500' : 'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-muted-foreground hover:text-foreground'}`}
                                                 title="Sync Catalog"
                                             >
                                                 <ArrowPathIcon className="w-4 h-4" />
@@ -481,7 +481,7 @@ export default function CatalogLibrary() {
 
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleOpenQuote(catalog.name); }}
-                                            className="text-primary hover:text-primary/80 text-xs font-semibold bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-lg transition-colors"
+                                            className="text-zinc-900 hover:text-zinc-700 dark:text-zinc-300 dark:hover:text-white text-xs font-semibold bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 px-3 py-1.5 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700"
                                         >
                                             Create Quote
                                         </button>
@@ -502,7 +502,7 @@ export default function CatalogLibrary() {
                                 setSearchQuery('');
                                 setFilters({ owner: 'All', status: 'All', manufacturer: 'All' });
                             }}
-                            className="mt-4 text-primary hover:underline"
+                            className="mt-4 text-zinc-500 hover:text-zinc-900 underline hover:no-underline transition-colors"
                         >
                             Clear all filters
                         </button>

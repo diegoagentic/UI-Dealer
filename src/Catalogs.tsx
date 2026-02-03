@@ -35,8 +35,8 @@ export default function Catalogs({ onNavigate }: PageProps) {
                 <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
-                            <div className="p-1.5 bg-primary/10 rounded-lg">
-                                <CubeTransparentIcon className="w-5 h-5 text-primary" />
+                            <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+                                <CubeTransparentIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                             </div>
                             <h1 className="text-xl font-bold tracking-tight text-foreground">Catalog Management</h1>
                         </div>
@@ -44,8 +44,8 @@ export default function Catalogs({ onNavigate }: PageProps) {
                 </div>
 
                 {/* Tabs */}
-                <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex gap-6 -mb-px">
+                <div className="max-w-7xl mx-auto px-4 pb-4">
+                    <div className="inline-flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
                         {tabs.map((tab) => {
                             const isActive = activeTab === tab.id;
                             const Icon = tab.icon;
@@ -54,13 +54,14 @@ export default function Catalogs({ onNavigate }: PageProps) {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
                                     className={cn(
-                                        "flex items-center gap-2 pb-3 pt-2 text-sm font-medium transition-all border-b-2",
+                                        "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all",
                                         isActive
-                                            ? "border-primary text-primary"
-                                            : "border-transparent text-muted-foreground hover:text-foreground hover:border-zinc-300 dark:hover:border-zinc-700"
+                                            ? "bg-primary text-zinc-900 shadow-sm"
+                                            : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"
                                     )}
                                 >
-                                    <Icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-zinc-400")} />
+                                    {/* Icons removed/hidden as per user example preference for cleaner look, or kept subtle if needed. 
+                                        User said icons are hard to see, and example had none. I will remove them for now to match the "clean" example. */}
                                     {tab.label}
                                 </button>
                             );

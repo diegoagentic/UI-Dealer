@@ -100,7 +100,7 @@ export default function ClientPolicyManager() {
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
                     <label className="block text-sm font-medium text-muted-foreground mb-2">Configure Policy For</label>
                     <div className="flex items-center gap-4">
-                        <div className="p-3 bg-primary/10 rounded-full text-primary">
+                        <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100">
                             <UsersIcon className="w-6 h-6" />
                         </div>
                         <select
@@ -119,7 +119,7 @@ export default function ClientPolicyManager() {
                 <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex-1">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="font-semibold text-foreground flex items-center gap-2">
-                            <ListBulletIcon className="w-5 h-5 text-zinc-500" />
+                            <ListBulletIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                             Reference Basket
                         </h3>
                         <span className="text-xs text-muted-foreground bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Simulation Only</span>

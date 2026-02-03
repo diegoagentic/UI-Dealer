@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import InventoryMovements from './components/InventoryMovements';
-import InventoryMaintenance from './components/InventoryMaintenance';
+// Imports removed
 import RelocateAssetModal from './components/RelocateAssetModal';
 import MaintenanceModal from './components/MaintenanceModal';
 import SmartAddAssetModal from './components/SmartAddAssetModal';
@@ -186,11 +185,26 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
     // State
     const [inventoryData, setInventoryData] = useState<InventoryItem[]>(MOCK_INVENTORY);
-    const [activeTab, setActiveTab] = useState<'inventory' | 'locations' | 'movements' | 'maintenance'>('inventory');
+    const [activeTab, setActiveTab] = useState<'inventory' | 'locations'>('inventory');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [showMetrics, setShowMetrics] = useState(false); // Collapsible status
+
+    // Toast State
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState({ title: '', description: '', action: '' });
+
+    // Toast Timer Ref
+    const toastTimerRef = useRef<any>(null);
+
+    const triggerToast = (title: string, description: string, action: string) => {
+        setToastMessage({ title, description, action });
+        setShowToast(true);
+
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = setTimeout(() => setShowToast(false), 5000);
+    };
 
     // Modal State
     const [isRelocateModalOpen, setIsRelocateModalOpen] = useState(false);
@@ -284,12 +298,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         }
 
         console.log('Relocation Requested:', data);
-        setActiveTab('movements');
+        triggerToast('Asset Move Requested', `Asset #${Array.from(selectedIds)[0] || 'Unknown'} moved to new location.`, 'Movements');
     };
 
     const handleMaintenanceConfirm = (data: any) => {
         console.log('Maintenance Scheduled:', data);
-        setActiveTab('maintenance');
+        triggerToast('Maintenance Scheduled', 'Maintenance request has been created successfully.', 'Maintenance');
     };
 
     const handleAddAssetConfirm = (newData: any) => {
@@ -375,9 +389,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                             {[
                                 { id: 'inventory', label: 'Inventory', count: MOCK_INVENTORY.length },
-                                { id: 'locations', label: 'Locations', count: 4 },
-                                { id: 'movements', label: 'Movements', count: 4 },
-                                { id: 'maintenance', label: 'Maintenance', count: 3 }
+                                { id: 'locations', label: 'Locations', count: 4 }
                             ].map((tab) => (
                                 <button
                                     key={tab.id}
@@ -842,12 +854,6 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* Movements Tab */}
-                {activeTab === 'movements' && <InventoryMovements />}
-
-                {/* Maintenance Tab */}
-                {activeTab === 'maintenance' && <InventoryMaintenance />}
-
                 {/* Locations Tab */}
                 {activeTab === 'locations' && <InventoryLocations />}
 
@@ -889,6 +895,35 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                             <TrashIcon className="w-4 h-4" />
                             Delete
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
+                    <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg shadow-2xl p-4 flex items-start gap-4 max-w-md border border-zinc-800 dark:border-zinc-200">
+                        <div className="bg-green-500/20 text-green-500 p-2 rounded-full shrink-0">
+                            <CheckCircleIcon className="w-5 h-5" />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-sm">{toastMessage.title}</h4>
+                            <p className="text-xs text-zinc-400 dark:text-zinc-600 mt-1">{toastMessage.description}</p>
+                            <div className="mt-3 flex gap-3">
+                                <button
+                                    onClick={() => onNavigate('mac')}
+                                    className="text-xs font-semibold text-primary hover:underline"
+                                >
+                                    View in MAC
+                                </button>
+                                <button
+                                    onClick={() => setShowToast(false)}
+                                    className="text-xs font-medium text-zinc-500 hover:text-zinc-300 dark:hover:text-zinc-700"
+                                >
+                                    Dismiss
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

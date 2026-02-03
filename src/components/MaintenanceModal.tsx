@@ -66,7 +66,7 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                             <p className="text-sm text-muted-foreground">For {selectedCount} item{selectedCount !== 1 ? 's' : ''}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-600 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                    <button onClick={onClose} className="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                         <XMarkIcon className="w-5 h-5" />
                     </button>
                 </div>
@@ -120,10 +120,11 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                 </form>
 
                 <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
-                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-100 rounded-lg">Cancel</button>
+                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">Cancel</button>
                     <button
                         onClick={handleSubmit}
-                        className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg shadow-sm"
+                        disabled={!issueType || !provider || !date}
+                        className="px-4 py-2 text-sm font-medium text-zinc-900 bg-primary hover:bg-primary/90 rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                     >
                         Schedule
                     </button>

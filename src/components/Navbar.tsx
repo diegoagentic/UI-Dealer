@@ -13,7 +13,8 @@ import {
     FolderIcon,
     WrenchScrewdriverIcon,
     PhotoIcon,
-    CreditCardIcon
+    CreditCardIcon,
+    ArrowPathRoundedSquareIcon
 } from '@heroicons/react/24/outline';
 import { useTheme } from '../useTheme'
 import { useTenant } from '../TenantContext'
@@ -55,6 +56,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
         { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
         { name: 'Catalogs', page: 'catalogs', icon: BookOpenIcon },
         { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
+        { name: 'MAC', page: 'mac', icon: ArrowPathRoundedSquareIcon },
         { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
         { name: 'CRM', page: 'crm', icon: UserGroupIcon },
         { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
