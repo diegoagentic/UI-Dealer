@@ -1,5 +1,5 @@
 import React from 'react';
-import { useGenUI } from '../../../../context/GenUIContext';
+import { useGenUI } from '../../../context/GenUIContext';
 import { DocumentTextIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 
 const MOCK_ERP_ORDERS = [

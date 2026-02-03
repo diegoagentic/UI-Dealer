@@ -1,6 +1,6 @@
 import React from 'react';
 import { CloudArrowUpIcon, ServerStackIcon } from '@heroicons/react/24/outline';
-import { useGenUI } from '../../../../context/GenUIContext';
+import { useGenUI } from '../../../context/GenUIContext';
 
 export default function ModeSelectionArtifact() {
     const { sendMessage } = useGenUI();

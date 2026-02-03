@@ -38,7 +38,7 @@ export default function AssetReviewArtifact({ data }: { data: any }) {
     const [filter, setFilter] = useState<'all' | 'attention' | 'validated'>('all');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<AssetType | null>(null);
-    const [currentStep, setCurrentStep] = useState<'review' | 'discount'>('review');
+    const [currentStep, setCurrentStep] = useState<'review' | 'map' | 'discount' | 'finalize'>('review');
     const [showSuccess, setShowSuccess] = useState(false);
 
     // Mock Data (will come from `data` prop later)
