@@ -5,6 +5,7 @@ import MaintenanceModal from './components/MaintenanceModal';
 import SmartAddAssetModal from './components/SmartAddAssetModal';
 import InventoryLocations from './components/InventoryLocations';
 import ChangeStatusModal from './components/ChangeStatusModal';
+import QuickMovementsModal from './components/QuickMovementsModal';
 import { useTenant } from './TenantContext';
 import {
     MagnifyingGlassIcon,
@@ -211,6 +212,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
     const [isMaintenanceModalOpen, setIsMaintenanceModalOpen] = useState(false);
     const [isAddAssetModalOpen, setIsAddAssetModalOpen] = useState(false);
     const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+    const [isQuickMovementsModalOpen, setIsQuickMovementsModalOpen] = useState(false);
 
     // Refs for scrolling
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -513,7 +515,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-800 xl:border-none xl:pl-0">
                             {[
                                 { icon: <QrCodeIcon className="w-5 h-5" />, label: "Scan Item" },
-                                { icon: <ArrowPathRoundedSquareIcon className="w-5 h-5" />, label: "Quick Transfer" },
+                                { icon: <ArrowPathRoundedSquareIcon className="w-5 h-5" />, label: "Quick Transfer", onClick: () => setIsQuickMovementsModalOpen(true) },
                                 { icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, label: "Start Audit" },
                                 { icon: <PlusIcon className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
                             ].map((action, i) => (
@@ -954,6 +956,11 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                 onClose={() => setIsStatusModalOpen(false)}
                 selectedCount={selectedIds.size || 1}
                 onConfirm={handleStatusConfirm}
+            />
+
+            <QuickMovementsModal
+                isOpen={isQuickMovementsModalOpen}
+                onClose={() => setIsQuickMovementsModalOpen(false)}
             />
         </div>
     );

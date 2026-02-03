@@ -32,4 +32,22 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+
+    /* Ultra-thin Minimal Scrollbar */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        @apply bg-zinc-200 dark:bg-zinc-700 rounded-full transition-colors;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        @apply bg-zinc-400 dark:bg-zinc-500;
+    }
 }
