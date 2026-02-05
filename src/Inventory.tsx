@@ -7,6 +7,7 @@ import InventoryLocations from './components/InventoryLocations';
 import ChangeStatusModal from './components/ChangeStatusModal';
 import QuickMovementsModal from './components/QuickMovementsModal';
 import { useTenant } from './TenantContext';
+import Breadcrumbs from './components/Breadcrumbs';
 import {
     MagnifyingGlassIcon,
     AdjustmentsHorizontalIcon,
@@ -383,6 +384,16 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
     return (
         <div className="min-h-screen bg-background font-sans text-foreground pb-24 relative">
             <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6">
+
+                {/* Breadcrumbs */}
+                <div className="mb-4">
+                    <Breadcrumbs
+                        items={[
+                            { label: 'Dashboard', onClick: () => onNavigate('dashboard') },
+                            { label: 'Inventory' }
+                        ]}
+                    />
+                </div>
 
                 {/* Header Container */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

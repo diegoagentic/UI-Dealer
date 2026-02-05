@@ -51,6 +51,7 @@ import CommandCenter from './components/gen-ui/CommandCenter'
 import StreamFeed from './components/gen-ui/StreamFeed'
 import SmartQuoteHub from './components/widgets/SmartQuoteHub';
 import { useGenUI } from './context/GenUIContext'
+import DashboardMetricsGrid from './components/DashboardMetricsGrid';
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -142,12 +143,6 @@ function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
 }
 
-const inventoryData = [
-    { name: 'Seating', value: 78, amt: 480 },
-    { name: 'Tables', value: 62, amt: 300 },
-    { name: 'Storage', value: 45, amt: 340 },
-]
-
 const salesData = [
     { name: 'Jan', sales: 4000, costs: 2400 },
     { name: 'Feb', sales: 3000, costs: 1398 },
@@ -157,13 +152,14 @@ const salesData = [
     { name: 'Jun', sales: 2390, costs: 3800 },
 ]
 
+
+
 const trackingSteps = [
     { status: 'Order Placed', date: 'Dec 20, 9:00 AM', location: 'System', completed: true },
     { status: 'Processing', date: 'Dec 21, 10:30 AM', location: 'Warehouse A', completed: true },
     { status: 'Shipped', date: 'Dec 22, 4:15 PM', location: 'Logistics Center', completed: true },
     { status: 'Customs Hold', date: 'Dec 24, 11:00 AM', location: 'Port of Entry', completed: false, alert: true },
 ]
-
 
 // Mock Data for Recent Quotes
 const recentQuotes = [
@@ -361,27 +357,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     }
 
     // Dynamic Metrics Data based on current filters (Client/Project)
-    const metricsData = useMemo(() => {
-        const dataToAnalyze = recentOrders.filter(order => {
-            const matchesProject = selectedProject === 'All Projects' || order.project === selectedProject
-            const matchesClient = selectedClient === 'All Clients' || order.client === selectedClient
-            return matchesProject && matchesClient
-        })
 
-        const totalValue = dataToAnalyze.reduce((sum, order) => {
-            return sum + parseInt(order.amount.replace(/[^0-9]/g, ''))
-        }, 0)
-
-        const activeCount = dataToAnalyze.filter(o => !['Delivered', 'Completed'].includes(o.status)).length
-        const completedCount = dataToAnalyze.filter(o => ['Delivered', 'Completed'].includes(o.status)).length
-
-        return {
-            revenue: totalValue.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0 }),
-            activeOrders: activeCount,
-            completedOrders: completedCount,
-            efficiency: dataToAnalyze.length > 0 ? Math.round((completedCount / dataToAnalyze.length) * 100) : 0
-        }
-    }, [selectedProject, selectedClient])
 
     const filteredOrders = useMemo(() => {
         return recentOrders.filter(order => {
@@ -1099,83 +1075,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     {/* Content */}
                                                     <div className="p-6 bg-muted/30 min-h-[300px]">
                                                         {activeTab === 'metrics' ? (
-                                                            <div className="space-y-8">
-                                                                <div className="flex items-center justify-between">
-                                                                    <div>
-                                                                        <h3 className="text-lg font-semibold text-foreground">Performance Metrics</h3>
-                                                                        <p className="text-sm text-muted-foreground">
-                                                                            {selectedClient === 'All Clients' ? 'Overview across all clients' : `Showing analytics for ${selectedClient}`}
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
-                                                                    {/* Revenue Card */}
-                                                                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-6 border border-green-200 dark:border-green-800/20 shadow-sm">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <p className="text-sm font-medium text-green-700 dark:text-green-400">Total Revenue</p>
-                                                                            <CurrencyDollarIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <p className="text-2xl font-bold text-green-700 dark:text-green-300">{metricsData.revenue}</p>
-                                                                            <p className="text-xs text-green-600/80 dark:text-green-400/80 mt-1">Based on visible orders</p>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Active Orders Card */}
-                                                                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <p className="text-sm font-medium text-blue-700 dark:text-blue-400">Active Orders</p>
-                                                                            <ShoppingBagIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{metricsData.activeOrders}</p>
-                                                                            <p className="text-xs text-blue-600/80 dark:text-blue-400/80 mt-1">In production or pending</p>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Completion Rate Card */}
-                                                                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800/20 shadow-sm">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <p className="text-sm font-medium text-purple-700 dark:text-purple-400">Completion Rate</p>
-                                                                            <ChartBarIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{metricsData.efficiency}%</p>
-                                                                            <p className="text-xs text-purple-600/80 dark:text-purple-400/80 mt-1">Orders delivered successfully</p>
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Project Count Card */}
-                                                                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-orange-200 dark:border-orange-800/20 shadow-sm">
-                                                                        <div className="flex items-center justify-between mb-4">
-                                                                            <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Project Count</p>
-                                                                            <ClipboardDocumentListIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                                                                        </div>
-                                                                        <div>
-                                                                            <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-                                                                                {availableProjects.length > 0 && availableProjects[0] === 'All Projects' ? availableProjects.length - 1 : availableProjects.length}
-                                                                            </p>
-                                                                            <p className="text-xs text-orange-600/80 dark:text-orange-400/80 mt-1">Active projects</p>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm">
-                                                                    <h4 className="text-md font-medium text-foreground mb-4">Monthly Trends</h4>
-                                                                    <ResponsiveContainer width="100%" height="100%">
-                                                                        <BarChart data={salesData}>
-                                                                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} vertical={false} />
-                                                                            <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
-                                                                            <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                                                                            <Tooltip
-                                                                                contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                                                            />
-                                                                            <Bar dataKey="sales" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                                                                        </BarChart>
-                                                                    </ResponsiveContainer>
-                                                                </div>
-                                                            </div>
+                                                            <DashboardMetricsGrid selectedClient={selectedClient} />
                                                         ) : viewMode === 'list' ? (
                                                             <div className="overflow-x-auto">
                                                                 <table className="min-w-full divide-y divide-border">
@@ -1589,47 +1489,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {/* Charts Area */}
                 {
                     mainTab === 'metrics' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
-                                <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Revenue Trend</h3>
-                                <div className="h-80 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={salesData}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} vertical={false} />
-                                            <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                                            <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                                            <Tooltip
-                                                contentStyle={{ backgroundColor: 'var(--popover)', borderRadius: '12px', borderColor: 'var(--border)', color: 'var(--popover-foreground)' }}
-                                                itemStyle={{ color: 'var(--popover-foreground)' }}
-                                            />
-                                            <Line
-                                                type="monotone"
-                                                dataKey="sales"
-                                                stroke="var(--chart-trend-line)"
-                                                strokeWidth={3}
-                                                dot={{ r: 4, strokeWidth: 2, fill: 'var(--chart-trend-dot-fill)', stroke: 'var(--chart-trend-dot-stroke)' }}
-                                                activeDot={{ r: 6, stroke: 'var(--chart-trend-dot-stroke)', fill: 'var(--chart-trend-dot-fill)', strokeWidth: 2 }}
-                                            />
-                                            <Line type="monotone" dataKey="costs" stroke="var(--muted-foreground)" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div>
-
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
-                                <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Inventory Breakdown</h3>
-                                <div className="h-80 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={inventoryData}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} vertical={false} />
-                                            <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                                            <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                                            <Tooltip cursor={{ fill: 'var(--muted)' }} contentStyle={{ backgroundColor: 'var(--popover)', borderRadius: '12px', border: '1px solid var(--border)', color: 'var(--popover-foreground)' }} />
-                                            <Bar dataKey="value" fill="#8B5CF6" radius={[6, 6, 0, 0]} barSize={40} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            </div >
+                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <DashboardMetricsGrid selectedClient={selectedClient} />
                         </div>
                     )
                 }

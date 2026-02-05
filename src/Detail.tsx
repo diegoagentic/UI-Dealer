@@ -14,6 +14,7 @@ import { twMerge } from 'tailwind-merge'
 import { useTheme } from './useTheme'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
+import Breadcrumbs from './components/Breadcrumbs'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -432,11 +433,13 @@ export default function Detail({ onBack, onLogout, onNavigateToWorkspace, onNavi
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
                         <ChevronRightIcon className="h-4 w-4 rotate-180" />
                     </button>
-                    <span className="hover:text-foreground cursor-pointer" onClick={onBack}>Dashboard</span>
-                    <ChevronRightIcon className="h-3 w-3 text-muted-foreground/50" />
-                    <span>{currentTenant} Inventory</span>
-                    <ChevronRightIcon className="h-3 w-3 text-muted-foreground/50" />
-                    <span className="font-medium text-foreground">Seating Category</span>
+                    <Breadcrumbs
+                        items={[
+                            { label: 'Dashboard', onClick: onBack },
+                            { label: `${currentTenant} Inventory` },
+                            { label: 'Seating Category', active: true }
+                        ]}
+                    />
                 </div>
                 <div className="flex items-center gap-3">
                     <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
