@@ -289,6 +289,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
     const [showCustomizeModal, setShowCustomizeModal] = useState(false);
     const [isERPSyncModalOpen, setIsERPSyncModalOpen] = useState(false);
+    const [isFeatureManagerOpen, setIsFeatureManagerOpen] = useState(false);
 
     // Mock dashboard customization
     const [activeFeatures, setActiveFeatures] = useState([

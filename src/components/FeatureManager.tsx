@@ -8,7 +8,7 @@ export interface Feature {
     title: string;
     description: string;
     enabled: boolean;
-    category: 'core' | 'analytics' | 'operations' | 'support';
+    category: 'core' | 'analytics' | 'operations' | 'support' | 'finance';
     required?: boolean;
 }
 
@@ -68,7 +68,7 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                 </div>
 
                                 <div className="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full">
-                                    {['core', 'operations', 'analytics', 'support'].map((category) => {
+                                    {['core', 'operations', 'analytics', 'support', 'finance'].map((category) => {
                                         const categoryFeatures = features.filter(f => f.category === category);
                                         if (categoryFeatures.length === 0) return null;
 

@@ -221,7 +221,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         })
 
         const totalValue = dataToAnalyze.reduce((sum, order) => {
-            return sum + parseInt(order.amount.replace(/[^0-9]/g, ''))
+            const amount = (order as any).amount || '0'
+            return sum + parseInt(amount.replace(/[^0-9]/g, ''))
         }, 0)
 
         const activeCount = dataToAnalyze.filter(o => {

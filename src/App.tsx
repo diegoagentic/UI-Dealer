@@ -58,6 +58,7 @@ function App() {
             onLogout={() => setCurrentPage('login')}
             onNavigateToDetail={(type) => setCurrentPage(type as any)}
             onNavigateToWorkspace={() => setCurrentPage('workspace')}
+            onNavigate={handleNavigate}
           />
         ) : currentPage === 'crm' ? (
           <CRM onLogout={() => setCurrentPage('login')} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />

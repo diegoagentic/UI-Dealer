@@ -756,7 +756,9 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     </div>
 
                                                     {msg.type === 'action_success' ? (
-                                                        <DiscrepancyActionCard msg={msg} />
+                                                        <div className="p-4 rounded-2xl text-sm leading-relaxed shadow-sm bg-green-50 text-green-700 border border-green-200">
+                                                            {msg.content}
+                                                        </div>
                                                     ) : (
                                                         <div className={cn(
                                                             "p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
