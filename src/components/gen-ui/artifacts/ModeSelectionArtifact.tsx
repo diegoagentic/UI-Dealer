@@ -141,28 +141,40 @@ export default function ModeSelectionArtifact() {
                 {/* Option 1: Process File */}
                 <button
                     onClick={() => setView('upload')}
-                    className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-primary hover:bg-primary/5 transition-all group text-left shadow-sm hover:shadow-md"
+                    className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all group text-left shadow-sm hover:shadow-md relative overflow-hidden"
                 >
-                    <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+                    <div className="absolute top-0 right-0 p-2 opacity-50">
+                        <div className="w-24 h-24 bg-indigo-500/5 rounded-full blur-xl"></div>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform z-10">
                         <CloudArrowUpIcon className="w-6 h-6" />
                     </div>
-                    <div>
-                        <h4 className="font-bold text-foreground">Upload Request</h4>
-                        <p className="text-sm text-muted-foreground mt-1">Process a PDF, Excel, or Email request using AI extraction.</p>
+                    <div className="z-10">
+                        <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-foreground">Magic Upload</h4>
+                            <span className="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-indigo-800">AI</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">"Don't Type". Drop PDF, Excel, or Email. AI extracts everything.</p>
                     </div>
                 </button>
 
                 {/* Option 2: Connect ERP */}
                 <button
                     onClick={() => sendMessage("Mode Selected: Connect ERP")}
-                    className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all group text-left shadow-sm hover:shadow-md"
+                    className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl hover:border-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-all group text-left shadow-sm hover:shadow-md relative overflow-hidden"
                 >
-                    <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+                    <div className="absolute top-0 right-0 p-2 opacity-50">
+                        <div className="w-16 h-16 bg-purple-500/5 rounded-full blur-xl"></div>
+                    </div>
+                    <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform z-10">
                         <ServerStackIcon className="w-6 h-6" />
                     </div>
-                    <div>
-                        <h4 className="font-bold text-foreground">Connect ERP</h4>
-                        <p className="text-sm text-muted-foreground mt-1">Pull open Purchase Orders directly from NetSuite or SAP.</p>
+                    <div className="z-10">
+                        <div className="flex items-center gap-2">
+                            <h4 className="font-bold text-foreground">Auto-Sync ERP</h4>
+                            <span className="text-[10px] font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 px-1.5 py-0.5 rounded border border-purple-200 dark:border-purple-800">AI</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Autonomous agent pulls POs from NetSuite/SAP.</p>
                     </div>
                 </button>
             </div>

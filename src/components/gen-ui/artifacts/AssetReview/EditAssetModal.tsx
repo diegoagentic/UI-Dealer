@@ -77,7 +77,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                 </div>
 
                 {/* Body */}
-                <div className="p-6 overflow-y-auto custom-scrollbar">
+                <div className="p-6 overflow-y-auto scrollbar-micro">
 
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">

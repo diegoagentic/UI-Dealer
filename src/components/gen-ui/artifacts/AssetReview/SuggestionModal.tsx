@@ -80,7 +80,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
                 </div>
 
                 {/* Grid Content */}
-                <div className="p-6 overflow-y-auto bg-zinc-50/50 dark:bg-zinc-900/50 custom-scrollbar">
+                <div className="p-6 overflow-y-auto bg-zinc-50/50 dark:bg-zinc-900/50 scrollbar-micro">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {options.map((opt) => (
                             <div key={opt.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full">

@@ -3,7 +3,16 @@ import { useGenUI, GenUIProvider } from '../../context/GenUIContext';
 import ModeSelectionArtifact from '../gen-ui/artifacts/ModeSelectionArtifact';
 import AssetReviewArtifact from '../gen-ui/artifacts/AssetReviewArtifact';
 import ERPSystemSelectorArtifact from '../gen-ui/artifacts/ERPSystemSelectorArtifact';
-import { CheckCircleIcon, DocumentPlusIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import QuoteExtractionArtifact from '../gen-ui/artifacts/QuoteExtractionArtifact';
+import QuoteSetupModal from '../catalogs/QuoteSetupModal';
+import OrderImportFlow from '../forms/OrderImportFlow';
+import {
+    CheckCircleIcon,
+    DocumentPlusIcon,
+    ArrowRightIcon,
+    WrenchScrewdriverIcon,
+    ArrowUpTrayIcon
+} from '@heroicons/react/24/outline';
 
 // Wrapper to intercept context messages
 function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => void }) {
@@ -11,51 +20,26 @@ function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => v
     const [mode, setMode] = useState<'selection' | 'erp_selection' | 'processing' | 'review' | 'success'>('selection');
     const [reviewData, setReviewData] = useState<any>(null);
 
+    // Legacy Modes State
+    const [showManualQuote, setShowManualQuote] = useState(false);
+    const [showImportFlow, setShowImportFlow] = useState(false);
+
     // Intercept messages to drive state
     useEffect(() => {
         if (messages.length === 0) return;
 
         const lastMsg = messages[messages.length - 1];
-        // We removed the check for ignoring user messages because the Artifacts use sendMessage (as user)
-        // to communicate selections. SmartQuoteHub needs to react to these "User" actions.
-
-        // Actually, we want to listen to the artifacts triggering "sendMessage"
-        // ModeSelectionArtifact triggers: "Mode Selected: File", "Mode Selected: Connect ERP" etc (via context)
-        // Since we are wrapping it in a local provider, we can see these messages.
-
         const content = lastMsg.content.toLowerCase();
 
         // 1. Transition: Selection -> Processing/Review OR ERP Selection
         if (mode === 'selection') {
-            // Logic extracted from GenUIContext intent engine mock, but specialized for this widget
-            if (content.includes('mode selected: file') || content.includes('upload request')) {
+            if (content.includes('mode selected: file') || content.includes('upload request') || content.includes('magic upload')) {
                 setMode('processing');
-                // Simulate processing delay
-                setTimeout(() => {
-                    setReviewData({
-                        source: 'upload',
-                        fileName: 'Request_Upload.pdf',
-                        assets: [
-                            { id: '1', description: 'Executive Task Chair', sku: 'CH-EXEC-24', qty: 150, unitPrice: 895.00, totalPrice: 134250.00, status: 'validated' },
-                            { id: '2', description: 'Conf Chair (Leather)', sku: 'CH-CONF-L', qty: 8, unitPrice: 850.00, totalPrice: 6800.00, status: 'review', issues: ['Needs review'] }
-                        ]
-                    });
-                    setMode('review');
-                }, 2000);
+                // Initialize artifact with filename
+                setReviewData({ source: 'upload', fileName: 'Request_Upload.pdf' });
             } else if (content.includes('processed upload')) {
-                // ModeSelectionArtifact sends "Processed Upload: filename"
                 setMode('processing');
-                setTimeout(() => {
-                    setReviewData({
-                        source: 'upload',
-                        fileName: 'Request_Upload.pdf',
-                        assets: [
-                            { id: '1', description: 'Executive Task Chair', sku: 'CH-EXEC-24', qty: 150, unitPrice: 895.00, totalPrice: 134250.00, status: 'validated' },
-                            { id: '2', description: 'Conf Chair (Leather)', sku: 'CH-CONF-L', qty: 8, unitPrice: 850.00, totalPrice: 6800.00, status: 'review', issues: ['Needs review'] }
-                        ]
-                    });
-                    setMode('review');
-                }, 1000);
+                setReviewData({ source: 'upload', fileName: 'Request_Upload.pdf' });
             } else if (content.includes('mode selected: connect erp')) {
                 setMode('erp_selection');
             }
@@ -65,41 +49,20 @@ function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => v
         if (mode === 'erp_selection') {
             if (content.includes('system selected')) {
                 setMode('processing');
-                setTimeout(() => {
-                    setReviewData({
-                        source: 'erp',
-                        fileName: 'NetSuite Import #4921',
-                        assets: [
-                            { id: '1', description: 'Herman Miller Aeron', sku: 'HM-AER-B', qty: 45, unitPrice: 1250.00, totalPrice: 56250.00, status: 'validated' },
-                            { id: '2', description: 'Steelcase Gesture', sku: 'SC-GES-01', qty: 12, unitPrice: 1100.00, totalPrice: 13200.00, status: 'validated' }
-                        ]
-                    });
-                    setMode('review');
-                }, 1500);
+                setReviewData({ source: 'erp', fileName: 'NetSuite Import #4921' });
             }
         }
 
         // 3. Transition: Review -> Success/Redirect
         if (mode === 'review') {
-            if (content.includes('purchase order') && content.includes('submitted')) {
-                // SuccessModal in AssetReviewArtifact sends this when user clicks "View in Transactions" or closes modal (triggers redirect logic)
-                // If they click "Create New Quote", it sends "Start New Quote" which we handle separately
+            if ((content.includes('purchase order') && content.includes('submitted')) || (content.includes('quote') && content.includes('created'))) {
                 if (!content.includes('start new quote')) {
-                    // Only transition to success/redirect if it wasn't a reset request
-                    // Actually, AssetReviewArtifact sends "Purchase Order... submitted" OR "Start New Quote"
-                    // So we can keep this for the redirect case
                     setMode('success');
                     setTimeout(() => {
                         if (onNavigate) onNavigate('transactions');
                     }, 1500);
                 }
-            } else if (content.includes('quote') && content.includes('created')) {
-                setMode('success');
-                setTimeout(() => {
-                    if (onNavigate) onNavigate('transactions');
-                }, 1500);
             } else if (content.includes('start new quote')) {
-                // Reset Flow
                 setMode('selection');
                 setReviewData(null);
             }
@@ -107,29 +70,81 @@ function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => v
 
     }, [messages, mode, onNavigate]);
 
+    // Handlers
+    const handleExtractionComplete = (data: any) => {
+        setReviewData(data);
+        setMode('review');
+    };
+
+    const handleManualQuoteComplete = () => {
+        setShowManualQuote(false);
+        if (onNavigate) onNavigate('transactions');
+    };
+
+    const handleImportComplete = (data: any) => {
+        setShowImportFlow(false);
+        if (onNavigate) onNavigate('transactions');
+    };
+
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden h-[600px] flex flex-col">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden h-[600px] flex flex-col relative">
             {/* Header (Shared) */}
             {mode === 'selection' && (
                 <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                         <DocumentPlusIcon className="w-6 h-6" />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
                             <h3 className="text-lg font-brand font-semibold text-foreground">Quick Quote</h3>
-                            <span className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">Essential</span>
+                            <span className="inline-flex items-center rounded-full bg-indigo-50 dark:bg-indigo-900/10 px-2 py-0.5 text-xs font-medium text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
+                                Autonomous Mode
+                            </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">Upload files or start from scratch</p>
+                        <p className="text-sm text-muted-foreground">AI-Powered Quote Generation</p>
                     </div>
                 </div>
             )}
 
-            <div className="flex-1 overflow-hidden relative">
+            <div className="flex-1 overflow-hidden relative flex flex-col">
                 {mode === 'selection' && (
-                    <div className="h-full overflow-y-auto p-4 scrollbar-micro">
-                        <ModeSelectionArtifact />
-                    </div>
+                    <>
+                        <div className="flex-1 overflow-y-auto p-4 scrollbar-micro">
+                            <ModeSelectionArtifact />
+                        </div>
+
+                        {/* Legacy Modes Footer */}
+                        <div className="p-4 bg-zinc-50/50 dark:bg-zinc-800/20 border-t border-zinc-100 dark:border-zinc-800">
+                            <p className="text-xs font-semibold text-muted-foreground uppercase mb-3 px-2">Other Methods (Legacy)</p>
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => setShowManualQuote(true)}
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-sm transition-all text-left group"
+                                >
+                                    <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                                        <WrenchScrewdriverIcon className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-foreground">Manual Builder</div>
+                                        <div className="text-[10px] text-muted-foreground">Standard catalog browser</div>
+                                    </div>
+                                </button>
+
+                                <button
+                                    onClick={() => setShowImportFlow(true)}
+                                    className="flex items-center gap-2 p-3 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-sm transition-all text-left group"
+                                >
+                                    <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                                        <ArrowUpTrayIcon className="w-4 h-4" />
+                                    </div>
+                                    <div>
+                                        <div className="text-sm font-medium text-foreground">Standard Import</div>
+                                        <div className="text-[10px] text-muted-foreground">CSV/Excel Template</div>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </>
                 )}
 
                 {mode === 'erp_selection' && (
@@ -138,17 +153,15 @@ function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => v
                     </div>
                 )}
 
-                {mode === 'processing' && (
-                    <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-in fade-in">
-                        <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-6"></div>
-                        <h3 className="text-lg font-semibold text-foreground">Analyzing Documents...</h3>
-                        <p className="text-muted-foreground mt-2">Extracting line items and validating SKUs.</p>
-                    </div>
+                {mode === 'processing' && reviewData && (
+                    <QuoteExtractionArtifact
+                        fileName={reviewData.fileName || 'Document.pdf'}
+                        onComplete={handleExtractionComplete}
+                    />
                 )}
 
                 {mode === 'review' && reviewData && (
                     <div className="h-full animate-in slide-in-from-right duration-500">
-                        {/* We reuse AssetReviewArtifact but inject mocked data */}
                         <AssetReviewArtifact data={reviewData} source={reviewData.source} />
                     </div>
                 )}
@@ -166,14 +179,26 @@ function SmartQuoteHubContent({ onNavigate }: { onNavigate?: (page: string) => v
                     </div>
                 )}
             </div>
+
+            {/* Legacy Modals */}
+            <QuoteSetupModal
+                isOpen={showManualQuote}
+                onClose={() => setShowManualQuote(false)}
+                catalogName="General Catalog"
+            />
+            {showImportFlow && (
+                <div className="absolute inset-0 bg-white dark:bg-zinc-900 z-50 animate-in slide-in-from-bottom duration-300">
+                    <OrderImportFlow
+                        onImportComplete={handleImportComplete}
+                        onCancel={() => setShowImportFlow(false)}
+                    />
+                </div>
+            )}
         </div>
     );
 }
 
 export default function SmartQuoteHub(props: { onNavigate?: (page: string) => void }) {
-    // We wrap the content in a LOCAL GenUIProvider so it has its own "message stream"
-    // This allows the artifacts (which use runGenUI()) to function autonomously within this widget
-    // without polluting the global chat
     return (
         <GenUIProvider>
             <SmartQuoteHubContent {...props} />

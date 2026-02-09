@@ -13,7 +13,8 @@ import {
     ArrowLongRightIcon,
     ShieldCheckIcon,
     ChartBarIcon,
-    ArrowLeftIcon
+    ArrowLeftIcon,
+    TagIcon
 } from '@heroicons/react/24/outline';
 import { useGenUI } from '../../../context/GenUIContext';
 import EditAssetModal from './AssetReview/EditAssetModal';
@@ -23,6 +24,7 @@ import SuccessModal from './AssetReview/SuccessModal';
 
 import MappingField from './AssetReview/MappingField';
 import SuggestionModal from './AssetReview/SuggestionModal';
+import DiscrepancyResolverArtifact, { type DiscrepancyItem } from './DiscrepancyResolverArtifact';
 
 // Types
 export interface AssetType {
@@ -48,13 +50,51 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
     const [filter, setFilter] = useState<'all' | 'attention' | 'validated'>('all');
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingAsset, setEditingAsset] = useState<AssetType | null>(null);
+
     // Initialize step based on source: ERP data is pre-mapped, so skip to review
-    const [currentStep, setCurrentStep] = useState<'map' | 'review' | 'discount' | 'finalize'>(source === 'erp' ? 'review' : 'map');
+    // Modified: Autonomous flow now starts at 'report' instead of 'map'
+    const [currentStep, setCurrentStep] = useState<'map' | 'report' | 'review' | 'discount' | 'finalize'>(source === 'erp' ? 'review' : 'report');
     const [finalType, setFinalType] = useState<'quote' | 'po'>('po');
     const [showSuccess, setShowSuccess] = useState(false);
     const [isMappingExpanded, setIsMappingExpanded] = useState(true);
     const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
     const [selectedSuggestionAsset, setSelectedSuggestionAsset] = useState<AssetType | null>(null);
+    const [isResolverOpen, setIsResolverOpen] = useState(false);
+
+    // Mock Header & Rule Issues (New for Unified Resolution)
+    const [headerIssues, setHeaderIssues] = useState<DiscrepancyItem[]>([
+        {
+            id: 'h-1',
+            type: 'header',
+            title: 'Reference Number Mismatch',
+            description: 'PO #12345 vs Extracted "PO-12345-RevA"',
+            severity: 'medium',
+            original: { label: 'Input PO', value: '12345' },
+            suggestion: {
+                label: 'Extracted PO',
+                value: 'PO-12345-RevA',
+                reason: 'Document header contains Revision suffix.',
+                confidence: 92
+            }
+        }
+    ]);
+
+    const [ruleIssues, setRuleIssues] = useState<DiscrepancyItem[]>([
+        {
+            id: 'r-1',
+            type: 'rule',
+            title: 'Margin Threshold Alert',
+            description: 'Project margin below 25% target',
+            severity: 'high',
+            original: { label: 'Current Margin', value: '22%' },
+            suggestion: {
+                label: 'Target Margin',
+                value: '25%',
+                reason: 'Standard dealer policy requires 25% min margin.',
+                confidence: 100
+            }
+        }
+    ]);
 
     // Mock Mapping Data
     const [mappingFields, setMappingFields] = useState<{
@@ -248,6 +288,56 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
         setIsSuggestionModalOpen(false); // Close modal on reject
     };
 
+    const [activeAccordion, setActiveAccordion] = useState<string | null>('assets');
+
+    const handleResolveDiscrepancy = (id: string, action: 'accept' | 'keep' | 'manual', data?: any) => {
+        // Handle Header/Rule issues
+        if (id.startsWith('h-')) {
+            setHeaderIssues(prev => prev.filter(i => i.id !== id));
+            return;
+        }
+        if (id.startsWith('r-')) {
+            setRuleIssues(prev => prev.filter(i => i.id !== id));
+            return;
+        }
+
+        // Handle Asset issues
+        setAssets(prev => prev.map(a => {
+            if (a.id !== id) return a;
+
+            if (action === 'accept') {
+                if (a.suggestion) {
+                    return {
+                        ...a,
+                        sku: a.suggestion.sku,
+                        unitPrice: a.suggestion.price,
+                        totalPrice: a.qty * a.suggestion.price,
+                        status: 'validated',
+                        suggestion: undefined,
+                        issues: []
+                    };
+                } else {
+                    // Accept without suggestion (resolve warning)
+                    return {
+                        ...a,
+                        status: 'validated',
+                        suggestion: undefined,
+                        issues: []
+                    };
+                }
+            }
+            if (action === 'keep') {
+                return {
+                    ...a,
+                    status: 'validated',
+                    suggestion: undefined,
+                    issues: []
+                };
+            }
+            return a;
+        }));
+    };
+
     const filteredAssets = assets.filter(a => {
         if (filter === 'all') return true;
         if (filter === 'attention') return a.status === 'review' || a.status === 'suggestion';
@@ -262,597 +352,650 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
         totalValue: assets.reduce((acc, curr) => acc + curr.totalPrice, 0)
     };
 
+    const totalIssues = headerIssues.length + ruleIssues.length + stats.attention;
+
     return (
         <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
-            {/* Header / Toolbar - Stratified */}
-            <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 flex justify-between items-center shadow-sm z-10 shrink-0">
-                <div>
-                    <div className="flex items-center gap-3 mb-1">
-                        <h2 className="text-xl font-bold font-brand text-foreground tracking-tight">Asset Processing</h2>
-                        <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Beta</span>
+            {/* Header / Status Bar */}
+            <div className="shrink-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                        <SparklesIcon className="w-5 h-5 text-primary" />
                     </div>
-                    <p className="text-muted-foreground text-xs">Review and validate assets from {source === 'erp' ? 'ERP Integration' : 'Document Extraction'}</p>
+                    <div>
+                        <h2 className="text-lg font-bold font-brand text-foreground flex items-center gap-2">
+                            A.I. Asset Processing
+                            <span className="px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-full text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">Beta</span>
+                        </h2>
+                        <p className="text-xs text-muted-foreground">
+                            {totalIssues > 0
+                                ? `${totalIssues} items require human review`
+                                : "All assets validated. Ready for submission."}
+                        </p>
+                    </div>
                 </div>
 
-                {/* Stepper (Strata Minimalist) */}
-                <div className="hidden md:flex items-center gap-2 text-sm font-medium bg-zinc-50 dark:bg-zinc-800/50 p-1.5 rounded-full border border-zinc-200 dark:border-zinc-800">
-                    {source !== 'erp' && (
-                        <>
-                            <button
-                                onClick={() => setCurrentStep('map')}
-                                className={`flex items-center gap-2 px-4 py-1.5 rounded-full transition-all ${currentStep === 'map' ? 'bg-white dark:bg-zinc-800 shadow-sm text-foreground ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-muted-foreground hover:text-foreground'}`}
-                            >
-                                <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${currentStep === 'map' ? 'bg-primary/10 text-primary' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500'}`}>1</span>
-                                Intelligence
-                            </button>
+                <div className="flex items-center gap-3">
+                    {/* Optional Actions Menu */}
+                    <div className="flex items-center border-r border-zinc-200 dark:border-zinc-800 pr-3 gap-2">
+                        <button
+                            onClick={() => setIsWarrantyMenuOpen(true)}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        >
+                            <ShieldCheckIcon className="w-4 h-4" />
+                            Warranties
+                        </button>
+                        <button
+                            onClick={() => setPricingStep('discounts')} // Re-using state for now to show discount widget
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        >
+                            <TagIcon className="w-4 h-4" />
+                            Discounts
+                        </button>
+                    </div>
 
-                            <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
-                        </>
-                    )}
-
-                    <button
-                        onClick={() => setCurrentStep('review')}
-                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full transition-all ${currentStep === 'review' ? 'bg-white dark:bg-zinc-800 shadow-sm text-foreground ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-muted-foreground hover:text-foreground'}`}
-                    >
-                        <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${currentStep === 'review' ? 'bg-primary/10 text-primary' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500'}`}>{source === 'erp' ? '1' : '2'}</span>
-                        Review
-                    </button>
-
-                    <div className="w-px h-4 bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
-
-                    <button
-                        onClick={() => setCurrentStep('discount')}
-                        className={`flex items-center gap-2 px-4 py-1.5 rounded-full transition-all ${currentStep === 'discount' ? 'bg-white dark:bg-zinc-800 shadow-sm text-foreground ring-1 ring-zinc-200 dark:ring-zinc-700' : 'text-muted-foreground hover:text-foreground'}`}
-                    >
-                        <span className={`flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold ${currentStep === 'discount' ? 'bg-primary/10 text-primary' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-500'}`}>{source === 'erp' ? '2' : '3'}</span>
-                        Discounts
-                    </button>
-                </div>
-
-                <div className="flex items-center gap-2">
                     <button className="flex items-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg text-xs font-medium transition-colors text-foreground">
                         <DocumentTextIcon className="w-4 h-4" />
                         Save Draft
                     </button>
-                </div>
-            </div>
 
-            <div className="flex-1 flex overflow-hidden">
-                {/* Left Panel: Asset List */}
-                <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800">
-
-                    {/* Controls */}
-                    <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 text-sm">
-                        <div className="flex items-center gap-2">
-                            <span className="font-medium text-foreground">Filter by Status:</span>
-                            <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setFilter('all')}
-                                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all ${filter === 'all' ? 'bg-white dark:bg-zinc-700 shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                                >
-                                    All ({stats.total})
-                                </button>
-                                <button
-                                    onClick={() => setFilter('attention')}
-                                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${filter === 'attention' ? 'bg-white dark:bg-zinc-700 shadow-sm text-amber-600 dark:text-amber-500' : 'text-muted-foreground hover:text-foreground'}`}
-                                >
-                                    <ExclamationTriangleIcon className="w-3.5 h-3.5" />
-                                    Needs Attention ({stats.attention})
-                                </button>
-                                <button
-                                    onClick={() => setFilter('validated')}
-                                    className={`px-3 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${filter === 'validated' ? 'bg-white dark:bg-zinc-700 shadow-sm text-green-600 dark:text-green-500' : 'text-muted-foreground hover:text-foreground'}`}
-                                >
-                                    <CheckCircleIcon className="w-3.5 h-3.5" />
-                                    Validated ({stats.validated})
-                                </button>
-                            </div>
-                        </div>
-                        <span className="text-muted-foreground text-xs">Showing {filteredAssets.length} of {stats.total} items</span>
-                        <span className="text-muted-foreground text-xs">Showing {filteredAssets.length} of {stats.total} items</span>
-                    </div>
-
-                    {/* Scrollable List with Integrated Mapping Section */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-micro bg-zinc-50/50 dark:bg-zinc-900/50">
-
-                        {/* Step 1: Integrated Field Mapping Section */}
-                        {currentStep === 'map' && (
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 bg-blue-50/50 dark:bg-blue-900/10">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                                            <SparklesIcon className="w-4 h-4" />
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="text-sm font-bold text-foreground">Order Intelligence & Mapping</h3>
-                                            <p className="text-xs text-muted-foreground">
-                                                Review and confirm AI-detected field mappings.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-zinc-50/30 dark:bg-zinc-900/30">
-                                    {unmappedFields.length > 0 ? (
-                                        <div className="flex flex-col gap-3">
-                                            {unmappedFields.map((field) => (
-                                                <MappingField
-                                                    key={field.label}
-                                                    field={{
-                                                        ...field,
-                                                        onApply: (val) => handleApplyMapping(field.label, val)
-                                                    }}
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-8">
-                                            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 text-green-600 mb-3">
-                                                <CheckCircleIcon className="w-6 h-6" />
-                                            </div>
-                                            <h3 className="text-sm font-bold text-foreground">All Fields Mapped</h3>
-                                            <p className="text-xs text-muted-foreground mt-1">Order intelligence is complete.</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Matched Fields Summary (Optional) */}
-                                {matchedFields.length > 0 && (
-                                    <div className="p-4 border-t border-zinc-100 dark:border-zinc-800">
-                                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Mapped Fields ({matchedFields.length})</h4>
-                                        <div className="space-y-2 opacity-70">
-                                            {matchedFields.map(field => (
-                                                <div key={`summary-${field.label}`} className="flex justify-between text-xs">
-                                                    <span className="text-foreground font-medium">{field.label}</span>
-                                                    <span className="text-muted-foreground">{field.value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-
-                            </div>
-                        )}
-
-                        {/* Divider */}
-                        {currentStep === 'review' && (
+                    <button
+                        onClick={() => {
+                            if (totalIssues === 0) setCurrentStep('finalize');
+                        }}
+                        disabled={totalIssues > 0}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition-all shadow-sm ${totalIssues > 0
+                            ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
+                            : 'bg-green-600 text-white hover:bg-green-700 hover:shadow-md'
+                            }`}
+                    >
+                        {totalIssues > 0 ? (
                             <>
-                                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider pl-1 pt-2">
-                                    <span>Asset List ({filteredAssets.length})</span>
-                                    <div className="h-px bg-zinc-200 dark:bg-zinc-800 flex-1"></div>
-                                </div>
-
-                                {/* Assets List */}
-                                <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    {filteredAssets.map(asset => (
-                                        <div key={asset.id} className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm hover:shadow-md transition-shadow group">
-                                            <div className="flex gap-4 items-start">
-                                                {/* Status Icon */}
-                                                <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${asset.status === 'review' ? 'bg-amber-100 text-amber-600' :
-                                                    asset.status === 'suggestion' ? 'bg-blue-100 text-blue-600' :
-                                                        'bg-green-100 text-green-600'
-                                                    }`}>
-                                                    {asset.status === 'review' && <ExclamationTriangleIcon className="w-5 h-5" />}
-                                                    {asset.status === 'suggestion' && <BoltIcon className="w-5 h-5" />}
-                                                    {asset.status === 'validated' && <CheckCircleIcon className="w-5 h-5" />}
-                                                </div>
-
-                                                {/* Details */}
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex justify-between items-start">
-                                                        <div>
-                                                            <h4 className="font-semibold text-foreground text-sm truncate">{asset.description}</h4>
-                                                            <div className="flex items-center gap-2 mt-1">
-                                                                <span className="text-xs text-muted-foreground">SKU: {asset.sku} • Qty: {asset.qty}</span>
-
-                                                                {/* Interactive Pills */}
-                                                                {asset.status === 'review' && (
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleEdit(asset); }}
-                                                                        className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wide hover:bg-amber-200 transition-colors"
-                                                                    >
-                                                                        Needs Review
-                                                                    </button>
-                                                                )}
-                                                                {asset.status === 'suggestion' && (
-                                                                    <button
-                                                                        onClick={(e) => { e.stopPropagation(); handleViewSuggestion(asset); }}
-                                                                        className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-[10px] font-bold uppercase tracking-wide hover:bg-blue-200 transition-colors"
-                                                                    >
-                                                                        AI Suggestion
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="text-right">
-                                                            <div className="font-semibold text-foreground text-sm">{formatCurrency(asset.totalPrice)}</div>
-                                                            <div className="text-xs text-muted-foreground">{formatCurrency(asset.unitPrice)} each</div>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Issues / Suggestions */}
-                                                    {asset.status === 'review' && asset.issues && (
-                                                        <div className="mt-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30 rounded-lg p-2 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
-                                                            <ExclamationTriangleIcon className="w-4 h-4" />
-                                                            <span>{asset.issues.join(', ')}</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Actions */}
-                                                <div className="flex flex-col gap-2">
-                                                    <button
-                                                        onClick={() => handleEdit(asset)}
-                                                        className="px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-medium hover:border-primary/50 hover:text-primary transition-colors whitespace-nowrap flex items-center justify-center gap-1"
-                                                    >
-                                                        <PencilSquareIcon className="w-3.5 h-3.5" />
-                                                        Edit
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
+                                <ExclamationTriangleIcon className="w-4 h-4" />
+                                Resolve Issues
+                            </>
+                        ) : (
+                            <>
+                                <CheckCircleIcon className="w-4 h-4" />
+                                Finalize & Submit
                             </>
                         )}
-                    </div>
-
-                    {/* Footer Stats similar to screenshot */}
-                    <div className="p-3 border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center text-xs">
-                        <div className="flex gap-4">
-                            <span className="flex items-center gap-1.5 text-green-600 font-medium">
-                                <CheckCircleIcon className="w-4 h-4" /> {stats.validated} Validated
-                            </span>
-                            <span className="flex items-center gap-1.5 text-amber-600 font-medium">
-                                <ExclamationTriangleIcon className="w-4 h-4" /> {stats.attention} Need Review
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-4">
-                            <div className="text-right">
-                                <span className="text-muted-foreground">Total Value:</span>
-                                <span className="ml-2 font-bold text-foreground text-sm">{formatCurrency(stats.totalValue)}</span>
-                            </div>
-                            <button
-                                onClick={() => {
-                                    if (currentStep === 'map') setCurrentStep('review');
-                                    else if (currentStep === 'review') setCurrentStep('discount');
-                                }}
-                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
-                            >
-                                {currentStep === 'map' ? 'Review Assets' : 'Pricing & Discounts'} <ChevronDownIcon className="w-3 h-3 -rotate-90" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Panel: Document Preview / PO */}
-                <div className="w-1/3 border-l border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 hidden lg:flex flex-col">
-                    <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center text-sm font-medium">
-                        <span className="flex items-center gap-2">
-                            <DocumentTextIcon className="w-4 h-4" />
-                            Purchase Order Preview
-                        </span>
-                        <div className="flex gap-2">
-                            <button className="p-1 hover:bg-zinc-100 rounded"><ArrowPathIcon className="w-4 h-4" /></button>
-                        </div>
-                    </div>
-
-                    {/* Mock PDF Viewer */}
-                    <div className="flex-1 p-8 overflow-y-auto flex justify-center scrollbar-micro">
-                        <div className="bg-white w-full max-w-[300px] min-h-[500px] h-fit shadow-lg rounded-sm border border-zinc-200 p-8 text-[10px] leading-relaxed relative text-zinc-900 flex flex-col">
-                            <div className="font-bold text-lg mb-4 text-center text-zinc-900">PURCHASE ORDER</div>
-                            <div className="flex justify-between mb-6">
-                                <div>
-                                    <div className="font-bold">BILL TO:</div>
-                                    <div>ENTERPRISE CORP</div>
-                                    <div>1234 BUSINESS WAY</div>
-                                    <div>Atlanta, GA 30318</div>
-                                </div>
-                                <div>
-                                    <div className="font-bold">VENDOR:</div>
-                                    <div>Office Furniture Co.</div>
-                                    <div>5678 SUPPLIER ST</div>
-                                    <div>Atlanta, GA 30309</div>
-                                </div>
-                            </div>
-                            <div className="space-y-2 flex-1">
-                                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                    <div key={i} className="flex justify-between border-b border-zinc-100 pb-1">
-                                        <div className="w-8">#{i}024</div>
-                                        <div className="flex-1 ml-2">Office Chair ergonomic black mesh...</div>
-                                        <div className="w-12 text-right">$450.00</div>
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex justify-end mt-8 pt-4 border-t border-zinc-200 font-bold text-sm">
-                                TOTAL: $511,575.00
-                            </div>
-                        </div>
-                    </div>
+                    </button>
                 </div>
             </div>
 
-            {/* Overlays */}
-            {/* Overlays */}
-            {/* Overlays */}
+            {/* Main Content Area */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Left Panel: Unified Dashboard */}
+                <div className="flex-1 flex flex-col min-w-0 bg-zinc-50/50 dark:bg-zinc-900/50">
 
-            {
-                currentStep === 'discount' && (
-                    <div className="absolute inset-0 z-20 bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-right duration-300">
-                        {/* Top Header */}
-                        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900 z-10">
-                            <button onClick={() => setCurrentStep('review')} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-                                <ChevronDownIcon className="w-4 h-4 rotate-90" /> Back to Review
-                            </button>
-
-                            {/* Pricing Stepper */}
-                            <div className="flex items-center gap-4 text-sm font-medium">
-                                <div className={`flex items-center gap-2 ${pricingStep === 'warranties' ? 'text-primary' : 'text-muted-foreground'}`}>
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border ${pricingStep === 'warranties' ? 'bg-primary/10 border-primary text-primary' : 'border-zinc-300 dark:border-zinc-700 text-zinc-500'}`}>1</div>
-                                    <span>Warranties</span>
+                    {/* Status Summary & Exceptions */}
+                    <div className="p-6 pb-2">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            {/* Validated Stats */}
+                            <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Validated Assets</p>
+                                    <p className="text-2xl font-bold text-foreground mt-1">{stats.validated}</p>
                                 </div>
-                                <div className="w-8 h-px bg-zinc-200 dark:bg-zinc-800"></div>
-                                <div className={`flex items-center gap-2 ${pricingStep === 'discounts' ? 'text-primary' : 'text-muted-foreground'}`}>
-                                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border ${pricingStep === 'discounts' ? 'bg-primary/10 border-primary text-primary' : 'border-zinc-300 dark:border-zinc-700 text-zinc-500'}`}>2</div>
-                                    <span>Discounts</span>
+                                <div className="p-2 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-lg">
+                                    <CheckCircleIcon className="w-6 h-6" />
                                 </div>
                             </div>
 
-                            <div className="w-20"></div> {/* Spacer for balance */}
-                        </div>
-                        <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/50 p-8 scrollbar-micro">
-                            <div className="max-w-4xl mx-auto space-y-6">
+                            {/* Total Value */}
+                            <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Value</p>
+                                    <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(stats.totalValue)}</p>
+                                </div>
+                                <div className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-lg">
+                                    <ChartBarIcon className="w-6 h-6" />
+                                </div>
+                            </div>
 
-                                {pricingStep === 'warranties' ? (
-                                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
-                                                <ShieldCheckIcon className="w-6 h-6" />
+                            {/* Action Card */}
+                            <div className={`p-4 rounded-xl border shadow-sm flex items-center justify-between transition-colors ${totalIssues > 0
+                                ? 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-800/30'
+                                : 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-800'
+                                }`}>
+                                <div>
+                                    <p className={`text-xs font-medium uppercase tracking-wider ${totalIssues > 0 ? 'text-amber-700 dark:text-amber-500' : 'text-muted-foreground'}`}>
+                                        {totalIssues > 0 ? 'Action Required' : 'Status'}
+                                    </p>
+                                    <p className={`text-lg font-bold mt-1 ${totalIssues > 0 ? 'text-amber-800 dark:text-amber-400' : 'text-foreground'}`}>
+                                        {totalIssues > 0 ? `${totalIssues} Issues Found` : 'Ready to Process'}
+                                    </p>
+                                </div>
+                                {totalIssues > 0 && (
+                                    <button
+                                        onClick={() => setIsResolverOpen(true)}
+                                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-bold text-sm shadow-md transition-transform active:scale-95"
+                                    >
+                                        Resolve Now
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* AI Mappings / Context (Collapsible) */}
+                        <div className="mb-4">
+                            <button
+                                onClick={() => setIsMappingExpanded(!isMappingExpanded)}
+                                className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors mb-2"
+                            >
+                                <ChevronDownIcon className={`w-3 h-3 transition-transform ${isMappingExpanded ? '' : '-rotate-90'}`} />
+                                Detected Context & Mappings
+                            </button>
+
+                            {isMappingExpanded && (
+                                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 animate-in slide-in-from-top-2">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        {mappingFields.slice(0, 4).map(field => (
+                                            <div key={field.label} className="flex flex-col gap-1">
+                                                <span className="text-[10px] uppercase font-bold text-muted-foreground">{field.value}</span>
+                                                <span className="text-sm font-medium text-foreground truncate" title={field.description}>{field.description}</span>
+                                                <span className={`text-[10px] px-1.5 py-0.5 rounded w-fit ${field.confidence > 80 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                                    }`}>
+                                                    {field.confidence}% Confidence
+                                                </span>
                                             </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Filter Tabs */}
+                        <div className="flex items-center gap-2 mb-4 border-b border-zinc-200 dark:border-zinc-800">
+                            <button
+                                onClick={() => setFilter('all')}
+                                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${filter === 'all'
+                                    ? 'border-primary text-primary'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                                    }`}
+                            >
+                                All Assets ({stats.total})
+                            </button>
+                            <button
+                                onClick={() => setFilter('attention')}
+                                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${filter === 'attention'
+                                    ? 'border-amber-500 text-amber-600'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                                    }`}
+                            >
+                                Needs Attention
+                                {stats.attention > 0 && (
+                                    <span className="bg-amber-100 text-amber-700 px-1.5 rounded-full text-xs">{stats.attention}</span>
+                                )}
+                            </button>
+                            <button
+                                onClick={() => setFilter('validated')}
+                                className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${filter === 'validated'
+                                    ? 'border-green-500 text-green-600'
+                                    : 'border-transparent text-muted-foreground hover:text-foreground'
+                                    }`}
+                            >
+                                Validated
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Scrollable List */}
+                    <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-3 scrollbar-micro">
+                        {filteredAssets.map(asset => (
+                            <div key={asset.id} className={`group bg-white dark:bg-zinc-900 rounded-xl border p-4 shadow-sm transition-all ${asset.status === 'review' || asset.status === 'suggestion'
+                                ? 'border-amber-200 dark:border-amber-800/30'
+                                : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
+                                }`}>
+                                <div className="flex gap-4 items-start">
+                                    {/* Status Icon */}
+                                    <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${asset.status === 'review' ? 'bg-amber-100 text-amber-600' :
+                                        asset.status === 'suggestion' ? 'bg-blue-100 text-blue-600' :
+                                            'bg-green-100 text-green-600'
+                                        }`}>
+                                        {asset.status === 'review' && <ExclamationTriangleIcon className="w-5 h-5" />}
+                                        {asset.status === 'suggestion' && <SparklesIcon className="w-5 h-5" />}
+                                        {asset.status === 'validated' && <CheckCircleIcon className="w-5 h-5" />}
+                                    </div>
+
+                                    {/* Details */}
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-start">
                                             <div>
-                                                <h3 className="text-xl font-bold text-foreground">Asset Protection Plans</h3>
-                                                <p className="text-sm text-muted-foreground">Select warranty coverage before applying final discounts.</p>
+                                                <h4 className="font-semibold text-foreground text-sm truncate">{asset.description}</h4>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <span className="text-xs text-muted-foreground font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">{asset.sku}</span>
+                                                    <span className="text-xs text-muted-foreground">Qty: {asset.qty}</span>
+
+                                                    {asset.warranty && asset.warranty !== 'Standard Warranty' && (
+                                                        <span className="text-[10px] flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded border border-purple-100 dark:border-purple-800/30">
+                                                            <ShieldCheckIcon className="w-3 h-3" />
+                                                            {asset.warranty}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="font-bold text-foreground text-sm">{formatCurrency(asset.totalPrice)}</div>
+                                                <div className="text-xs text-muted-foreground">{formatCurrency(asset.unitPrice)} ea</div>
                                             </div>
                                         </div>
 
-                                        {/* Warranty Toolbar */}
-                                        <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <button
-                                                    onClick={() => handleApplyWarranty('Extended Warranty (3 Years)', 'all')}
-                                                    className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-medium hover:border-primary hover:text-primary transition-colors hover:shadow-sm"
-                                                >
-                                                    <ShieldCheckIcon className="w-4 h-4" />
-                                                    Extended Warranty
-                                                </button>
-
-                                                <div className="relative">
-                                                    <button
-                                                        onClick={() => setIsWarrantyMenuOpen(!isWarrantyMenuOpen)}
-                                                        className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-medium hover:border-primary hover:text-primary transition-colors hover:shadow-sm"
-                                                    >
-                                                        <SparklesIcon className="w-4 h-4" />
-                                                        Premium Protection
-                                                    </button>
-
-                                                    {isWarrantyMenuOpen && (
+                                        {/* Issues / Suggestions Bar */}
+                                        {(asset.status === 'review' || asset.status === 'suggestion') && (
+                                            <div className="mt-3 flex items-center justify-between p-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800">
+                                                <div className="flex items-center gap-2 text-xs">
+                                                    {asset.status === 'review' ? (
                                                         <>
-                                                            <div className="fixed inset-0 z-10" onClick={() => setIsWarrantyMenuOpen(false)}></div>
-                                                            <div className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                                                                <div className="py-1">
-                                                                    <button
-                                                                        onClick={() => handleApplyWarranty('Premium Protection (5 Years)', 'all')}
-                                                                        className="w-full text-left px-4 py-2 text-xs font-medium text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors border-b border-zinc-100 dark:border-zinc-800"
-                                                                    >
-                                                                        Apply Premium (5 Years)
-                                                                    </button>
-                                                                    <div className="px-4 py-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                                                        By Category
-                                                                    </div>
-                                                                    {['Seating', 'Desks', 'Tables', 'Storage'].map(cat => (
-                                                                        <button
-                                                                            key={cat}
-                                                                            onClick={() => handleApplyWarranty('Premium Protection (5 Years)', 'all')}
-                                                                            className="w-full text-left px-4 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
-                                                                        >
-                                                                            Apply to All {cat}
-                                                                        </button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
+                                                            <ExclamationTriangleIcon className="w-4 h-4 text-amber-600" />
+                                                            <span className="text-amber-700 dark:text-amber-500 font-medium">Issue Detected:</span>
+                                                            <span className="text-zinc-600 dark:text-zinc-400">{asset.issues?.join(', ')}</span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <SparklesIcon className="w-4 h-4 text-blue-600" />
+                                                            <span className="text-blue-700 dark:text-blue-500 font-medium">AI Suggestion:</span>
+                                                            <span className="text-zinc-600 dark:text-zinc-400">{asset.suggestion?.reason}</span>
                                                         </>
                                                     )}
                                                 </div>
-
                                                 <button
-                                                    onClick={() => handleApplyWarranty('Standard Warranty', 'all')}
-                                                    className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-foreground text-xs transition-colors ml-auto"
+                                                    onClick={() => setIsResolverOpen(true)} // Open unified resolver mainly
+                                                    className="text-xs font-bold text-primary hover:underline"
                                                 >
-                                                    <ArrowPathIcon className="w-4 h-4" />
-                                                    Reset All
+                                                    Review
                                                 </button>
                                             </div>
-                                        </div>
+                                        )}
+                                    </div>
 
-                                        {/* Asset List for Warranty */}
-                                        <div className="space-y-3">
-                                            {filteredAssets.map(asset => (
-                                                <div key={asset.id} className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm flex gap-4 items-center group hover:border-primary/30 transition-colors">
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex justify-between items-start">
-                                                            <div>
-                                                                <h4 className="font-semibold text-foreground text-sm truncate">{asset.description}</h4>
-                                                                <div className="flex items-center gap-2 mt-1">
-                                                                    <span className="text-xs text-muted-foreground">SKU: {asset.sku} • Qty: {asset.qty}</span>
-                                                                </div>
-                                                            </div>
-                                                            <div className="text-right">
-                                                                <div className="font-semibold text-foreground text-sm">{formatCurrency(asset.totalPrice)}</div>
-                                                                <div className="text-xs text-muted-foreground">{(asset.basePrice !== undefined && asset.unitPrice !== asset.basePrice) && <span className="text-amber-600 mr-1">Modified</span>}{formatCurrency(asset.unitPrice)} each</div>
-                                                            </div>
+                                    {/* Quick Actions (Hover) */}
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-1">
+                                        <button
+                                            onClick={() => handleEdit(asset)}
+                                            className="p-1.5 text-zinc-400 hover:text-primary hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg"
+                                            title="Edit Asset"
+                                        >
+                                            <PencilSquareIcon className="w-4 h-4" />
+                                        </button>
+                                        <button
+                                            className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg"
+                                            title="Remove Asset"
+                                        >
+                                            <TrashIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Right Panel: Preview / Context */}
+                <div className="w-[380px] border-l border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hidden xl:flex flex-col">
+                    {pricingStep === 'discounts' ? (
+                        <div className="h-full flex flex-col">
+                            <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                                <h3 className="font-bold flex items-center gap-2">
+                                    <TagIcon className="w-5 h-5" />
+                                    Discounts & Pricing
+                                </h3>
+                                <button onClick={() => setPricingStep('warranties')} className="text-xs text-primary hover:underline">Close</button>
+                            </div>
+                            <div className="flex-1 overflow-hidden p-4">
+                                <DiscountStructureWidget
+                                    subtotal={stats.totalValue}
+                                    onApply={(total) => {
+                                        // Handle apply logic
+                                        setPricingStep('warranties'); // Close/Reset
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        // Default PDF Preview (Simplified)
+                        <div className="h-full flex flex-col">
+                            <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center text-sm font-medium">
+                                <span className="flex items-center gap-2">
+                                    <DocumentTextIcon className="w-4 h-4" />
+                                    Source Document
+                                </span>
+                                <div className="flex gap-2">
+                                    <button className="p-1 hover:bg-zinc-100 rounded"><ArrowPathIcon className="w-4 h-4" /></button>
+                                </div>
+                            </div>
+
+                            {/* Mock PDF Viewer */}
+                            <div className="flex-1 p-8 overflow-y-auto flex justify-center scrollbar-micro bg-zinc-100/50 dark:bg-zinc-950">
+                                <div className="bg-white w-full shadow-lg rounded-sm border border-zinc-200 p-8 text-[10px] leading-relaxed relative text-zinc-900 h-fit min-h-[600px]">
+                                    <div className="font-bold text-lg mb-4 text-center text-zinc-900">PURCHASE ORDER</div>
+                                    <div className="flex justify-between mb-6">
+                                        <div>
+                                            <div className="font-bold">BILL TO:</div>
+                                            <div>ENTERPRISE CORP</div>
+                                            <div>1234 BUSINESS WAY</div>
+                                            <div>Atlanta, GA 30318</div>
+                                        </div>
+                                        <div>
+                                            <div className="font-bold">VENDOR:</div>
+                                            <div>Office Furniture Co.</div>
+                                            <div>5678 SUPPLIER ST</div>
+                                            <div>Atlanta, GA 30309</div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                            <div key={i} className="flex justify-between border-b border-zinc-100 pb-1">
+                                                <div className="w-8">#{i}024</div>
+                                                <div className="flex-1 ml-2">Office Chair ergonomic black mesh...</div>
+                                                <div className="w-16 text-right">$450.00</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="absolute bottom-8 right-8 text-right">
+                                        <div className="font-bold text-lg">TOTAL: $68,650.00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Render 'Report' Step Overlay */}
+            {currentStep === 'report' && (
+                <div className="absolute inset-0 z-20 bg-zinc-50 dark:bg-zinc-900 flex flex-col p-8 items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="max-w-3xl w-full">
+                        <div className="text-center mb-10">
+                            <h2 className="text-3xl font-bold font-brand text-foreground mb-2">Analysis Complete</h2>
+                            <p className="text-muted-foreground">The AI has analyzed your document and found the following items requiring attention.</p>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-6 mb-8">
+                            {/* Context & Rules Card */}
+                            <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-sm relative overflow-hidden group hover:border-amber-200 transition-colors">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 relative z-10">
+                                    <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
+                                        <ShieldCheckIcon className="w-5 h-5" />
+                                    </div>
+                                    Context & Rules
+                                </h3>
+
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                        <span className="text-sm font-medium">Header Discrepancies</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${headerIssues.length > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
+                                            {headerIssues.length} Issues
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                        <span className="text-sm font-medium">Business Rule Alerts</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${ruleIssues.length > 0 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                                            {ruleIssues.length} Alerts
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Line Items Card */}
+                            <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-colors">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                                <h3 className="text-lg font-bold flex items-center gap-2 mb-4 relative z-10">
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+                                        <BoltIcon className="w-5 h-5" />
+                                    </div>
+                                    Line Items
+                                </h3>
+
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                        <span className="text-sm font-medium">Confident Matches</span>
+                                        <span className="px-2 py-0.5 bg-green-100 text-green-600 rounded-full text-xs font-bold">
+                                            {stats.validated} Items
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                        <span className="text-sm font-medium">Needs Verification</span>
+                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${stats.attention > 0 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
+                                            {stats.attention} Items
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center">
+                            {totalIssues > 0 ? (
+                                <button
+                                    onClick={() => setIsResolverOpen(true)}
+                                    className="px-8 py-4 bg-primary text-primary-foreground text-lg font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform animate-pulse"
+                                >
+                                    Resolve {totalIssues} Issues to Proceed
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => setCurrentStep('review')}
+                                    className="px-8 py-4 bg-green-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                                >
+                                    <CheckCircleIcon className="w-6 h-6" />
+                                    Proceed to Review
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Unified Discrepancy Resolver Modal */}
+            {isResolverOpen && (
+                <DiscrepancyResolverArtifact
+                    issues={[
+                        ...headerIssues,
+                        ...ruleIssues,
+                        ...assets
+                            .filter(a => a.status === 'review' || a.status === 'suggestion')
+                            .map(a => ({
+                                id: a.id,
+                                type: 'line_item' as const,
+                                title: a.description,
+                                description: a.issues?.join(', ') || 'Potential Mismatch',
+                                severity: 'medium' as const,
+                                original: {
+                                    label: 'Extracted Item',
+                                    value: a.sku,
+                                    subText: `Qty: ${a.qty} @ $${a.unitPrice}`
+                                },
+                                suggestion: {
+                                    label: 'Catalog Match',
+                                    value: a.suggestion?.sku || a.sku + '?',
+                                    subText: a.suggestion ? `$${a.suggestion.price}` : 'No match found',
+                                    reason: a.suggestion?.reason || 'Confidence low',
+                                    confidence: 85
+                                }
+                            }))
+                    ]}
+                    onResolve={handleResolveDiscrepancy}
+                    onClose={() => {
+                        setIsResolverOpen(false);
+                        // Auto-advance if clean
+                        const remaining = headerIssues.length + ruleIssues.length + assets.filter(a => a.status !== 'validated').length;
+                        if (remaining === 0) setCurrentStep('review');
+                    }}
+                />
+            )}
+
+            {currentStep === 'finalize' && (
+                <div className="absolute inset-0 z-20 bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-right duration-300">
+                    <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2 sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                        <button onClick={() => setCurrentStep('review')} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
+                            <ChevronDownIcon className="w-4 h-4 rotate-90" /> Back to Review
+                        </button>
+                    </div>
+                    <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-900/50 scrollbar-micro p-4 md:p-8">
+                        <div className="max-w-3xl mx-auto space-y-6 pb-20">
+
+                            <div className="text-center mb-8">
+                                <h2 className="text-3xl font-bold font-brand mb-2">Final Review</h2>
+                                <p className="text-muted-foreground">Please review all details before submitting.</p>
+                            </div>
+
+                            {/* Accordion 1: Asset Summary */}
+                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                                <button
+                                    className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                    onClick={() => setActiveAccordion(activeAccordion === 'assets' ? null : 'assets')}
+                                >
+                                    <div className="flex items-center gap-3 font-bold text-lg">
+                                        <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+                                            <BoltIcon className="w-5 h-5" />
+                                        </div>
+                                        Assets ({stats.total})
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-sm font-mono font-medium text-muted-foreground">{formatCurrency(stats.totalValue)}</span>
+                                        <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${activeAccordion === 'assets' ? 'rotate-180' : ''}`} />
+                                    </div>
+                                </button>
+
+                                {activeAccordion === 'assets' && (
+                                    <div className="p-0 animate-in slide-in-from-top-2 duration-200">
+                                        <div className="max-h-[300px] overflow-y-auto scrollbar-micro border-t border-zinc-100 dark:border-zinc-800">
+                                            {assets.map((a, idx) => (
+                                                <div key={a.id} className={`flex justify-between items-center p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors ${idx !== assets.length - 1 ? 'border-b border-zinc-100 dark:border-zinc-800' : ''}`}>
+                                                    <div className="flex-1 min-w-0 pr-4">
+                                                        <div className="font-medium text-sm truncate" title={a.description}>{a.description}</div>
+                                                        <div className="text-xs text-muted-foreground mt-0.5 flex gap-2">
+                                                            <span className="font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">{a.sku}</span>
+                                                            <span>Qty: {a.qty}</span>
                                                         </div>
                                                     </div>
-
-                                                    <div className="w-[200px] shrink-0">
-                                                        <div className="relative">
-                                                            <ShieldCheckIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
-                                                            <select
-                                                                value={asset.warranty || 'Standard Warranty'}
-                                                                onChange={(e) => handleApplyWarranty(e.target.value, 'single', asset.id)}
-                                                                className="w-full pl-8 pr-3 py-1.5 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer appearance-none hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
-                                                            >
-                                                                <option value="Standard Warranty">Standard @ {formatCurrency(asset.basePrice || asset.unitPrice)}</option>
-                                                                <option value="Extended Warranty (3 Years)">Extended +$50</option>
-                                                                <option value="Premium Protection (5 Years)">Premium +$120</option>
-                                                            </select>
-                                                            <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-                                                                <ChevronDownIcon className="w-3 h-3 text-muted-foreground" />
-                                                            </div>
-                                                        </div>
+                                                    <div className="text-right whitespace-nowrap">
+                                                        <div className="font-mono text-sm font-medium">{formatCurrency(a.totalPrice)}</div>
+                                                        <div className="text-[10px] text-muted-foreground">{formatCurrency(a.unitPrice)} ea</div>
                                                     </div>
                                                 </div>
                                             ))}
                                         </div>
-
-                                        <div className="flex justify-end pt-6 border-t border-zinc-200 dark:border-zinc-800">
-                                            <button
-                                                onClick={() => setPricingStep('discounts')}
-                                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02]"
-                                            >
-                                                Next: Apply Discounts <ArrowLongRightIcon className="w-5 h-5" />
-                                            </button>
-                                        </div>
                                     </div>
-                                ) : (
-                                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <div className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
-                                                <ChartBarIcon className="w-6 h-6" />
-                                            </div>
-                                            <div>
-                                                <h3 className="text-xl font-bold text-foreground">Discounts & Adjustments</h3>
-                                                <p className="text-sm text-muted-foreground">Review total value and apply applicable discounts.</p>
-                                            </div>
+                                )}
+                            </div>
+
+                            {/* Accordion 2: Warranties */}
+                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                                <button
+                                    className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                    onClick={() => setActiveAccordion(activeAccordion === 'warranties' ? null : 'warranties')}
+                                >
+                                    <div className="flex items-center gap-3 font-bold text-lg">
+                                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
+                                            <ShieldCheckIcon className="w-5 h-5" />
                                         </div>
+                                        Warranties
+                                    </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-xs px-2 py-1 bg-zinc-100 dark:bg-zinc-800 rounded text-muted-foreground">Standard & Extended</span>
+                                        <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${activeAccordion === 'warranties' ? 'rotate-180' : ''}`} />
+                                    </div>
+                                </button>
 
-                                        <DiscountStructureWidget
-                                            subtotal={stats.totalValue}
-                                            onApply={(finalTotal) => setCurrentStep('finalize')}
-                                        />
+                                {activeAccordion === 'warranties' && (
+                                    <div className="p-6 animate-in slide-in-from-top-2 duration-200 border-t border-zinc-100 dark:border-zinc-800">
+                                        <div className="space-y-4">
+                                            <div className="flex items-start gap-4 p-4 bg-purple-50 dark:bg-purple-900/10 rounded-lg border border-purple-100 dark:border-purple-800/30">
+                                                <ShieldCheckIcon className="w-6 h-6 text-purple-600 mt-1" />
+                                                <div>
+                                                    <h4 className="font-bold text-purple-900 dark:text-purple-300">Coverage Summary</h4>
+                                                    <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">
+                                                        Standard Manufacturer Warranty applies to all items unless otherwise specified.
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                        <div className="flex justify-between items-center pt-6 border-t border-zinc-200 dark:border-zinc-800">
                                             <button
-                                                onClick={() => setPricingStep('warranties')}
-                                                className="text-muted-foreground hover:text-foreground px-4 py-2 text-sm font-medium transition-colors flex items-center gap-2"
+                                                onClick={() => setIsWarrantyMenuOpen(true)}
+                                                className="w-full py-2 border border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg text-sm text-muted-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:text-foreground transition-colors flex items-center justify-center gap-2"
                                             >
-                                                <ArrowLongRightIcon className="w-4 h-4 rotate-180" /> Back to Warranties
+                                                <PencilSquareIcon className="w-4 h-4" />
+                                                Modify Warranty Selections
                                             </button>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        </div>
-                    </div>
-                )
-            }
 
-            {
-                currentStep === 'finalize' && (
-                    <div className="absolute inset-0 z-20 bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-right duration-300">
-                        <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2">
-                            <button onClick={() => setCurrentStep('discount')} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
-                                <ChevronDownIcon className="w-4 h-4 rotate-90" /> Back to Pricing
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-black/50 scrollbar-micro">
-                            <div className="min-h-full flex items-center justify-center p-8">
-                                <div className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl p-8">
-                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${stats.total === stats.validated ? 'bg-green-100 text-green-600 dark:bg-green-900/30' : 'bg-amber-100 text-amber-600 dark:bg-amber-900/30'}`}>
-                                        {stats.total === stats.validated ? (
-                                            <CheckCircleIcon className="w-8 h-8" />
-                                        ) : (
-                                            <ExclamationTriangleIcon className="w-8 h-8" />
-                                        )}
+                            {/* Accordion 3: Discounts */}
+                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                                <button
+                                    className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                    onClick={() => setActiveAccordion(activeAccordion === 'discounts' ? null : 'discounts')}
+                                >
+                                    <div className="flex items-center gap-3 font-bold text-lg">
+                                        <div className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
+                                            <TagIcon className="w-5 h-5" />
+                                        </div>
+                                        Discounts
                                     </div>
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-xs px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded font-medium">Applied</span>
+                                        <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${activeAccordion === 'discounts' ? 'rotate-180' : ''}`} />
+                                    </div>
+                                </button>
 
-                                    <h3 className="text-2xl font-bold text-center mb-2">
-                                        {stats.total === stats.validated ? 'Ready to Submit Order' : 'Review Incomplete'}
-                                    </h3>
-                                    <p className="text-center text-muted-foreground mb-8 text-sm">
-                                        {stats.total === stats.validated
-                                            ? 'All assets have been validated. This will create a Purchase Order.'
-                                            : 'Some items still need review. You can proceed by creating a Quote instead.'}
-                                    </p>
-
-                                    <div className="space-y-4 mb-8">
-                                        <div className="flex justify-between p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
-                                            <span className="text-muted-foreground">Ordering Assets</span>
-                                            <span className="font-semibold">{stats.total} Items</span>
-                                        </div>
-                                        <div className="flex justify-between p-3 bg-zinc-50 dark:bg-zinc-800 rounded-lg">
-                                            <span className="text-muted-foreground">Validation Status</span>
-                                            {stats.total === stats.validated ? (
-                                                <span className="text-green-600 font-semibold flex items-center gap-1">
-                                                    <CheckCircleIcon className="w-4 h-4" /> All Validated
-                                                </span>
-                                            ) : (
-                                                <span className="text-amber-600 font-semibold flex items-center gap-1">
-                                                    <ExclamationTriangleIcon className="w-4 h-4" /> {stats.total - stats.validated} Pending
-                                                </span>
-                                            )}
-                                        </div>
-                                        <div className="flex justify-between p-3 bg-primary/5 border border-primary/20 rounded-lg">
-                                            <span className="text-primary font-medium">Total Value</span>
-                                            <span className="text-2xl font-bold text-primary">{formatCurrency(stats.totalValue)}</span>
+                                {activeAccordion === 'discounts' && (
+                                    <div className="p-6 animate-in slide-in-from-top-2 duration-200 border-t border-zinc-100 dark:border-zinc-800">
+                                        <div className="space-y-4">
+                                            <DiscountStructureWidget
+                                                subtotal={stats.totalValue}
+                                                onApply={(total) => {
+                                                    // console.log('Applied', total);
+                                                }}
+                                            />
                                         </div>
                                     </div>
+                                )}
+                            </div>
 
-                                    {stats.total === stats.validated ? (
-                                        <button
-                                            onClick={() => {
-                                                setFinalType('po');
-                                                setShowSuccess(true);
-                                            }}
-                                            className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-bold text-lg hover:bg-primary/90 hover:scale-[1.02] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
-                                        >
-                                            <DocumentTextIcon className="w-5 h-5" />
-                                            Submit Purchase Order
-                                        </button>
-                                    ) : (
-                                        <div className="space-y-3">
-                                            <button
-                                                onClick={() => {
-                                                    setFinalType('quote');
-                                                    setShowSuccess(true);
-                                                }}
-                                                className="w-full py-3 bg-white dark:bg-zinc-800 border-2 border-primary text-primary rounded-xl font-bold text-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                                            >
-                                                <DocumentTextIcon className="w-5 h-5" />
-                                                Create Quote Only
-                                            </button>
-                                            <p className="text-xs text-center text-muted-foreground px-4">
-                                                Creating a quote allows you to save progress and finish validation later.
-                                            </p>
+                            {/* Totals & Submit Section */}
+                            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl p-6 md:p-8 mt-8 sticky bottom-4 z-20">
+                                <div className="flex flex-col md:flex-row justify-between items-end mb-6 pb-6 border-b border-zinc-100 dark:border-zinc-800">
+                                    <div className="mb-4 md:mb-0">
+                                        <span className="block text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Estimated Total</span>
+                                        <span className="text-xs text-muted-foreground">*Excludes tax & shipping</span>
+                                    </div>
+                                    <span className="text-4xl font-bold font-brand text-foreground bg-clip-text text-transparent bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-400">
+                                        {formatCurrency(stats.totalValue)}
+                                    </span>
+                                </div>
 
-                                            <button
-                                                onClick={() => {
-                                                    setFilter('attention');
-                                                    setCurrentStep('review');
-                                                }}
-                                                className="w-full py-3 mt-3 bg-zinc-100 dark:bg-zinc-800/80 hover:bg-zinc-200 dark:hover:bg-zinc-800 text-foreground font-semibold rounded-xl transition-all flex items-center justify-center gap-2 group active:scale-[0.98]"
-                                            >
-                                                <ArrowLeftIcon className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                                                Review Pending Items
-                                            </button>
-                                        </div>
-                                    )}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <button
+                                        onClick={() => {
+                                            setFinalType('quote');
+                                            setShowSuccess(true);
+                                        }}
+                                        className="w-full py-4 bg-white dark:bg-zinc-800 border-2 border-zinc-200 dark:border-zinc-700 text-foreground rounded-xl font-bold text-lg hover:bg-zinc-50 dark:hover:bg-zinc-700 hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Create Quote Only
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            setFinalType('po');
+                                            setShowSuccess(true);
+                                        }}
+                                        className="w-full py-4 bg-primary text-primary-foreground rounded-xl font-bold text-lg hover:bg-primary/90 hover:scale-[1.02] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                                    >
+                                        <DocumentTextIcon className="w-6 h-6" />
+                                        Submit Purchase Order
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                )
-            }
+                </div>
+            )}
 
             <EditAssetModal
                 isOpen={isEditModalOpen}
@@ -887,6 +1030,6 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                     sendMessage('Start New Quote', 'user');
                 }}
             />
-        </div >
+        </div>
     );
 }
