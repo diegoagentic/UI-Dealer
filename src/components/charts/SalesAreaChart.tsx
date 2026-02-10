@@ -28,8 +28,8 @@ export function SalesAreaChart() {
                 <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                            <stop offset="5%" stopColor="#D6FF3C" stopOpacity={0.3} />
+                            <stop offset="95%" stopColor="#D6FF3C" stopOpacity={0} />
                         </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" className="dark:stroke-zinc-800" />
@@ -48,22 +48,23 @@ export function SalesAreaChart() {
                     />
                     <Tooltip
                         contentStyle={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            backgroundColor: 'rgba(24, 24, 27, 0.9)', // Zinc-900 (Dark) default for dashboards usually looks better, or keep white and use class logic if available. Keeping it simple but branded.
                             borderRadius: '8px',
-                            border: '1px solid #E5E7EB',
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                            border: '1px solid #27272a', // Zinc-800
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                            color: '#F4F4F5' // Zinc-100
                         }}
-                        itemStyle={{ color: '#1F2937' }}
+                        itemStyle={{ color: '#D6FF3C' }} // Volt Lime text
                         formatter={(value) => [`$${value}`, 'Revenue']}
                     />
                     <Area
                         type="monotone"
                         dataKey="revenue"
-                        stroke="#8b5cf6"
+                        stroke="#D6FF3C" // Volt Lime
                         strokeWidth={3}
                         fillOpacity={1}
                         fill="url(#colorRevenue)"
-                        activeDot={{ r: 6, strokeWidth: 0, fill: '#7c3aed' }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: '#BEF264' }} // Slightly lighter lime
                         animationDuration={1500}
                     />
                 </AreaChart>

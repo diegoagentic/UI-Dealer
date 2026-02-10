@@ -24,21 +24,21 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
                 </div>
             </div>
 
-            {/* Bento Grid Layout - 4 Columns Base */}
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
-
-                {/* Row 1: Core Performance */}
-                <div className="xl:col-span-2">
+            {/* Primary Metrics - Row 1 */}
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
+                <div className="xl:col-span-3">
                     <SalesAreaChart />
                 </div>
                 <div className="xl:col-span-1">
                     <CategoryDonutChart />
                 </div>
+            </div>
+
+            {/* Complementary Metrics - Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300 delay-100">
                 <div className="xl:col-span-1">
                     <FunnelBarChart />
                 </div>
-
-                {/* Row 2: Operational Insights */}
                 <div className="xl:col-span-1">
                     <LogisticsStatusChart />
                 </div>
@@ -48,8 +48,6 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
                 <div className="xl:col-span-1">
                     <TeamWorkloadChart />
                 </div>
-
-                {/* Row 3: Strategic & Pipeline */}
                 <div className="xl:col-span-2">
                     <ClientTreemapChart />
                 </div>
@@ -59,7 +57,6 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
                 <div className="xl:col-span-1">
                     <QuotePipelineChart />
                 </div>
-
             </div>
         </div>
     );

@@ -7,7 +7,7 @@ const data = [
     { name: "Accessories", value: 200 },
 ];
 
-const COLORS = ["#8b5cf6", "#ec4899", "#06b6d4", "#f59e0b"];
+const COLORS = ["#D6FF3C", "#FFFFFF", "#71717A", "#3F3F46"]; // Volt Lime, White, Zinc-500, Zinc-700
 
 export function CategoryDonutChart() {
     return (
