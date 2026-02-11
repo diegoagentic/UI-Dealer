@@ -7,7 +7,7 @@ import {
     PlusIcon, DocumentDuplicateIcon, DocumentTextIcon, EnvelopeIcon, Squares2X2Icon,
     EllipsisHorizontalIcon, ListBulletIcon, SunIcon, MoonIcon,
     ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
-    CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon,
+    CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon, CheckCircleIcon,
     ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
     FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon
 } from '@heroicons/react/24/outline'
@@ -141,6 +141,34 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [isAckModalOpen, setIsAckModalOpen] = useState(false);
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false);
+
+    // Toast State
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState({ title: '', description: '', type: 'success' }); // success | error | info
+    const toastTimerRef = useRef<any>(null);
+
+    const triggerToast = (title: string, description: string, type: 'success' | 'error' | 'info' = 'success') => {
+        setToastMessage({ title, description, type });
+        setShowToast(true);
+
+        if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+        toastTimerRef.current = setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleExportSIF = (type: string) => {
+        triggerToast(`Exporting ${type} SIF...`, 'Generating SIF file. Please wait.', 'info');
+
+        setTimeout(() => {
+            triggerToast(`${type} SIF Exported`, 'The SIF file has been successfully generated and downloaded.', 'success');
+            // Simulate download
+            // const element = document.createElement("a");
+            // const file = new Blob(["Simulated SIF Content"], {type: 'text/plain'});
+            // element.href = URL.createObjectURL(file);
+            // element.download = `${type}_Export_${new Date().toISOString().split('T')[0]}.sif`;
+            // document.body.appendChild(element); // Required for this to work in FireFox
+            // element.click(); 
+        }, 1500);
+    };
     const { theme, toggleTheme } = useTheme()
     const { currentTenant } = useTenant()
 
@@ -387,10 +415,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     {[
                                         { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote" },
                                         { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export PDF" },
+                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
                                     ].map((action, i) => (
-                                        <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
                                             {action.icon}
                                             <span>{action.label}</span>
                                         </button>
@@ -422,10 +450,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         {[
                                             { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote" },
                                             { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export PDF" },
+                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
                                             { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
                                         ].map((action, i) => (
-                                            <button key={i} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                            <button key={i} onClick={() => action.action && action.action()} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
                                                 {action.icon}
                                             </button>
                                         ))}
@@ -486,7 +514,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Quick Actions:</span>
                                     {[
                                         { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export List" },
+                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement", action: () => handleExportSIF('Acknowledgement') },
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Email Vendor" },
                                         { icon: <CheckBadgeIcon className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                                     ].map((action, i) => (
@@ -521,13 +549,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
                                         {[
                                             { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack" },
-                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export List" },
+                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement" },
                                             { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Email Vendor" },
                                             { icon: <CheckBadgeIcon className="w-5 h-5" />, label: "Approve Orders" },
                                         ].map((action, i) => (
                                             <button key={i} onClick={() => {
                                                 if (action.label === 'Upload Ack') setIsAckModalOpen(true);
                                                 if (action.label === 'Approve Orders') setIsBatchAckOpen(true);
+                                                if (action.label === 'Export Acknowledgement') handleExportSIF('Acknowledgement');
                                             }} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
                                                 {action.icon}
                                             </button>
@@ -593,10 +622,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     {[
                                         { icon: <PlusIcon className="w-5 h-5" />, label: "New Order" },
                                         { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export PDF" },
+                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Order", action: () => handleExportSIF('Order') },
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send Email" },
                                     ].map((action, i) => (
-                                        <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
                                             {action.icon}
                                             <span>{action.label}</span>
                                         </button>
@@ -678,8 +707,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         </button>
                                     ))}
                                     <div className="w-px h-6 bg-border/50 mx-1"></div>
-                                    <button className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-purple-500 transition-colors relative group" title="View All & Manage">
-                                        <Squares2X2Icon className="w-5 h-5" />
+                                    <button onClick={() => handleExportSIF('Order')} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-purple-500 transition-colors relative group" title="Export Order">
+                                        <DocumentTextIcon className="w-5 h-5" />
                                     </button>
                                 </div>
 
@@ -1437,6 +1466,33 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
             <AcknowledgementUploadModal isOpen={isAckModalOpen} onClose={() => setIsAckModalOpen(false)} />
             <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} />
+
+            {/* Toast Notification */}
+            {showToast && (
+                <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
+                    <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl shadow-black/10 border border-zinc-100 dark:border-zinc-700 p-4 flex items-start gap-4 max-w-sm">
+                        <div className={`mt-0.5 p-1 rounded-full ${toastMessage.type === 'success' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : toastMessage.type === 'info' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
+                            {toastMessage.type === 'success' ? (
+                                <CheckCircleIcon className="w-5 h-5" />
+                            ) : toastMessage.type === 'info' ? (
+                                <DocumentTextIcon className="w-5 h-5" />
+                            ) : (
+                                <ExclamationCircleIcon className="w-5 h-5" />
+                            )}
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-sm font-semibold text-zinc-900 dark:text-white">{toastMessage.title}</h4>
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{toastMessage.description}</p>
+                        </div>
+                        <button onClick={() => setShowToast(false)} className="text-zinc-400 hover:text-zinc-500 dark:hover:text-zinc-300 transition-colors">
+                            <span className="sr-only">Close</span>
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </div >
     )
