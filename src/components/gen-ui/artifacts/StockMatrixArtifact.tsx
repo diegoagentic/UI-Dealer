@@ -28,7 +28,7 @@ export default function StockMatrixArtifact({ data }: { data: any }) {
     }
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-3 border-b border-blue-100 dark:border-blue-800 flex items-center gap-2">
                 <TruckIcon className="w-4 h-4 text-blue-600 dark:text-blue-500" />

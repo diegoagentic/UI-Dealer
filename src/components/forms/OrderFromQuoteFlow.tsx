@@ -113,15 +113,15 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
     };
 
     return (
-        <div className="h-[600px] flex flex-col bg-zinc-50 dark:bg-zinc-900/50">
+        <div className="h-[600px] flex flex-col bg-muted/30">
             {/* Header */}
-            <div className="px-8 py-6 border-b border-border bg-white dark:bg-zinc-900 flex items-center gap-4">
+            <div className="px-8 py-6 border-b border-border bg-background flex items-center gap-4">
                 <button
                     onClick={() => {
                         if (step === 'selection') onCancel();
                         else setStep('selection');
                     }}
-                    className="p-2 -ml-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="p-2 -ml-2 rounded-lg hover:bg-accent transition-colors"
                 >
                     <ArrowPathIcon className={clsx("w-5 h-5 text-muted-foreground", step === 'selection' ? "rotate-90" : "")} />
                     {step !== 'selection' && <span className="sr-only">Back</span>}
@@ -151,13 +151,13 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                 <input
                                     type="text"
                                     placeholder="Search by Quote ID, Customer, or Project..."
-                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                                 />
                             </div>
 
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm overflow-hidden">
+                            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-xs uppercase text-muted-foreground font-semibold border-b border-border">
+                                    <thead className="bg-muted/50 text-xs uppercase text-muted-foreground font-semibold border-b border-border">
                                         <tr>
                                             <th className="px-6 py-3">Quote Details</th>
                                             <th className="px-6 py-3">Customer & Project</th>
@@ -230,7 +230,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
 
                             {/* Summary Cards */}
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm">
+                                <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
                                             <BuildingOfficeIcon className="w-5 h-5" />
@@ -240,9 +240,9 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                     <div className="font-semibold text-foreground">{selectedQuote.customer}</div>
                                     <div className="text-sm text-muted-foreground truncate">{selectedQuote.project}</div>
                                 </div>
-                                <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm">
+                                <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-purple-50 dark:bg-purple-900/20 text-purple-600 rounded-lg">
+                                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
                                             <BanknotesIcon className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Total Value</span>
@@ -250,9 +250,9 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                     <div className="font-semibold text-foreground">{selectedQuote.formattedValue}</div>
                                     <div className="text-sm text-muted-foreground">PO-FROM-{selectedQuote.id}</div>
                                 </div>
-                                <div className="p-4 bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm">
+                                <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg">
+                                        <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-lg">
                                             <CalendarIcon className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Requested Date</span>
@@ -263,7 +263,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                             </div>
 
                             {/* Items Table */}
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm overflow-hidden mb-8">
+                            <div className="bg-white dark:bg-zinc-800 rounded-xl border border-border shadow-sm overflow-hidden mb-8">
                                 <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/20">
                                     <h3 className="font-semibold text-foreground flex items-center gap-2">
                                         <DocumentTextIcon className="w-5 h-5 text-muted-foreground" />

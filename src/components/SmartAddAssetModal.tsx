@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     XMarkIcon,
     DocumentTextIcon,
@@ -6,11 +6,9 @@ import {
     TableCellsIcon,
     PencilSquareIcon,
     CheckCircleIcon,
-    CloudArrowUpIcon,
+
     ArrowPathIcon,
     CameraIcon,
-    BoltIcon,
-    ExclamationTriangleIcon,
     ChevronRightIcon,
     ChevronLeftIcon
 } from '@heroicons/react/24/outline';
@@ -26,7 +24,7 @@ type TabType = 'selection' | 'manual' | 'template' | 'csv' | 'qr';
 interface SmartAddAssetModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onConfirm: (data: any) => void;
+    onConfirm: (data: unknown) => void;
 }
 
 const STEPS = [
@@ -76,13 +74,14 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
     });
 
     // Simulation States
-    const [isAnalyzing, setIsAnalyzing] = useState(false); // Template/AI
+
     const [isScanning, setIsScanning] = useState(false); // QR
     const [csvState, setCsvState] = useState<'upload' | 'validating' | 'summary'>('upload');
 
     // Reset on close/open
     useEffect(() => {
         if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveTab('csv');
             setCurrentStep(1);
             setFormData({
@@ -100,7 +99,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
             });
             setCsvState('upload');
             setIsScanning(false);
-            setIsAnalyzing(false);
+
         }
     }, [isOpen]);
 
@@ -113,23 +112,11 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         // Reset simulations when switching tabs
         setCsvState('upload');
         setIsScanning(false);
-        setIsAnalyzing(false);
+
     };
 
-    // --- Template / Smart Import Logic ---
-    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setIsAnalyzing(true);
-            // Simulate AI Analysis
-            setTimeout(() => {
-                setIsAnalyzing(false);
-                setFormData(prev => ({ ...prev, ...MOCK_AI_DATA }));
-                setActiveTab('manual'); // Switch to manual to show filled data
-                setCurrentStep(1); // Go to start of form
-            }, 2500);
-        }
-    };
+
+
 
     // --- QR Logic ---
     const startQrScan = () => {
@@ -202,7 +189,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         // Reset specific states
         setCsvState('upload');
         setIsScanning(false);
-        setIsAnalyzing(false);
+
         setCurrentStep(1);
     };
 
@@ -213,7 +200,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         if (activeTab === 'selection') return null;
 
         return (
-            <div className="flex p-1 bg-zinc-100 dark:bg-zinc-800 rounded-xl mb-6">
+            <div className="flex p-1 bg-muted rounded-xl mb-6">
                 {[
                     { id: 'manual', label: 'Manual', icon: PencilSquareIcon, tooltip: 'Fill in asset details manually' },
                     { id: 'template', label: 'Template', icon: DocumentTextIcon, tooltip: 'Use a pre-defined template' },
@@ -226,17 +213,17 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             className={cn(
                                 "w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-lg transition-all",
                                 activeTab === tab.id
-                                    ? "bg-white dark:bg-zinc-700 text-foreground shadow-sm"
-                                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50"
+                                    ? "bg-background text-foreground shadow-sm"
+                                    : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 hover:bg-muted/50"
                             )}
                         >
                             <tab.icon className="w-4 h-4" />
                             {tab.label}
                         </button>
                         {/* Tooltip */}
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-foreground text-background text-xs rounded opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
                             {tab.tooltip}
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900 dark:border-t-zinc-100"></div>
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-foreground"></div>
                         </div>
                     </div>
                 ))}
@@ -255,9 +242,9 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                 <button
                     key={mode.id}
                     onClick={() => handleTabChange(mode.id as TabType)}
-                    className="flex flex-col items-center justify-center text-center p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 hover:border-primary hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all group gap-3 cursor-pointer"
+                    className="flex flex-col items-center justify-center text-center p-6 rounded-2xl border border-border hover:border-primary hover:bg-muted transition-all group gap-3 cursor-pointer"
                 >
-                    <div className="w-12 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
                         <mode.icon className="w-6 h-6" />
                     </div>
                     <div>
@@ -278,7 +265,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors duration-300",
                             currentStep >= step.id
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 border border-zinc-200 dark:border-zinc-700"
+                                : "bg-muted text-muted-foreground border border-border"
                         )}>
                             {currentStep > step.id ? <CheckCircleIcon className="w-5 h-5" /> : step.id}
                         </div>
@@ -292,7 +279,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                     {idx < STEPS.length - 1 && (
                         <div className={cn(
                             "h-[2px] w-full mx-2 -mt-4 transition-colors duration-300",
-                            currentStep > step.id ? "bg-primary/50" : "bg-zinc-100 dark:bg-zinc-800"
+                            currentStep > step.id ? "bg-primary/50" : "bg-muted"
                         )} />
                     )}
                 </div>
@@ -315,7 +302,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                         value={formData.assetName}
                                         onChange={e => setFormData({ ...formData, assetName: e.target.value })}
                                         placeholder="e.g. Executive Office Chair"
-                                        className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
+                                        className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -326,7 +313,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                             value={formData.sku}
                                             onChange={e => setFormData({ ...formData, sku: e.target.value })}
                                             placeholder="Auto-generated"
-                                            className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
+                                            className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
                                         />
                                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
                                             <span className="text-xs text-zinc-400">Auto</span>
@@ -344,7 +331,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                     <select
                                         value={formData.category}
                                         onChange={e => setFormData({ ...formData, category: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
+                                        className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
                                     >
                                         <option value="">Select category...</option>
                                         <option value="Furniture">Furniture</option>
@@ -357,7 +344,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                     <select
                                         value={formData.subCategory}
                                         onChange={e => setFormData({ ...formData, subCategory: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
+                                        className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
                                     >
                                         <option value="">Select subcategory...</option>
                                         <option value="Chair">Chair</option>
@@ -374,18 +361,18 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                     value={formData.description}
                                     onChange={e => setFormData({ ...formData, description: e.target.value })}
                                     placeholder="Brief description of the asset..."
-                                    className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm resize-none"
+                                    className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm resize-none"
                                 />
                             </div>
 
                             <div className="flex items-center gap-4">
                                 <div
-                                    className="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-100 dark:border-zinc-800 flex-1 cursor-pointer select-none transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                    className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border flex-1 cursor-pointer select-none transition-colors hover:bg-accent"
                                     onClick={() => setFormData(p => ({ ...p, createMultiple: !p.createMultiple }))}
                                 >
-                                    <div className="w-10 h-5 bg-zinc-200 dark:bg-zinc-700 rounded-full relative transition-colors">
+                                    <div className="w-10 h-5 bg-input rounded-full relative transition-colors">
                                         <div className={cn(
-                                            "w-5 h-5 bg-white rounded-full shadow-sm absolute top-0 transition-all border border-zinc-200",
+                                            "w-5 h-5 bg-white rounded-full shadow-sm absolute top-0 transition-all border border-input",
                                             formData.createMultiple ? "right-0 border-primary bg-primary" : "left-0"
                                         )} />
                                     </div>
@@ -401,7 +388,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                             max={100}
                                             value={formData.quantity}
                                             onChange={e => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
-                                            className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-sm"
+                                            className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:outline-none text-sm"
                                         />
                                     </div>
                                 )}
@@ -415,11 +402,11 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-xs font-medium text-zinc-500 uppercase tracking-wide">Assignment Type</label>
-                                    <div className="flex bg-zinc-50 dark:bg-zinc-800/50 p-1 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                    <div className="flex bg-muted/50 p-1 rounded-lg border border-border">
                                         {['Warehouse', 'Project', 'Location'].map(type => (
                                             <button
                                                 key={type}
-                                                className="flex-1 text-xs font-medium py-1.5 rounded-md hover:bg-white dark:hover:bg-zinc-700 shadow-sm transition-all"
+                                                className="flex-1 text-xs font-medium py-1.5 rounded-md hover:bg-background shadow-sm transition-all"
                                             >
                                                 {type}
                                             </button>
@@ -432,7 +419,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                 <select
                                     value={formData.location}
                                     onChange={e => setFormData({ ...formData, location: e.target.value })}
-                                    className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
+                                    className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
                                 >
                                     <option value="">Select Warehouse...</option>
                                     <option value="Main Warehouse">Main Warehouse</option>
@@ -452,7 +439,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                         type="text"
                                         value={formData.value}
                                         onChange={e => setFormData({ ...formData, value: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
+                                        className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -460,7 +447,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                     <select
                                         value={formData.status}
                                         onChange={e => setFormData({ ...formData, status: e.target.value })}
-                                        className="w-full px-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
+                                        className="w-full px-4 py-2.5 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm appearance-none"
                                     >
                                         <option value="Available">Available</option>
                                         <option value="In Use">In Use</option>
@@ -499,7 +486,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                 </div>
 
                 {/* Footer Controls */}
-                <div className="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center justify-between pt-4 border-t border-border">
                     {/* Back button logic handled in header for non-step-1 or use standard prev */}
                     <button
                         onClick={handlePrev}
@@ -508,7 +495,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             "px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2",
                             currentStep === 1
                                 ? "opacity-0 pointer-events-none" // Hide when on step 1 since back is in header
-                                : "text-zinc-500 hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                                : "text-zinc-500 hover:text-foreground hover:bg-muted"
                         )}
                     >
                         <ChevronLeftIcon className="w-4 h-4" />
@@ -534,13 +521,13 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                     <button
                         key={template.id}
                         onClick={() => handleTemplateSelect(template)}
-                        className="flex flex-col items-start p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:border-primary hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all text-left group"
+                        className="flex flex-col items-start p-4 rounded-xl border border-border hover:border-primary hover:bg-muted/50 transition-all text-left group"
                     >
                         <div className="flex items-center justify-between w-full mb-2">
                             <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                 <DocumentTextIcon className="w-5 h-5" />
                             </span>
-                            <span className="text-xs font-medium text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">{template.category}</span>
+                            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">{template.category}</span>
                         </div>
                         <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-900 dark:group-hover:text-white mb-1">{template.label}</h4>
                         <p className="text-xs text-zinc-500 line-clamp-2">{template.description}</p>
@@ -555,7 +542,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         <div className="h-[400px] animate-in fade-in zoom-in-95 duration-300">
             {csvState === 'upload' && (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-                    <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-3xl p-10 w-full hover:border-primary/50 hover:bg-primary/5 transition-all group cursor-pointer relative">
+                    <div className="border-2 border-dashed border-border rounded-3xl p-10 w-full hover:border-primary/50 hover:bg-primary/5 transition-all group cursor-pointer relative">
                         <input
                             type="file"
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
@@ -597,9 +584,9 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                 <span className="block text-2xl font-bold text-indigo-600">7</span>
                                 <span className="text-xs font-medium text-indigo-400">Total Rows</span>
                             </div>
-                            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded-xl text-center">
-                                <span className="block text-2xl font-bold text-emerald-600">6</span>
-                                <span className="text-xs font-medium text-emerald-400">Valid</span>
+                            <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl text-center">
+                                <span className="block text-2xl font-bold text-green-600">6</span>
+                                <span className="text-xs font-medium text-green-400">Valid</span>
                             </div>
                             <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl text-center">
                                 <span className="block text-2xl font-bold text-amber-600">1</span>
@@ -611,14 +598,14 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             </div>
                         </div>
 
-                        <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-                            <div className="bg-zinc-50 dark:bg-zinc-800 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700 flex justify-between">
+                        <div className="border border-border rounded-xl overflow-hidden">
+                            <div className="bg-muted/50 px-4 py-2 border-b border-border flex justify-between">
                                 <span className="text-xs font-bold text-zinc-500 uppercase">Preview</span>
                                 <span className="text-xs text-zinc-400">Showing 3 of 7</span>
                             </div>
                             <div className="p-4 space-y-2">
                                 {['Executive Leather Chair', 'Adjustable LED Floor Lamp', 'Tempered Glass Partition'].map((item, i) => (
-                                    <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-dashed border-zinc-100 dark:border-zinc-800 last:border-0">
+                                    <div key={i} className="flex items-center justify-between text-sm py-1 border-b border-dashed border-border last:border-0">
                                         <span className="font-medium">{item}</span>
                                         <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs">Valid</span>
                                     </div>
@@ -627,8 +614,8 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                         </div>
                     </div>
 
-                    <div className="pt-6 flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
-                        <button onClick={() => setCsvState('upload')} className="px-4 py-2 text-sm text-zinc-500 hover:text-foreground hover:bg-zinc-100 rounded-lg transition-colors">Cancel</button>
+                    <div className="pt-6 flex justify-end gap-3 border-t border-border mt-4">
+                        <button onClick={() => setCsvState('upload')} className="px-4 py-2 text-sm text-zinc-500 hover:text-foreground hover:bg-muted rounded-lg transition-colors">Cancel</button>
                         <button onClick={handleCreateFromCsv} className="px-6 py-2 bg-primary text-zinc-900 text-sm font-medium rounded-lg shadow hover:bg-primary/90 transition-colors">
                             Create 6 Assets
                         </button>
@@ -691,12 +678,12 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200" onClick={onClose}></div>
             <div className={cn(
-                "relative bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full overflow-hidden animate-in zoom-in-95 duration-200 border border-zinc-200 dark:border-zinc-800 flex flex-col max-h-[90vh]",
+                "relative bg-card rounded-2xl shadow-2xl w-full overflow-hidden animate-in zoom-in-95 duration-200 border border-border flex flex-col max-h-[90vh]",
                 activeTab === 'selection' ? "max-w-3xl" : "max-w-2xl"
             )}>
 
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-zinc-100 dark:border-zinc-800 relative">
+                <div className="flex items-center justify-between p-6 border-b border-border relative">
                     <div className="flex items-center gap-3">
                         {activeTab !== 'selection' && (
                             <button
@@ -715,7 +702,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors">
+                    <button onClick={onClose} className="p-2 text-muted-foreground hover:text-zinc-600 hover:bg-muted rounded-full transition-colors">
                         <XMarkIcon className="w-6 h-6" />
                     </button>
                 </div>

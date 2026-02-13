@@ -38,7 +38,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 // Chart Colors
-const COLORS = ['#84cc16', '#3b82f6', '#f59e0b', '#ef4444']; // Lime, Blue, Amber, Red
+const COLORS = ['#84cc16', '#3b82f6', 'bg-amber-500', '#ef4444']; // Lime, Blue, Amber, Red
 
 export interface MovementRequest {
     id: string;
@@ -206,9 +206,9 @@ export default function InventoryMovements() {
     // Helper for Status Look & Feel
     const getStatusStyle = (status: string) => {
         switch (status) {
-            case 'Ordered': return 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700/50';
-            case 'Assigned': return 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700/50';
-            case 'Scheduled': return 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-700/50';
+            case 'Ordered': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50';
+            case 'Assigned': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50';
+            case 'Scheduled': return 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-700/50';
             case 'In-Progress': return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700/50';
             case 'Completed': return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700/50';
             default: return 'bg-zinc-100 text-zinc-700 border-zinc-200';
@@ -218,7 +218,7 @@ export default function InventoryMovements() {
     const getPriorityStyle = (priority: string) => {
         switch (priority) {
             case 'High': return 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30';
-            case 'Medium': return 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30';
+            case 'Medium': return 'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30';
             case 'Low': return 'bg-green-50 text-green-600 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30';
             default: return 'bg-zinc-50 text-zinc-600';
         }
@@ -250,7 +250,7 @@ export default function InventoryMovements() {
                     <div
                         key={move.id}
                         onClick={() => toggleExpand(move.id)}
-                        className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+                        className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-all cursor-pointer group"
                     >
                         <div className="p-6">
                             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -261,7 +261,7 @@ export default function InventoryMovements() {
                                     <div className="flex items-center gap-3">
                                         <h3 className="font-semibold text-lg text-foreground">{move.assetName}</h3>
                                         {move.trackingId && (
-                                            <span className="text-xs font-mono text-muted-foreground bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                                            <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
                                                 {move.trackingId}
                                             </span>
                                         )}
@@ -319,7 +319,7 @@ export default function InventoryMovements() {
                                         </button>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleTrackClick(move); }}
-                                            className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors">
+                                            className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-background border border-border text-foreground rounded-lg text-sm font-medium hover:bg-accent transition-colors">
                                             Track Progress
                                         </button>
                                     </div>
@@ -329,11 +329,11 @@ export default function InventoryMovements() {
 
                         {/* Expanded Analytics View */}
                         {expandedIds.has(move.id) && (
-                            <div className="border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20 p-6 animate-in slide-in-from-top-2 duration-300">
+                            <div className="border-t border-border bg-muted/30 p-6 animate-in slide-in-from-top-2 duration-300">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
                                     {/* Cost Breakdown */}
-                                    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                    <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
                                                 <CurrencyDollarIcon className="w-4 h-4" />
@@ -373,7 +373,7 @@ export default function InventoryMovements() {
                                     </div>
 
                                     {/* SLA Performance */}
-                                    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                    <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
                                                 <ClockIcon className="w-4 h-4" />
@@ -401,9 +401,9 @@ export default function InventoryMovements() {
                                     </div>
 
                                     {/* Asset History */}
-                                    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                                    <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
-                                            <div className="p-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg">
+                                            <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
                                                 <PresentationChartLineIcon className="w-4 h-4" />
                                             </div>
                                             <h4 className="text-sm font-semibold text-foreground">Movement History (6 Mo)</h4>
@@ -417,7 +417,7 @@ export default function InventoryMovements() {
                                                     <Tooltip
                                                         contentStyle={{ backgroundColor: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}
                                                     />
-                                                    <Line type="monotone" dataKey="moves" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                                                    <Line type="monotone" dataKey="moves" stroke="bg-indigo-500" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                                                 </LineChart>
                                             </ResponsiveContainer>
                                         </div>

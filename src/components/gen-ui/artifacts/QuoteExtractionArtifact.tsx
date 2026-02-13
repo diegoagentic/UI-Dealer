@@ -169,7 +169,7 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
 
                         <div className="flex items-start gap-4">
                             <div className={clsx(
-                                "w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2 transition-all duration-300 z-10 bg-white dark:bg-zinc-900",
+                                "w-6 h-6 rounded-full flex items-center justify-center shrink-0 border-2 transition-all duration-300 z-10 bg-white dark:bg-zinc-800",
                                 step.status === 'complete'
                                     ? "border-green-500 text-green-500 bg-green-50 dark:bg-green-900/10"
                                     : step.status === 'active'

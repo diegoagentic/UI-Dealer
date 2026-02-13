@@ -28,7 +28,7 @@ export default function QuoteProposalArtifact({ data }: { data: any }) {
     }
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden group">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden group">
             {/* Header */}
             <div className="relative bg-indigo-600 px-4 py-8 flex flex-col items-center justify-center text-white overflow-hidden">
                 {/* Abstract Background Pattern */}

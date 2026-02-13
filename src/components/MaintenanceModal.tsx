@@ -55,10 +55,10 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                 onClick={onClose}
             ></div>
 
-            <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-zinc-200 dark:border-zinc-800">
-                <div className="flex items-center justify-between p-6 border-b border-zinc-100 dark:border-zinc-800">
+            <div className="relative bg-card rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-border">
+                <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-orange-50 dark:bg-orange-900/20 rounded-lg text-orange-600 dark:text-orange-400">
+                        <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-amber-600 dark:text-amber-400">
                             <WrenchScrewdriverIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -66,7 +66,7 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                             <p className="text-sm text-muted-foreground">For {selectedCount} item{selectedCount !== 1 ? 's' : ''}</p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                    <button onClick={onClose} className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors">
                         <XMarkIcon className="w-5 h-5" />
                     </button>
                 </div>
@@ -84,8 +84,8 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                                     className={cn(
                                         "py-2 px-3 text-sm font-medium rounded-lg border transition-all",
                                         issueType === type
-                                            ? "bg-orange-50 border-orange-200 text-orange-700 dark:bg-orange-900/20 dark:border-orange-800 dark:text-orange-400"
-                                            : "bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 text-zinc-600 hover:bg-zinc-50"
+                                            ? "bg-amber-50 border-amber-200 text-amber-700 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400"
+                                            : "bg-card border-input text-muted-foreground hover:bg-accent"
                                     )}
                                 >
                                     {type}
@@ -100,7 +100,7 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                             required
                             value={provider}
                             onChange={(e) => setProvider(e.target.value)}
-                            className="w-full p-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
+                            className="w-full p-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm"
                         >
                             <option value="" disabled>Select provider...</option>
                             {SERVICE_PROVIDERS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -114,13 +114,13 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                             required
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
-                            className="w-full p-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm text-foreground"
+                            className="w-full p-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm text-foreground"
                         />
                     </div>
                 </form>
 
-                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
-                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors">Cancel</button>
+                <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted/20">
+                    <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent rounded-lg transition-colors">Cancel</button>
                     <button
                         onClick={handleSubmit}
                         disabled={!issueType || !provider || !date}

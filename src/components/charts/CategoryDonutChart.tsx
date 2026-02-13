@@ -7,11 +7,11 @@ const data = [
     { name: "Accessories", value: 200 },
 ];
 
-const COLORS = ["#D6FF3C", "#FFFFFF", "#71717A", "#3F3F46"]; // Volt Lime, White, Zinc-500, Zinc-700
+const COLORS = ["bg-brand-400", "#FFFFFF", "#71717A", "#3F3F46"]; // Volt Lime, White, Zinc-500, Zinc-700
 
 export function CategoryDonutChart() {
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-2">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Top Categories</h3>

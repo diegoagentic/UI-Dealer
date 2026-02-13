@@ -46,7 +46,7 @@ export default function ERPSystemSelectorArtifact() {
     };
 
     return (
-        <div className="w-full max-w-md mx-auto bg-white dark:bg-zinc-900 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden font-sans">
+        <div className="w-full max-w-md mx-auto bg-white dark:bg-zinc-800 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden font-sans">
             {/* Header Area */}
             <div className="bg-zinc-50/50 dark:bg-zinc-800/30 p-8 flex flex-col items-center justify-center border-b border-zinc-100 dark:border-zinc-800">
                 <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 transform rotate-3">
@@ -87,7 +87,7 @@ export default function ERPSystemSelectorArtifact() {
 
                     {/* Dropdown Menu */}
                     {isOpen && (
-                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl z-20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                             <div className="p-2 space-y-1">
                                 <div className="px-3 py-2 text-[10px] uppercase font-bold text-zinc-400">Available Systems</div>
                                 {SYSTEMS.map((system) => (
@@ -116,7 +116,7 @@ export default function ERPSystemSelectorArtifact() {
 
             {/* Footer */}
             <div className="bg-zinc-50 dark:bg-zinc-800/30 p-4 border-t border-zinc-100 dark:border-zinc-800">
-                <div className="flex items-start gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700/50 shadow-sm">
+                <div className="flex items-start gap-3 p-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700/50 shadow-sm">
                     <div className="mt-0.5">
                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                     </div>

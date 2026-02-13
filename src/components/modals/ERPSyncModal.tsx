@@ -111,10 +111,10 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                         leaveFrom="opacity-100 scale-100 translate-y-0"
                         leaveTo="opacity-0 scale-95 translate-y-4"
                     >
-                        <Dialog.Panel className="w-full max-w-lg bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-white/10 flex flex-col max-h-[90vh]">
+                        <Dialog.Panel className="w-full max-w-lg bg-card rounded-3xl shadow-2xl overflow-hidden border border-border flex flex-col max-h-[90vh]">
 
                             {/* Header / Brand Area */}
-                            <div className="relative bg-zinc-50 dark:bg-zinc-800/30 p-6 text-center border-b border-zinc-100 dark:border-white/5">
+                            <div className="relative bg-muted/30 p-6 text-center border-b border-border">
                                 <button
                                     onClick={onClose}
                                     className="absolute top-4 right-4 p-2 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700/50 text-zinc-400 transition-colors"
@@ -142,7 +142,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                             <button
                                                 key={system.id}
                                                 onClick={() => handleConnect(system)}
-                                                className={`w-full flex items-center gap-4 p-4 rounded-2xl border bg-white dark:bg-zinc-900 shadow-sm transition-all group text-left ${system.status === 'Connected'
+                                                className={`w-full flex items-center gap-4 p-4 rounded-2xl border bg-card shadow-sm transition-all group text-left ${system.status === 'Connected'
                                                     ? 'border-green-200 dark:border-green-900/30 ring-1 ring-green-500/20'
                                                     : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md'
                                                     }`}
@@ -184,7 +184,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
 
                                 {step === 'login' && selectedSystem && (
                                     <div className="animate-in fade-in slide-in-from-right-8 duration-300">
-                                        <div className="flex items-center gap-4 mb-6 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                        <div className="flex items-center gap-4 mb-6 p-4 bg-muted/50 rounded-2xl border border-border">
                                             <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${selectedSystem.color}`}>
                                                 <selectedSystem.icon className="w-6 h-6" />
                                             </div>
@@ -203,7 +203,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
                                                         placeholder={`e.g. ${selectedSystem.name.toLowerCase()}.app.com`}
                                                         defaultValue="acme-corp-global"
                                                     />
@@ -218,7 +218,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
                                                         defaultValue="jdoe@acmecorp.com"
                                                     />
                                                 </div>
@@ -232,7 +232,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="password"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
                                                         defaultValue="password123"
                                                     />
                                                 </div>
@@ -242,7 +242,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                 <button
                                                     type="button"
                                                     onClick={() => setStep('selection')}
-                                                    className="flex-1 py-2.5 px-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-xl font-semibold hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                                                    className="flex-1 py-2.5 px-4 bg-muted text-muted-foreground rounded-xl font-semibold hover:bg-muted/80 transition-colors"
                                                 >
                                                     Back
                                                 </button>
@@ -305,7 +305,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
 
                             {/* Footer for Trust */}
                             {step !== 'success' && (
-                                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/30 border-t border-zinc-100 dark:border-white/5 text-center">
+                                <div className="p-4 bg-muted/30 border-t border-border text-center">
                                     <p className="text-xs text-zinc-400 flex items-center justify-center gap-1.5">
                                         <ShieldCheckIcon className="w-3.5 h-3.5" />
                                         End-to-end encrypted connection

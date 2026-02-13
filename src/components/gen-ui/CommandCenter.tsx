@@ -23,7 +23,7 @@ export default function CommandCenter() {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4">
             <div className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative flex items-center bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 gap-1">
+                <div className="relative flex items-center bg-white dark:bg-zinc-800 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 gap-1">
                     <button
                         onClick={toggleStream}
                         className={`p-2 rounded-xl text-zinc-400 hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all ${isStreamOpen ? 'bg-zinc-100 dark:bg-zinc-800 text-foreground' : ''}`}
@@ -45,7 +45,7 @@ export default function CommandCenter() {
 
                     <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
-                    <div className="pl-1 text-purple-500">
+                    <div className="pl-1 text-indigo-500">
                         <SparklesIcon className="w-6 h-6 animate-pulse" />
                     </div>
                     <input

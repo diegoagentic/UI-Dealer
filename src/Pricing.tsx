@@ -40,8 +40,8 @@ const recentOrders = [
 // Color Mapping for Status Icons
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
-    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
     indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
@@ -49,8 +49,8 @@ const colorStyles: Record<string, string> = {
 
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm shadow-purple-500/20 border-purple-500',
-    orange: 'bg-orange-600 hover:bg-orange-700 text-white shadow-sm shadow-orange-500/20 border-orange-500',
+    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
     indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
@@ -209,7 +209,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                             </button>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in zoom-in duration-300">
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
+                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Inventory</p>
@@ -225,13 +225,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
+                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Efficiency</p>
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">88%</p>
                                     </div>
-                                    <div className="p-3 bg-purple-50 dark:bg-purple-500/10 rounded-xl text-purple-600 dark:text-purple-400">
+                                    <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
                                         <ChartBarIcon className="w-6 h-6" />
                                     </div>
                                 </div>
@@ -241,13 +241,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
+                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Orders</p>
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">142</p>
                                     </div>
-                                    <div className="p-3 bg-orange-50 dark:bg-orange-500/10 rounded-xl text-orange-600 dark:text-orange-400">
+                                    <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-600 dark:text-amber-400">
                                         <ClipboardDocumentListIcon className="w-6 h-6" />
                                     </div>
                                 </div>
@@ -256,7 +256,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
+                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Low Stock</p>
@@ -280,7 +280,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export PDF" },
                                 { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send Email" },
                             ].map((action, i) => (
-                                <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                     {action.icon}
                                     <span>{action.label}</span>
                                 </button>
@@ -288,32 +288,32 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                         </div>
                     </>
                 ) : (
-                    <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-card/60 backdrop-blur-md rounded-2xl p-4 border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center gap-6 overflow-x-auto w-full scrollbar-minimal">
                             <div className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">Inventory:</span>
                                 <span className="text-lg font-semibold text-gray-900 dark:text-white">$1.2M</span>
                                 <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+0.2%</span>
                             </div>
-                            <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
+                            <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">Efficiency:</span>
                                 <span className="text-lg font-semibold text-gray-900 dark:text-white">88%</span>
                                 <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+3.5%</span>
                             </div>
-                            <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
+                            <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">Pending:</span>
                                 <span className="text-lg font-semibold text-gray-900 dark:text-white">142</span>
                             </div>
-                            <div className="w-px h-8 bg-gray-200 dark:bg-white/10 hidden sm:block"></div>
+                            <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
                                 <span className="text-sm text-gray-500 dark:text-gray-400">Low Stock:</span>
                                 <span className="text-lg font-semibold text-gray-900 dark:text-white">15</span>
                                 <span className="text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded-md self-center">Alert</span>
                             </div>
                         </div>
-                        <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-border hidden xl:block mx-2"></div>
                         {/* Quick Actions Integrated */}
                         <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
                             {[
@@ -330,7 +330,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 </button>
                             ))}
                         </div>
-                        <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-border hidden xl:block mx-2"></div>
                         <button
                             onClick={() => setShowMetrics(true)}
                             className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
@@ -347,7 +347,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                 {/* Recent Orders Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-3">
-                        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden">
+                        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
                             {/* Header for Orders */}
                             <div className="p-6 border-b border-border">
                                 <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2 mb-4">
@@ -466,33 +466,33 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             </div>
 
                                             {/* Completion Rate Card */}
-                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-purple-700 dark:text-purple-400">Completion Rate</p>
-                                                    <ChartBarIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                    <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Completion Rate</p>
+                                                    <ChartBarIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{metricsData.efficiency}%</p>
-                                                    <p className="text-xs text-purple-600/80 dark:text-purple-400/80 mt-1">Orders delivered successfully</p>
+                                                    <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
+                                                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 mt-1">Orders delivered successfully</p>
                                                 </div>
                                             </div>
 
                                             {/* Project Count Card */}
-                                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-orange-200 dark:border-orange-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Project Count</p>
-                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                                    <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Project Count</p>
+                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                                                    <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
                                                         {availableProjects.length > 0 && availableProjects[0] === 'All Projects' ? availableProjects.length - 1 : availableProjects.length}
                                                     </p>
-                                                    <p className="text-xs text-orange-600/80 dark:text-orange-400/80 mt-1">Active projects</p>
+                                                    <p className="text-xs text-amber-600/80 dark:text-amber-400/80 mt-1">Active projects</p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm">
+                                        <div className="h-[300px] w-full bg-card rounded-2xl p-6 border border-border shadow-sm">
                                             <h4 className="text-md font-medium text-foreground mb-4">Monthly Trends</h4>
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <BarChart data={salesData}>
@@ -569,21 +569,21 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
-                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
+                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
                                                                                             <span className="w-4 h-4 mr-2" ><PencilSquareIcon /></span> Edit
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
-                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
+                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
                                                                                             <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
-                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
+                                                                                        <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
                                                                                             <span className="w-4 h-4 mr-2" ><EnvelopeIcon /></span> Contact
                                                                                         </button>
                                                                                     )}
@@ -598,7 +598,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                         {expandedIds.has(order.id) && (
                                                             <tr>
                                                                 <td colSpan={6} className="px-0 py-0 border-b border-gray-200 dark:border-white/10">
-                                                                    <div className="p-4 bg-gray-50 dark:bg-black/40 pl-12">
+                                                                    <div className="p-4 bg-muted/50 pl-12">
                                                                         <div className="flex items-start gap-4">
                                                                             <div className="flex-1 space-y-4">
                                                                                 <div className="flex items-center gap-3">
@@ -608,7 +608,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                         <p className="text-xs text-gray-500">Project Manager</p>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className="h-px bg-gray-200 dark:bg-white/10 w-full"></div>
+                                                                                <div className="h-px bg-border w-full"></div>
                                                                                 {/* Progress Bar Simple */}
                                                                                 <div className="relative">
                                                                                     <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 -translate-y-1/2"></div>
@@ -623,12 +623,12 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                 </div>
                                                                             </div>
                                                                             <div className="w-64">
-                                                                                <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
+                                                                                <div className="p-3 bg-card rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
                                                                                     <p className="text-xs font-medium text-gray-500 uppercase">Alert</p>
                                                                                     <div className="mt-2 flex items-start gap-2">
-                                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                         <div>
-                                                                                            <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Customs Delay</p>
+                                                                                            <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
                                                                                             <p className="text-xs text-gray-500 mt-1">Shipment held at port. ETA +24h.</p>
                                                                                             <button onClick={() => setTrackingOrder(order)} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">Track Shipment</button>
                                                                                         </div>
@@ -650,7 +650,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         {filteredOrders.map((order) => (
                                             <div
                                                 key={order.id}
-                                                className={`group relative bg-white dark:bg-zinc-900 rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
+                                                className={`group relative bg-card rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
                                                 onClick={() => toggleExpand(order.id)}
                                             >
                                                 <div className="p-5">
@@ -684,11 +684,11 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                     leaveFrom="transform opacity-100 scale-100"
                                                                     leaveTo="transform opacity-0 scale-95"
                                                                 >
-                                                                    <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 dark:border-white/10">
+                                                                    <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-card shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 dark:border-white/10">
                                                                         <div className="py-1">
                                                                             <MenuItem>
                                                                                 {({ active }) => (
-                                                                                    <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
+                                                                                    <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
                                                                                         <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
                                                                                     </button>
                                                                                 )}
@@ -722,7 +722,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                         <div className="flex flex-col md:flex-row gap-8">
                                                             <div className="flex-1 space-y-6">
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-500">
+                                                                    <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-card flex items-center justify-center text-gray-500">
                                                                         <UserIcon className="h-4 w-4" />
                                                                     </div>
                                                                     <div>
@@ -735,7 +735,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                     <div className="absolute top-3 left-0 w-full h-0.5 bg-gray-200 dark:bg-zinc-700" />
                                                                     <div className="relative z-10 flex justify-between">
                                                                         {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
-                                                                            <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1">
+                                                                            <div key={i} className="flex flex-col items-center bg-card px-1">
                                                                                 <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-gray-200 dark:bg-zinc-700 text-gray-400'}`}>
                                                                                     {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
                                                                                 </div>
@@ -747,12 +747,12 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                             </div>
 
                                                             <div className="w-full md:w-[280px]">
-                                                                <div className="rounded-xl border border-orange-200 dark:border-orange-500/20 bg-orange-50 dark:bg-orange-500/10 p-4">
+                                                                <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
                                                                     <div className="flex gap-3">
-                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                         <div>
-                                                                            <p className="text-sm font-bold text-orange-900 dark:text-orange-100">Action Required</p>
-                                                                            <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                                                            <p className="text-sm font-bold text-amber-900 dark:text-amber-100">Action Required</p>
+                                                                            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
                                                                                 Customs documentation pending approval.
                                                                             </p>
                                                                         </div>

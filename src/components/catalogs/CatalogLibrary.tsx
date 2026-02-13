@@ -66,7 +66,7 @@ const INITIAL_CATALOGS = [
         version: 'Seating 2023',
         items: 54,
         lastSync: '1 week ago',
-        cover: 'bg-orange-500',
+        cover: 'bg-amber-500',
         status: 'Active',
         owner: 'Mike Johnson',
         image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&q=80&w=800'
@@ -277,7 +277,7 @@ export default function CatalogLibrary() {
 
                 {/* Filters Panel */}
                 {showFilters && (
-                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in slide-in-from-top-2 fade-in">
+                    <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in slide-in-from-top-2 fade-in">
                         <div className="space-y-1.5">
                             <label className="text-xs font-medium text-muted-foreground">Product Owner</label>
                             <select
@@ -323,7 +323,7 @@ export default function CatalogLibrary() {
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredCatalogs.map(catalog => (
-                    <div key={catalog.id} className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-md transition-all hover:border-primary/50 cursor-pointer flex flex-col relative z-0 h-[380px]">
+                    <div key={catalog.id} className="group bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-md transition-all hover:border-primary/50 cursor-pointer flex flex-col relative z-0 h-[380px]">
                         {/* Cover Area */}
                         <div
                             className={`h-32 ${catalog.cover} p-6 flex items-end relative rounded-t-2xl shrink-0`}
@@ -337,7 +337,7 @@ export default function CatalogLibrary() {
                         </div>
 
                         {/* Content */}
-                        <div className="p-4 flex-1 flex flex-col justify-between space-y-4 rounded-b-2xl overflow-hidden bg-white dark:bg-zinc-900">
+                        <div className="p-4 flex-1 flex flex-col justify-between space-y-4 rounded-b-2xl overflow-hidden bg-white dark:bg-zinc-800">
                             {historyView[catalog.id] ? (
                                 // History View
                                 <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-300">
@@ -536,7 +536,7 @@ export default function CatalogLibrary() {
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
+                                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-800 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
                                     <div className="flex items-center gap-4 mb-4">
                                         <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-full text-red-600 dark:text-red-400">
                                             <ExclamationTriangleIcon className="w-6 h-6" />

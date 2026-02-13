@@ -70,7 +70,7 @@ export default function ProjectTrackerWidget() {
                         </div>
 
                         {/* Progress Bar */}
-                        <div className="relative h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden mb-3">
+                        <div className="relative h-1.5 bg-muted rounded-full overflow-hidden mb-3">
                             <div
                                 className="absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-1000"
                                 style={{ width: `${project.progress}%` }}
@@ -80,7 +80,7 @@ export default function ProjectTrackerWidget() {
                         {/* Milestones Visual */}
                         <div className="flex items-center justify-between text-xs relative">
                             {/* Connector Line */}
-                            <div className="absolute top-3 left-4 right-4 h-0.5 bg-zinc-100 dark:bg-zinc-800 -z-10" />
+                            <div className="absolute top-3 left-4 right-4 h-0.5 bg-muted -z-10" />
 
                             {stages.map((stage, idx) => {
                                 const isCompleted = ['planning', 'production', 'shipping', 'installation'].indexOf(project.stage) >= idx;
@@ -88,10 +88,10 @@ export default function ProjectTrackerWidget() {
                                 const StageIcon = stage.icon;
 
                                 return (
-                                    <div key={stage.id} className="flex flex-col items-center gap-1.5 bg-white dark:bg-zinc-900 px-1">
-                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-colors ${isCurrent ? 'bg-zinc-900 text-white border-zinc-900 shadow-sm scale-110 dark:bg-white dark:text-zinc-900 dark:border-white' :
-                                            isCompleted ? 'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700' :
-                                                'bg-white text-zinc-300 border-zinc-100 dark:bg-zinc-900 dark:text-zinc-700 dark:border-zinc-800'
+                                    <div key={stage.id} className="flex flex-col items-center gap-1.5 bg-card px-1">
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center border transition-colors ${isCurrent ? 'bg-primary text-primary-foreground border-primary shadow-sm scale-110' :
+                                            isCompleted ? 'bg-muted text-muted-foreground border-border' :
+                                                'bg-card text-muted-foreground/50 border-border'
                                             }`}>
                                             <StageIcon className="w-3 h-3" />
                                         </div>
@@ -102,7 +102,7 @@ export default function ProjectTrackerWidget() {
                             })}
                         </div>
 
-                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-3 bg-zinc-50 dark:bg-zinc-800/50 p-1.5 rounded-md w-fit">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-3 bg-muted/50 p-1.5 rounded-md w-fit">
                             <EllipsisHorizontalIcon className="w-3 h-3" />
                             Next: <span className="font-medium text-foreground">{project.nextMilestone}</span>
                         </div>

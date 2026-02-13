@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "sync:tokens": "node scripts/sync-tokens.mjs",
-    "promote": "node scripts/promote-component.mjs"
+    "promote": "node scripts/promote-component.mjs",
+    "audit:tokens": "node scripts/audit-design-tokens.mjs",
+    "fix:tokens": "node scripts/fix-design-tokens.mjs",
+    "fix:tokens:dry": "node scripts/fix-design-tokens.mjs --dry-run"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -19,6 +22,7 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "recharts": "^3.6.0",
+    "strata-design-system": "file:../../Strata Design System",
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {

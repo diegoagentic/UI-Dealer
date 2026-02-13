@@ -20,7 +20,7 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.unread).length,
             icon: Squares2X2Icon,
             colorTheme: {
-                activeBg: 'bg-zinc-800 dark:bg-white/10',
+                activeBg: 'bg-primary text-primary-foreground',
                 activeText: 'text-white',
                 activeBorder: 'border-white/10',
                 badgeBg: 'bg-white/20',
@@ -48,11 +48,11 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.type === 'payment' && n.unread).length,
             icon: CreditCardIcon,
             colorTheme: {
-                activeBg: 'bg-orange-500/15',
-                activeText: 'text-orange-500',
-                activeBorder: 'border-orange-500/20',
-                badgeBg: 'bg-orange-500/20',
-                badgeText: 'text-orange-500'
+                activeBg: 'bg-amber-500/15',
+                activeText: 'text-amber-500',
+                activeBorder: 'border-amber-500/20',
+                badgeBg: 'bg-amber-500/20',
+                badgeText: 'text-amber-500'
             },
             filter: (n) => n.type === 'payment'
         },
@@ -62,11 +62,11 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.type === 'approval' && n.unread).length,
             icon: ClipboardDocumentCheckIcon,
             colorTheme: {
-                activeBg: 'bg-cyan-500/15',
-                activeText: 'text-cyan-500',
-                activeBorder: 'border-cyan-500/20',
-                badgeBg: 'bg-cyan-500/20',
-                badgeText: 'text-cyan-500'
+                activeBg: 'bg-blue-500/15',
+                activeText: 'text-blue-500',
+                activeBorder: 'border-blue-500/20',
+                badgeBg: 'bg-blue-500/20',
+                badgeText: 'text-blue-500'
             },
             filter: (n) => n.type === 'approval'
         },
@@ -90,11 +90,11 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.type === 'announcement' && n.unread).length,
             icon: MegaphoneIcon,
             colorTheme: {
-                activeBg: 'bg-purple-500/15',
-                activeText: 'text-purple-500',
-                activeBorder: 'border-purple-500/20',
-                badgeBg: 'bg-purple-500/20',
-                badgeText: 'text-purple-500'
+                activeBg: 'bg-indigo-500/15',
+                activeText: 'text-indigo-500',
+                activeBorder: 'border-indigo-500/20',
+                badgeBg: 'bg-indigo-500/20',
+                badgeText: 'text-indigo-500'
             },
             filter: (n) => n.type === 'announcement'
         },
@@ -152,7 +152,7 @@ export default function ActionCenter() {
                         leaveTo="opacity-0 translate-y-2 scale-95"
                     >
                         <PopoverPanel className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[95vw] max-h-[85vh] lg:w-[600px] lg:fixed lg:left-1/2 lg:-translate-x-1/2 p-0 z-50 focus:outline-none">
-                            <div className="bg-white/85 dark:bg-zinc-900/85 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
+                            <div className="bg-card/85 backdrop-blur-xl border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
 
                                 {currentView === 'chat' ? (
                                     <ChatView onBack={() => setCurrentView('list')} />

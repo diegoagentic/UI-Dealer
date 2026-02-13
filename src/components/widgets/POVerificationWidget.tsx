@@ -47,7 +47,7 @@ export default function POVerificationWidget() {
         >
             <div className="space-y-4">
                 {verificationItems.map((item) => (
-                    <div key={item.id} className="p-3 rounded-xl border border-border bg-white dark:bg-zinc-900 hover:border-primary/30 transition-colors group">
+                    <div key={item.id} className="p-3 rounded-xl border border-border bg-card hover:border-primary/30 transition-colors group">
                         <div className="flex justify-between items-start mb-2">
                             <div>
                                 <h4 className="text-sm font-bold text-foreground">{item.client}</h4>
@@ -59,7 +59,7 @@ export default function POVerificationWidget() {
                             </div>
                             <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border flex items-center gap-1 ${item.status === 'discrepancy' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30' :
                                 item.status === 'matched' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30' :
-                                    'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700'
+                                    'bg-muted text-muted-foreground border-border'
                                 }`}>
                                 {item.status === 'discrepancy' && <ExclamationTriangleIcon className="w-3 h-3" />}
                                 {item.status === 'matched' && <CheckCircleIcon className="w-3 h-3" />}

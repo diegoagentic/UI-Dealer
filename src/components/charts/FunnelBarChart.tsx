@@ -1,8 +1,8 @@
 import { Bar, BarChart, CartesianGrid, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 const data = [
-    { name: "Impressions", value: 4000, fill: "#8b5cf6" },
-    { name: "Clicks", value: 3000, fill: "#a78bfa" },
+    { name: "Impressions", value: 4000, fill: "bg-indigo-500" },
+    { name: "Clicks", value: 3000, fill: "bg-indigo-400" },
     { name: "Leads", value: 2000, fill: "#c4b5fd" },
     { name: "Quotes", value: 1200, fill: "#ddd6fe" },
     { name: "Closed", value: 800, fill: "#ede9fe" },
@@ -10,7 +10,7 @@ const data = [
 
 export function FunnelBarChart() {
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Conversion Funnel</h3>
@@ -48,7 +48,7 @@ export function FunnelBarChart() {
                             dataKey="value"
                             radius={[0, 4, 4, 0]}
                             barSize={32}
-                            activeBar={<Rectangle fill="#7c3aed" stroke="#8b5cf6" />}
+                            activeBar={<Rectangle fill="#7c3aed" stroke="bg-indigo-500" />}
                         />
                     </BarChart>
                 </ResponsiveContainer>

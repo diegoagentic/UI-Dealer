@@ -33,7 +33,7 @@ export default function Select<T extends string>({ value, onChange, options, cla
                     leaveTo="opacity-0"
                 >
                     <ListboxOptions className={cn(
-                        "absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-zinc-900 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-50",
+                        "absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-popover py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm z-50",
                         align === 'right' ? "right-0" : "left-0"
                     )}>
                         {options.map((option, personIdx) => (
@@ -42,7 +42,7 @@ export default function Select<T extends string>({ value, onChange, options, cla
                                 className={({ active }) =>
                                     cn(
                                         "relative cursor-default select-none py-2 pl-10 pr-4",
-                                        active ? "bg-zinc-100 dark:bg-zinc-800 text-foreground" : "text-foreground"
+                                        active ? "bg-accent text-accent-foreground" : "text-foreground"
                                     )
                                 }
                                 value={option}

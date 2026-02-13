@@ -103,9 +103,9 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
     const total = subtotal + tax;
 
     return (
-        <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-900/50">
+        <div className="flex flex-col h-full bg-muted/10">
             {/* Header */}
-            <div className="px-8 py-6 border-b border-border bg-white dark:bg-zinc-900 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+            <div className="px-8 py-6 border-b border-border bg-background flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <div>
                     <h2 className="text-2xl font-brand font-bold text-foreground">
                         {isTemplate ? 'New Order from Template' : 'New Order'}
@@ -134,7 +134,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                 <div className="max-w-5xl mx-auto space-y-8">
 
                     {/* Customer & Project Info */}
-                    <section className="bg-white dark:bg-zinc-900 rounded-xl border border-border p-6 shadow-sm">
+                    <section className="bg-card rounded-xl border border-border p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-6">
                             <UserIcon className="w-5 h-5 text-primary" />
                             <h3 className="text-lg font-semibold text-foreground">Customer Information</h3>
@@ -188,9 +188,9 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                     </section>
 
                     {/* Logistics */}
-                    <section className="bg-white dark:bg-zinc-900 rounded-xl border border-border p-6 shadow-sm">
+                    <section className="bg-card rounded-xl border border-border p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-6">
-                            <TruckIcon className="w-5 h-5 text-orange-500" />
+                            <TruckIcon className="w-5 h-5 text-amber-500" />
                             <h3 className="text-lg font-semibold text-foreground">Logistics & Delivery</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -223,12 +223,12 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                     </section>
 
                     {/* Line Items */}
-                    <section className="bg-white dark:bg-zinc-900 rounded-xl border border-border p-6 shadow-sm">
+                    <section className="bg-card rounded-xl border border-border p-6 shadow-sm">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-semibold text-foreground">Line Items</h3>
                             <button
                                 onClick={handleAddItem}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-foreground hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-sm font-medium"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors text-sm font-medium"
                             >
                                 <PlusIcon className="w-4 h-4" />
                                 Add Item
@@ -237,7 +237,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
 
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left">
-                                <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-xs uppercase text-muted-foreground font-semibold">
+                                <thead className="bg-muted/50 text-xs uppercase text-muted-foreground font-semibold">
                                     <tr>
                                         <th className="px-4 py-3 rounded-l-lg w-[40%]">Description</th>
                                         <th className="px-4 py-3 w-[15%] text-center">Qty</th>
@@ -255,7 +255,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                                         </tr>
                                     ) : (
                                         formData.items.map((item) => (
-                                            <tr key={item.id} className="group hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
+                                            <tr key={item.id} className="group hover:bg-muted/50 transition-colors">
                                                 <td className="px-4 py-3">
                                                     <input
                                                         type="text"
@@ -293,7 +293,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                                                 <td className="px-4 py-3 text-center">
                                                     <button
                                                         onClick={() => handleRemoveItem(item.id)}
-                                                        className="p-1 rounded text-muted-foreground hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                                        className="p-1 rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                                                         title="Remove Item"
                                                     >
                                                         <TrashIcon className="w-4 h-4" />
@@ -308,7 +308,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
 
                         {/* Financial Summary */}
                         <div className="mt-8 flex justify-end">
-                            <div className="w-full md:w-1/3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-6 space-y-3">
+                            <div className="w-full md:w-1/3 bg-muted/50 rounded-lg p-6 space-y-3">
                                 <div className="flex justify-between text-sm text-foreground">
                                     <span>Subtotal</span>
                                     <span>${subtotal.toFixed(2)}</span>
@@ -331,7 +331,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                         <textarea
                             rows={3}
                             placeholder="Add any internal notes regarding this order..."
-                            className="w-full px-4 py-3 rounded-lg border border-border bg-white dark:bg-zinc-900 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
+                            className="w-full px-4 py-3 rounded-lg border border-border bg-card focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm resize-none"
                             value={formData.notes}
                             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         />

@@ -46,35 +46,35 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
+                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-background p-6 text-left align-middle shadow-xl transition-all border border-border">
                                 <div className="flex items-center justify-between mb-6">
                                     <div>
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-bold leading-6 text-gray-900 dark:text-white"
+                                            className="text-lg font-bold leading-6 text-foreground"
                                         >
                                             Customize your experience
                                         </Dialog.Title>
-                                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="mt-1 text-sm text-muted-foreground">
                                             Enable or disable features to tailor the dashboard to your workflow.
                                         </p>
                                     </div>
                                     <button
                                         onClick={onClose}
-                                        className="rounded-full p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-800 hover:text-gray-500 transition-colors focus:outline-none"
+                                        className="rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors focus:outline-none"
                                     >
                                         <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                                     </button>
                                 </div>
 
-                                <div className="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800 [&::-webkit-scrollbar-thumb]:rounded-full">
+                                <div className="mt-4 space-y-6 max-h-[60vh] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-[2px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full">
                                     {['core', 'operations', 'analytics', 'support', 'finance'].map((category) => {
                                         const categoryFeatures = features.filter(f => f.category === category);
                                         if (categoryFeatures.length === 0) return null;
 
                                         return (
                                             <div key={category}>
-                                                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-1">
+                                                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">
                                                     {category.charAt(0).toUpperCase() + category.slice(1)}
                                                 </h4>
                                                 <div className="space-y-3">
@@ -82,22 +82,22 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                                         <div
                                                             key={feature.id}
                                                             className={`flex items-start justify-between p-4 rounded-xl border transition-all ${feature.enabled
-                                                                ? 'bg-zinc-50 dark:bg-zinc-800/50 border-zinc-200 dark:border-zinc-700'
-                                                                : 'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-zinc-800 opacity-60'
+                                                                ? 'bg-muted/50 border-border'
+                                                                : 'bg-card border-border/60 opacity-60'
                                                                 }`}
                                                         >
                                                             <div className="flex-1 mr-4">
                                                                 <div className="flex items-center gap-2">
-                                                                    <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                                                    <h5 className="text-sm font-semibold text-foreground">
                                                                         {feature.title}
                                                                     </h5>
                                                                     {feature.required && (
-                                                                        <span className="inline-flex items-center rounded-full bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                                                        <span className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground border border-border">
                                                                             Essential
                                                                         </span>
                                                                     )}
                                                                 </div>
-                                                                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                                                <p className="mt-1 text-xs text-muted-foreground">
                                                                     {feature.description}
                                                                 </p>
                                                             </div>
@@ -105,7 +105,7 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                                                 checked={feature.enabled}
                                                                 onChange={(checked) => !feature.required && onToggleFeature(feature.id, checked)}
                                                                 disabled={feature.required}
-                                                                className={`${feature.enabled ? 'bg-primary' : 'bg-zinc-200 dark:bg-zinc-700'}
+                                                                className={`${feature.enabled ? 'bg-primary' : 'bg-input'}
                                           ${feature.required ? 'opacity-80 cursor-not-allowed' : 'cursor-pointer'}
                                           relative inline-flex h-6 w-11 shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2  focus-visible:ring-white/75`}
                                                             >
@@ -124,10 +124,10 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                     })}
                                 </div>
 
-                                <div className="mt-8 pt-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-between items-center">
+                                <div className="mt-8 pt-6 border-t border-border flex justify-between items-center">
                                     <button
                                         type="button"
-                                        className="inline-flex items-center gap-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 transition-colors"
+                                        className="inline-flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
                                     >
                                         <PlusIcon className="w-4 h-4" />
                                         Browse App Marketplace

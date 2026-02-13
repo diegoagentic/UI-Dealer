@@ -166,8 +166,8 @@ const inventorySummary = {
 // Color Mapping for Status Icons (from Transactions)
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
-    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
     indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
@@ -356,20 +356,20 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
     const getStatusBadge = (status: string) => {
         switch (status) {
             case 'Available': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-            case 'Under Maintenance': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400';
+            case 'Under Maintenance': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
             case 'In Use': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-            case 'Reserved': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
+            case 'Reserved': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400';
             case 'In Consignment': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
-            case 'Sold': return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400 line-through opacity-75';
+            case 'Sold': return 'bg-zinc-100 text-zinc-700 dark:bg-card dark:text-zinc-400 line-through opacity-75';
             case 'Write-off': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-            default: return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400';
+            default: return 'bg-zinc-100 text-zinc-700 dark:bg-card dark:text-zinc-400';
         }
     };
 
     const getImpactBadge = (impact: string) => {
         return impact === 'Low Impact'
             ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/10'
-            : 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/10';
+            : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/10';
     };
 
     const getCategoryIcon = (category: string, className: string = "w-12 h-12 mb-2 text-zinc-300 dark:text-zinc-600") => {
@@ -399,7 +399,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         {/* Pill-style Tabs (Matching Transactions) */}
-                        <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
+                        <div className="flex gap-1 bg-zinc-100 dark:bg-card/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                             {[
                                 { id: 'inventory', label: 'Inventory', count: MOCK_INVENTORY.length },
                                 { id: 'locations', label: 'Locations', count: 4 }
@@ -441,7 +441,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
                             {Object.entries(inventorySummary).map(([key, data]) => (
-                                <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
@@ -470,7 +470,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 <button
                                     key={i}
                                     onClick={action.onClick}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full text-sm font-medium text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all shadow-sm"
+                                    className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-full text-sm font-medium text-foreground hover:bg-accent hover:border-accent transition-all shadow-sm"
                                 >
                                     {action.icon}
                                     {action.label}
@@ -479,12 +479,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         {/* Collapsed Ticker View - Carousel */}
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                             <button
                                 onClick={() => scroll(scrollContainerRef, 'left')}
-                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                className="p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
                             >
                                 <ChevronLeftIcon className="w-4 h-4" />
                             </button>
@@ -498,7 +498,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                     <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                         <div className={cn("relative flex items-center justify-center w-10 h-10 rounded-full transition-colors", colorStyles[data.color])}>
                                             {data.icon}
-                                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-zinc-800 text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
+                                            <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-card text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
                                                 {data.label}
                                                 <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900 dark:border-t-zinc-800"></div>
                                             </div>
@@ -514,29 +514,29 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
                             <button
                                 onClick={() => scroll(scrollContainerRef, 'right')}
-                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                className="p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
                             >
                                 <ChevronRightIcon className="w-4 h-4" />
                             </button>
                         </div>
 
-                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-800 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                         {/* Quick Actions (Product Owner Context) */}
-                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-800 xl:border-none xl:pl-0">
+                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                             {[
                                 { icon: <QrCodeIcon className="w-5 h-5" />, label: "Scan Item" },
                                 { icon: <ArrowPathRoundedSquareIcon className="w-5 h-5" />, label: "Quick Transfer", onClick: () => setIsQuickMovementsModalOpen(true) },
                                 { icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, label: "Start Audit" },
                                 { icon: <PlusIcon className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
                             ].map((action, i) => (
-                                <button key={i} onClick={action.onClick} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                <button key={i} onClick={action.onClick} className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative group" title={action.label}>
                                     {action.icon}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-800 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                         <button
                             onClick={() => setShowMetrics(true)}
@@ -556,7 +556,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
 
                         {/* Filters & View Toggle Bar */}
-                        <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="bg-card p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
 
                             {/* Left: Search & Filters */}
                             <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
@@ -567,7 +567,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         placeholder="Search assets..."
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                                        className="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-card/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                                     />
                                 </div>
                                 <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -576,7 +576,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <select
                                             value={filterType}
                                             onChange={(e) => setFilterType(e.target.value)}
-                                            className="pl-9 pr-8 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none"
+                                            className="pl-9 pr-8 py-2 bg-muted/50 border border-border rounded-lg text-sm font-medium hover:bg-accent transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none"
                                         >
                                             <option value="All Types">All Types</option>
                                             {uniqueTypes.map(type => (
@@ -591,7 +591,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <select
                                             value={filterLocation}
                                             onChange={(e) => setFilterLocation(e.target.value)}
-                                            className="pl-9 pr-8 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none max-w-[200px] truncate"
+                                            className="pl-9 pr-8 py-2 bg-muted/50 border border-border rounded-lg text-sm font-medium hover:bg-accent transition-colors appearance-none cursor-pointer focus:ring-2 focus:ring-primary focus:outline-none max-w-[200px] truncate"
                                         >
                                             <option value="All Locations">All Locations</option>
                                             {uniqueLocations.map(loc => (
@@ -604,7 +604,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
 
                             {/* Right: View Toggle */}
-                            <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-lg">
+                            <div className="flex bg-zinc-100 dark:bg-card p-1 rounded-lg">
                                 <button
                                     onClick={() => setViewMode('list')}
                                     className={cn("p-1.5 rounded-md transition-all", viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
@@ -622,10 +622,10 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
                         {/* List View */}
                         {viewMode === 'list' && (
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+                            <div className="bg-card rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-left text-sm">
-                                        <thead className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-800">
+                                        <thead className="bg-zinc-50 dark:bg-card/50 border-b border-zinc-200 dark:border-zinc-800">
                                             <tr>
                                                 <th className="p-4 w-12">
                                                     <input
@@ -646,7 +646,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </thead>
                                         <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
                                             {filteredData.map((item) => (
-                                                <tr key={item.id} className={cn("group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors", selectedIds.has(item.id) ? "bg-primary/5 hover:bg-primary/10" : "")}>
+                                                <tr key={item.id} className={cn("group hover:bg-muted/50 transition-colors", selectedIds.has(item.id) ? "bg-primary/5 hover:bg-primary/10" : "")}>
                                                     <td className="p-4">
                                                         <input
                                                             type="checkbox"
@@ -669,12 +669,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                             e.currentTarget.nextElementSibling?.classList.add('flex');
                                                                         }}
                                                                     />
-                                                                    <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 hidden items-center justify-center border border-zinc-200 dark:border-zinc-700">
+                                                                    <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-card hidden items-center justify-center border border-zinc-200 dark:border-zinc-700">
                                                                         {getCategoryIcon(item.category, "w-6 h-6 text-zinc-400")}
                                                                     </div>
                                                                 </>
                                                             ) : (
-                                                                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
+                                                                <div className="w-10 h-10 rounded-lg bg-zinc-100 dark:bg-card flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                                                                     {getCategoryIcon(item.category, "w-6 h-6 text-zinc-400")}
                                                                 </div>
                                                             )}
@@ -723,12 +723,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         key={item.id}
                                         onClick={() => toggleSelection(item.id)}
                                         className={cn(
-                                            "group bg-white dark:bg-zinc-900 rounded-2xl border shadow-sm hover:shadow-lg transition-all cursor-pointer relative overflow-hidden flex flex-col h-[340px]",
+                                            "group bg-card rounded-2xl border shadow-sm hover:shadow-lg transition-all cursor-pointer relative overflow-hidden flex flex-col h-[340px]",
                                             selectedIds.has(item.id) ? "border-primary ring-1 ring-primary" : "border-zinc-200 dark:border-zinc-800 hover:border-primary/50"
                                         )}
                                     >
                                         {/* Image Section */}
-                                        <div className="h-44 w-full relative bg-zinc-100 dark:bg-zinc-800">
+                                        <div className="h-44 w-full relative bg-zinc-100 dark:bg-card">
                                             {item.image ? (
                                                 <>
                                                     <img
@@ -741,7 +741,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                             e.currentTarget.nextElementSibling?.classList.add('flex');
                                                         }}
                                                     />
-                                                    <div className="w-full h-full bg-zinc-100 dark:bg-zinc-800 hidden flex-col items-center justify-center text-zinc-300 dark:text-zinc-600">
+                                                    <div className="w-full h-full bg-zinc-100 dark:bg-card hidden flex-col items-center justify-center text-zinc-300 dark:text-zinc-600">
                                                         {getCategoryIcon(item.category)}
                                                         <span className="text-xs font-medium">{item.category}</span>
                                                     </div>
@@ -770,7 +770,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
                                             {/* Kebab Menu */}
                                             <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <button className="p-1.5 bg-white/90 dark:bg-black/80 backdrop-blur rounded-lg text-foreground hover:bg-white dark:hover:bg-zinc-800 shadow-sm" onClick={(e) => e.stopPropagation()}>
+                                                <button className="p-1.5 bg-background/90 backdrop-blur rounded-lg text-foreground hover:bg-background shadow-sm" onClick={(e) => e.stopPropagation()}>
                                                     <EllipsisHorizontalIcon className="w-5 h-5" />
                                                 </button>
                                             </div>
@@ -824,7 +824,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                         disabled={currentPage === 1}
-                                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-zinc-200 dark:border-zinc-800 text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-border text-foreground hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     >
                                         Previous
                                     </button>
@@ -846,7 +846,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         "w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors",
                                                         currentPage === p
                                                             ? "bg-primary text-primary-foreground"
-                                                            : "text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                                                            : "text-foreground hover:bg-accent"
                                                     )}
                                                 >
                                                     {p}
@@ -857,7 +857,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                         disabled={currentPage === totalPages}
-                                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-zinc-200 dark:border-zinc-800 text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        className="px-3 py-1.5 text-sm font-medium rounded-md border border-border text-foreground hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                     >
                                         Next
                                     </button>
@@ -874,7 +874,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
             {/* Sticky Bulk Actions Footer */}
             {selectedIds.size > 0 && (
-                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 shadow-xl rounded-full px-6 py-3 flex items-center gap-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-card border border-zinc-200 dark:border-zinc-700 shadow-xl rounded-full px-6 py-3 flex items-center gap-6 z-50 animate-in slide-in-from-bottom-5 fade-in duration-300">
                     <div className="flex items-center gap-2 border-r border-zinc-200 dark:border-zinc-700 pr-6">
                         <div className="bg-primary text-primary-foreground text-xs font-bold px-2 py-0.5 rounded-full">
                             {selectedIds.size}
@@ -885,23 +885,23 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     <div className="flex items-center gap-2">
                         <button
                             onClick={() => setIsStatusModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                         >
                             <ArrowPathRoundedSquareIcon className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
                             Change Status
                         </button>
                         <button
                             onClick={() => setIsRelocateModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                         >
                             <MapPinIcon className="w-4 h-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
                             Move
                         </button>
                         <button
                             onClick={() => setIsMaintenanceModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-sm font-medium text-foreground transition-colors group"
+                            className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                         >
-                            <WrenchScrewdriverIcon className="w-4 h-4 text-muted-foreground group-hover:text-orange-500 transition-colors" />
+                            <WrenchScrewdriverIcon className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
                             Maintenance
                         </button>
                         <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 transition-colors group">

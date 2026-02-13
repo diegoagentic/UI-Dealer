@@ -45,7 +45,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
+                <div className="flex gap-1 bg-card/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                     {[
                         { id: 'requests', label: 'Requests', count: 12, icon: ClipboardDocumentCheckIcon },
                         { id: 'movements', label: 'Movements', count: 4, icon: ArrowPathRoundedSquareIcon },
@@ -58,7 +58,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                                 "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-2 outline-none whitespace-nowrap",
                                 activeTab === tab.id
                                     ? "bg-primary text-primary-foreground shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-700/50"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-card/50"
                             )}
                         >
                             <tab.icon className="w-4 h-4" />

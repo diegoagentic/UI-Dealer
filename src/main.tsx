@@ -4,10 +4,14 @@ import './index.css'
 import App from './App.tsx'
 import { TenantProvider } from './TenantContext'
 
+import { ThemeProvider } from 'strata-design-system'
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <TenantProvider>
-      <App />
+      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+        <App />
+      </ThemeProvider>
     </TenantProvider>
   </StrictMode>,
 )

@@ -14,7 +14,7 @@ import {
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
-import { useTheme } from './useTheme'
+import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Select from './components/Select'
 import CreateOrderModal from './components/CreateOrderModal'
@@ -57,13 +57,13 @@ const recentOrders = [
     { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700", location: "Berlin" },
     { id: "#ORD-2051", customer: "City Builders", client: "City Builders", project: "City Center", amount: "$120,000", status: "Order Received", date: "Jan 05, 2026", initials: "CB", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
     { id: "#ORD-2050", customer: "Modern Homes", client: "Modern Homes", project: "Residential A", amount: "$85,000", status: "Acknowledgement", date: "Jan 02, 2026", initials: "MH", statusColor: "bg-blue-50 text-blue-700", location: "Austin" },
-    { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-purple-50 text-purple-700", location: "London" },
+    { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-indigo-50 text-indigo-700", location: "London" },
     { id: "#ORD-2048", customer: "Valley Homes", client: "Valley Homes", project: "Mountain Retreat", amount: "$95,000", status: "Ready to Ship", date: "Nov 20, 2025", initials: "VH", statusColor: "bg-indigo-50 text-indigo-700", location: "Berlin" },
-    { id: "#ORD-2047", customer: "Elite Builders", client: "Elite Builders", project: "Sky V", amount: "$450,000", status: "In Transit", date: "Nov 05, 2025", initials: "EB", statusColor: "bg-orange-50 text-orange-700", location: "New York" },
+    { id: "#ORD-2047", customer: "Elite Builders", client: "Elite Builders", project: "Sky V", amount: "$450,000", status: "In Transit", date: "Nov 05, 2025", initials: "EB", statusColor: "bg-amber-50 text-amber-700", location: "New York" },
 ]
 
 const recentQuotes = [
-    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-purple-50 text-purple-700", location: "Austin" },
+    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-indigo-50 text-indigo-700", location: "Austin" },
     { id: "QT-1024", customer: "BioLife Inc", project: "Lab Expansion", amount: "$540,000", status: "Draft", date: "Jan 10, 2026", validUntil: "Draft", probability: "N/A", initials: "BL", statusColor: "bg-zinc-100 text-zinc-700", location: "Boston" },
     { id: "QT-1023", customer: "FinServe Corp", project: "Branch Rollout", amount: "$890,000", status: "Sent", date: "Jan 08, 2026", validUntil: "Feb 08, 2026", probability: "Medium", initials: "FS", statusColor: "bg-blue-50 text-blue-700", location: "New York" },
     { id: "QT-1022", customer: "Redwood School", project: "Classroom Refresh", amount: "$150,000", status: "Approved", date: "Dec 28, 2025", validUntil: "Jan 28, 2026", probability: "Closed", initials: "RS", statusColor: "bg-green-50 text-green-700", location: "Portland" },
@@ -72,7 +72,7 @@ const recentQuotes = [
 const recentAcknowledgments = [
     { id: "ACK-8839", relatedPo: "PO-2026-001", vendor: "Herman Miller", status: "Confirmed", date: "Jan 14, 2026", expShipDate: "Feb 20, 2026", discrepancy: "None", initials: "HM", statusColor: "bg-green-50 text-green-700", location: "Zeeland" },
     { id: "ACK-8840", relatedPo: "PO-2026-002", vendor: "Steelcase", status: "Discrepancy", date: "Jan 13, 2026", expShipDate: "Pending", discrepancy: "Price Mismatch ($500)", initials: "SC", statusColor: "bg-red-50 text-red-700", location: "Grand Rapids" },
-    { id: "ACK-8841", relatedPo: "PO-2026-003", vendor: "Knoll", status: "Partial", date: "Jan 12, 2026", expShipDate: "Mar 01, 2026", discrepancy: "Backordered Items", initials: "KN", statusColor: "bg-orange-50 text-orange-700", location: "East Greenville" },
+    { id: "ACK-8841", relatedPo: "PO-2026-003", vendor: "Knoll", status: "Partial", date: "Jan 12, 2026", expShipDate: "Mar 01, 2026", discrepancy: "Backordered Items", initials: "KN", statusColor: "bg-amber-50 text-amber-700", location: "East Greenville" },
 ]
 
 // Pipeline stages
@@ -84,8 +84,8 @@ const ackStages = ['Pending', 'Discrepancy', 'Partial', 'Confirmed']
 // Color Mapping for Status Icons
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
-    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
     indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
@@ -93,8 +93,8 @@ const colorStyles: Record<string, string> = {
 
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm shadow-purple-500/20 border-purple-500',
-    orange: 'bg-orange-600 hover:bg-orange-700 text-white shadow-sm shadow-orange-500/20 border-orange-500',
+    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
     indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
@@ -333,7 +333,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
                 {/* Lifecycle Tabs Navigation */}
                 <div className="flex items-center mb-6">
-                    <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
+                    <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-card/50 rounded-xl border border-zinc-200 dark:border-zinc-800">
                         <button
                             onClick={() => setLifecycleTab('quotes')}
                             className={cn(
@@ -387,15 +387,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="relative">
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
                                         {Object.entries(quotesSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
                                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' :
-                                                            data.color === 'purple' ? 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400' :
+                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
+                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
                                                                 data.color === 'indigo' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
@@ -418,7 +418,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
                                     ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
                                             <span>{action.label}</span>
                                         </button>
@@ -428,12 +428,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                         ) : (
                             /* Collapsed Quotes Metrics */
                             <>
-                                <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
                                             {Object.entries(quotesSummary).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                    <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-zinc-800'}`}>
+                                                    <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}>
                                                         {data.icon}
                                                     </div>
                                                     <div className="flex flex-col">
@@ -444,21 +444,21 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
                                     {/* Quick Actions Integrated - Compact */}
-                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                         {[
                                             { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote" },
                                             { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
                                             { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
                                             { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
                                         ].map((action, i) => (
-                                            <button key={i} onClick={() => action.action && action.action()} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                            <button key={i} onClick={() => action.action && action.action()} className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative group" title={action.label}>
                                                 {action.icon}
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
                                     <button
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
@@ -487,15 +487,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="relative">
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
                                         {Object.entries(acksSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
                                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' :
-                                                            data.color === 'purple' ? 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400' :
+                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
+                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
                                                                 data.color === 'red' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
@@ -518,7 +518,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Email Vendor" },
                                         { icon: <CheckBadgeIcon className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                                     ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action ? action.action() : null} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                        <button key={i} onClick={() => action.action ? action.action() : null} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
                                             <span>{action.label}</span>
                                         </button>
@@ -528,12 +528,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                         ) : (
                             /* Collapsed Acks Metrics */
                             <>
-                                <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
                                             {Object.entries(acksSummary).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                    <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-zinc-800'}`}>
+                                                    <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}>
                                                         {data.icon}
                                                     </div>
                                                     <div className="flex flex-col">
@@ -544,9 +544,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             ))}
                                         </div>
                                     </div>
-                                    <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
                                     {/* Quick Actions Integrated - Compact */}
-                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                         {[
                                             { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack" },
                                             { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement" },
@@ -557,12 +557,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 if (action.label === 'Upload Ack') setIsAckModalOpen(true);
                                                 if (action.label === 'Approve Orders') setIsBatchAckOpen(true);
                                                 if (action.label === 'Export Acknowledgement') handleExportSIF('Acknowledgement');
-                                            }} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group" title={action.label}>
+                                            }} className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative group" title={action.label}>
                                                 {action.icon}
                                             </button>
                                         ))}
                                     </div>
-                                    <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
                                     <button
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
@@ -594,15 +594,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         ref={expandedScrollRef}
                                     >
                                         {Object.entries(ordersSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group min-w-[200px]">
+                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
                                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400' :
-                                                            data.color === 'purple' ? 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400' :
+                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
+                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
                                                                 data.color === 'indigo' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
@@ -625,7 +625,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Order", action: () => handleExportSIF('Order') },
                                         { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send Email" },
                                     ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 hover:border-primary dark:hover:border-primary hover:bg-primary dark:hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 text-gray-500 dark:text-gray-400 transition-all text-xs font-medium">
+                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
                                             <span>{action.label}</span>
                                         </button>
@@ -633,13 +633,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                             </>
                         ) : (
-                            <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                 {/* Collapsed Ticker View - Carousel */}
                                 <div className="flex items-center gap-2 flex-1 min-w-0">
                                     {/* Left Scroll Button */}
                                     <button
                                         onClick={() => scroll(scrollContainerRef, 'left')}
-                                        className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                        className="p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
                                     >
                                         <ChevronLeftIcon className="w-4 h-4" />
                                     </button>
@@ -652,10 +652,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         {Object.entries(ordersSummary).map(([key, data]) => (
                                             <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                                 {/* Icon with Floating Tooltip */}
-                                                <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-zinc-800'}`}>
+                                                <div className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}>
                                                     {data.icon}
                                                     {/* Tooltip */}
-                                                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-zinc-800 text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
+                                                    <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap bg-zinc-900 dark:bg-card text-white text-xs font-semibold px-2 py-1 rounded shadow-lg z-50 animate-in fade-in zoom-in duration-200">
                                                         {data.label}
                                                         {/* Arrow */}
                                                         <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900 dark:border-t-zinc-800"></div>
@@ -679,40 +679,40 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     {/* Right Scroll Button */}
                                     <button
                                         onClick={() => scroll(scrollContainerRef, 'right')}
-                                        className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
+                                        className="p-1.5 rounded-full hover:bg-accent text-muted-foreground hover:text-foreground transition-colors shrink-0"
                                     >
                                         <ChevronRightIcon className="w-4 h-4" />
                                     </button>
                                 </div>
 
-                                <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                                 {/* Quick Actions Integrated - Compact */}
-                                <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                                <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                     {[
                                         { icon: <DocumentPlusIcon className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
-                                        { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock", color: "text-orange-500" },
+                                        { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock", color: "text-amber-500" },
                                         { icon: <ChartBarIcon className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
-                                        { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "ERP Sync", color: "text-purple-500" },
+                                        { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "ERP Sync", color: "text-indigo-500" },
                                     ].map((action, i) => (
                                         <button
                                             key={i}
                                             onClick={() => {
                                                 if (action.label === 'New Quote') setIsQuoteWidgetOpen(true);
                                             }}
-                                            className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-foreground transition-colors relative group"
+                                            className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative group"
                                             title={action.label}
                                         >
                                             {action.icon}
                                         </button>
                                     ))}
-                                    <div className="w-px h-6 bg-border/50 mx-1"></div>
-                                    <button onClick={() => handleExportSIF('Order')} className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-purple-500 transition-colors relative group" title="Export Order">
+                                    <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
+                                    <button onClick={() => handleExportSIF('Order')} className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-indigo-500 transition-colors relative group" title="Export Order">
                                         <DocumentTextIcon className="w-5 h-5" />
                                     </button>
                                 </div>
 
-                                <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                                <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
                                 <button
                                     onClick={() => setShowMetrics(true)}
                                     className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
@@ -733,7 +733,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Recent Orders - The Grid/List view handled here */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-3">
-                        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden">
+                        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
                             {/* Header for Orders */}
                             <div className="p-6 border-b border-border">
                                 <div className="flex flex-col gap-6">
@@ -820,7 +820,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     onClick={() => setViewMode('list')}
                                                     className={cn(
                                                         "p-1.5 rounded-md transition-all",
-                                                        viewMode === 'list' ? "bg-white dark:bg-zinc-800 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50"
+                                                        viewMode === 'list' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                                                     )}
                                                     title="List View"
                                                 >
@@ -831,7 +831,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     onClick={() => setViewMode('pipeline')}
                                                     className={cn(
                                                         "p-1.5 rounded-md transition-all",
-                                                        viewMode === 'pipeline' ? "bg-white dark:bg-zinc-800 shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/50 dark:hover:bg-zinc-800/50"
+                                                        viewMode === 'pipeline' ? "bg-card shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                                                     )}
                                                     title="Pipeline View"
                                                 >
@@ -890,12 +890,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 leaveFrom="opacity-100 scale-100"
                                                 leaveTo="opacity-0 scale-95"
                                             >
-                                                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 shadow-xl transition-all">
+                                                <DialogPanel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-card shadow-xl transition-all">
                                                     <div className="relative">
                                                         {/* Close X Button - Floating */}
                                                         <button
                                                             onClick={() => setIsQuoteWidgetOpen(false)}
-                                                            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/50 dark:bg-black/50 hover:bg-white dark:hover:bg-zinc-800 backdrop-blur-sm text-zinc-500 hover:text-foreground transition-colors"
+                                                            className="absolute top-4 right-4 z-10 p-2 rounded-full bg-background/50 hover:bg-Card backdrop-blur-sm text-muted-foreground hover:text-foreground transition-colors"
                                                         >
                                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -947,37 +947,37 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
 
                                             {/* Completion Rate Card */}
-                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-purple-200 dark:border-purple-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-purple-700 dark:text-purple-400">
+                                                    <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">
                                                         {lifecycleTab === 'quotes' ? 'Win Rate' : lifecycleTab === 'acknowledgments' ? 'Conf. Rate' : 'Completion Rate'}
                                                     </p>
-                                                    <ChartBarIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                    <ChartBarIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-purple-700 dark:text-purple-300">{metricsData.efficiency}%</p>
-                                                    <p className="text-xs text-purple-600/80 dark:text-purple-400/80 mt-1">
+                                                    <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
+                                                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 mt-1">
                                                         {lifecycleTab === 'quotes' ? 'Quotes approved' : lifecycleTab === 'acknowledgments' ? 'Acks confirmed' : 'Orders delivered successfully'}
                                                     </p>
                                                 </div>
                                             </div>
 
                                             {/* Project Count Card */}
-                                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-orange-200 dark:border-orange-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Project Count</p>
-                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                                    <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Project Count</p>
+                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-orange-700 dark:text-orange-300">
+                                                    <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
                                                         {availableProjects.length > 0 && availableProjects[0] === 'All Projects' ? availableProjects.length - 1 : availableProjects.length}
                                                     </p>
-                                                    <p className="text-xs text-orange-600/80 dark:text-orange-400/80 mt-1">Active projects</p>
+                                                    <p className="text-xs text-amber-600/80 dark:text-amber-400/80 mt-1">Active projects</p>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-border shadow-sm">
+                                        <div className="h-[300px] w-full bg-card rounded-2xl p-6 border border-border shadow-sm">
                                             <h4 className="text-md font-medium text-foreground mb-4">Monthly Trends</h4>
                                             <ResponsiveContainer width="100%" height="100%">
                                                 <BarChart data={salesData}>
@@ -994,7 +994,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </div>
                                 ) : viewMode === 'list' ? (
                                     /* List View */
-                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border overflow-hidden">
+                                    <div className="bg-card rounded-2xl border border-border overflow-hidden">
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left">
                                                 <thead className="bg-muted/50 border-b border-border">
@@ -1106,7 +1106,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </div>
                                 ) : (
                                     /* Pipeline View */
-                                    <div className="flex gap-6 overflow-x-auto pb-4 scale-y-[-1] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-zinc-200/50 hover:[&::-webkit-scrollbar-thumb]:bg-zinc-200 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-800/50 dark:hover:[&::-webkit-scrollbar-thumb]:bg-zinc-800">
+                                    <div className="flex gap-6 overflow-x-auto pb-4 scale-y-[-1] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted/50 hover:[&::-webkit-scrollbar-thumb]:bg-muted dark:[&::-webkit-scrollbar-thumb]:bg-muted/50 dark:hover:[&::-webkit-scrollbar-thumb]:bg-muted">
                                         {(lifecycleTab === 'quotes' ? quoteStages : lifecycleTab === 'acknowledgments' ? ackStages : pipelineStages).map((stage) => {
                                             const stageOrders = filteredData.filter((o: any) => o.status === stage);
                                             return (
@@ -1125,7 +1125,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         {stageOrders.map(order => (
                                                             <div
                                                                 key={order.id}
-                                                                className={`group relative bg-white dark:bg-zinc-900 rounded-2xl border ${expandedIds.has(order.id) ? 'border-brand-400/50 ring-1 ring-brand-400/20 shadow-lg' : 'border-zinc-200 dark:border-white/10 shadow-sm hover:shadow-md'} transition-all duration-200 overflow-hidden flex flex-col`}
+                                                                className={`group relative bg-card rounded-2xl border ${expandedIds.has(order.id) ? 'border-brand-400/50 ring-1 ring-brand-400/20 shadow-lg' : 'border-border shadow-sm hover:shadow-md'} transition-all duration-200 overflow-hidden flex flex-col`}
                                                             >
                                                                 <div className="p-4">
                                                                     <div className="flex items-center justify-between mb-3">
@@ -1163,7 +1163,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                         <div className="flex items-center justify-between">
                                                                             {/* Status Badge */}
                                                                             <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
-                                                                                colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-zinc-100 text-zinc-700 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                                                                                colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-muted text-muted-foreground border-border"
                                                                             )}>
                                                                                 {order.status}
                                                                             </span>
@@ -1189,7 +1189,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
                                                                 {/* Internal Accordion Content */}
                                                                 {expandedIds.has(order.id) && (
-                                                                    <div className="bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-white/5 animate-in slide-in-from-top-2 duration-200">
+                                                                    <div className="bg-card border-t border-border animate-in slide-in-from-top-2 duration-200">
                                                                         <div className="p-5 space-y-5">
                                                                             <div className="grid grid-cols-2 gap-x-4 gap-y-4">
                                                                                 <div className="space-y-1.5">
@@ -1214,7 +1214,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             </div>
 
                                                                             <div className="flex flex-col gap-3 pt-2">
-                                                                                <button className="w-full py-2.5 text-xs font-bold text-zinc-700 bg-white border border-zinc-200 rounded-lg hover:bg-zinc-50 hover:text-zinc-900 transition-colors shadow-sm">
+                                                                                <button className="w-full py-2.5 text-xs font-bold text-foreground bg-card border border-border rounded-lg hover:bg-accent hover:text-foreground transition-colors shadow-sm">
                                                                                     {lifecycleTab === 'quotes' ? 'View Quote Details' : lifecycleTab === 'acknowledgments' ? 'View PO Details' : 'View Full Order Details'}
                                                                                 </button>
                                                                                 <button
@@ -1250,7 +1250,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
                 {/* Charts Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
+                    <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
                         <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Revenue Trend</h3>
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -1276,7 +1276,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
+                    <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
                         <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Inventory Breakdown</h3>
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
@@ -1285,7 +1285,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                                     <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                                     <Tooltip cursor={{ fill: 'var(--muted)' }} contentStyle={{ backgroundColor: 'var(--popover)', borderRadius: '12px', border: '1px solid var(--border)', color: 'var(--popover-foreground)' }} />
-                                    <Bar dataKey="value" fill="#8B5CF6" radius={[6, 6, 0, 0]} barSize={40} />
+                                    <Bar dataKey="value" fill="bg-indigo-500" radius={[6, 6, 0, 0]} barSize={40} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>
@@ -1320,7 +1320,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <DialogPanel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
+                                <DialogPanel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-card p-6 text-left align-middle shadow-xl transition-all border border-border">
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-zinc-900 dark:text-white flex justify-between items-center mb-6"
@@ -1332,7 +1332,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         </span>
                                         <button
                                             onClick={() => setTrackingOrder(null)}
-                                            className="rounded-full p-1 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                            className="rounded-full p-1 hover:bg-accent transition-colors"
                                         >
                                             <span className="sr-only">Close</span>
                                             <svg className="h-5 w-5 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1347,11 +1347,11 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             <div>
                                                 <h4 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Margin Analysis</h4>
                                                 <div className="space-y-4">
-                                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+                                                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                                         <span className="text-sm text-muted-foreground">Total Cost</span>
                                                         <span className="font-mono text-foreground">$850,000</span>
                                                     </div>
-                                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+                                                    <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
                                                         <span className="text-sm text-muted-foreground">List Price</span>
                                                         <span className="font-mono text-foreground">$1,200,000</span>
                                                     </div>
@@ -1361,7 +1361,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col h-full bg-brand-50 dark:bg-zinc-800/80 p-5 rounded-xl border border-brand-100 dark:border-brand-500/30">
+                                            <div className="flex flex-col h-full bg-primary/5 p-5 rounded-xl border border-primary/10">
                                                 <div className="flex items-center gap-2 mb-3 text-brand-700 dark:text-brand-300">
                                                     <SparklesIcon className="w-5 h-5 text-brand-600 dark:text-brand-400" />
                                                     <span className="font-semibold text-sm">AI Pricing Insight</span>
@@ -1399,7 +1399,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
 
                                             <div className="flex gap-3 justify-end pt-4 border-t border-border">
-                                                <button className="px-4 py-2 text-sm font-medium text-foreground bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                                                <button className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-accent">
                                                     Contact Rep
                                                 </button>
                                                 <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
@@ -1432,14 +1432,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 <h4 className="text-sm font-semibold text-zinc-900 dark:text-white mb-4 uppercase tracking-wider">Delivery Location</h4>
 
                                                 {/* Map Placeholder */}
-                                                <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg h-40 w-full mb-4 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
+                                                <div className="bg-muted rounded-lg h-40 w-full mb-4 flex items-center justify-center border border-border">
                                                     <div className="text-center">
                                                         <MapPinIcon className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
                                                         <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Map Preview Unavailable</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-100 dark:border-zinc-800 mb-6">
+                                                <div className="bg-muted/30 p-3 rounded-lg border border-border mb-6">
                                                     <p className="text-xs font-medium text-zinc-900 dark:text-white">Distribution Center NY-05</p>
                                                     <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">45 Industrial Park Dr, Brooklyn, NY 11201</p>
                                                 </div>
@@ -1447,7 +1447,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 <div className="mt-auto pt-6 border-t border-zinc-100 dark:border-zinc-800">
                                                     <button
                                                         type="button"
-                                                        className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                                                        className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-300 dark:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                                                         onClick={() => console.log('Contacting support...')}
                                                     >
                                                         <EnvelopeIcon className="h-4 w-4" />
@@ -1470,7 +1470,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             {/* Toast Notification */}
             {showToast && (
                 <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
-                    <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl shadow-black/10 border border-zinc-100 dark:border-zinc-700 p-4 flex items-start gap-4 max-w-sm">
+                    <div className="bg-popover rounded-xl shadow-2xl shadow-black/10 border border-border p-4 flex items-start gap-4 max-w-sm">
                         <div className={`mt-0.5 p-1 rounded-full ${toastMessage.type === 'success' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : toastMessage.type === 'info' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
                             {toastMessage.type === 'success' ? (
                                 <CheckCircleIcon className="w-5 h-5" />

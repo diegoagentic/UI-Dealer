@@ -31,7 +31,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
 
     if (isConnected) {
         return (
-            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-300">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-300">
                 <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-500 mb-2">
                     <CheckCircleIcon className="w-10 h-10" />
                 </div>
@@ -44,9 +44,9 @@ export default function ERPConnectModal({ data }: { data: any }) {
     }
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-w-2xl w-full mx-auto shadow-lg">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-w-2xl w-full mx-auto shadow-lg">
             {/* Header */}
-            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex justify-between items-start">
+            <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex justify-between items-start">
                 <div>
                     <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                         <div className="p-1.5 bg-indigo-600 rounded-lg">
@@ -104,7 +104,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
             </div>
 
             {/* Footer */}
-            <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex justify-end gap-3">
+            <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex justify-end gap-3">
                 <button
                     onClick={() => sendMessage("Cancel ERP connection.")}
                     className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"

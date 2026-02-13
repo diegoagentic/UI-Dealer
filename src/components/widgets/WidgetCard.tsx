@@ -14,7 +14,7 @@ interface WidgetCardProps {
 
 export default function WidgetCard({ title, description, icon: Icon, action, children, className }: WidgetCardProps) {
     return (
-        <div className={clsx("bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500", className)}>
+        <div className={clsx("bg-card rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500", className)}>
             <div className="p-6 border-b border-border flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     {/* Consistent Drag Handle */}

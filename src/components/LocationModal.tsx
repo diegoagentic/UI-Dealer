@@ -85,12 +85,12 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                         leaveFrom="opacity-100 scale-100"
                         leaveTo="opacity-0 scale-95"
                     >
-                        <Dialog.Panel className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-                            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+                        <Dialog.Panel className="w-full max-w-md bg-card rounded-2xl shadow-xl border border-border overflow-hidden">
+                            <div className="flex items-center justify-between p-4 border-b border-border">
                                 <Dialog.Title className="text-lg font-semibold text-foreground">
                                     {isEdit ? 'Edit Location' : 'Create Location'}
                                 </Dialog.Title>
-                                <button onClick={onClose} className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
+                                <button onClick={onClose} className="p-1 rounded-full hover:bg-accent text-muted-foreground transition-colors">
                                     <XMarkIcon className="w-5 h-5" />
                                 </button>
                             </div>
@@ -103,19 +103,19 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                             <input
                                                 type="text"
                                                 required
-                                                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
+                                                className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
                                                 placeholder="e.g. Tech Storage Hub"
                                                 value={formData.name}
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                             />
-                                            <BuildingOfficeIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <BuildingOfficeIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                         </div>
                                     </div>
 
                                     <div>
                                         <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                                         <textarea
-                                            className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[80px]"
+                                            className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all min-h-[80px]"
                                             placeholder="Enter description..."
                                             value={formData.description}
                                             onChange={e => setFormData({ ...formData, description: e.target.value })}
@@ -128,12 +128,12 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                             <input
                                                 type="text"
                                                 required
-                                                className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
+                                                className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
                                                 placeholder="e.g. Innovation Park - Level B2"
                                                 value={formData.address}
                                                 onChange={e => setFormData({ ...formData, address: e.target.value })}
                                             />
-                                            <MapPinIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <MapPinIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                         </div>
                                     </div>
 
@@ -143,12 +143,12 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                             <div className="relative">
                                                 <input
                                                     type="text"
-                                                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
+                                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
                                                     placeholder="John Doe"
                                                     value={formData.manager}
                                                     onChange={e => setFormData({ ...formData, manager: e.target.value })}
                                                 />
-                                                <UserIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <UserIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                             </div>
                                         </div>
                                         <div>
@@ -156,22 +156,22 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                             <div className="relative">
                                                 <input
                                                     type="text"
-                                                    className="w-full px-3 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
+                                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all pl-9"
                                                     placeholder="e.g. 600"
                                                     value={formData.capacity}
                                                     onChange={e => setFormData({ ...formData, capacity: e.target.value })}
                                                 />
-                                                <CubeIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <CubeIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                                <div className="flex items-center gap-3 pt-4 border-t border-border">
                                     <button
                                         type="button"
                                         onClick={onClose}
-                                        className="flex-1 px-4 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground font-medium rounded-lg transition-colors"
+                                        className="flex-1 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-medium rounded-lg transition-colors"
                                     >
                                         Cancel
                                     </button>

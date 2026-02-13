@@ -10,7 +10,7 @@ const data = [
 
 export function LogisticsStatusChart() {
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Logistics Pulse</h3>
@@ -43,7 +43,7 @@ export function LogisticsStatusChart() {
                             itemStyle={{ color: '#1F2937' }}
                         />
                         <Legend />
-                        <Bar dataKey="processing" stackId="a" fill="#f59e0b" name="Processing" radius={[0, 0, 0, 4]} />
+                        <Bar dataKey="processing" stackId="a" fill="bg-amber-500" name="Processing" radius={[0, 0, 0, 4]} />
                         <Bar dataKey="transit" stackId="a" fill="#3b82f6" name="In Transit" />
                         <Bar dataKey="delivered" stackId="a" fill="#10b981" name="Delivered" radius={[0, 4, 4, 0]} />
                     </BarChart>

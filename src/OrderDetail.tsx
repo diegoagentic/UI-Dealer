@@ -11,7 +11,7 @@ import { Fragment } from 'react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { useTheme } from './useTheme'
+import { useTheme, Table, TableHeader, TableBody, TableRow, TableHead, TableCell, Badge, Button, Checkbox, Card, Input } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
@@ -23,12 +23,12 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 const items = [
     { id: "SKU-OFF-2025-001", name: "Executive Chair Pro", category: "Premium Series", properties: "Leather / Black", stock: 285, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700", aiStatus: "info" },
     { id: "SKU-OFF-2025-002", name: "Ergonomic Task Chair", category: "Standard Series", properties: "Mesh / Gray", stock: 520, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
-    { id: "SKU-OFF-2025-003", name: "Conference Room Chair", category: "Meeting Series", properties: "Fabric / Navy", stock: 42, status: "Low Stock", statusColor: "bg-yellow-50 text-yellow-700 ring-yellow-600/20", aiStatus: "warning" },
+    { id: "SKU-OFF-2025-003", name: "Conference Room Chair", category: "Meeting Series", properties: "Fabric / Navy", stock: 42, status: "Low Stock", statusColor: "bg-amber-50 text-amber-700 ring-amber-600/20", aiStatus: "warning" },
     { id: "SKU-OFF-2025-004", name: "Visitor Stacking Chair", category: "Guest Series", properties: "Plastic / White", stock: 180, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "SKU-OFF-2025-005", name: "Gaming Office Chair", category: "Sport Series", properties: "Leather / Red", stock: 0, status: "Out of Stock", statusColor: "bg-red-50 text-red-700 ring-red-600/20" },
     { id: "SKU-OFF-2025-006", name: "Reception Lounge Chair", category: "Lobby Series", properties: "Velvet / Teal", stock: 95, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "SKU-OFF-2025-007", name: "Drafting Stool High", category: "Studio Series", properties: "Mesh / Black", stock: 340, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
-    { id: "SKU-OFF-2025-008", name: "Bench Seating 3-Seat", category: "Waiting Series", properties: "Metal / Chrome", stock: 28, status: "Low Stock", statusColor: "bg-yellow-50 text-yellow-700 ring-yellow-600/20" },
+    { id: "SKU-OFF-2025-008", name: "Bench Seating 3-Seat", category: "Waiting Series", properties: "Metal / Chrome", stock: 28, status: "Low Stock", statusColor: "bg-amber-50 text-amber-700 ring-amber-600/20" },
 ]
 
 interface Message {
@@ -81,7 +81,7 @@ const DiscrepancyResolutionFlow = () => {
             <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2">
                 <p className="text-sm font-medium text-zinc-900 dark:text-white">Describe required changes:</p>
                 <textarea
-                    className="w-full text-sm p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-zinc-400"
+                    className="w-full text-sm p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-card text-zinc-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-zinc-400"
                     rows={3}
                     placeholder="E.g., Update weight for ORD-2054 to 48kg..."
                     value={requestText}
@@ -189,7 +189,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                     <CheckCircleIcon className="h-5 w-5" />
                     <p>Changes approved. PO updated.</p>
                 </div>
-                <div className="flex items-center gap-3 bg-white dark:bg-zinc-900/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
+                <div className="flex items-center gap-3 bg-card/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
                     <div className="h-10 w-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center border border-red-100 dark:border-red-800/30">
                         <DocumentTextIcon className="h-5 w-5 text-red-500" />
                     </div>
@@ -197,7 +197,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                         <p className="text-sm font-medium text-zinc-900 dark:text-white">PO_Revised_Final.pdf</p>
                         <p className="text-xs text-zinc-500">2.4 MB • Generated just now</p>
                     </div>
-                    <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-600 transition-colors">
+                    <button className="p-2 hover:bg-muted rounded-lg text-muted-foreground hover:text-foreground transition-colors">
                         <ArrowDownTrayIcon className="h-5 w-5" />
                     </button>
                 </div>
@@ -208,7 +208,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
     return (
         <div className={cn(
             "rounded-2xl p-4 shadow-sm transition-all duration-300",
-            isRequesting ? "ring-2 ring-purple-500/20 bg-white dark:bg-zinc-900" : "bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800"
+            isRequesting ? "ring-2 ring-indigo-500/20 bg-card" : "bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800"
         )}>
             {!isRequesting ? (
                 <>
@@ -223,7 +223,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
 
                     <div className="mt-3 space-y-3">
                         {/* PDF File */}
-                        <div className="flex items-center gap-3 bg-white dark:bg-zinc-900/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
+                        <div className="flex items-center gap-3 bg-card/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
                             <div className="h-10 w-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center border border-red-100 dark:border-red-800/30">
                                 <DocumentTextIcon className="h-5 w-5 text-red-500" />
                             </div>
@@ -250,12 +250,12 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                                     <div className="mt-2 flex items-center gap-4 text-xs font-medium">
                                         <div className="flex items-center gap-2">
                                             <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Warehouse</span>
-                                            <span className="text-zinc-900 dark:text-white font-mono text-sm bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">42</span>
+                                            <span className="text-zinc-900 dark:text-white font-mono text-sm bg-zinc-100 dark:bg-card px-1.5 py-0.5 rounded">42</span>
                                         </div>
                                         <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-700"></div>
                                         <div className="flex items-center gap-2">
                                             <span className="text-zinc-500 uppercase tracking-wider text-[10px]">Local</span>
-                                            <span className="text-zinc-900 dark:text-white font-mono text-sm bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">35</span>
+                                            <span className="text-zinc-900 dark:text-white font-mono text-sm bg-zinc-100 dark:bg-card px-1.5 py-0.5 rounded">35</span>
                                         </div>
                                     </div>
                                 </div>
@@ -264,7 +264,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
 
                         {/* Actions */}
                         <div className="flex items-center gap-3 pt-2">
-                            <button className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-semibold rounded-lg shadow-sm transition-colors">
+                            <button className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded-lg shadow-sm transition-colors">
                                 Sync Database
                             </button>
                             <button className="px-4 py-2 bg-white dark:bg-transparent border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary dark:hover:text-zinc-900 text-xs font-medium rounded-lg transition-colors">
@@ -290,7 +290,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                         </button>
                     </div>
                     <textarea
-                        className="w-full text-sm bg-zinc-50 dark:bg-zinc-800 border-0 rounded-lg p-3 text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-purple-500/20"
+                        className="w-full text-sm bg-zinc-50 dark:bg-card border-0 rounded-lg p-3 text-zinc-900 dark:text-white placeholder:text-zinc-500 focus:ring-2 focus:ring-indigo-500/20"
                         placeholder="E.g., Update weight for ORD-2054 to 48kg..."
                         rows={3}
                         autoFocus
@@ -298,7 +298,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                         onChange={(e) => setRequestText(e.target.value)}
                     />
                     <div className="flex items-center justify-between">
-                        <button className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1.5 px-2 py-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                        <button className="text-xs font-medium text-muted-foreground hover:text-foreground flex items-center gap-1.5 px-2 py-1.5 rounded hover:bg-muted transition-colors">
                             <PaperClipIcon className="w-3.5 h-3.5" />
                             Attach File
                         </button>
@@ -430,9 +430,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
             {/* Page Header (moved from original header, adjusted for floating nav) */}
             <div className="pt-24 px-6 pb-4 flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
+                    <Button variant="ghost" onClick={onBack} className="p-1 h-auto text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-900">
                         <ChevronRightIcon className="h-4 w-4 rotate-180" />
-                    </button>
+                    </Button>
                     <Breadcrumbs
                         items={[
                             { label: 'Dashboard', onClick: onBack },
@@ -442,15 +442,15 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     />
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
+                    <Button variant="outline" className="gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border-input hover:bg-primary hover:text-zinc-900 group">
                         <FunnelIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Filter
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
+                    </Button>
+                    <Button variant="outline" className="gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border-input hover:bg-primary hover:text-zinc-900 group">
                         <ArrowDownTrayIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
+                    </Button>
+                    <Button variant="primary" className="gap-2 px-3 py-1.5 text-sm font-medium">
                         <PlusIcon className="h-4 w-4" /> Add New Item
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -458,11 +458,11 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 {/* Collapsible Summary */}
                 {isSummaryExpanded ? (
                     <>
-                        <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
+                        <div className="bg-card p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
-                                <button onClick={() => setIsSummaryExpanded(false)} className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 transition-colors bg-zinc-100 dark:bg-zinc-800 hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
+                                <Button variant="ghost" onClick={() => setIsSummaryExpanded(false)} className="gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 bg-zinc-100 dark:bg-card hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
                                     Hide Details <ChevronUpIcon className="w-3.5 h-3.5" />
-                                </button>
+                                </Button>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 animate-in fade-in zoom-in duration-300">
                                 {[
@@ -472,7 +472,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     { label: 'CARRIER', value: 'FedEx' },
                                     { label: 'STATUS', value: 'Processing', color: 'text-blue-600 dark:text-blue-400' },
                                 ].map((stat, i) => (
-                                    <div key={i} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-white/5">
+                                    <div key={i} className="bg-zinc-50 dark:bg-card/50 p-4 rounded-xl border border-zinc-100 dark:border-white/5">
                                         <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1">{stat.label}</p>
                                         <p className={cn("text-2xl font-bold tracking-tight", stat.color || "text-zinc-900 dark:text-white")}>{stat.value}</p>
                                     </div>
@@ -506,7 +506,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             // Pending: Gray Background
 
                                             return (
-                                                <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1 group cursor-default">
+                                                <div key={i} className="flex flex-col items-center bg-card px-1 group cursor-default">
                                                     <div className={cn(
                                                         "h-6 w-6 rounded-full flex items-center justify-center transition-all duration-300",
                                                         isCompleted || isCurrent
@@ -533,7 +533,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         </div>
                     </>
                 ) : (
-                    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-card p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide">
                             {[
                                 { label: 'Order Value', value: '$45.2k' },
@@ -558,22 +558,23 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Current Phase</span>
                                     <span className="text-sm font-bold text-zinc-900 dark:text-white">Processing</span>
                                 </div>
-                                <div className="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white bg-white dark:bg-zinc-900">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 dark:bg-white" />
+                                <div className="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white bg-card">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
                                 </div>
                             </div>
 
                             <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
-                            <button
+                            <Button
+                                variant="ghost"
                                 onClick={() => setIsSummaryExpanded(true)}
-                                className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
+                                className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary h-auto"
                             >
                                 <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
                                     <ChevronDownIcon className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Show Details</span>
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 )}
@@ -615,134 +616,142 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                             <TabPanel className="flex flex-col focus:outline-none">
                                 <div className="grid grid-cols-12 gap-6 p-6">
                                     {/* Left Panel: List */}
-                                    <div className="col-span-8 flex flex-col bg-white dark:bg-zinc-900 border border-border rounded-lg shadow-sm">
+                                    <Card className="col-span-8 flex flex-col bg-card border border-border shadow-sm">
                                         {/* Search and Filter Bar */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <div className="flex-1 max-w-lg relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                                     <MagnifyingGlassIcon className="h-5 w-5 text-muted-foreground" />
                                                 </div>
-                                                <input
+                                                <Input
                                                     type="text"
                                                     placeholder="Search SKU, Product Name..."
-                                                    className="block w-full pl-10 pr-3 py-2 border border-input rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary sm:text-sm"
+                                                    className="w-full pl-10 pr-3 py-2 border-input rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:ring-primary sm:text-sm"
                                                 />
                                             </div>
                                             <div className="flex gap-2 ml-4">
-                                                <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
+                                                <Button variant="outline" className="gap-2 px-3 py-2 border-input text-sm leading-4 font-medium text-foreground bg-background hover:bg-muted">
                                                     All Materials
                                                     <ChevronDownIcon className="ml-2 h-4 w-4" />
-                                                </button>
-                                                <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
+                                                </Button>
+                                                <Button variant="outline" className="gap-2 px-3 py-2 border-input text-sm leading-4 font-medium text-foreground bg-background hover:bg-muted">
                                                     Stock Status
                                                     <ChevronDownIcon className="ml-2 h-4 w-4" />
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
 
                                         {/* Table */}
-                                        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-700 scrollbar-track-transparent">
-                                            <table className="min-w-full divide-y divide-border">
-                                                <thead className="bg-muted/50">
-                                                    <tr>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-10">
-                                                            <input type="checkbox" className="h-4 w-4 rounded border-input text-zinc-900 dark:text-primary focus:ring-primary bg-background" />
-                                                        </th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">SKU ID</th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Image</th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Product Name</th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Properties</th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Stock Level</th>
-                                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="bg-white dark:bg-zinc-900 divide-y divide-border">
+                                        <div className="overflow-x-auto [&::-webkit-scrollbar]:h-0.5 [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-zinc-600 [&::-webkit-scrollbar-track]:bg-transparent pb-2">
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead className="w-10">
+                                                            <Checkbox className="border-input text-zinc-900 dark:text-primary focus:ring-primary bg-background" />
+                                                        </TableHead>
+                                                        <TableHead>SKU ID</TableHead>
+                                                        <TableHead>Image</TableHead>
+                                                        <TableHead>Product Name</TableHead>
+                                                        <TableHead>Properties</TableHead>
+                                                        <TableHead>Stock Level</TableHead>
+                                                        <TableHead>Status</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
                                                     {items.map((item) => (
-                                                        <tr
+                                                        <TableRow
                                                             key={item.id}
                                                             onClick={() => setSelectedItem(item)}
                                                             className={cn(
-                                                                "cursor-pointer transition-colors hover:bg-muted/50",
+                                                                "cursor-pointer",
                                                                 selectedItem.id === item.id ? "bg-muted/80" : ""
                                                             )}
                                                         >
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <input type="checkbox" className="h-4 w-4 rounded border-input text-zinc-900 dark:text-primary focus:ring-primary bg-background" />
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{item.id}</td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
-                                                                    <CubeIcon className="h-5 w-5 text-muted-foreground" />
-                                                                </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <div className="flex items-center">
-                                                                    <div>
-                                                                        <div className="text-sm font-medium text-foreground flex items-center gap-2">
-                                                                            {item.name}
-                                                                            {item.aiStatus && (
-                                                                                <div className={cn(
-                                                                                    "h-2 w-2 rounded-full",
-                                                                                    item.aiStatus === 'warning' ? "bg-amber-500 shadow-[0_0_0_2px_rgba(245,158,11,0.2)]" : "bg-primary shadow-[0_0_0_2px_rgba(var(--primary),0.2)]"
-                                                                                )} />
-                                                                            )}
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap">
+                                                                <Checkbox
+                                                                    checked={selectedItem.id === item.id}
+                                                                    onChange={() => setSelectedItem(item)}
+                                                                    className="border-input text-zinc-900 dark:text-primary focus:ring-primary bg-background"
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                                                                {item.id}
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap">
+                                                                <div className="h-10 w-10 flex-shrink-0">
+                                                                    {item.image ? (
+                                                                        <img className="h-10 w-10 rounded-full object-cover" src={item.image} alt="" />
+                                                                    ) : (
+                                                                        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center">
+                                                                            <CubeIcon className="h-6 w-6 text-muted-foreground" />
                                                                         </div>
-                                                                        <div className="text-sm text-muted-foreground">{item.category}</div>
-                                                                    </div>
+                                                                    )}
                                                                 </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{item.properties}</td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-foreground font-medium">{item.name}</span>
+                                                                    <span className="text-xs text-muted-foreground/70 mt-0.5">{item.category}</span>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                                                                {item.properties}
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="h-8 w-1.5 bg-muted rounded-full relative overflow-hidden">
+                                                                    <div className="h-8 w-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden flex items-end">
                                                                         <div
-                                                                            className="absolute bottom-0 left-0 w-full bg-foreground rounded-full"
-                                                                            style={{ height: `${(item.stock / 600) * 100}%` }}
+                                                                            className={cn(
+                                                                                "w-full rounded-full transition-all",
+                                                                                item.stock > 100 ? "bg-green-500" : item.stock > 20 ? "bg-amber-500" : "bg-red-500"
+                                                                            )}
+                                                                            style={{ height: `${Math.min((item.stock / 600) * 100, 100)}%` }}
                                                                         />
                                                                     </div>
-                                                                    <span className="text-xs text-muted-foreground">{Math.floor((item.stock / 600) * 100)}%</span>
+                                                                    <span className="text-xs text-muted-foreground font-medium min-w-[3ch]">{Math.round((item.stock / 600) * 100)}%</span>
                                                                 </div>
-                                                            </td>
-                                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                                <span className={cn(
-                                                                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                                                                    item.status === 'In Stock' ? "bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700" :
-                                                                        item.status === 'Low Stock' ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-800" :
-                                                                            "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800"
-                                                                )}>
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap">
+                                                                <Badge
+                                                                    variant={
+                                                                        item.status === 'In Stock' ? 'success' :
+                                                                            item.status === 'Low Stock' ? 'warning' :
+                                                                                'error'
+                                                                    }
+                                                                >
                                                                     {item.status}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
+                                                                </Badge>
+                                                            </TableCell>
+                                                        </TableRow>
                                                     ))}
-                                                </tbody>
-                                            </table>
+                                                </TableBody>
+                                            </Table>
                                         </div>
-                                    </div>
+                                    </Card>
 
                                     {/* Right Panel: Details */}
-                                    <div className="col-span-4 flex flex-col bg-white dark:bg-zinc-900 border border-border rounded-lg shadow-sm">
+                                    <Card className="col-span-4 flex flex-col bg-card border border-border shadow-sm">
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <Button variant="ghost" onClick={() => setIsDocumentModalOpen(true)} className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <PencilSquareIcon className="h-4 w-4" />
-                                                </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                </Button>
+                                                <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <ArrowDownTrayIcon className="h-4 w-4" />
-                                                </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                </Button>
+                                                <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <PaperAirplaneIcon className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-purple-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                </Button>
+                                                <Button variant="ghost" onClick={() => setIsAiDiagnosisOpen(true)} className="relative h-auto p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <SparklesIcon className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-purple-500 ring-2 ring-white dark:ring-zinc-900" />
-                                                </button>
+                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
+                                                </Button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <EllipsisHorizontalIcon className="h-4 w-4" />
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
 
@@ -750,16 +759,17 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             {/* AI Side Panel Section */}
                                             {selectedItem.aiStatus && (
                                                 <div>
-                                                    <button
+                                                    <Button
+                                                        variant="ghost"
                                                         onClick={() => toggleSection('aiSuggestions')}
-                                                        className="flex items-center justify-between w-full mb-2 group"
+                                                        className="flex items-center justify-between w-full h-auto p-0 hover:bg-transparent group"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <SparklesIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                                            <SparklesIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                                             <span className="text-sm font-bold text-foreground">AI Suggestions</span>
                                                             <span className="relative flex h-2 w-2">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                                                             </span>
                                                         </div>
                                                         <ChevronDownIcon
@@ -768,11 +778,11 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                 sections.aiSuggestions ? "transform rotate-0" : "transform -rotate-90"
                                                             )}
                                                         />
-                                                    </button>
+                                                    </Button>
 
                                                     {sections.aiSuggestions && (
                                                         selectedItem.aiStatus === 'info' ? (
-                                                            <div className="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+                                                            <div className="bg-zinc-50 dark:bg-card/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
                                                                 <h4 className="text-sm font-bold text-foreground mb-2">Optimization Opportunity</h4>
                                                                 <div className="space-y-2">
                                                                     <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-primary transition-colors">
@@ -795,23 +805,23 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-purple-500 transition-colors">
+                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-indigo-500 transition-colors">
                                                                         <div className="flex gap-2">
                                                                             <div className="mt-1 h-3 w-3 rounded-full border border-muted-foreground"></div>
                                                                             <div>
-                                                                                <div className="text-sm font-medium text-purple-700 dark:text-purple-400">Premium {selectedItem.name}</div>
+                                                                                <div className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Premium {selectedItem.name}</div>
                                                                                 <div className="text-xs text-muted-foreground">+ High Durability Finish</div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
 
-                                                                    <button className="w-full mt-1 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold rounded shadow-sm transition-colors">
+                                                                    <Button variant="primary" className="w-full mt-1 text-xs py-1.5">
                                                                         Apply Selection
-                                                                    </button>
+                                                                    </Button>
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
+                                                            <div className="bg-zinc-50 dark:bg-card/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
                                                                 <div className="flex gap-3">
                                                                     <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                     <div className="w-full">
@@ -821,12 +831,13 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                                 <p className="text-xs text-muted-foreground mt-1">Stock count mismatch detected.</p>
                                                                             </div>
                                                                             {!isManualFixMode && (
-                                                                                <button
+                                                                                <Button
+                                                                                    variant="ghost"
                                                                                     onClick={() => setIsManualFixMode(true)}
-                                                                                    className="text-xs text-muted-foreground underline hover:text-foreground"
+                                                                                    className="h-auto p-0 text-xs text-muted-foreground underline hover:text-foreground hover:bg-transparent"
                                                                                 >
                                                                                     Resolve Manually
-                                                                                </button>
+                                                                                </Button>
                                                                             )}
                                                                         </div>
 
@@ -843,9 +854,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                                         <div className="text-sm font-bold text-amber-600 dark:text-amber-400">{(selectedItem.stock || 0) + 5}</div>
                                                                                     </div>
                                                                                 </div>
-                                                                                <button className="w-full py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded shadow-sm transition-colors">
+                                                                                <Button className="w-full py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-sm focus-visible:outline-amber-600">
                                                                                     Auto-Sync to Warehouse
-                                                                                </button>
+                                                                                </Button>
                                                                             </>
                                                                         ) : (
                                                                             <div className="mt-3 space-y-2">
@@ -883,21 +894,22 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                                 </div>
 
                                                                                 <div className="flex gap-2 mt-3">
-                                                                                    <button
+                                                                                    <Button
                                                                                         onClick={() => setIsManualFixMode(false)}
-                                                                                        className="flex-1 py-1.5 bg-background border border-input text-foreground text-xs font-medium rounded hover:bg-muted"
+                                                                                        variant="outline"
+                                                                                        className="flex-1 text-xs py-1.5"
                                                                                     >
                                                                                         Cancel
-                                                                                    </button>
-                                                                                    <button
+                                                                                    </Button>
+                                                                                    <Button
                                                                                         onClick={() => {
                                                                                             alert(`Fixed with: ${resolutionMethod}`)
                                                                                             setIsManualFixMode(false)
                                                                                         }}
-                                                                                        className="flex-1 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded shadow-sm"
+                                                                                        className="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm focus-visible:outline-amber-600"
                                                                                     >
                                                                                         Confirm Fix
-                                                                                    </button>
+                                                                                    </Button>
                                                                                 </div>
                                                                             </div>
                                                                         )}
@@ -911,9 +923,10 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                             {/* Product Overview */}
                                             <div>
-                                                <button
+                                                <Button
+                                                    variant="ghost"
                                                     onClick={() => toggleSection('productOverview')}
-                                                    className="flex items-center justify-between w-full mb-2 group"
+                                                    className="flex items-center justify-between w-full h-auto p-0 mb-2 hover:bg-transparent group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Product Overview</span>
                                                     <ChevronDownIcon
@@ -922,9 +935,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             sections.productOverview ? "transform rotate-0" : "transform -rotate-90"
                                                         )}
                                                     />
-                                                </button>
+                                                </Button>
                                                 {sections.productOverview && (
-                                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-zinc-900 border border-border rounded-lg p-4">
+                                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-card border border-border rounded-lg p-4">
                                                         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                                                             <CubeIcon className="h-12 w-12 text-muted-foreground/50" />
                                                         </div>
@@ -932,15 +945,18 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <h4 className="text-base font-semibold text-foreground">{selectedItem.name}</h4>
                                                             <p className="text-sm text-muted-foreground">{selectedItem.id}</p>
                                                             <div className="flex gap-2 mt-2">
-                                                                <span className={cn(
-                                                                    "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                                                                    selectedItem.statusColor
-                                                                )}>
+                                                                <Badge
+                                                                    variant={
+                                                                        selectedItem.status === 'In Stock' ? 'success' :
+                                                                            selectedItem.status === 'Low Stock' ? 'warning' :
+                                                                                'error'
+                                                                    }
+                                                                >
                                                                     {selectedItem.status}
-                                                                </span>
-                                                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground border border-border">
+                                                                </Badge>
+                                                                <Badge variant="outline">
                                                                     Premium
-                                                                </span>
+                                                                </Badge>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -951,9 +967,10 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                             {/* Lifecycle */}
                                             <div>
-                                                <button
+                                                <Button
+                                                    variant="ghost"
                                                     onClick={() => toggleSection('lifecycle')}
-                                                    className="flex items-center justify-between w-full mb-2 group"
+                                                    className="flex items-center justify-between w-full h-auto p-0 mb-2 hover:bg-transparent group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Lifecycle Status</span>
                                                     <ChevronDownIcon
@@ -962,9 +979,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             sections.lifecycle ? "transform rotate-0" : "transform -rotate-90"
                                                         )}
                                                     />
-                                                </button>
+                                                </Button>
                                                 {sections.lifecycle && (
-                                                    <div className="pl-4 border-l border-border ml-2 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-zinc-900 border-r border-y border-border rounded-r-lg p-4">
+                                                    <div className="pl-4 border-l border-border ml-2 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-card border-r border-y border-border rounded-r-lg p-4">
                                                         {['Material Sourced', 'Manufacturing', 'Quality Control'].map((step, i) => (
                                                             <div key={i} className="relative pb-2 last:pb-0">
                                                                 <div className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-primary" />
@@ -987,19 +1004,23 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <div>
                                                 <h4 className="text-sm font-medium text-foreground mb-2">Action Required</h4>
                                                 <div className="pl-4 border-l border-border ml-2 space-y-3">
-                                                    <button
+                                                    <Button
                                                         onClick={() => setIsPOModalOpen(true)}
-                                                        className="w-full py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg shadow-sm transition-colors"
+                                                        variant="primary"
+                                                        className="w-full"
                                                     >
                                                         Create Purchase Order
-                                                    </button>
-                                                    <button className="w-full py-1.5 bg-background hover:bg-muted text-muted-foreground text-xs font-semibold rounded-lg border border-border transition-colors">
+                                                    </Button>
+                                                    <Button
+                                                        className="w-full"
+                                                        variant="outline"
+                                                    >
                                                         Send Acknowledgment
-                                                    </button>
+                                                    </Button>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </Card>
                                 </div>
                             </TabPanel>
                             <TabPanel className="flex focus:outline-none min-h-[800px]">
@@ -1018,7 +1039,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 {collaborators.map((c, i) => (
                                                     <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background">
                                                         {c.avatar === 'AI' ? (
-                                                            <div className="h-full w-full rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white">AI</div>
+                                                            <div className="h-full w-full rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">AI</div>
                                                         ) : (
                                                             <img className="h-full w-full rounded-full object-cover" src={c.avatar} alt={c.name} />
                                                         )}
@@ -1029,9 +1050,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     </div>
                                                 ))}
                                             </div>
-                                            <button className="h-8 w-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                                            <Button variant="ghost" className="h-8 w-8 p-0 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                                                 <PlusIcon className="h-4 w-4" />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
 
@@ -1049,8 +1070,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                         </div>
                                                     ) : msg.avatar === 'AI' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border border-purple-200 dark:border-purple-800">
-                                                            <SparklesIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                        <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
+                                                            <SparklesIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                         </div>
                                                     ) : msg.avatar ? (
                                                         <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />
@@ -1092,20 +1113,20 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <div className="sticky bottom-4 mx-4 p-4 bg-background border border-border rounded-2xl shadow-lg z-10 transition-all duration-200">
                                         <div className="flex gap-4">
                                             <div className="flex-1 relative">
-                                                <input
+                                                <Input
                                                     type="text"
                                                     placeholder="Type a message or use @ to mention..."
-                                                    className="w-full pl-4 pr-12 py-3 bg-muted/50 border-0 rounded-xl text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary transition-shadow"
+                                                    className="w-full pl-4 pr-12 py-3 bg-muted/50 border-0 rounded-xl text-foreground placeholder-muted-foreground focus:ring-primary transition-shadow shadow-none focus:shadow-md"
                                                 />
                                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                                    <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted">
+                                                    <Button variant="ghost" className="h-auto w-auto p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted">
                                                         <PaperClipIcon className="h-5 w-5" />
-                                                    </button>
+                                                    </Button>
                                                 </div>
                                             </div>
-                                            <button className="p-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity shadow-sm">
+                                            <Button variant="primary" className="h-auto w-auto p-3 rounded-xl hover:opacity-90 transition-opacity shadow-sm bg-primary text-primary-foreground">
                                                 <PaperAirplaneIcon className="h-5 w-5" />
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 </div>
@@ -1115,11 +1136,11 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <div className="p-5 border-b border-border bg-background/50">
                                         <div className="flex items-center justify-between mb-2">
                                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Context</h3>
-                                            <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                                            <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center border border-orange-200 dark:border-orange-500/30">
-                                                <ClockIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center border border-amber-200 dark:border-amber-500/30">
+                                                <ClockIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-foreground">Pending Review</p>
@@ -1132,35 +1153,45 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         <div>
                                             <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Suggested Actions</h4>
                                             <div className="space-y-3">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left">
+                                                <Button
+                                                    onClick={() => setIsDocumentModalOpen(true)}
+                                                    variant="ghost"
+                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left"
+                                                >
                                                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors text-zinc-900 dark:text-primary">
                                                         <DocumentTextIcon className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-zinc-900 dark:group-hover:text-primary transition-colors">Process Quote</p>
-                                                        <p className="text-[10px] text-muted-foreground">Analyze PDF & Extract Data</p>
+                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Analyze PDF & Extract Data</p>
                                                     </div>
-                                                </button>
+                                                </Button>
 
-                                                <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-green-500/50 hover:shadow-md transition-all text-left">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-green-500/50 hover:shadow-md transition-all text-left"
+                                                >
                                                     <div className="h-8 w-8 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors text-green-600 dark:text-green-400">
                                                         <CheckIcon className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Approve Order</p>
-                                                        <p className="text-[10px] text-muted-foreground">Move to Production</p>
+                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Move to Production</p>
                                                     </div>
-                                                </button>
+                                                </Button>
 
-                                                <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-orange-500/50 hover:shadow-md transition-all text-left">
-                                                    <div className="h-8 w-8 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors text-orange-600 dark:text-orange-400">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:shadow-md transition-all text-left"
+                                                >
+                                                    <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600 dark:text-amber-400">
                                                         <PencilIcon className="h-5 w-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Request Changes</p>
-                                                        <p className="text-[10px] text-muted-foreground">Send feedback to vendor</p>
+                                                        <p className="text-sm font-medium text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Request Changes</p>
+                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Send feedback to vendor</p>
                                                     </div>
-                                                </button>
+                                                </Button>
                                             </div>
                                         </div>
 
@@ -1182,16 +1213,16 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
 
                                     <div className="p-4 border-t border-border bg-muted/50">
-                                        <button className="w-full py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1">
+                                        <Button variant="ghost" className="w-full h-auto py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1">
                                             View Activity Log <ArrowRightOnRectangleIcon className="h-3 w-3" />
-                                        </button>
+                                        </Button>
                                     </div>
                                 </div>
-                            </TabPanel >
-                        </TabPanels >
-                    </TabGroup >
-                </div >
-            </div >
+                            </TabPanel>
+                        </TabPanels>
+                    </TabGroup>
+                </div>
+            </div>
 
             <Transition show={isDocumentModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={setIsDocumentModalOpen}>
@@ -1228,9 +1259,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 Previewing Purchase Order #PO-2025-001
                                             </p>
                                         </div>
-                                        <button onClick={() => setIsDocumentModalOpen(false)} className="text-muted-foreground hover:text-foreground">
+                                        <Button variant="ghost" onClick={() => setIsDocumentModalOpen(false)} className="h-auto p-1 text-muted-foreground hover:text-foreground">
                                             <XMarkIcon className="h-6 w-6" />
-                                        </button>
+                                        </Button>
                                     </div>
 
                                     <div className="bg-white text-black p-10 rounded-lg border border-zinc-200 h-[600px] overflow-auto shadow-sm">
@@ -1293,20 +1324,20 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
 
                                     <div className="mt-6 flex justify-end gap-3">
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-lg border border-transparent bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 focus:outline-none"
+                                        <Button
+                                            variant="outline"
+                                            className="px-4 py-2 border-transparent bg-muted hover:bg-muted/80"
                                             onClick={() => setIsDocumentModalOpen(false)}
                                         >
                                             Close
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="inline-flex justify-center rounded-lg border border-transparent bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 focus:outline-none"
+                                        </Button>
+                                        <Button
+                                            variant="primary"
+                                            className="px-4 py-2 border-transparent"
                                             onClick={() => { }}
                                         >
                                             Download PDF
-                                        </button>
+                                        </Button>
                                     </div>
                                 </DialogPanel>
                             </TransitionChild>

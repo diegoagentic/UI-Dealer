@@ -35,7 +35,6 @@ import { useState, useMemo, useEffect, useRef } from 'react'
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
-import { useTheme } from './useTheme'
 import { useTenant } from './TenantContext'
 import Select from './components/Select'
 import FeatureManager, { type Feature } from './components/FeatureManager'
@@ -52,6 +51,7 @@ import StreamFeed from './components/gen-ui/StreamFeed'
 import SmartQuoteHub from './components/widgets/SmartQuoteHub';
 import { useGenUI } from './context/GenUIContext'
 import DashboardMetricsGrid from './components/DashboardMetricsGrid';
+import { Card } from 'strata-design-system';
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -180,11 +180,11 @@ const recentOrders = [
 
 // Mock Data for Performance Metrics
 const performanceMetrics = [
-    { label: 'Quote win rate', value: 68, target: 65, color: 'bg-lime-400' },
-    { label: 'On-time delivery', value: 92, target: 90, color: 'bg-lime-400' },
+    { label: 'Quote win rate', value: 68, target: 65, color: 'bg-brand-400' },
+    { label: 'On-time delivery', value: 92, target: 90, color: 'bg-brand-400' },
     { label: 'Discrepancy resolution', value: 45, target: 80, color: 'bg-amber-500' },
-    { label: 'Payment speed', value: 78, target: 75, color: 'bg-lime-400' },
-    { label: 'Inventory accuracy', value: 99, target: 98, color: 'bg-lime-400' },
+    { label: 'Payment speed', value: 78, target: 75, color: 'bg-brand-400' },
+    { label: 'Inventory accuracy', value: 99, target: 98, color: 'bg-brand-400' },
 ]
 
 // Mock Data for AI Suggestions
@@ -218,8 +218,8 @@ const aiSuggestions = [
 // Color Mapping for Status Icons - Optimized for Dark Mode Contrast
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-purple-50 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300 ring-1 ring-inset ring-purple-600/20 dark:ring-purple-400/30',
-    orange: 'bg-orange-50 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300 ring-1 ring-inset ring-orange-600/20 dark:ring-orange-400/30',
+    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
     indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
@@ -228,8 +228,8 @@ const colorStyles: Record<string, string> = {
 // Solid Color Mapping for Action Buttons (High Contrast)
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-purple-600 hover:bg-purple-700 text-white shadow-sm shadow-purple-500/20 border-purple-500',
-    orange: 'bg-orange-600 hover:bg-orange-700 text-white shadow-sm shadow-orange-500/20 border-orange-500',
+    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
     indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
@@ -257,7 +257,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [showMetrics, setShowMetrics] = useState(false);
     const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
-    const { theme, toggleTheme } = useTheme()
+    // const { theme, toggleTheme } = useTheme() // Removed - useTheme not available
     const { currentTenant } = useTenant()
     const { sendMessage, setStreamOpen, setShowTriggers } = useGenUI()
 
@@ -287,6 +287,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [mainTab, setMainTab] = useState<'follow_up' | 'your_tools' | 'metrics'>('follow_up')
     const [expandedActionId, setExpandedActionId] = useState<number | null>(null)
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
+    const [performanceTimePeriod, setPerformanceTimePeriod] = useState<'Day' | 'Month' | 'Sem' | 'Year'>('Month')
     const [showCustomizeModal, setShowCustomizeModal] = useState(false);
     const [isERPSyncModalOpen, setIsERPSyncModalOpen] = useState(false);
     const [isFeatureManagerOpen, setIsFeatureManagerOpen] = useState(false);
@@ -415,6 +416,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                 </div>
 
+
                 {/* KPI Cards / Executive Summary */}
                 {showMetrics ? (
                     <>
@@ -443,7 +445,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     {Object.entries(platformSummary).map(([key, data]) => (
                                         <div
                                             key={key}
-                                            className={`min-w-[230px] max-w-[230px] h-[200px] flex flex-col justify-between bg-white dark:bg-zinc-900/50 backdrop-blur-sm rounded-xl p-3 border transition-all duration-300 group/card ${expandedCardId === key ? 'border-primary ring-1 ring-primary/20 shadow-md' : 'border-border shadow-sm hover:shadow-md'}`}
+                                            className={`min-w-[230px] max-w-[230px] h-[200px] flex flex-col justify-between bg-white dark:bg-zinc-800 backdrop-blur-sm rounded-xl p-3 border border-zinc-200 dark:border-zinc-700 transition-all duration-300 group/card ${expandedCardId === key ? 'ring-1 ring-primary/20 shadow-md' : 'shadow-sm hover:shadow-md'}`}
                                         >
                                             <div className="flex-1 flex flex-col">
                                                 {/* Header: Label + Icon */}
@@ -552,7 +554,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         </div>
                     </>
                 ) : (
-                    <div className="bg-white/60 dark:bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-gray-200 dark:border-white/10 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         {/* Collapsed Ticker View - Carousel */}
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                             {/* Left Scroll Button */}
@@ -604,10 +606,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </button>
                         </div>
 
-                        <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                         {/* Quick Actions Integrated - Compact */}
-                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                             {[
                                 { icon: <DocumentPlusIcon className="w-5 h-5" />, label: "New Quote" },
                                 { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock" },
@@ -623,13 +625,13 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     {action.icon}
                                 </button>
                             ))}
-                            <div className="w-px h-6 bg-border/50 mx-1"></div>
-                            <button className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-purple-500 transition-colors relative group" title="View All & Manage">
+                            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
+                            <button className="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 hover:text-indigo-500 transition-colors relative group" title="View All & Manage">
                                 <Squares2X2Icon className="w-5 h-5" />
                             </button>
                         </div>
 
-                        <div className="w-px h-12 bg-gray-200 dark:bg-white/10 hidden xl:block mx-2"></div>
+                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                         <button
                             onClick={() => setShowMetrics(true)}
@@ -692,7 +694,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             {/* New Section: Urgent Actions & Recent Activity */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 {/* Left Column: Urgent Actions */}
-                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
+                                <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
                                             <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
@@ -735,7 +737,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 </div>
                                                 {/* Expandable Quick Action */}
                                                 <div className={`overflow-hidden transition-all duration-300 ${expandedActionId === action.id ? 'max-h-20 opacity-100 border-t border-border' : 'max-h-0 opacity-0'}`}>
-                                                    <div className="p-3 bg-white dark:bg-zinc-900/50 flex justify-end gap-2">
+                                                    <div className="p-3 bg-secondary flex justify-end gap-2">
                                                         <button className="text-xs font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 transition-colors">
                                                             Dismiss
                                                         </button>
@@ -754,7 +756,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 </div>
 
                                 {/* Right Column: Recent Activity Feed */}
-                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6">
+                                <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
                                             {/* Changed from text-primary (lime) to text-zinc-500 for better visibility in light mode */}
@@ -773,7 +775,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 key={item.id}
                                                 className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${expandedActivityId === item.id
                                                     ? 'bg-muted/30 border-primary/20 shadow-sm'
-                                                    : 'bg-white dark:bg-zinc-900 border-border hover:border-primary/20 hover:bg-muted/10'
+                                                    : 'bg-secondary border-border hover:border-primary/20 hover:bg-muted/10'
                                                     }`}
                                             >
                                                 <div
@@ -874,21 +876,21 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             {/* New Section: Performance & AI Suggestions */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 {/* Left Column: AI Suggestions */}
-                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
+                                <div className="bg-card rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
-                                            <SparklesIcon className="w-5 h-5 text-purple-500" />
+                                            <SparklesIcon className="w-5 h-5 text-indigo-500" />
                                             AI Suggestions
                                         </h3>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-bold">
+                                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold">
                                             3 New
                                         </span>
                                     </div>
                                     <div className="space-y-4 flex-1">
                                         {aiSuggestions.map((suggestion) => (
-                                            <div key={suggestion.id} className="p-4 rounded-xl border border-border bg-zinc-50 dark:bg-zinc-800/20 hover:border-purple-200 dark:hover:border-purple-900/50 transition-colors group cursor-pointer">
+                                            <div key={suggestion.id} className="p-4 rounded-xl border border-border bg-muted dark:bg-secondary/50 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-colors group cursor-pointer">
                                                 <div className="flex items-start gap-4">
-                                                    <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                                    <div className="w-10 h-10 rounded-full bg-card dark:bg-secondary border border-zinc-100 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                                                         <suggestion.icon className="w-5 h-5 text-zinc-500" />
                                                     </div>
                                                     <div className="flex-1">
@@ -903,7 +905,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         </p>
                                                         <button
                                                             onClick={() => handleGenUIAction(`Apply Suggestion: ${suggestion.title}`)}
-                                                            className="mt-3 text-xs font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 flex items-center gap-1 group/btn"
+                                                            className="mt-3 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 group/btn"
                                                         >
                                                             Apply Suggestion <ArrowRightIcon className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
                                                         </button>
@@ -915,9 +917,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 </div>
 
                                 {/* Right Column: Performance Tracking (Adaptive) */}
-                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full relative overflow-hidden group">
+                                <div className="bg-card rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full relative overflow-hidden group">
                                     {/* Background glow effect - Adaptive */}
-                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-lime-500/10 dark:bg-lime-500/20 blur-3xl rounded-full pointer-events-none opacity-50 dark:opacity-100"></div>
+                                    <div className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 bg-brand-500/10 dark:bg-brand-500/20 blur-3xl rounded-full pointer-events-none opacity-50 dark:opacity-100"></div>
 
                                     <div className="flex items-center justify-between mb-8 relative z-10">
                                         <div>
@@ -926,7 +928,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </div>
                                         <div className="flex bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700/50">
                                             {['Day', 'Month', 'Sem', 'Year'].map((period) => (
-                                                <button key={period} className={`px-3 py-1 text-[10px] font-medium rounded-md transition-all ${period === 'Month' ? 'bg-white dark:bg-lime-400 text-foreground dark:text-zinc-900 shadow-sm border border-border dark:border-transparent' : 'text-muted-foreground hover:text-foreground hover:bg-zinc-200/50 dark:hover:bg-zinc-700'}`}>
+                                                <button key={period} className={`px-3 py-1 text-[10px] font-medium rounded-md transition-all ${period === 'Month' ? 'bg-white dark:bg-brand-400 text-foreground dark:text-zinc-900 shadow-sm border border-border dark:border-transparent' : 'text-muted-foreground hover:text-foreground hover:bg-zinc-200/50 dark:hover:bg-zinc-700'}`}>
                                                     {period}
                                                 </button>
                                             ))}
@@ -1003,14 +1005,14 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: -20 }}
                                             whileDrag={{ scale: 1.02, zIndex: 50, boxShadow: "0px 10px 20px rgba(0,0,0,0.1)" }}
-                                            className="mb-8 rounded-2xl bg-white dark:bg-zinc-900 overflow-hidden relative"
+                                            className="mb-8 rounded-2xl bg-card overflow-hidden relative"
                                         >
                                             {/* Drag Handle Overlay - Optional if using specific handle, but Reorder.Item defaults to whole item draggable unless dragListener={false} */}
                                             {/* We want smooth reordering, so we'll let the user drag from anywhere or just handle? User asked for guidance, usually handle is explicit. */}
                                             {/* Let's try explicit handle for better control as requested "guide" */}
 
                                             {toolId === 'recent_orders' ? (
-                                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                                                     {/* Header for Orders */}
                                                     <div className="p-6 border-b border-border">
                                                         <div className="flex items-center justify-between mb-4">
@@ -1199,7 +1201,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                 {expandedIds.has(order.id) && (
                                                                                     <tr>
                                                                                         <td colSpan={6} className="px-0 py-0 border-b border-gray-200 dark:border-white/10">
-                                                                                            <div className="p-4 bg-gray-50 dark:bg-black/40 pl-12">
+                                                                                            <div className="p-4 bg-muted dark:bg-secondary pl-12">
                                                                                                 <div className="flex items-start gap-4">
                                                                                                     <div className="flex-1 space-y-4">
                                                                                                         <div className="flex items-center gap-3">
@@ -1227,9 +1229,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                         <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
                                                                                                             <p className="text-xs font-medium text-gray-500 uppercase">Alert</p>
                                                                                                             <div className="mt-2 flex items-start gap-2">
-                                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 flex-shrink-0" />
+                                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                                                 <div>
-                                                                                                                    <p className="text-sm font-medium text-orange-700 dark:text-orange-400">Customs Delay</p>
+                                                                                                                    <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
                                                                                                                     <p className="text-xs text-gray-500 mt-1">Shipment held at port. ETA +24h.</p>
                                                                                                                     <button onClick={() => setTrackingOrder(order)} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">Track Shipment</button>
                                                                                                                 </div>
@@ -1251,7 +1253,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                 {filteredOrders.map((order) => (
                                                                     <div
                                                                         key={order.id}
-                                                                        className={`group relative bg-white dark:bg-zinc-900 rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
+                                                                        className={`group relative bg-secondary rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
                                                                         onClick={() => toggleExpand(order.id)}
                                                                     >
                                                                         <div className="p-5">
@@ -1348,12 +1350,12 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     </div>
 
                                                                                     <div className="w-full md:w-[280px]">
-                                                                                        <div className="rounded-xl border border-orange-200 dark:border-orange-500/20 bg-orange-50 dark:bg-orange-500/10 p-4">
+                                                                                        <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
                                                                                             <div className="flex gap-3">
-                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-orange-500 shrink-0" />
+                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 shrink-0" />
                                                                                                 <div>
-                                                                                                    <h5 className="text-sm font-bold text-orange-700 dark:text-orange-400">Alert: Customs Delay</h5>
-                                                                                                    <p className="mt-1 text-xs text-orange-600/80 dark:text-orange-400/70">Held at port. ETA +24h.</p>
+                                                                                                    <h5 className="text-sm font-bold text-amber-700 dark:text-amber-400">Alert: Customs Delay</h5>
+                                                                                                    <p className="mt-1 text-xs text-amber-600/80 dark:text-amber-400/70">Held at port. ETA +24h.</p>
                                                                                                     <button onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">
                                                                                                         Track Shipment
                                                                                                     </button>
@@ -1404,7 +1406,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     </div>
 
                                                     {/* Right Column: Recent Quotes List (1/3 width) */}
-                                                    <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
+                                                    <div className="bg-card rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
                                                         <div className="flex items-center justify-between mb-6">
                                                             <h3 className="text-lg font-brand font-semibold text-foreground">Recent Quotes</h3>
                                                             <button className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">View All</button>
@@ -1453,8 +1455,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 <POVerificationWidget />
                                             ) : (
                                                 /* Placeholder for New B2B Widgets */
-                                                <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                                    <div className="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4">
+                                                <div className="bg-card rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                                    <div className="w-12 h-12 rounded-full bg-muted dark:bg-secondary flex items-center justify-center mb-4">
                                                         <CubeIcon className="w-6 h-6 text-zinc-400" />
                                                     </div>
                                                     <h3 className="text-lg font-brand font-semibold text-foreground">{feature?.title}</h3>
@@ -1507,7 +1509,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 leaveFrom="opacity-100 scale-100"
                                 leaveTo="opacity-0 scale-95"
                             >
-                                <DialogPanel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
+                                <DialogPanel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-card p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
                                     <Dialog.Title
                                         as="h3"
                                         className="text-lg font-medium leading-6 text-zinc-900 dark:text-white flex justify-between items-center mb-6"
@@ -1563,7 +1565,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                             <div className="mt-auto pt-6 border-t border-zinc-100 dark:border-zinc-800">
                                                 <button
                                                     type="button"
-                                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                                                    className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-300 dark:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                                                     onClick={() => console.log('Contacting support...')}
                                                 >
                                                     <EnvelopeIcon className="h-4 w-4" />

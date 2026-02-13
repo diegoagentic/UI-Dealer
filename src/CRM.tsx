@@ -23,7 +23,7 @@ export default function CRM({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                         <p className="text-muted-foreground mt-1">Customer Relationship Management.</p>
                     </div>
                 </div>
-                <div className="p-10 border-2 border-dashed border-gray-300 rounded-lg text-center text-gray-400">
+                <div className="p-10 border-2 border-dashed border-border rounded-lg text-center text-muted-foreground">
                     CRM Content Placeholder
                 </div>
             </div>

@@ -50,7 +50,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
     };
 
     return (
-        <div className={`bg-white dark:bg-zinc-900 border ${isMatched ? 'border-green-200 dark:border-green-900' : 'border-zinc-200 dark:border-zinc-800'} rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow`}>
+        <div className={`bg-white dark:bg-zinc-800 border ${isMatched ? 'border-green-200 dark:border-green-900' : 'border-zinc-200 dark:border-zinc-800'} rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow`}>
             {/* Header / Summary */}
             <div
                 onClick={() => setIsOpen(!isOpen)}
@@ -86,7 +86,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
 
             {/* Expanded Content */}
             {isOpen && (
-                <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 animate-in slide-in-from-top-2 duration-200">
+                <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-800 animate-in slide-in-from-top-2 duration-200">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Column 1: Source Data */}
                         <div className="flex flex-col gap-1">

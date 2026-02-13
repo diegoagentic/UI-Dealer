@@ -28,7 +28,7 @@ export default function WarrantyClaimArtifact({ data }: { data: any }) {
     }
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-green-50 dark:bg-green-900/20 px-4 py-3 border-b border-green-100 dark:border-green-800 flex items-center gap-2">
                 <ShieldCheckIcon className="w-4 h-4 text-green-600 dark:text-green-500" />

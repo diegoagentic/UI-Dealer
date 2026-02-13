@@ -49,7 +49,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
 
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-2xl border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl w-full max-w-2xl border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
 
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
@@ -100,7 +100,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                                 type="text"
                                 value={formData.description || ''}
                                 onChange={(e) => handleChange('description', e.target.value)}
-                                className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-orange-50/50 dark:bg-zinc-800/50 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-amber-50/50 dark:bg-zinc-800/50 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                             />
                             {/* Inline Suggestion */}
                             {asset.issues?.length && (
@@ -136,7 +136,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                             <input
                                 type="text"
                                 defaultValue="Office Furniture"
-                                className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-orange-50/50 dark:bg-zinc-800/50 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                                className="w-full px-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-amber-50/50 dark:bg-zinc-800/50 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                             />
                             {/* Inline Suggestion */}
                             {asset.issues?.length && (
@@ -188,7 +188,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex flex-col items-center gap-4 shrink-0">
+                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex flex-col items-center gap-4 shrink-0">
 
                     <div className="w-full flex justify-end gap-3">
                         <button onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">

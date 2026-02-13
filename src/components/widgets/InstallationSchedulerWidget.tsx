@@ -48,9 +48,9 @@ export default function InstallationSchedulerWidget() {
             <div className="space-y-4">
                 {/* Date Header Grouping could go here, for now simple list */}
                 {scheduleItems.map((item) => (
-                    <div key={item.id} className="flex gap-4 p-3 rounded-xl border border-border bg-zinc-50 dark:bg-zinc-800/20 hover:border-primary/30 transition-colors group">
+                    <div key={item.id} className="flex gap-4 p-3 rounded-xl border border-border bg-muted/20 hover:border-primary/30 transition-colors group">
                         {/* Date Box */}
-                        <div className="flex flex-col items-center justify-center w-14 h-14 rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 shadow-sm shrink-0">
+                        <div className="flex flex-col items-center justify-center w-14 h-14 rounded-lg bg-card border border-border shadow-sm shrink-0">
                             <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase">
                                 {new Date(item.date).toLocaleDateString('en-US', { month: 'short' })}
                             </span>
@@ -89,7 +89,7 @@ export default function InstallationSchedulerWidget() {
                     </div>
                 ))}
 
-                <button className="w-full py-2 text-xs font-medium text-muted-foreground border border-dashed border-border rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+                <button className="w-full py-2 text-xs font-medium text-muted-foreground border border-dashed border-border rounded-lg hover:bg-muted/50 transition-colors">
                     + Schedule New Installation
                 </button>
             </div>

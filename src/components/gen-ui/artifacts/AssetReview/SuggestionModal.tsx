@@ -24,7 +24,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
         },
         {
             id: 'premium',
-            badge: { text: 'Premium Quality', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' },
+            badge: { text: 'Premium Quality', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
             title: 'Premium Height Adjustable Workstation',
             sku: 'DESK-ELECTRIC-7230-PREMIUM',
             total: 148437.5,
@@ -40,7 +40,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
         },
         {
             id: 'eco',
-            badge: { text: 'Eco-Friendly', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' },
+            badge: { text: 'Eco-Friendly', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
             title: 'Eco-Friendly Height Adjustable Workstation',
             sku: 'DESK-ELECTRIC-7230-ECO',
             total: 124687.5,
@@ -52,7 +52,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
 
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-4xl border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-2xl w-full max-w-4xl border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-200 overflow-hidden flex flex-col max-h-[90vh]">
                 {/* Header */}
                 <div className="flex justify-between items-start p-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
                     <div>
@@ -80,10 +80,10 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
                 </div>
 
                 {/* Grid Content */}
-                <div className="p-6 overflow-y-auto bg-zinc-50/50 dark:bg-zinc-900/50 scrollbar-micro">
+                <div className="p-6 overflow-y-auto bg-zinc-50/50 dark:bg-zinc-800/50 scrollbar-micro">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {options.map((opt) => (
-                            <div key={opt.id} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full">
+                            <div key={opt.id} className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-full">
                                 <div>
                                     <div className="flex justify-between items-start mb-4">
                                         <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide ${opt.badge.color}`}>
@@ -128,7 +128,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
                 </div>
 
                 {/* Footer */}
-                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0 flex justify-center">
+                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-800 shrink-0 flex justify-center">
                     <button
                         onClick={onClose}
                         className="w-full max-w-sm py-2.5 text-sm font-bold text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"

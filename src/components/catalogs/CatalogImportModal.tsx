@@ -24,7 +24,8 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 interface CatalogImportModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onImportComplete: (data: any) => void;
+    onClose: () => void;
+    onImportComplete: (data: unknown) => void;
 }
 
 type ImportStep = 'select' | 'configure' | 'processing' | 'complete';
@@ -167,7 +168,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                 <div className="relative mb-6">
                     <div className="absolute inset-0 bg-primary/20 rounded-full animate-ping" />
-                    <div className="relative bg-white dark:bg-zinc-800 p-4 rounded-full border border-primary/20 shadow-xl shadow-primary/10">
+                    <div className="relative bg-background p-4 rounded-full border border-primary/20 shadow-xl shadow-primary/10">
                         <Icon className="w-8 h-8 text-primary animate-pulse" />
                     </div>
                 </div>
@@ -176,7 +177,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                 <p className="text-sm text-muted-foreground mb-6 max-w-xs">{stageInfo.detail}</p>
 
                 {/* Progress Bar */}
-                <div className="w-full max-w-xs bg-zinc-100 dark:bg-zinc-800 rounded-full h-2 mb-2 overflow-hidden">
+                <div className="w-full max-w-xs bg-secondary rounded-full h-2 mb-2 overflow-hidden">
                     <div
                         className="bg-primary h-full rounded-full transition-all duration-300 ease-out"
                         style={{ width: `${progress}%` }}
@@ -227,16 +228,16 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                         leaveFrom="opacity-100 scale-100"
                         leaveTo="opacity-0 scale-95"
                     >
-                        <Dialog.Panel className="w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]">
+                        <Dialog.Panel className="w-full max-w-2xl bg-card rounded-2xl shadow-xl border border-border overflow-hidden flex flex-col max-h-[90vh]">
 
                             {/* Header */}
-                            <div className="flex items-center justify-between p-4 border-b border-zinc-100 dark:border-zinc-800">
+                            <div className="flex items-center justify-between p-4 border-b border-border">
                                 <Dialog.Title className="text-lg font-semibold text-foreground flex items-center gap-2">
                                     <CloudArrowUpIcon className="w-5 h-5 text-zinc-500" />
                                     Import Catalog
                                 </Dialog.Title>
                                 {step !== 'processing' && (
-                                    <button onClick={onClose} className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors">
+                                    <button onClick={onClose} className="p-1 rounded-full hover:bg-muted text-zinc-500 transition-colors">
                                         <XMarkIcon className="w-5 h-5" />
                                     </button>
                                 )}
@@ -254,7 +255,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                     "p-4 rounded-xl border-2 flex flex-col items-center gap-3 transition-all",
                                                     sourceType === 'url'
                                                         ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 text-muted-foreground"
+                                                        : "border-input hover:border-input text-muted-foreground"
                                                 )}
                                             >
                                                 <GlobeAltIcon className="w-8 h-8" />
@@ -266,7 +267,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                     "p-4 rounded-xl border-2 flex flex-col items-center gap-3 transition-all",
                                                     sourceType === 'file'
                                                         ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 text-muted-foreground"
+                                                        : "border-input hover:border-input text-muted-foreground"
                                                 )}
                                             >
                                                 <PhotoIcon className="w-8 h-8" />
@@ -278,7 +279,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                     "p-4 rounded-xl border-2 flex flex-col items-center gap-3 transition-all",
                                                     sourceType === 'erp'
                                                         ? "border-primary bg-primary/5 text-primary"
-                                                        : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 text-muted-foreground"
+                                                        : "border-input hover:border-input text-muted-foreground"
                                                 )}
                                             >
                                                 <ServerStackIcon className="w-8 h-8" />
@@ -293,7 +294,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                     <input
                                                         type="url"
                                                         placeholder="https://manufacturer.com/catalog/2026/q1"
-                                                        className="flex-1 px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                                                        className="flex-1 px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none"
                                                         value={url}
                                                         onChange={(e) => setUrl(e.target.value)}
                                                     />
@@ -305,7 +306,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                         )}
 
                                         {sourceType === 'file' && (
-                                            <div className="border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-xl p-8 text-center bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
+                                            <div className="border-2 border-dashed border-input rounded-xl p-8 text-center bg-muted/50 hover:bg-muted transition-colors cursor-pointer">
                                                 <CloudArrowUpIcon className="w-10 h-10 text-zinc-400 mx-auto mb-3" />
                                                 <p className="text-sm font-medium text-foreground">Click to upload catalog file</p>
                                                 <p className="text-xs text-muted-foreground mt-1">Supports JSON, CSV, XML</p>
@@ -315,10 +316,10 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                         {sourceType === 'erp' && (
                                             <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2">
                                                 <label className="block text-sm font-medium text-foreground">Available ERP Catalogs</label>
-                                                <div className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+                                                <div className="border border-input rounded-xl overflow-hidden">
                                                     <div className="max-h-[200px] overflow-y-auto">
                                                         <table className="w-full text-sm text-left">
-                                                            <thead className="text-xs text-muted-foreground bg-zinc-50 dark:bg-zinc-800/50 uppercase">
+                                                            <thead className="text-xs text-muted-foreground bg-muted/50 uppercase">
                                                                 <tr>
                                                                     <th className="px-4 py-3 font-medium">Catalog Name</th>
                                                                     <th className="px-4 py-3 font-medium">Version</th>
@@ -326,7 +327,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                                     <th className="px-4 py-3 font-medium">Updated</th>
                                                                 </tr>
                                                             </thead>
-                                                            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                                                            <tbody className="divide-y divide-border">
                                                                 {MOCK_ERP_CATALOGS.map(cat => (
                                                                     <tr
                                                                         key={cat.id}
@@ -335,12 +336,12 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                                             "cursor-pointer transition-colors",
                                                                             selectedErpCatalog === cat.id
                                                                                 ? "bg-primary/10 dark:bg-primary/20"
-                                                                                : "hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                                                                                : "hover:bg-muted"
                                                                         )}
                                                                     >
                                                                         <td className="px-4 py-3 font-medium text-foreground">
                                                                             <div className="flex items-center gap-2">
-                                                                                <div className={cn("w-4 h-4 rounded-full border flex items-center justify-center", selectedErpCatalog === cat.id ? "border-primary bg-primary" : "border-zinc-300 dark:border-zinc-600")}>
+                                                                                <div className={cn("w-4 h-4 rounded-full border flex items-center justify-center", selectedErpCatalog === cat.id ? "border-primary bg-primary" : "border-input")}>
                                                                                     {selectedErpCatalog === cat.id && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                                                                                 </div>
                                                                                 {cat.name}
@@ -372,7 +373,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                             {/* Option 1: Current Tenant */}
                                             <label className={cn(
                                                 "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                                                tenantScope === 'current' ? "border-primary bg-primary/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300"
+                                                tenantScope === 'current' ? "border-primary bg-primary/5" : "border-input hover:border-input"
                                             )}>
                                                 <input
                                                     type="radio"
@@ -392,7 +393,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                             {/* Option 2: All Tenants */}
                                             <label className={cn(
                                                 "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                                                tenantScope === 'all' ? "border-primary bg-primary/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300"
+                                                tenantScope === 'all' ? "border-primary bg-primary/5" : "border-input hover:border-input"
                                             )}>
                                                 <input
                                                     type="radio"
@@ -412,7 +413,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                             {/* Option 3: Specific Tenants */}
                                             <label className={cn(
                                                 "flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all",
-                                                tenantScope === 'select' ? "border-primary bg-primary/5" : "border-zinc-200 dark:border-zinc-700 hover:border-zinc-300"
+                                                tenantScope === 'select' ? "border-primary bg-primary/5" : "border-input hover:border-input"
                                             )}>
                                                 <input
                                                     type="radio"
@@ -433,7 +434,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                         {/* Multi-select List */}
                                         {tenantScope === 'select' && (
                                             <div className="mt-4 border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden animate-in fade-in slide-in-from-top-2">
-                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 px-4 py-2 border-b border-zinc-100 dark:border-zinc-700 text-xs font-medium text-muted-foreground uppercase">
+                                                <div className="bg-muted/50 px-4 py-2 border-b border-border text-xs font-medium text-muted-foreground uppercase">
                                                     Select Tenants
                                                 </div>
                                                 <div className="divide-y divide-zinc-100 dark:divide-zinc-800 max-h-[150px] overflow-y-auto">
@@ -441,13 +442,13 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                                         <div
                                                             key={tenant.id}
                                                             onClick={() => toggleTenant(tenant.id)}
-                                                            className="flex items-center gap-3 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 cursor-pointer"
+                                                            className="flex items-center gap-3 px-4 py-3 hover:bg-muted cursor-pointer"
                                                         >
                                                             <div className={cn(
                                                                 "w-4 h-4 rounded border flex items-center justify-center transition-colors",
                                                                 selectedTenants.includes(tenant.id)
                                                                     ? "bg-primary border-primary text-white"
-                                                                    : "border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900"
+                                                                    : "border-input bg-background"
                                                             )}>
                                                                 {selectedTenants.includes(tenant.id) && <XMarkIcon className="w-3 h-3 rotate-45" style={{ transform: 'rotate(0deg)' }} />}
                                                                 {/* Using Check icon but XMark is imported, let me just use absolute check logic or generic svg */}
@@ -476,19 +477,19 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                                         <p className="text-muted-foreground mb-8">
                                             Successfully processed {sourceType === 'erp' ? 'ERP catalog' : 'catalog'} data.
                                             <br />
-                                            {tenantScope === 'all' && <span className="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded mt-2 inline-block">Applies to All Tenants</span>}
-                                            {tenantScope === 'select' && <span className="text-xs bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded mt-2 inline-block">Applies to {selectedTenants.length} Tenants</span>}
+                                            {tenantScope === 'all' && <span className="text-xs bg-secondary px-2 py-1 rounded mt-2 inline-block">Applies to All Tenants</span>}
+                                            {tenantScope === 'select' && <span className="text-xs bg-secondary px-2 py-1 rounded mt-2 inline-block">Applies to {selectedTenants.length} Tenants</span>}
                                         </p>
                                         <div className="grid grid-cols-3 gap-4 w-full max-w-md text-center mb-8">
-                                            <div className="bg-zinc-50 dark:bg-zinc-800 p-3 rounded-lg">
+                                            <div className="bg-secondary/50 p-3 rounded-lg">
                                                 <div className="text-2xl font-bold text-foreground">{sourceType === 'erp' ? 4500 : 124}</div>
                                                 <div className="text-xs text-muted-foreground">Products</div>
                                             </div>
-                                            <div className="bg-zinc-50 dark:bg-zinc-800 p-3 rounded-lg">
+                                            <div className="bg-secondary/50 p-3 rounded-lg">
                                                 <div className="text-2xl font-bold text-foreground">Active</div>
                                                 <div className="text-xs text-muted-foreground">Status</div>
                                             </div>
-                                            <div className="bg-zinc-50 dark:bg-zinc-800 p-3 rounded-lg">
+                                            <div className="bg-secondary/50 p-3 rounded-lg">
                                                 <div className="text-2xl font-bold text-foreground">100%</div>
                                                 <div className="text-xs text-muted-foreground">Accuracy</div>
                                             </div>
@@ -499,10 +500,10 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
 
                             {/* Footer */}
                             {(step === 'select' || step === 'configure') && (
-                                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                <div className="p-4 border-t border-border flex justify-end gap-3 bg-muted/50">
                                     <button
                                         onClick={step === 'configure' ? () => setStep('select') : onClose}
-                                        className="px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-foreground font-medium rounded-lg transition-colors"
+                                        className="px-4 py-2 bg-background border border-input hover:bg-muted text-foreground font-medium rounded-lg transition-colors"
                                     >
                                         {step === 'configure' ? 'Back' : 'Cancel'}
                                     </button>
@@ -529,7 +530,7 @@ export default function CatalogImportModal({ isOpen, onClose, onImportComplete }
                             )}
 
                             {step === 'complete' && (
-                                <div className="p-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-center w-full">
+                                <div className="p-4 border-t border-border flex justify-center w-full">
                                     <button
                                         onClick={handleComplete}
                                         className="w-full max-w-sm px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"

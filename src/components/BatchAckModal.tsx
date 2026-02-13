@@ -90,7 +90,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 text-left shadow-2xl transition-all w-full sm:max-w-4xl border border-zinc-200 dark:border-zinc-800">
+                            <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-card text-left shadow-2xl transition-all w-full sm:max-w-4xl border border-border">
                                 {showSuccess ? (
                                     <div className="p-12 flex flex-col items-center justify-center text-center">
                                         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4">
@@ -103,7 +103,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                     </div>
                                 ) : (
                                     <div className="h-[600px] flex flex-col">
-                                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-900/50">
+                                        <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-muted/50">
                                             <div>
                                                 <Dialog.Title as="h3" className="text-lg font-bold text-foreground">
                                                     Bulk Acknowledge Processing
@@ -128,7 +128,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                                 'pb-3 text-sm font-medium border-b-2 outline-none transition-colors',
                                                                 selected
                                                                     ? 'border-primary text-primary'
-                                                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-zinc-300'
+                                                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-primary/50'
                                                             )
                                                         }
                                                     >
@@ -143,7 +143,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                                 'pb-3 text-sm font-medium border-b-2 outline-none transition-colors',
                                                                 selected
                                                                     ? 'border-red-500 text-red-600 dark:text-red-400'
-                                                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-zinc-300'
+                                                                    : 'border-transparent text-muted-foreground hover:text-foreground hover:border-primary/50'
                                                             )
                                                         }
                                                     >
@@ -155,7 +155,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                 </Tab.List>
                                             </div>
 
-                                            <Tab.Panels className="flex-1 overflow-hidden bg-zinc-50/30 dark:bg-black/20">
+                                            <Tab.Panels className="flex-1 overflow-hidden bg-muted/30">
                                                 {/* Ready Panel */}
                                                 <Tab.Panel className="h-full flex flex-col">
                                                     <div className="flex-1 overflow-y-auto p-6">
@@ -174,9 +174,9 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                             {readyOrders.map((order) => (
                                                                 <div
                                                                     key={order.id}
-                                                                    className={`p-4 rounded-xl border bg-white dark:bg-zinc-800 transition-all flex items-center gap-4 ${selectedReady.includes(order.id)
+                                                                    className={`p-4 rounded-xl border bg-card transition-all flex items-center gap-4 ${selectedReady.includes(order.id)
                                                                         ? 'border-primary ring-1 ring-primary/20 shadow-sm'
-                                                                        : 'border-border hover:border-zinc-300 dark:hover:border-zinc-700'
+                                                                        : 'border-border hover:border-primary/50'
                                                                         }`}
                                                                     onClick={() => toggleSelect(order.id)}
                                                                 >
@@ -200,7 +200,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                             ))}
                                                         </div>
                                                     </div>
-                                                    <div className="p-4 border-t border-border bg-white dark:bg-zinc-900 flex justify-between items-center">
+                                                    <div className="p-4 border-t border-border bg-card flex justify-between items-center">
                                                         <span className="text-sm text-muted-foreground">
                                                             {selectedReady.length} selected
                                                         </span>
@@ -224,7 +224,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                                 onClick={handleApprove}
                                                                 className={`flex items-center gap-2 px-6 py-2 rounded-lg text-sm font-bold text-white transition-all ${selectedReady.length > 0 && !isProcessing
                                                                     ? 'bg-primary hover:bg-primary/90 shadow-md hover:shadow-lg'
-                                                                    : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
+                                                                    : 'bg-muted text-muted-foreground cursor-not-allowed'
                                                                     }`}
                                                             >
                                                                 {isProcessing && <ArrowPathIcon className="w-4 h-4 animate-spin" />}
@@ -238,7 +238,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                 <Tab.Panel className="h-full p-6 overflow-y-auto">
                                                     <div className="space-y-3">
                                                         {attentionOrders.map((order) => (
-                                                            <div key={order.id} className="p-4 rounded-xl border border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/10 flex items-start gap-4">
+                                                            <div key={order.id} className="p-4 rounded-xl border border-destructive/20 bg-destructive/10 flex items-start gap-4">
                                                                 <ExclamationTriangleIcon className="w-5 h-5 text-red-600 mt-0.5" />
                                                                 <div className="flex-1">
                                                                     <div className="flex justify-between items-start mb-1">
@@ -249,7 +249,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                                         </div>
                                                                     </div>
                                                                     <p className="text-sm text-muted-foreground mb-2">{order.vendor} • {order.amount}</p>
-                                                                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-white dark:bg-zinc-900 border border-red-100 dark:border-red-900/30 text-xs font-medium text-red-700 dark:text-red-400">
+                                                                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-card border border-destructive/20 text-xs font-medium text-red-700 dark:text-red-400">
                                                                         {order.discrepancy}
                                                                     </div>
                                                                 </div>

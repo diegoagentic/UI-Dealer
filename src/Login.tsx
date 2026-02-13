@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { EyeIcon, EyeSlashIcon, ArrowRightIcon, ChevronDownIcon, BuildingOfficeIcon } from '@heroicons/react/24/outline'
 import logoLightBrand from './assets/logo-light-brand.png';
 import logoDarkBrand from './assets/logo-dark-brand.png';
-import { useTheme } from './useTheme';
+import { useTheme } from 'strata-design-system';
 
 const organizations = [
     { name: 'Strata Manufacturing HQ', users: 245, type: 'Primary workspace' },
@@ -130,7 +130,7 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: () => void }
                                                 <div className="flex-1 overflow-hidden">
                                                     <div className="flex items-center gap-2">
                                                         <span className="font-semibold text-sm truncate">{selectedOrg.name}</span>
-                                                        <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0"></span>
+                                                        <span className="h-2 w-2 rounded-full bg-green-500 shrink-0"></span>
                                                     </div>
                                                     <div className="text-xs text-zinc-400 truncate">{selectedOrg.type} • {selectedOrg.users} users</div>
                                                 </div>
@@ -138,7 +138,7 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: () => void }
                                             </button>
 
                                             {isDropdownOpen && (
-                                                <div className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+                                                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
                                                     {organizations.map((org, index) => (
                                                         <button
                                                             key={index}
@@ -194,30 +194,30 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: () => void }
                                 </div>
 
                                 {isRegistering && (
-                                    <div className="bg-emerald-500/10 rounded-lg p-4 border border-emerald-500/20">
-                                        <div className="flex items-start gap-2 text-xs text-emerald-400">
+                                    <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
+                                        <div className="flex items-start gap-2 text-xs text-green-400">
                                             <div className="mt-0.5">
-                                                <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </div>
                                             <div>
-                                                <p className="font-medium text-emerald-200 mb-1">Password requirements met:</p>
+                                                <p className="font-medium text-green-200 mb-1">Password requirements met:</p>
                                                 <ul className="space-y-1 ml-1">
                                                     <li className="flex items-center gap-2">
-                                                        <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg className="w-3 h-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                         </svg>
                                                         <span>Minimum 8 characters</span>
                                                     </li>
                                                     <li className="flex items-center gap-2">
-                                                        <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg className="w-3 h-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                         </svg>
                                                         <span>At least one uppercase letter</span>
                                                     </li>
                                                     <li className="flex items-center gap-2">
-                                                        <svg className="w-3 h-3 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg className="w-3 h-3 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                         </svg>
                                                         <span>At least one number</span>

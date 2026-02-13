@@ -98,7 +98,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
     const getTypeIcon = (type: string) => {
         switch (type) {
             case 'header': return <DocumentTextIcon className="w-5 h-5 text-blue-500" />;
-            case 'rule': return <ScaleIcon className="w-5 h-5 text-purple-500" />;
+            case 'rule': return <ScaleIcon className="w-5 h-5 text-indigo-500" />;
             case 'line_item': return <BoltIcon className="w-5 h-5 text-amber-500" />;
             default: return <BoltIcon className="w-5 h-5" />;
         }
@@ -120,10 +120,10 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="bg-white dark:bg-zinc-800 w-full max-w-2xl rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]">
 
                 {/* Header */}
-                <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-900 z-10">
+                <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-center bg-white dark:bg-zinc-800 z-10">
                     <div>
                         <h2 className="text-xl font-bold font-brand flex items-center gap-2">
                             {getTypeIcon(currentIssue.type)}
@@ -168,7 +168,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
 
                                         <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
                                             <label className="text-xs text-muted-foreground">{currentIssue.original.label}</label>
-                                            <div className="font-mono text-sm bg-zinc-100 dark:bg-zinc-900 p-2 rounded border border-zinc-200 dark:border-zinc-700 mt-1">
+                                            <div className="font-mono text-sm bg-zinc-100 dark:bg-zinc-800 p-2 rounded border border-zinc-200 dark:border-zinc-700 mt-1">
                                                 {String(currentIssue.original.value)}
                                             </div>
                                             {currentIssue.original.subText && (
@@ -205,7 +205,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
 
                                         <div className="pt-4 border-t border-indigo-100 dark:border-indigo-800">
                                             <label className="text-xs text-indigo-600/70 dark:text-indigo-400/70">Proposed {currentIssue.suggestion.label}</label>
-                                            <div className="font-mono text-sm bg-white dark:bg-zinc-900 p-2 rounded border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 shadow-sm flex items-center gap-2 mt-1">
+                                            <div className="font-mono text-sm bg-white dark:bg-zinc-800 p-2 rounded border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 shadow-sm flex items-center gap-2 mt-1">
                                                 {String(currentIssue.suggestion.value)}
                                                 <CheckCircleIcon className="w-4 h-4 text-green-500 ml-auto" />
                                             </div>
@@ -221,7 +221,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                 </div>
 
                 {/* Footer Controls */}
-                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center">
+                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-800 flex justify-between items-center">
                     <div className="text-xs text-muted-foreground italic">
                         Resolution required to proceed.
                     </div>

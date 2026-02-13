@@ -78,12 +78,12 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
     };
 
     return (
-        <div className="h-[600px] flex flex-col bg-zinc-50 dark:bg-zinc-900/50">
+        <div className="h-[600px] flex flex-col bg-muted/30">
             {/* Header */}
-            <div className="px-8 py-6 border-b border-border bg-white dark:bg-zinc-900 flex items-center gap-4">
+            <div className="px-8 py-6 border-b border-border bg-background flex items-center gap-4">
                 <button
                     onClick={onCancel}
-                    className="p-2 -ml-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                    className="p-2 -ml-2 rounded-lg hover:bg-accent transition-colors"
                 >
                     <ArrowPathIcon className="w-5 h-5 text-muted-foreground rotate-90" /> {/* Simulating 'Back' icon logic */}
                 </button>
@@ -108,7 +108,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                                 "w-full max-w-xl p-12 rounded-3xl border-2 border-dashed transition-all duration-200 flex flex-col items-center justify-center text-center cursor-pointer",
                                 dragActive
                                     ? "border-primary bg-primary/5 scale-[1.02]"
-                                    : "border-zinc-300 dark:border-zinc-700 hover:border-primary/50 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+                                    : "border-input hover:border-primary/50 hover:bg-accent/50"
                             )}
                             onDragEnter={handleDrag}
                             onDragLeave={handleDrag}
@@ -176,8 +176,8 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                 {/* 3. Review State */}
                 {status === 'review' && (
                     <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-8 duration-500">
-                        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-border shadow-sm overflow-hidden mb-6">
-                            <div className="p-4 border-b border-border flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/10">
+                        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden mb-6">
+                            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
                                         <DocumentTextIcon className="w-5 h-5" />
@@ -213,7 +213,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                             </div>
 
                             <div className="border-t border-border">
-                                <div className="bg-zinc-50 dark:bg-zinc-800/30 px-6 py-2 text-xs font-semibold text-muted-foreground uppercase flex">
+                                <div className="bg-muted/50 px-6 py-2 text-xs font-semibold text-muted-foreground uppercase flex">
                                     <div className="flex-1">Item Description</div>
                                     <div className="w-20 text-center">Qty</div>
                                     <div className="w-24 text-right">Price</div>
@@ -222,7 +222,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                                 </div>
                                 <div className="divide-y divide-border">
                                     {MOCK_EXTRACTED_DATA.items.map((item) => (
-                                        <div key={item.id} className="px-6 py-3 flex items-center text-sm group hover:bg-zinc-50 dark:hover:bg-zinc-800/30 transition-colors">
+                                        <div key={item.id} className="px-6 py-3 flex items-center text-sm group hover:bg-accent/50 transition-colors">
                                             <div className="flex-1 font-medium text-foreground">{item.description}</div>
                                             <div className="w-20 text-center text-muted-foreground">{item.qty}</div>
                                             <div className="w-24 text-right text-muted-foreground">${item.unitPrice.toFixed(2)}</div>

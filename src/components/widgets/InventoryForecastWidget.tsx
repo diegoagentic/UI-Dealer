@@ -66,9 +66,9 @@ export default function InventoryForecastWidget() {
                         <div className="col-span-2">
                             <h4 className="text-sm font-medium text-foreground truncate" title={item.name}>{item.name}</h4>
                             <div className="flex items-center gap-1.5 mt-0.5">
-                                <span className="text-[10px] text-muted-foreground font-mono bg-zinc-100 dark:bg-zinc-800 px-1 rounded">{item.id}</span>
+                                <span className="text-[10px] text-muted-foreground font-mono bg-muted px-1 rounded">{item.id}</span>
                                 {item.velocity === 'high' && (
-                                    <span className="text-[9px] font-bold text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20 px-1 rounded flex items-center gap-0.5">
+                                    <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-1 rounded flex items-center gap-0.5">
                                         <ArrowTrendingUpIcon className="w-2.5 h-2.5" /> FAST MOVER
                                     </span>
                                 )}
@@ -83,7 +83,7 @@ export default function InventoryForecastWidget() {
                         <div className="text-right flex justify-end">
                             <div className={`px-2 py-1 rounded-md text-[10px] font-bold border flex flex-col items-end w-fit ${item.health === 'critical' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-900/30' :
                                 item.health === 'warning' ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30' :
-                                    'bg-zinc-50 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700'
+                                    'bg-muted/50 text-muted-foreground border-border'
                                 }`}>
                                 <span className="uppercase tracking-wide">{item.health}</span>
                                 {(item.health === 'critical' || item.health === 'warning') && (
@@ -109,7 +109,7 @@ export default function InventoryForecastWidget() {
                             High demand predicted for "Aeron Chair" next week due to 3 pending bulk quotes. Recommend increasing safety stock.
                         </p>
                     </div>
-                    <button className="ml-auto text-xs font-bold text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 whitespace-nowrap bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-2 py-1 rounded shadow-sm">
+                    <button className="ml-auto text-xs font-bold text-foreground hover:text-muted-foreground whitespace-nowrap bg-card border border-border px-2 py-1 rounded shadow-sm">
                         Auto-Order
                     </button>
                 </div>

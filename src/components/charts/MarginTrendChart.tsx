@@ -11,7 +11,7 @@ const data = [
 
 export function MarginTrendChart() {
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Margin Trends</h3>

@@ -12,7 +12,7 @@ export default function ERPSelectorArtifact() {
     const { sendMessage } = useGenUI();
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm w-full">
+        <div className="bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm w-full">
             <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50">
                 <h3 className="font-semibold text-foreground flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -53,7 +53,7 @@ export default function ERPSelectorArtifact() {
                     </tbody>
                 </table>
             </div>
-            <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/50 text-xs text-center text-muted-foreground">
+            <div className="p-3 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 text-xs text-center text-muted-foreground">
                 Displaying 3 recent open orders from NetSuite ERP
             </div>
         </div>

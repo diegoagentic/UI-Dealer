@@ -103,7 +103,7 @@ export default function StreamFeed() {
     };
 
     return (
-        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-[95vw] max-w-6xl max-h-[70vh] bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl z-40 px-2 py-2 flex flex-col origin-bottom animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 w-[95vw] max-w-6xl max-h-[70vh] bg-white/95 dark:bg-zinc-800/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-2xl z-40 px-2 py-2 flex flex-col origin-bottom animate-in fade-in slide-in-from-bottom-4 duration-300">
             {/* Header / Title Bar */}
             <div className="px-4 py-2 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between shrink-0">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -138,7 +138,7 @@ export default function StreamFeed() {
                                     <div className="flex items-center gap-2 mb-0.5">
                                         <span className={`w-2 h-2 rounded-full ${trigger.category === 'correction' ? 'bg-red-400' :
                                             trigger.category === 'sourcing' ? 'bg-amber-400' :
-                                                trigger.category === 'layout' ? 'bg-purple-400' :
+                                                trigger.category === 'layout' ? 'bg-indigo-400' :
                                                     trigger.category === 'support' ? 'bg-blue-400' : 'bg-green-400'
                                             }`} />
                                         <span className="font-semibold text-sm text-foreground">{trigger.label}</span>

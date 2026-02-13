@@ -36,7 +36,7 @@ export default function WarrantyClaimsWidget() {
             description="Active support requests."
             icon={ShieldCheckIcon}
             action={
-                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity">
                     <PlusIcon className="w-3.5 h-3.5" />
                     New Claim
                 </button>
@@ -46,9 +46,9 @@ export default function WarrantyClaimsWidget() {
                 {claims.map((claim) => (
                     <div key={claim.id} className="relative pl-4 border-l-2 border-zinc-100 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 transition-colors group">
                         {/* Status Icon Indicator */}
-                        <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 bg-white dark:bg-zinc-900 flex items-center justify-center ${claim.status === 'approved' ? 'border-green-500 text-green-500' :
-                                claim.status === 'action_required' ? 'border-red-500 text-red-500' :
-                                    'border-amber-500 text-amber-500'
+                        <div className={`absolute -left-[9px] top-1 w-4 h-4 rounded-full border-2 bg-card flex items-center justify-center ${claim.status === 'approved' ? 'border-green-500 text-green-500' :
+                            claim.status === 'action_required' ? 'border-red-500 text-red-500' :
+                                'border-amber-500 text-amber-500'
                             }`}>
                             {claim.status === 'approved' && <CheckCircleIcon className="w-2.5 h-2.5" />}
                             {claim.status === 'action_required' && <ExclamationCircleIcon className="w-2.5 h-2.5" />}
@@ -65,14 +65,14 @@ export default function WarrantyClaimsWidget() {
                                 </p>
                             </div>
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border capitalize ${claim.status === 'approved' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' :
-                                    claim.status === 'action_required' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800' :
-                                        'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800'
+                                claim.status === 'action_required' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800' :
+                                    'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800'
                                 }`}>
                                 {claim.status.replace('_', ' ')}
                             </span>
                         </div>
 
-                        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded-lg mt-2 flex items-center justify-between">
+                        <div className="bg-muted/50 p-2 rounded-lg mt-2 flex items-center justify-between">
                             <span className="text-xs text-muted-foreground truncate max-w-[70%]">
                                 <span className="font-medium text-foreground">Issue:</span> {claim.issue}
                             </span>

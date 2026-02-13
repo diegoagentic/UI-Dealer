@@ -50,7 +50,7 @@ export default function ERPPODashboardArtifact({ data }: { data: any }) {
             <div className="flex-1 flex flex-col gap-4 min-w-0">
 
                 {/* Header Actions */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
                     <div className="relative w-full sm:w-96">
                         <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
@@ -75,15 +75,15 @@ export default function ERPPODashboardArtifact({ data }: { data: any }) {
                 {/* PO List */}
                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800">
                     {filteredPOs.map((po) => (
-                        <div key={po.id} className="group bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all shadow-sm hover:shadow-md flex flex-col sm:flex-row gap-4 items-center justify-between">
+                        <div key={po.id} className="group bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 hover:border-primary/50 dark:hover:border-primary/50 transition-all shadow-sm hover:shadow-md flex flex-col sm:flex-row gap-4 items-center justify-between">
 
                             {/* Info */}
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3 mb-1">
                                     <h4 className="font-semibold text-foreground truncate">{po.number}</h4>
                                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium border ${po.status === 'Approved' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' :
-                                            po.status === 'In Progress' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' :
-                                                'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700'
+                                        po.status === 'In Progress' ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800' :
+                                            'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700'
                                         }`}>
                                         {po.status}
                                     </span>
@@ -121,7 +121,7 @@ export default function ERPPODashboardArtifact({ data }: { data: any }) {
 
             {/* Sidebar Stats */}
             <div className="w-full lg:w-72 flex flex-col gap-4">
-                <div className="bg-white dark:bg-zinc-900 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                <div className="bg-white dark:bg-zinc-800 p-5 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
                     <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                         <ArrowRightIcon className="w-4 h-4 -rotate-45 text-primary" />
                         Purchase Orders Overview
@@ -144,7 +144,7 @@ export default function ERPPODashboardArtifact({ data }: { data: any }) {
                         </div>
                         <div className="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg flex items-center justify-between">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <CubeIcon className="w-4 h-4 text-purple-500" />
+                                <CubeIcon className="w-4 h-4 text-indigo-500" />
                                 Total Items
                             </div>
                             <span className="font-bold text-foreground">1971</span>
@@ -152,7 +152,7 @@ export default function ERPPODashboardArtifact({ data }: { data: any }) {
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 text-xs text-muted-foreground flex items-center gap-1.5">
-                        <ArrowRightIcon className="w-3 h-3 text-orange-500" />
+                        <ArrowRightIcon className="w-3 h-3 text-amber-500" />
                         Avg. Order Value <span className="font-semibold text-foreground">$269.9K</span>
                     </div>
                 </div>

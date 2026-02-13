@@ -46,7 +46,7 @@ const DiscrepancyResolutionFlow = () => {
     if (status === 'initial') {
         return (
             <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 font-medium">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
                     <ExclamationTriangleIcon className="w-5 h-5" />
                     Found 3 discrepancies in recent shipments.
                 </div>
@@ -384,7 +384,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                             Analysis Complete. Found 3 orders under $1M.
                         </div>
                         <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600 dark:text-gray-300">
-                            <li>Order #ORD-2054: $850k - <span className="text-orange-500 font-medium">Missing Logistics Provider</span></li>
+                            <li>Order #ORD-2054: $850k - <span className="text-amber-500 font-medium">Missing Logistics Provider</span></li>
                             <li>Order #ORD-2051: $420k - In Transit</li>
                             <li>Order #ORD-2048: $120k - Delivered</li>
                         </ul>
@@ -477,8 +477,8 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
     }
 
     return (
-        <div className={`bg-white dark:bg-zinc-900 rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-[600px] ${className}`}>
-            <div className="p-3 border-b border-border flex items-center justify-between bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm">
+        <div className={`bg-white dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden flex flex-col h-[600px] ${className}`}>
+            <div className="p-3 border-b border-border flex items-center justify-between bg-white/80 dark:bg-zinc-800/80 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                     <Bars3Icon className="w-5 h-5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400 transition-colors cursor-grab active:cursor-grabbing mr-2" />
                     <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
@@ -532,13 +532,13 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                     <div className="flex items-center gap-1">
                         <button
                             onClick={() => handleSendMessage("Show pending orders")}
-                            className="flex flex-col items-center justify-center gap-1 group p-1.5 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-lg transition-colors min-w-[50px]"
+                            className="flex flex-col items-center justify-center gap-1 group p-1.5 hover:bg-amber-50 dark:hover:bg-amber-900/10 rounded-lg transition-colors min-w-[50px]"
                             title="Show Pending"
                         >
-                            <div className="text-orange-500 group-hover:text-orange-600 dark:text-orange-400 dark:group-hover:text-orange-300 transition-colors">
+                            <div className="text-amber-500 group-hover:text-amber-600 dark:text-amber-400 dark:group-hover:text-amber-300 transition-colors">
                                 <ExclamationCircleIcon className="w-4 h-4" />
                             </div>
-                            <span className="text-[9px] font-bold text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">3 Pending</span>
+                            <span className="text-[9px] font-bold text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">3 Pending</span>
                         </button>
                         <button
                             onClick={() => handleSendMessage("Show pending orders")}
@@ -564,7 +564,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Activity Sidebar (Left) - Collapsible */}
-                <div className={`${showActivity ? 'w-[240px] border-r' : 'w-0 border-r-0'} flex flex-col border-border bg-gray-50/50 dark:bg-zinc-900/30 backdrop-blur-sm transition-all duration-300 overflow-hidden`}>
+                <div className={`${showActivity ? 'w-[240px] border-r' : 'w-0 border-r-0'} flex flex-col border-border bg-gray-50/50 dark:bg-zinc-800/30 backdrop-blur-sm transition-all duration-300 overflow-hidden`}>
                     <div className="p-3 border-b border-border min-w-[240px]">
                         <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                             <ClockIcon className="w-3.5 h-3.5" /> Recent Activity
@@ -574,7 +574,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                         {appActivities.map((activity, i) => {
                             let iconColorClass = "bg-primary/10 text-zinc-900 dark:text-primary" // Default
                             if (activity.app === 'Inventory') iconColorClass = "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                            if (activity.app === 'Analytics') iconColorClass = "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400"
+                            if (activity.app === 'Analytics') iconColorClass = "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400"
                             if (activity.app === 'CRM') iconColorClass = "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
 
                             return (
@@ -647,7 +647,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                 </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-zinc-900 border-t border-border">
+            <div className="p-4 bg-white dark:bg-zinc-800 border-t border-border">
                 <div className="relative flex items-center gap-2 bg-gray-50 dark:bg-zinc-800 p-2 pr-2 rounded-full border border-gray-200 dark:border-white/10 focus-within:ring-2 ring-primary/20 focus-within:border-primary transition-all">
                     <div className="pl-3 text-gray-400">
                         <SparklesIcon className="w-5 h-5" />

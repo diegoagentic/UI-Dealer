@@ -145,7 +145,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
     const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
     return (
-        <div className="w-full bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col h-full max-h-[800px]">
+        <div className="w-full bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col h-full max-h-[800px]">
 
             {/* Header */}
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
@@ -163,30 +163,30 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             <div className="flex-1 overflow-y-auto scrollbar-micro p-6 space-y-6">
 
                 {/* Summary Card (Green) */}
-                <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800/30 rounded-2xl p-6 relative overflow-hidden">
+                <div className="bg-green-50 dark:bg-green-900/10 border border-green-100 dark:border-green-800/30 rounded-2xl p-6 relative overflow-hidden">
                     <div className="flex justify-between items-start mb-2">
-                        <span className="text-emerald-800 dark:text-emerald-400 font-semibold text-sm tracking-wide uppercase">Active Discounts</span>
-                        <span className="bg-emerald-200/50 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 text-xs px-2 py-1 rounded-full font-bold">
+                        <span className="text-green-800 dark:text-green-400 font-semibold text-sm tracking-wide uppercase">Active Discounts</span>
+                        <span className="bg-green-200/50 dark:bg-green-500/20 text-green-800 dark:text-green-300 text-xs px-2 py-1 rounded-full font-bold">
                             {activeCount} applied
                         </span>
                     </div>
 
                     <div className="mb-6">
-                        <div className="text-sm text-emerald-600 dark:text-emerald-500 mb-1">Net Total</div>
-                        <div className="text-4xl font-black text-emerald-700 dark:text-emerald-400 tracking-tight">
+                        <div className="text-sm text-green-600 dark:text-green-500 mb-1">Net Total</div>
+                        <div className="text-4xl font-black text-green-700 dark:text-green-400 tracking-tight">
                             {formatCurrency(finalTotal)}
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-emerald-200/50 dark:border-emerald-800/30 pt-4">
+                    <div className="flex items-center justify-between border-t border-green-200/50 dark:border-green-800/30 pt-4">
                         <div>
-                            <div className="text-xs text-emerald-600 dark:text-emerald-500">Total Savings</div>
-                            <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400">{formatCurrency(totalDiscountAmount)}</div>
+                            <div className="text-xs text-green-600 dark:text-green-500">Total Savings</div>
+                            <div className="text-xl font-bold text-green-700 dark:text-green-400">{formatCurrency(totalDiscountAmount)}</div>
                         </div>
                         <div className="text-right">
-                            <div className="text-xs text-emerald-600 dark:text-emerald-500">Discount Rate</div>
-                            <div className="text-xl font-bold text-emerald-700 dark:text-emerald-400">{totalDiscountRate.toFixed(1)}%</div>
-                            <InformationCircleIcon className="w-4 h-4 text-emerald-400 absolute bottom-5 right-6" />
+                            <div className="text-xs text-green-600 dark:text-green-500">Discount Rate</div>
+                            <div className="text-xl font-bold text-green-700 dark:text-green-400">{totalDiscountRate.toFixed(1)}%</div>
+                            <InformationCircleIcon className="w-4 h-4 text-green-400 absolute bottom-5 right-6" />
                         </div>
                     </div>
                 </div>
@@ -200,15 +200,15 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                         // Dynamic Colors
                         const colorMap: Record<string, any> = {
                             blue: { bg: 'bg-blue-50 dark:bg-blue-900/10', border: 'border-blue-100 dark:border-blue-800/30', text: 'text-blue-700 dark:text-blue-400', badge: 'bg-blue-100 dark:bg-blue-800' },
-                            orange: { bg: 'bg-orange-50 dark:bg-orange-900/10', border: 'border-orange-100 dark:border-orange-800/30', text: 'text-orange-700 dark:text-orange-400', badge: 'bg-orange-100 dark:bg-orange-800' },
-                            purple: { bg: 'bg-purple-50 dark:bg-purple-900/10', border: 'border-purple-100 dark:border-purple-800/30', text: 'text-purple-700 dark:text-purple-400', badge: 'bg-purple-100 dark:bg-purple-800' },
+                            orange: { bg: 'bg-amber-50 dark:bg-amber-900/10', border: 'border-amber-100 dark:border-amber-800/30', text: 'text-amber-700 dark:text-amber-400', badge: 'bg-amber-100 dark:bg-amber-800' },
+                            purple: { bg: 'bg-indigo-50 dark:bg-indigo-900/10', border: 'border-indigo-100 dark:border-indigo-800/30', text: 'text-indigo-700 dark:text-indigo-400', badge: 'bg-indigo-100 dark:bg-indigo-800' },
                             green: { bg: 'bg-green-50 dark:bg-green-900/10', border: 'border-green-100 dark:border-green-800/30', text: 'text-green-700 dark:text-green-400', badge: 'bg-green-100 dark:bg-green-800' },
                             teal: { bg: 'bg-teal-50 dark:bg-teal-900/10', border: 'border-teal-100 dark:border-teal-800/30', text: 'text-teal-700 dark:text-teal-400', badge: 'bg-teal-100 dark:bg-teal-800' },
                         };
                         const theme = colorMap[section.color];
 
                         return (
-                            <div key={section.id} className={`border rounded-xl transition-all duration-300 ${section.expanded ? `${theme.bg} ${theme.border}` : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800'}`}>
+                            <div key={section.id} className={`border rounded-xl transition-all duration-300 ${section.expanded ? `${theme.bg} ${theme.border}` : 'bg-white dark:bg-zinc-800 border-zinc-200 dark:border-zinc-800'}`}>
                                 {/* Section Header */}
                                 <button
                                     onClick={() => toggleSection(section.id)}
@@ -235,13 +235,13 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                                                 onClick={(e) => { e.stopPropagation(); toggleAllInSection(section.id, !isAllEnabled); }}
                                                 className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${isAllEnabled ? 'bg-zinc-900 dark:bg-white' : 'bg-zinc-200 dark:bg-zinc-700'}`}
                                             >
-                                                <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white dark:bg-zinc-900 transition-transform ${isAllEnabled ? 'translate-x-4.5' : 'translate-x-1'}`} />
+                                                <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white dark:bg-zinc-800 transition-transform ${isAllEnabled ? 'translate-x-4.5' : 'translate-x-1'}`} />
                                             </button>
                                         </div>
 
                                         <div className="space-y-3">
                                             {section.items.map(item => (
-                                                <div key={item.id} className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:shadow-md transition-all">
+                                                <div key={item.id} className="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-100 dark:border-zinc-800 shadow-sm flex items-center justify-between hover:shadow-md transition-all">
                                                     <div className="flex flex-col">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <span className="font-bold text-foreground">{item.label}</span>
@@ -263,7 +263,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                                                         onClick={() => toggleItem(section.id, item.id)}
                                                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary ${item.enabled ? 'bg-zinc-900 dark:bg-white' : 'bg-zinc-200 dark:bg-zinc-700'}`}
                                                     >
-                                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-900 transition-transform ${item.enabled ? 'translate-x-6' : 'translate-x-1'}`} />
+                                                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white dark:bg-zinc-800 transition-transform ${item.enabled ? 'translate-x-6' : 'translate-x-1'}`} />
                                                     </button>
                                                 </div>
                                             ))}
@@ -291,7 +291,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             </div>
 
             {/* Bottom Action Bar */}
-            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 shrink-0">
+            <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 shrink-0">
                 <button
                     onClick={() => onApply(finalTotal)}
                     className="w-full py-3.5 bg-primary text-primary-foreground rounded-xl font-bold text-base hover:bg-primary/90 hover:scale-[1.01] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"

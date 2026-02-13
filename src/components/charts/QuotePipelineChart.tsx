@@ -4,13 +4,13 @@ const data = [
     { name: "Draft", uv: 31.47, pv: 2400, fill: "#94a3b8" },
     { name: "Sent", uv: 26.69, pv: 4567, fill: "#3b82f6" },
     { name: "Negotiating", uv: 15.69, pv: 1398, fill: "#eab308" },
-    { name: "Approved", uv: 8.22, pv: 9800, fill: "#22c55e" },
+    { name: "Approved", uv: 8.22, pv: 9800, fill: "bg-green-500" },
     { name: "Rejected", uv: 4.63, pv: 3908, fill: "#ef4444" },
 ];
 
 export function QuotePipelineChart() {
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-900 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-2">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Quote Pipeline</h3>

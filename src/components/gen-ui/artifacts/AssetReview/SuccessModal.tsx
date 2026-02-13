@@ -15,7 +15,7 @@ export default function SuccessModal({ isOpen, type = 'po', poNumber = 'PO-2026-
 
     return (
         <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/90 dark:bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md border border-zinc-200 dark:border-zinc-800 text-center p-8 relative overflow-hidden">
+            <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl w-full max-w-md border border-zinc-200 dark:border-zinc-800 text-center p-8 relative overflow-hidden">
                 <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${isPO ? 'from-green-400 to-emerald-600' : 'from-amber-400 to-orange-600'}`}></div>
 
                 <div className="flex justify-center mb-6">

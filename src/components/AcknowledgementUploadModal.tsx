@@ -32,10 +32,10 @@ const ackOptions = [
         description: 'Select an existing Purchase Order to convert into an acknowledgement.',
         icon: LinkIcon,
         estimatedTime: '2-3 mins',
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-100',
-        darkColor: 'dark:text-purple-400',
-        darkBgColor: 'dark:bg-purple-900/30'
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-100',
+        darkColor: 'dark:text-indigo-400',
+        darkBgColor: 'dark:bg-indigo-900/30'
     },
     {
         id: 'manual',
@@ -111,7 +111,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 text-left shadow-2xl transition-all border border-border w-full sm:max-w-3xl">
+                            <Dialog.Panel className="relative transform overflow-hidden rounded-2xl bg-background text-left shadow-2xl transition-all border border-border w-full sm:max-w-3xl">
                                 {step === 'selection' ? (
                                     <div className="p-8">
                                         <div className="flex justify-between items-start mb-6">
@@ -146,7 +146,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <h4 className="text-sm font-bold text-foreground">{option.title}</h4>
-                                                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
+                                                            <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-secondary text-zinc-500 border border-border">
                                                                 {option.estimatedTime}
                                                             </span>
                                                         </div>
@@ -182,8 +182,8 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                     key={order.id}
                                                     onClick={() => handleOrderSelect(order.id)}
                                                     className={`p-4 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${selectedOrder === order.id
-                                                            ? 'border-primary bg-primary/5 ring-1 ring-primary'
-                                                            : 'border-border hover:border-zinc-300 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-900'
+                                                        ? 'border-primary bg-primary/5 ring-1 ring-primary'
+                                                        : 'border-border hover:border-input hover:bg-muted'
                                                         }`}
                                                 >
                                                     <div>
@@ -216,8 +216,8 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                             <button
                                                 disabled={!selectedOrder}
                                                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-colors ${selectedOrder
-                                                        ? 'bg-primary text-zinc-900 hover:bg-brand-400'
-                                                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
+                                                    ? 'bg-primary text-zinc-900 hover:bg-brand-400'
+                                                    : 'bg-muted text-zinc-400 cursor-not-allowed'
                                                     }`}
                                             >
                                                 Continue
@@ -234,7 +234,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
 
-                                        <div className="bg-zinc-100 dark:bg-zinc-800/50 p-6 rounded-full mb-6 animate-pulse">
+                                        <div className="bg-muted/50 p-6 rounded-full mb-6 animate-pulse">
                                             <DocumentMagnifyingGlassIcon className="h-12 w-12 text-muted-foreground" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground mb-2">
@@ -245,7 +245,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                         </p>
                                         <button
                                             onClick={() => setStep('selection')}
-                                            className="px-6 py-2.5 rounded-xl border border-border hover:bg-zinc-50 dark:hover:bg-zinc-900 text-sm font-medium transition-colors"
+                                            className="px-6 py-2.5 rounded-xl border border-border hover:bg-muted text-sm font-medium transition-colors"
                                         >
                                             Go Back
                                         </button>

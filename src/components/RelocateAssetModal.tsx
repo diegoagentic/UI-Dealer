@@ -66,9 +66,9 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
             ></div>
 
             {/* Modal Content */}
-            <div className="relative bg-white dark:bg-zinc-900 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-zinc-200 dark:border-zinc-800">
+            <div className="relative bg-card rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200 border border-border">
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-zinc-100 dark:border-zinc-800">
+                <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
                             <TruckIcon className="w-5 h-5" />
@@ -80,7 +80,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors"
                     >
                         <XMarkIcon className="w-5 h-5" />
                     </button>
@@ -98,7 +98,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                                 required
                                 value={targetLocation}
                                 onChange={(e) => setTargetLocation(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none appearance-none text-sm"
+                                className="w-full pl-10 pr-4 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary focus:outline-none appearance-none text-sm"
                             >
                                 <option value="" disabled>Select destination...</option>
                                 {LOCATION_OPTIONS.map(loc => (
@@ -121,7 +121,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                                 required
                                 value={moveDate}
                                 onChange={(e) => setMoveDate(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm text-foreground"
+                                className="w-full pl-10 pr-4 py-2.5 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm text-foreground"
                             />
                         </div>
                     </div>
@@ -134,18 +134,18 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Add handling instructions or specific details..."
-                            className="w-full p-3 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm resize-none"
+                            className="w-full p-3 bg-background border border-input rounded-xl focus:ring-2 focus:ring-primary focus:outline-none text-sm resize-none"
                         ></textarea>
                     </div>
 
                 </form>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-3 bg-zinc-50/50 dark:bg-zinc-900/50">
+                <div className="p-6 border-t border-border flex justify-end gap-3 bg-muted/20">
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-4 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-accent rounded-lg transition-colors"
                     >
                         Cancel
                     </button>

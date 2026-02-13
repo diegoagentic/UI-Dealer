@@ -17,8 +17,8 @@ const PriorityIcon = ({ priority, type }: { priority: Notification['priority'], 
 const PriorityBadge = ({ priority, type }: { priority: Notification['priority'], type: Notification['type'] }) => {
     const colors = {
         high: 'text-red-500 bg-red-500/10 border-red-500/20',
-        medium: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
-        low: 'text-gray-500 bg-gray-500/10 border-gray-500/20',
+        medium: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
+        low: 'text-muted-foreground bg-muted/50 border-border',
     };
 
     const labels = {
@@ -45,7 +45,7 @@ const PriorityBadge = ({ priority, type }: { priority: Notification['priority'],
 export default function NotificationItem({ notification, onActionClick }: { notification: Notification, onActionClick?: (actionLabel: string) => void }) {
     const priorityColors = {
         high: 'text-red-500 bg-red-500/10 border-red-500/20',
-        medium: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
+        medium: 'text-amber-500 bg-amber-500/10 border-amber-500/20',
         low: 'text-primary bg-primary/10 border-primary/20',
     };
 
@@ -64,7 +64,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
     };
 
     return (
-        <div className="group relative p-4 rounded-2xl bg-white dark:bg-black/20 border border-transparent hover:border-gray-200 dark:hover:border-white/10 hover:shadow-md transition-all duration-200">
+        <div className="group relative p-4 rounded-2xl bg-card border border-transparent hover:border-border hover:shadow-md transition-all duration-200">
             <div className="flex justify-between items-start gap-4">
 
                 <div className="flex-1 min-w-0">
@@ -76,7 +76,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                             </span>
                         )}
                         {notification.priority === 'medium' && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-400">
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400">
                                 Medium
                             </span>
                         )}
@@ -87,15 +87,15 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                         )}
                     </div>
 
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    <h4 className="text-sm font-semibold text-foreground truncate">
                         {notification.title}
                     </h4>
 
-                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                         {notification.message}
                     </p>
 
-                    <div className="mt-2 text-[10px] flex items-center gap-2 text-gray-400 dark:text-gray-500 font-mono">
+                    <div className="mt-2 text-[10px] flex items-center gap-2 text-muted-foreground font-mono">
                         <span>{notification.meta}</span>
                         <span>•</span>
                         <span>{notification.timestamp}</span>
@@ -110,7 +110,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm",
                             action.primary
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-                                : "bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/20",
+                                : "bg-muted text-muted-foreground hover:bg-accent",
                             actionState[i] === 'Sent!' && "!bg-green-500 !text-white"
                         )}
                         onClick={() => handleActionClick(action.label, i)}
@@ -126,7 +126,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
             <div className={clsx(
                 "absolute left-0 top-4 bottom-4 w-1 rounded-r-full",
                 notification.priority === 'high' ? 'bg-red-500' :
-                    notification.priority === 'medium' ? 'bg-orange-500' : 'bg-transparent'
+                    notification.priority === 'medium' ? 'bg-amber-500' : 'bg-transparent'
             )} />
 
         </div>

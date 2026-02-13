@@ -158,7 +158,7 @@ export default function InventoryMaintenance() {
     const getStatusStyle = (status: string) => {
         switch (status) {
             case 'Scheduled': return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400';
-            case 'In-Progress': return 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400';
+            case 'In-Progress': return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400';
             case 'Completed': return 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400';
             case 'Overdue': return 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400';
             default: return 'bg-zinc-50 text-zinc-700 border-zinc-200';
@@ -173,9 +173,9 @@ export default function InventoryMaintenance() {
     return (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Legend/Info (Optional) */}
-            <div className="bg-orange-50/50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-800 rounded-lg p-3 flex items-start gap-3">
-                <WrenchScrewdriverIcon className="w-5 h-5 text-orange-600 dark:text-orange-400 mt-0.5 shrink-0" />
-                <p className="text-sm text-orange-700 dark:text-orange-300">
+            <div className="bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800 rounded-lg p-3 flex items-start gap-3">
+                <WrenchScrewdriverIcon className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <p className="text-sm text-amber-700 dark:text-amber-300">
                     Track asset repairs and maintenance costs. Expand any card to view the full service history and audit trail.
                 </p>
             </div>
@@ -184,7 +184,7 @@ export default function InventoryMaintenance() {
                 <div
                     key={task.id}
                     onClick={() => toggleExpand(task.id)}
-                    className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                    className="bg-card rounded-xl border border-border shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
                 >
                     <div className="p-6">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -193,7 +193,7 @@ export default function InventoryMaintenance() {
                                 <div className="flex items-center gap-3">
                                     <h3 className="font-semibold text-lg text-foreground">{task.assetName}</h3>
                                     {task.trackingId && (
-                                        <span className="text-xs font-mono text-muted-foreground bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200 dark:border-zinc-700">
+                                        <span className="text-xs font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
                                             {task.trackingId}
                                         </span>
                                     )}
@@ -228,14 +228,14 @@ export default function InventoryMaintenance() {
 
                             <div className="flex items-center gap-2">
                                 <button
-                                    className="px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors flex items-center gap-2"
+                                    className="px-4 py-2 bg-background border border-border text-foreground rounded-lg text-sm font-medium hover:bg-accent transition-colors flex items-center gap-2"
                                 >
                                     View History
                                     {expandedIds.has(task.id) ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleTrackClick(task); }}
-                                    className="px-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-foreground rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors">
+                                    className="px-4 py-2 bg-background border border-border text-foreground rounded-lg text-sm font-medium hover:bg-accent transition-colors">
                                     Track Progress
                                 </button>
                                 <button
@@ -249,7 +249,7 @@ export default function InventoryMaintenance() {
 
                     {/* Expanded History View */}
                     {expandedIds.has(task.id) && (
-                        <div className="border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/20 p-6 animate-in slide-in-from-top-2 duration-300">
+                        <div className="border-t border-border bg-muted/30 p-6 animate-in slide-in-from-top-2 duration-300">
                             <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
                                 <ClipboardDocumentCheckIcon className="w-4 h-4 text-primary" />
                                 Service History & Audit Trail
@@ -266,7 +266,7 @@ export default function InventoryMaintenance() {
                                                 <span className="text-xs font-mono text-muted-foreground">{event.date}</span>
                                             </div>
 
-                                            <div className="flex-1 bg-white dark:bg-zinc-900 p-3 rounded-lg border border-zinc-200 dark:border-zinc-800 text-sm shadow-sm">
+                                            <div className="flex-1 bg-card p-3 rounded-lg border border-border text-sm shadow-sm">
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div>
                                                         <span className="font-medium text-foreground block">{event.action}</span>

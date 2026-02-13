@@ -23,10 +23,10 @@ const creationOptions = [
         icon: ArrowUpOnSquareIcon,
         actionLabel: 'Upload Files',
         estimatedTime: '3-5 minutes',
-        color: 'text-emerald-600',
-        bgColor: 'bg-emerald-100',
-        darkColor: 'dark:text-emerald-400',
-        darkBgColor: 'dark:bg-emerald-900/30'
+        color: 'text-green-600',
+        bgColor: 'bg-green-100',
+        darkColor: 'dark:text-green-400',
+        darkBgColor: 'dark:bg-green-900/30'
     },
     {
         id: 'quote',
@@ -47,10 +47,10 @@ const creationOptions = [
         icon: DocumentDuplicateIcon,
         actionLabel: 'Browse Templates',
         estimatedTime: '5-8 minutes',
-        color: 'text-purple-600',
-        bgColor: 'bg-purple-100',
-        darkColor: 'dark:text-purple-400',
-        darkBgColor: 'dark:bg-purple-900/30'
+        color: 'text-indigo-600',
+        bgColor: 'bg-indigo-100',
+        darkColor: 'dark:text-indigo-400',
+        darkBgColor: 'dark:bg-indigo-900/30'
     },
     {
         id: 'manual',
@@ -310,7 +310,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                         className="group flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
                                                     >
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                                            <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                                                                 <DocumentDuplicateIcon className="h-5 w-5" />
                                                             </div>
                                                             <div>

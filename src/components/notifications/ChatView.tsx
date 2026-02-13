@@ -55,7 +55,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
     };
 
     return (
-        <div className="flex flex-col h-[500px] bg-white dark:bg-zinc-900">
+        <div className="flex flex-col h-[500px] bg-card">
             {/* Header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100 dark:border-white/10 shrink-0">
                 <button
@@ -92,7 +92,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                         <div className={clsx(
                             "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border",
                             msg.sender === 'user'
-                                ? "bg-zinc-100 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700"
+                                ? "bg-muted border-border"
                                 : "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-100 dark:border-indigo-500/20"
                         )}>
                             {msg.sender === 'user' ? (

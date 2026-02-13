@@ -47,7 +47,7 @@ const DiscrepancyResolutionFlow = () => {
     if (status === 'initial') {
         return (
             <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 text-orange-600 dark:text-orange-400 font-medium">
+                <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
                     <ExclamationTriangleIcon className="w-5 h-5" />
                     Found 3 discrepancies in recent shipments.
                 </div>
@@ -62,7 +62,7 @@ const DiscrepancyResolutionFlow = () => {
                     </button>
                     <button
                         onClick={() => setStatus('requesting')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-border text-muted-foreground text-xs font-medium rounded-lg hover:bg-accent transition-colors"
                     >
                         <PencilIcon className="w-3.5 h-3.5" /> Request Changes
                     </button>
@@ -76,7 +76,7 @@ const DiscrepancyResolutionFlow = () => {
             <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Describe required changes:</p>
                 <textarea
-                    className="w-full text-sm p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-gray-400"
+                    className="w-full text-sm p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-card text-gray-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-gray-400"
                     rows={3}
                     placeholder="E.g., Update weight for ORD-2054 to 48kg..."
                     value={requestText}
@@ -123,7 +123,7 @@ const DiscrepancyResolutionFlow = () => {
                     <CheckCircleIcon className="w-5 h-5" />
                     Changes approved. PO updated.
                 </div>
-                <div className="p-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
+                <div className="p-3 bg-card rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
                             <DocumentChartBarIcon className="w-6 h-6" />
@@ -174,10 +174,10 @@ const PendingOrders = () => {
                 <span className="text-sm font-semibold text-gray-500">Pending Review ({activeOrders.length})</span>
             </div>
             {activeOrders.map(order => (
-                <div key={order.id} className="border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm">
+                <div key={order.id} className="border border-border rounded-lg bg-card overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleExpand(order.id)}
-                        className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center justify-between p-3 hover:bg-accent transition-colors"
                     >
                         <div className="flex items-center gap-3">
                             <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${order.status === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
@@ -407,7 +407,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                             Analysis Complete. Found 3 orders under $1M.
                         </div>
                         <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600 dark:text-gray-300">
-                            <li>Order #ORD-2054: $850k - <span className="text-orange-500 font-medium">Missing Logistics Provider</span></li>
+                            <li>Order #ORD-2054: $850k - <span className="text-amber-500 font-medium">Missing Logistics Provider</span></li>
                             <li>Order #ORD-2051: $420k - In Transit</li>
                             <li>Order #ORD-2048: $120k - Delivered</li>
                         </ul>
@@ -445,7 +445,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                             <DocumentChartBarIcon className="w-4 h-4" />
                             <span>Generating Reconciliation Report... Done.</span>
                         </div>
-                        <div className="mt-3 p-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
+                        <div className="mt-3 p-3 bg-card rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
                                     <DocumentChartBarIcon className="w-6 h-6" />
@@ -504,17 +504,17 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
             <Dialog open={isLogsOpen} onClose={() => setIsLogsOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <Dialog.Panel className="w-full max-w-lg rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-xl border border-gray-200 dark:border-white/10">
+                    <Dialog.Panel className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl border border-border">
                         <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
                             <CommandLineIcon className="w-5 h-5 text-gray-500" />
                             System Logs
                         </Dialog.Title>
                         <div className="h-[300px] overflow-y-auto space-y-3 pr-2">
                             {systemLogs.map((log) => (
-                                <div key={log.id} className="flex items-start gap-3 text-sm p-2 rounded hover:bg-gray-50 dark:hover:bg-white/5">
+                                <div key={log.id} className="flex items-start gap-3 text-sm p-2 rounded hover:bg-accent">
                                     <div className={`mt-1 w-2 h-2 rounded-full shrink-0
                                         ${log.type === 'success' ? 'bg-green-500' :
-                                            log.type === 'warning' ? 'bg-orange-500' :
+                                            log.type === 'warning' ? 'bg-amber-500' :
                                                 log.type === 'error' ? 'bg-red-500' : 'bg-blue-500'}`}
                                     />
                                     <div className="flex-1">
@@ -527,7 +527,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                         <div className="mt-6 flex justify-end">
                             <button
                                 onClick={() => setIsLogsOpen(false)}
-                                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-white/10 text-sm font-medium hover:bg-gray-200 dark:hover:bg-white/20 transition-colors text-gray-900 dark:text-white"
+                                className="px-4 py-2 rounded-lg bg-secondary text-sm font-medium hover:bg-secondary/80 transition-colors text-secondary-foreground"
                             >
                                 Close
                             </button>
@@ -543,9 +543,9 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
 
                 {/* Horizontal Quick Actions Panel & Status */}
                 {/* Horizontal Quick Actions Panel & Status */}
-                <div className="flex items-center justify-between px-6 py-3 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/10 z-10">
+                <div className="flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-border z-10">
                     <div className="flex items-center gap-4">
-                        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-500 transition-colors">
+                        <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground transition-colors">
                             <ChevronLeftIcon className="w-5 h-5" />
                         </button>
                         <h1 className="text-sm font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
@@ -594,19 +594,19 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                             </div>
                         </div>
 
-                        <div className="w-px h-8 bg-gray-200 dark:bg-zinc-800 hidden sm:block"></div>
+                        <div className="w-px h-8 bg-border hidden sm:block"></div>
 
                         {/* Status Buttons */}
                         <div className="flex items-center gap-1">
                             <button
                                 onClick={() => handleSendMessage("Show pending orders")}
-                                className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-orange-50 dark:hover:bg-orange-900/10 rounded-lg transition-colors w-16"
+                                className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-amber-50 dark:hover:bg-amber-900/10 rounded-lg transition-colors w-16"
                                 title="Show Pending"
                             >
-                                <div className="text-orange-500 group-hover:text-orange-600 dark:text-orange-400 dark:group-hover:text-orange-300 transition-colors">
+                                <div className="text-amber-500 group-hover:text-amber-600 dark:text-amber-400 dark:group-hover:text-amber-300 transition-colors">
                                     <ExclamationCircleIcon className="w-4 h-4" />
                                 </div>
-                                <span className="text-[10px] font-bold text-orange-600 dark:text-orange-400 group-hover:text-orange-700 dark:group-hover:text-orange-300 transition-colors">3 Pending</span>
+                                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">3 Pending</span>
                             </button>
                             <button
                                 onClick={() => handleSendMessage("Show pending orders")}
@@ -618,7 +618,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 </div>
                                 <span className="text-[10px] font-bold text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">1 Urgent</span>
                             </button>
-                            <div className="w-px h-8 bg-gray-200 dark:bg-zinc-800 mx-2"></div>
+                            <div className="w-px h-8 bg-border mx-2"></div>
                             <button
                                 onClick={() => setIsLogsOpen(true)}
                                 className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors w-16"
@@ -645,7 +645,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
 
                 <div className="flex-1 flex overflow-hidden">
                     {/* Activity Sidebar (Left) */}
-                    <div className={`${showActivity ? 'w-[280px] border-r' : 'w-0 border-r-0'} hidden md:flex flex-col border-gray-200 dark:border-white/10 bg-white/50 dark:bg-zinc-900/50 backdrop-blur-xl transition-all duration-300 overflow-hidden`}>
+                    <div className={`${showActivity ? 'w-[280px] border-r' : 'w-0 border-r-0'} hidden md:flex flex-col border-border bg-background/50 backdrop-blur-xl transition-all duration-300 overflow-hidden`}>
                         <div className="p-4 border-b border-gray-200 dark:border-white/10 min-w-[280px]">
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                                 <ClockIcon className="w-3.5 h-3.5" /> Recent Activity
@@ -655,11 +655,11 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                             {appActivities.map((activity, i) => {
                                 let iconColorClass = "bg-primary/10 text-zinc-900 dark:text-primary" // Default
                                 if (activity.app === 'Inventory') iconColorClass = "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                                if (activity.app === 'Analytics') iconColorClass = "bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400"
+                                if (activity.app === 'Analytics') iconColorClass = "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400"
                                 if (activity.app === 'CRM') iconColorClass = "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
 
                                 return (
-                                    <div key={activity.id} className="relative pl-0 pb-2 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-gray-50 dark:hover:bg-white/5 p-3 rounded transition-colors group">
+                                    <div key={activity.id} className="relative pl-0 pb-2 border-b border-border/50 last:border-0 hover:bg-accent p-3 rounded transition-colors group">
                                         <div className="flex items-center gap-3 mb-1">
                                             <div className={`p-1.5 rounded-md ${iconColorClass} transition-colors`}>
                                                 <activity.icon className="w-4 h-4" />
@@ -684,7 +684,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                         max-w-[85%] sm:max-w-[70%] rounded-2xl p-4 shadow-sm backdrop-blur-sm border
                                         ${msg.role === 'user'
                                             ? 'bg-brand-400 text-primary-foreground rounded-br-none border-primary'
-                                            : 'bg-white dark:bg-zinc-900 text-gray-800 dark:text-gray-100 rounded-bl-none border-gray-100 dark:border-white/10'
+                                            : 'bg-card text-card-foreground rounded-bl-none border-border'
                                         }
                                     `}>
                                         {msg.role === 'assistant' && (
@@ -717,7 +717,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                             ))}
                             {isTyping && (
                                 <div className="flex justify-start">
-                                    <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/10 rounded-2xl rounded-bl-none p-3 shadow-sm">
+                                    <div className="bg-card border border-border rounded-2xl rounded-bl-none p-3 shadow-sm">
                                         <div className="flex gap-1">
                                             <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" />
                                             <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-75" />
@@ -730,10 +730,10 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-t border-gray-200 dark:border-white/10">
+                        <div className="p-4 bg-background/80 backdrop-blur-xl border-t border-border">
                             <div className="max-w-4xl mx-auto relative group">
                                 <div className="absolute inset-0 bg-primary/10 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="relative flex items-center gap-2 bg-white dark:bg-zinc-900 p-2 pr-2 rounded-full border border-gray-200 dark:border-white/10 shadow-sm transition-all focus-within:ring-2 ring-primary/20 focus-within:border-primary">
+                                <div className="relative flex items-center gap-2 bg-card p-2 pr-2 rounded-full border border-border shadow-sm transition-all focus-within:ring-2 ring-primary/20 focus-within:border-primary">
                                     <div className="pl-3 text-gray-400">
                                         <SparklesIcon className="w-5 h-5" />
                                     </div>

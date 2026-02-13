@@ -391,10 +391,10 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-6xl h-[80vh] flex flex-col bg-zinc-50 dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800">
+                            <Dialog.Panel className="w-full max-w-6xl h-[80vh] flex flex-col bg-background rounded-3xl shadow-2xl overflow-hidden border border-border">
 
                                 {/* Header */}
-                                <div className="p-6 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center z-10">
+                                <div className="p-6 bg-card border-b border-border flex justify-between items-center z-10">
                                     <div>
                                         <Dialog.Title className="text-xl font-bold text-foreground flex items-center gap-2">
                                             <ArrowPathIcon className="w-6 h-6 text-indigo-500" />
@@ -412,7 +412,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                         </button>
                                         <button
                                             onClick={onClose}
-                                            className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors"
+                                            className="p-2 hover:bg-accent rounded-full transition-colors"
                                         >
                                             <XMarkIcon className="w-6 h-6 text-zinc-500" />
                                         </button>
@@ -420,10 +420,10 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                 </div>
 
                                 {/* Main Area */}
-                                <div className="flex-1 overflow-y-auto relative custom-scrollbar flex flex-col sm:flex-row bg-zinc-50/50 dark:bg-zinc-950/50">
+                                <div className="flex-1 overflow-y-auto relative custom-scrollbar flex flex-col sm:flex-row bg-muted/20">
 
                                     {/* Sidebar: Assets */}
-                                    <div className="w-full sm:w-80 bg-white dark:bg-zinc-900 border-b sm:border-b-0 sm:border-r border-zinc-200 dark:border-zinc-800 p-4 flex flex-col gap-4 shadow-inner shrink-0">
+                                    <div className="w-full sm:w-80 bg-card border-b sm:border-b-0 sm:border-r border-border p-4 flex flex-col gap-4 shadow-inner shrink-0">
 
                                         {/* Filter Toolbar */}
                                         <div className="space-y-3">
@@ -433,7 +433,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         onClick={() => setShowBulkMove(!showBulkMove)}
                                                         className={clsx(
                                                             "p-2 rounded-lg transition-colors",
-                                                            showBulkMove ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800"
+                                                            showBulkMove ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50" : "bg-muted text-muted-foreground"
                                                         )}
                                                         title="Bulk Move Tool"
                                                     >
@@ -455,7 +455,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         exit={{ height: 0, opacity: 0 }}
                                                         className="overflow-hidden"
                                                     >
-                                                        <div className="bg-zinc-50 dark:bg-zinc-900/50 rounded-xl p-3 border border-zinc-200 dark:border-zinc-800 space-y-3">
+                                                        <div className="bg-muted/50 rounded-xl p-3 border border-border space-y-3">
                                                             <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
                                                                 <TruckIcon className="w-3 h-3" />
                                                                 Bulk Move {selectedAssetIds.length > 0 ? `(${selectedAssetIds.length} selected)` : ''}
@@ -466,7 +466,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             ) : (
                                                                 <div className="space-y-2">
                                                                     <select
-                                                                        className="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded p-2 outline-none focus:ring-2 focus:ring-indigo-500"
+                                                                        className="w-full text-xs bg-background border border-input rounded p-2 outline-none focus:ring-2 focus:ring-indigo-500"
                                                                         onChange={(e) => {
                                                                             if (e.target.value) {
                                                                                 selectedAssetIds.forEach(id => {
@@ -496,9 +496,9 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                     placeholder="Search assets..."
                                                     value={searchQuery}
                                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                                    className="w-full text-sm bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg pl-8 pr-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                                                    className="w-full text-sm bg-muted/50 border border-input rounded-lg pl-8 pr-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                                                 />
-                                                <svg className="w-4 h-4 text-zinc-400 absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="w-4 h-4 text-muted-foreground absolute left-2.5 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                 </svg>
                                             </div>
@@ -512,7 +512,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             "px-3 py-1.5 rounded-full whitespace-nowrap transition-colors",
                                                             filterCategory === cat
                                                                 ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 font-medium"
-                                                                : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                                                                : "bg-muted text-muted-foreground hover:bg-accent"
                                                         )}
                                                     >
                                                         {cat}
@@ -520,7 +520,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                 ))}
                                             </div>
 
-                                            <div className="flex items-center gap-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+                                            <div className="flex items-center gap-2 pt-2 border-t border-border">
                                                 <input
                                                     type="checkbox"
                                                     id="selectAll"
@@ -532,9 +532,9 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             setSelectedAssetIds([]);
                                                         }
                                                     }}
-                                                    className="rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500"
+                                                    className="rounded border-input text-indigo-600 focus:ring-indigo-500"
                                                 />
-                                                <label htmlFor="selectAll" className="text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer select-none">
+                                                <label htmlFor="selectAll" className="text-xs text-muted-foreground cursor-pointer select-none">
                                                     Select All ({selectedAssetIds.length})
                                                 </label>
                                             </div>
@@ -556,8 +556,8 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         onDrag={handleDrag}
                                                         onDragEnd={(e, info) => handleDragEnd(e, info, asset, 'unassigned')}
                                                         className={clsx(
-                                                            "bg-white dark:bg-zinc-800 p-3 rounded-xl border shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors group relative z-20",
-                                                            selectedAssetIds.includes(asset.id) ? "border-indigo-500 ring-1 ring-indigo-500 bg-indigo-50/10" : "border-zinc-200 dark:border-zinc-700"
+                                                            "bg-card p-3 rounded-xl border shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors group relative z-20",
+                                                            selectedAssetIds.includes(asset.id) ? "border-indigo-500 ring-1 ring-indigo-500 bg-indigo-50/10" : "border-border"
                                                         )}
                                                         onClick={(e) => {
                                                             // Multi-select logic on click
@@ -587,11 +587,11 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             </div>
                                                         )}
                                                         <div className="flex items-center gap-3">
-                                                            <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-700 rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
+                                                            <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden shrink-0 flex items-center justify-center">
                                                                 {asset.image ? (
                                                                     <img src={asset.image} alt="" className="w-full h-full object-cover" />
                                                                 ) : (
-                                                                    <CubeIcon className="w-6 h-6 text-zinc-400" />
+                                                                    <CubeIcon className="w-6 h-6 text-muted-foreground/50" />
                                                                 )}
                                                             </div>
                                                             <div>
@@ -603,12 +603,12 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <button
                                                                 onClick={() => stageMove(asset, 'zone-office-3', 'unassigned')}
-                                                                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-xs"
+                                                                className="p-1 hover:bg-accent rounded text-xs"
                                                                 title="Move to Office"
                                                             >🏢</button>
                                                             <button
                                                                 onClick={() => stageMove(asset, 'zone-warehouse-a', 'unassigned')}
-                                                                className="p-1 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded text-xs"
+                                                                className="p-1 hover:bg-accent rounded text-xs"
                                                                 title="Move to Warehouse"
                                                             >📦</button>
                                                         </div>
@@ -616,7 +616,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                 ))}
                                             </AnimatePresence>
                                             {effectiveAssets.length === 0 && (
-                                                <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl">
+                                                <div className="text-center py-10 text-muted-foreground border-2 border-dashed border-border rounded-xl">
                                                     <CheckCircleIcon className="w-8 h-8 mx-auto mb-2 text-green-500" />
                                                     <p className="text-sm">All assets assigned!</p>
                                                 </div>
@@ -644,27 +644,27 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         key={zone.id}
                                                         ref={el => { zoneRefs.current[zone.id] = el; }}
                                                         className={clsx(
-                                                            "rounded-3xl border-2 border-dashed flex flex-col transition-all min-h-[400px] overflow-hidden bg-white/50 dark:bg-zinc-900/50",
+                                                            "rounded-3xl border-2 border-dashed flex flex-col transition-all min-h-[400px] overflow-hidden bg-card/50",
                                                             draggingId ? "scale-[1.01]" : "",
                                                             activeDropZone === zone.id || activeDropZone?.startsWith(zone.id + '::')
                                                                 ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20 ring-4 ring-indigo-500/10 shadow-xl scale-[1.02]"
-                                                                : "border-zinc-200 dark:border-zinc-700"
+                                                                : "border-border"
                                                         )}
                                                     >
                                                         {/* Zone Header (Fixed) */}
-                                                        <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900/80 backdrop-blur-sm sticky top-0 z-30">
+                                                        <div className="p-4 border-b border-border bg-card/80 backdrop-blur-sm sticky top-0 z-30">
                                                             <div className="flex items-center gap-3">
                                                                 <div className={clsx("p-2 rounded-xl shadow-sm",
                                                                     zone.type === 'office' ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" :
                                                                         zone.type === 'warehouse' ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" :
-                                                                            "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
+                                                                            "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
                                                                 )}>
                                                                     <zone.icon className="w-5 h-5" />
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <h3 className="font-bold text-sm text-foreground truncate">{zone.name}</h3>
                                                                     <div className="flex items-center gap-2 mt-1">
-                                                                        <div className="h-1.5 flex-1 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                                                        <div className="h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
                                                                             <motion.div
                                                                                 initial={{ width: 0 }}
                                                                                 animate={{ width: `${Math.min((zone.items.length / zone.capacity) * 100, 100)}%` }}
@@ -686,7 +686,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         {/* Scrollable Content Area */}
                                                         <div className="flex-1 p-3 overflow-y-auto max-h-[350px] custom-scrollbar space-y-2 relative">
                                                             {zone.items.length === 0 && (
-                                                                <div className="absolute inset-0 flex flex-col items-center justify-center text-zinc-400 pointer-events-none">
+                                                                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground pointer-events-none">
                                                                     <CubeIcon className="w-10 h-10 opacity-20 mb-2" />
                                                                     <p className="text-xs">Drop items here</p>
                                                                 </div>
@@ -699,20 +699,20 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                         key={category}
                                                                         ref={el => { subsectionRefs.current[`${zone.id}::${category}`] = el; }}
                                                                         className={clsx(
-                                                                            "bg-white dark:bg-zinc-800/40 rounded-lg border overflow-hidden shadow-sm transition-all duration-200",
+                                                                            "bg-card/40 rounded-lg border overflow-hidden shadow-sm transition-all duration-200",
                                                                             activeDropZone === `${zone.id}::${category}`
                                                                                 ? "border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/30 dark:bg-indigo-900/10 scale-[1.02] shadow-md z-10"
-                                                                                : "border-zinc-100 dark:border-zinc-800"
+                                                                                : "border-border"
                                                                         )}>
                                                                         <button
                                                                             onClick={() => toggleCategory(zone.id, category)}
-                                                                            className="w-full flex items-center justify-between p-2.5 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors"
+                                                                            className="w-full flex items-center justify-between p-2.5 hover:bg-accent/50 transition-colors"
                                                                         >
                                                                             <div className="flex items-center gap-2">
-                                                                                {isExpanded ? <ChevronDownIcon className="w-3.5 h-3.5 text-zinc-400" /> : <ChevronRightIcon className="w-3.5 h-3.5 text-zinc-400" />}
+                                                                                {isExpanded ? <ChevronDownIcon className="w-3.5 h-3.5 text-muted-foreground" /> : <ChevronRightIcon className="w-3.5 h-3.5 text-muted-foreground" />}
                                                                                 <span className="text-xs font-semibold text-foreground">{category}</span>
                                                                             </div>
-                                                                            <span className="text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-500 px-2 py-0.5 rounded-full font-medium">
+                                                                            <span className="text-[10px] bg-muted text-muted-foreground px-2 py-0.5 rounded-full font-medium">
                                                                                 {groupedItems[category].length}
                                                                             </span>
                                                                         </button>
@@ -739,24 +739,24 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                                                 whileHover={{ scale: 1.05, zIndex: 10 }}
                                                                                                 whileDrag={{ scale: 1.1, zIndex: 9999, cursor: 'grabbing' }}
                                                                                                 className={clsx(
-                                                                                                    "aspect-square rounded-lg border flex flex-col items-center justify-center p-1 text-center shadow-sm relative cursor-grab active:cursor-grabbing bg-white dark:bg-zinc-800",
+                                                                                                    "aspect-square rounded-lg border flex flex-col items-center justify-center p-1 text-center shadow-sm relative cursor-grab active:cursor-grabbing bg-card",
                                                                                                     (item as any).isPending
                                                                                                         ? "border-indigo-300 dark:border-indigo-700 opacity-80"
-                                                                                                        : "border-zinc-200 dark:border-zinc-700"
+                                                                                                        : "border-border"
                                                                                                 )}
                                                                                             >
-                                                                                                <div className="w-6 h-6 bg-zinc-50 dark:bg-zinc-700/50 rounded flex items-center justify-center overflow-hidden mb-1">
+                                                                                                <div className="w-6 h-6 bg-muted/50 rounded flex items-center justify-center overflow-hidden mb-1">
                                                                                                     {item.image ? (
                                                                                                         <img src={item.image} className="w-full h-full object-cover" />
                                                                                                     ) : (
-                                                                                                        <CubeIcon className="w-3.5 h-3.5 text-zinc-300" />
+                                                                                                        <CubeIcon className="w-3.5 h-3.5 text-muted-foreground/50" />
                                                                                                     )}
                                                                                                 </div>
-                                                                                                <p className="text-[9px] leading-tight font-medium truncate w-full px-0.5 text-zinc-600 dark:text-zinc-300">{item.name}</p>
+                                                                                                <p className="text-[9px] leading-tight font-medium truncate w-full px-0.5 text-muted-foreground">{item.name}</p>
 
                                                                                                 {/* Pending Badge */}
                                                                                                 {(item as any).isPending && (
-                                                                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-white dark:border-zinc-800 z-20 shadow-sm" />
+                                                                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-background z-20 shadow-sm" />
                                                                                                 )}
                                                                                             </motion.div>
                                                                                         ))}
@@ -780,7 +780,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                     initial={{ y: 100, opacity: 0 }}
                                                     animate={{ y: 0, opacity: 1 }}
                                                     exit={{ y: 100, opacity: 0 }}
-                                                    className="absolute bottom-6 left-6 right-6 bg-white dark:bg-zinc-800 rounded-2xl border border-indigo-100 dark:border-indigo-800 shadow-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4 z-50 ring-1 ring-indigo-500/20"
+                                                    className="absolute bottom-6 left-6 right-6 bg-card rounded-2xl border border-indigo-100 dark:border-indigo-800 shadow-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4 z-50 ring-1 ring-indigo-500/20"
                                                 >
                                                     <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white shadow-lg shrink-0">
                                                         <SparklesIcon className="w-6 h-6 animate-pulse" />
@@ -809,7 +809,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         <div className="flex items-center gap-2 w-full md:w-auto mt-2 md:mt-0">
                                                             <button
                                                                 onClick={() => setShowAiPanel(false)}
-                                                                className="px-4 py-2 text-zinc-500 hover:text-zinc-700 text-sm font-medium"
+                                                                className="px-4 py-2 text-muted-foreground hover:text-foreground text-sm font-medium"
                                                             >
                                                                 Dismiss
                                                             </button>
@@ -830,7 +830,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
 
                                 {/* Transactional Footer */}
                                 {pendingMoves.length > 0 && (
-                                    <div className="bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-800 p-4 px-6 flex items-center justify-between animate-in slide-in-from-bottom duration-300 z-50">
+                                    <div className="bg-card border-t border-border p-4 px-6 flex items-center justify-between animate-in slide-in-from-bottom duration-300 z-50">
                                         <div className="flex items-center gap-4">
                                             <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
                                                 {pendingMoves.length}
@@ -846,7 +846,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                         <div className="flex items-center gap-3">
                                             <button
                                                 onClick={() => setPendingMoves([])}
-                                                className="px-4 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                                                className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground"
                                             >
                                                 Undo All
                                             </button>

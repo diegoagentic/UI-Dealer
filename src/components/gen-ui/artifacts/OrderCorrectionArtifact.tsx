@@ -29,7 +29,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
     }
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 border-b border-amber-100 dark:border-amber-800 flex items-center gap-2">
                 <ExclamationTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-500" />
@@ -44,7 +44,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
                 </div>
 
                 {/* Diff View */}
-                <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 grid grid-cols-[1fr,auto,1fr] gap-2 items-center text-sm border border-zinc-100 dark:border-zinc-700">
+                <div className="bg-muted/50 rounded-lg p-3 grid grid-cols-[1fr,auto,1fr] gap-2 items-center text-sm border border-border">
                     <div className="space-y-1 opacity-50">
                         <p className="text-xs text-zinc-500 uppercase tracking-wider font-semibold">Original</p>
                         <div className="font-medium text-zinc-700 dark:text-zinc-300 line-through decoration-red-500 decoration-2">{data.issue}</div>

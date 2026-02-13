@@ -20,14 +20,14 @@ export default function FilterTabs({ tabs, activeTab, onTabChange }: FilterTabsP
                             key={tab.id}
                             onClick={() => onTabChange(tab.id)}
                             className={clsx(
-                                "relative flex items-center justify-center rounded-xl transition-all outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
+                                "relative flex items-center justify-center rounded-xl transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                 isActive
                                     ? clsx(
                                         "px-3 py-2 border",
                                         tab.colorTheme.activeBg,
                                         tab.colorTheme.activeBorder
                                     )
-                                    : "p-2 hover:bg-black/5 dark:hover:bg-white/5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                                    : "p-2 hover:bg-accent text-muted-foreground hover:text-foreground"
                             )}
                         >
                             <div className="flex items-center gap-2">
@@ -64,7 +64,7 @@ export default function FilterTabs({ tabs, activeTab, onTabChange }: FilterTabsP
 
                             {/* Collapsed Badge (Notification Dot) */}
                             {!isActive && tab.count > 0 && (
-                                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold border-2 border-white dark:border-zinc-900">
+                                <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold border-2 border-background">
                                     {tab.count}
                                 </span>
                             )}

@@ -80,10 +80,10 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 p-6 text-left align-middle shadow-xl transition-all border border-zinc-200 dark:border-zinc-800">
+                            <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-card p-6 text-left align-middle shadow-xl transition-all border border-border">
                                 <Dialog.Title
                                     as="div"
-                                    className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4 mb-6"
+                                    className="flex items-center justify-between border-b border-border pb-4 mb-6"
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -100,7 +100,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                     </div>
                                     <button
                                         onClick={onClose}
-                                        className="p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                        className="p-1 rounded-full hover:bg-muted transition-colors"
                                     >
                                         <XMarkIcon className="w-5 h-5 text-muted-foreground" />
                                     </button>
@@ -115,7 +115,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                     {type === 'movement' ? 'Movement Details' : 'Task Details'}
                                                 </h4>
                                                 <div className="flex items-center gap-2 mt-1">
-                                                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-700/50 uppercase">
+                                                    <span className="text-xs font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-700/50 uppercase">
                                                         {item.status}
                                                     </span>
                                                 </div>
@@ -161,7 +161,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                 <select
                                                     value={assignedTeam}
                                                     onChange={(e) => setAssignedTeam(e.target.value)}
-                                                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none"
+                                                    className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none"
                                                 >
                                                     <option value="">Select a team to handle this {type}</option>
                                                     {teams.map(team => (
@@ -179,7 +179,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                             <div className="grid grid-cols-3 gap-3">
                                                 {[
                                                     { value: 'Low', icon: CheckCircleIcon, color: 'text-green-600', border: 'peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20' },
-                                                    { value: 'Medium', icon: ClockIcon, color: 'text-orange-600', border: 'peer-checked:border-orange-500 peer-checked:bg-orange-50 dark:peer-checked:bg-orange-900/20' },
+                                                    { value: 'Medium', icon: ClockIcon, color: 'text-amber-600', border: 'peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20' },
                                                     { value: 'High', icon: ExclamationTriangleIcon, color: 'text-red-600', border: 'peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20' }
                                                 ].map((p) => (
                                                     <label key={p.value} className="cursor-pointer">
@@ -192,7 +192,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                             className="peer sr-only"
                                                         />
                                                         <div className={cn(
-                                                            "flex items-center justify-center gap-2 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all",
+                                                            "flex items-center justify-center gap-2 p-3 rounded-lg border border-border hover:bg-muted transition-all",
                                                             p.border
                                                         )}>
                                                             <p.icon className={cn("w-5 h-5", p.color)} />
@@ -213,7 +213,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                         type="date"
                                                         value={scheduledDate}
                                                         onChange={(e) => setScheduledDate(e.target.value)}
-                                                        className="w-full pl-10 pr-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                     />
                                                     <CalendarIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
                                                 </div>
@@ -227,7 +227,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                         type="time"
                                                         value={scheduledTime}
                                                         onChange={(e) => setScheduledTime(e.target.value)}
-                                                        className="w-full pl-10 pr-4 py-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                                        className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                     />
                                                     <ClockIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
                                                 </div>
@@ -242,16 +242,16 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                 value={notes}
                                                 onChange={(e) => setNotes(e.target.value)}
                                                 placeholder="Enter any specific instructions for the team..."
-                                                className="w-full p-3 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[80px]"
+                                                className="w-full p-3 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary min-h-[80px]"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="mt-8 flex items-center justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                                <div className="mt-8 flex items-center justify-end gap-3 border-t border-border pt-4">
                                     <button
                                         onClick={onClose}
-                                        className="px-4 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-foreground hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                                        className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
                                     >
                                         Cancel
                                     </button>

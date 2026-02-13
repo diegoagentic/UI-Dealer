@@ -128,7 +128,7 @@ export default function InventoryLocations() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 
                 {/* Tabs */}
-                <div className="bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-lg inline-flex overflow-x-auto border border-zinc-200 dark:border-zinc-800">
+                <div className="bg-muted p-1 rounded-lg inline-flex overflow-x-auto border border-border">
                     {(['Warehouse', 'Project', 'Location', 'Consignment'] as const).map((tab) => (
                         <button
                             key={tab}
@@ -156,7 +156,7 @@ export default function InventoryLocations() {
                             placeholder={`Search ${activeTab.toLowerCase()}s...`}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                            className="w-full pl-9 pr-4 py-2 bg-muted/50 border border-input rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                         />
                     </div>
 
@@ -174,7 +174,7 @@ export default function InventoryLocations() {
             {/* Content Display */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredLocations.map((loc) => (
-                    <div key={loc.id} className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 hover:shadow-md transition-shadow group relative">
+                    <div key={loc.id} className="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow group relative">
 
                         {/* Header */}
                         <div className="flex justify-between items-start mb-4">
@@ -231,7 +231,7 @@ export default function InventoryLocations() {
 
                 {/* Empty State */}
                 {filteredLocations.length === 0 && (
-                    <div className="col-span-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50/50 dark:bg-zinc-800/10">
+                    <div className="col-span-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-border rounded-xl bg-muted/30">
                         <BuildingOfficeIcon className="w-12 h-12 text-zinc-300 mb-3" />
                         <h3 className="text-lg font-medium text-foreground">No {activeTab}s found</h3>
                         <p className="text-muted-foreground text-sm mt-1 max-w-xs">

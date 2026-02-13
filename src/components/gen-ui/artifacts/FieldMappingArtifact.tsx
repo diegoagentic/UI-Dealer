@@ -33,7 +33,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
     const allConfirmed = reviewFields.every(f => f.status === 'confirmed');
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden w-full max-w-lg">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden w-full max-w-lg">
             {/* Header */}
             <div className="bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -78,8 +78,8 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                             <div
                                 key={idx}
                                 className={`p-3 rounded-lg border transition-all ${field.status === 'confirmed'
-                                        ? 'bg-zinc-50 dark:bg-zinc-800/30 border-zinc-200 dark:border-zinc-800 opacity-75'
-                                        : 'bg-white dark:bg-zinc-900 border-amber-200 dark:border-amber-900/50 shadow-sm'
+                                    ? 'bg-zinc-50 dark:bg-zinc-800/30 border-zinc-200 dark:border-zinc-800 opacity-75'
+                                    : 'bg-white dark:bg-zinc-800 border-amber-200 dark:border-amber-900/50 shadow-sm'
                                     }`}
                             >
                                 <div className="flex justify-between items-start mb-2">
@@ -97,7 +97,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                                     <span className="font-mono text-[10px] truncate max-w-[120px]">{field.text}</span>
                                     <ArrowRightIcon className="w-3 h-3 text-zinc-300" />
                                     <span className="font-medium text-foreground flex items-center gap-1">
-                                        <SparklesIcon className="w-3 h-3 text-purple-400" />
+                                        <SparklesIcon className="w-3 h-3 text-indigo-400" />
                                         {field.match}
                                     </span>
                                 </div>

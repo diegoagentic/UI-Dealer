@@ -97,7 +97,7 @@ export default function ClientPolicyManager() {
             <div className="flex-1 space-y-6">
 
                 {/* Client Selector (Header Context) */}
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
+                <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm">
                     <label className="block text-sm font-medium text-muted-foreground mb-2">Configure Policy For</label>
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100">
@@ -116,7 +116,7 @@ export default function ClientPolicyManager() {
                 </div>
 
                 {/* Product List Simulation */}
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex-1">
+                <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex-1">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="font-semibold text-foreground flex items-center gap-2">
                             <ListBulletIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
@@ -147,7 +147,7 @@ export default function ClientPolicyManager() {
 
             {/* Right Col: Interactive Rules Engine */}
             <div className="w-full lg:max-w-md space-y-6">
-                <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-black/20 sticky top-6">
+                <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-lg shadow-zinc-200/50 dark:shadow-black/20 sticky top-6">
 
                     {/* Header Results */}
                     <div className="bg-green-50 dark:bg-green-900/10 p-6 border-b border-green-100 dark:border-green-900/20">
@@ -214,16 +214,16 @@ export default function ClientPolicyManager() {
                         </div>
 
                         {/* 3. Volume Discounts */}
-                        <div className="flex items-center justify-between p-4 bg-purple-50/50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-900/20">
+                        <div className="flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/20">
                             <div>
-                                <div className="font-medium text-purple-900 dark:text-purple-300">Volume Tier 2</div>
-                                <div className="text-xs text-purple-700/70 dark:text-purple-400/70">Orders &gt; $100k Net (3%)</div>
+                                <div className="font-medium text-indigo-900 dark:text-indigo-300">Volume Tier 2</div>
+                                <div className="text-xs text-indigo-700/70 dark:text-indigo-400/70">Orders &gt; $100k Net (3%)</div>
                             </div>
                             <Switch
                                 checked={useVolumeDiscount}
                                 onChange={setUseVolumeDiscount}
                                 disabled={results.net <= 100000 && !useVolumeDiscount} // Disable if threshold not met in simulation
-                                className={`${useVolumeDiscount ? 'bg-purple-600' : 'bg-zinc-200 dark:bg-zinc-700'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50`}
+                                className={`${useVolumeDiscount ? 'bg-indigo-600' : 'bg-zinc-200 dark:bg-zinc-700'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50`}
                             >
                                 <span className={`${useVolumeDiscount ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
                             </Switch>

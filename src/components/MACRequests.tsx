@@ -100,7 +100,7 @@ export default function MACRequests() {
 
     const getOriginIcon = (origin: RequestOrigin) => {
         switch (origin) {
-            case 'Slack': return <ChatBubbleLeftEllipsisIcon className="w-5 h-5 text-purple-500" />;
+            case 'Slack': return <ChatBubbleLeftEllipsisIcon className="w-5 h-5 text-indigo-500" />;
             case 'Email': return <EnvelopeIcon className="w-5 h-5 text-blue-500" />;
             case 'MobileApp': return <DevicePhoneMobileIcon className="w-5 h-5 text-green-500" />;
         }
@@ -109,7 +109,7 @@ export default function MACRequests() {
     const getUrgencyStyle = (urgency: RequestUrgency) => {
         switch (urgency) {
             case 'High': return 'text-red-600 bg-red-50 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/30';
-            case 'Medium': return 'text-orange-600 bg-orange-50 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400 dark:border-orange-800/30';
+            case 'Medium': return 'text-amber-600 bg-amber-50 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30';
             case 'Low': return 'text-green-600 bg-green-50 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30';
         }
     };
@@ -123,27 +123,27 @@ export default function MACRequests() {
                     <p className="text-sm text-muted-foreground">Triage requests from various channels and convert them to work orders.</p>
                 </div>
                 <div className="flex gap-2">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground">
                         {requests.length} Pending
                     </span>
                 </div>
             </div>
 
             {/* List */}
-            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                <div className="divide-y divide-border">
                     {requests.length === 0 ? (
                         <div className="p-12 text-center">
-                            <CheckCircleIcon className="w-12 h-12 text-zinc-300 mx-auto mb-3" />
+                            <CheckCircleIcon className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
                             <h3 className="text-lg font-medium text-foreground">All caught up!</h3>
                             <p className="text-muted-foreground">No pending requests in the queue.</p>
                         </div>
                     ) : (
                         requests.map((req) => (
-                            <div key={req.id} className="group p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors flex flex-col md:flex-row gap-4 items-start md:items-center">
+                            <div key={req.id} className="group p-4 hover:bg-accent/50 transition-colors flex flex-col md:flex-row gap-4 items-start md:items-center">
                                 {/* Icon / Origin */}
                                 <div className="shrink-0 pt-1 md:pt-0">
-                                    <div className="w-10 h-10 rounded-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shadow-sm">
+                                    <div className="w-10 h-10 rounded-full bg-muted/50 border border-border flex items-center justify-center shadow-sm">
                                         {getOriginIcon(req.origin)}
                                     </div>
                                 </div>
@@ -155,11 +155,11 @@ export default function MACRequests() {
                                         <span className="text-muted-foreground text-xs">•</span>
                                         <span className="text-muted-foreground text-xs">{req.department}</span>
                                         <span className="text-muted-foreground text-xs">•</span>
-                                        <span className="text-zinc-400 text-xs flex items-center gap-1">
+                                        <span className="text-muted-foreground text-xs flex items-center gap-1">
                                             <ClockIcon className="w-3 h-3" /> {req.receivedAt}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-zinc-700 dark:text-zinc-300 line-clamp-1 group-hover:line-clamp-none transition-all">
+                                    <p className="text-sm text-foreground/80 line-clamp-1 group-hover:line-clamp-none transition-all">
                                         {req.description}
                                     </p>
                                 </div>
@@ -183,14 +183,14 @@ export default function MACRequests() {
                                         <button
                                             onClick={() => handleAction(req.id, 'maintenance')}
                                             title="Convert to Maintenance"
-                                            className="p-2 text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-full transition-colors"
+                                            className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-full transition-colors"
                                         >
                                             <WrenchIcon className="w-5 h-5" />
                                         </button>
                                         <button
                                             onClick={() => handleAction(req.id, 'reject')}
                                             title="Reject Request"
-                                            className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                                            className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
                                         >
                                             <XCircleIcon className="w-5 h-5" />
                                         </button>

@@ -355,9 +355,9 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
     const totalIssues = headerIssues.length + ruleIssues.length + stats.attention;
 
     return (
-        <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
+        <div className="flex flex-col h-full bg-zinc-50 dark:bg-zinc-800 overflow-hidden">
             {/* Header / Status Bar */}
-            <div className="shrink-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 p-4 flex items-center justify-between">
+            <div className="shrink-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                         <SparklesIcon className="w-5 h-5 text-primary" />
@@ -427,13 +427,13 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
             {/* Main Content Area */}
             <div className="flex-1 flex overflow-hidden">
                 {/* Left Panel: Unified Dashboard */}
-                <div className="flex-1 flex flex-col min-w-0 bg-zinc-50/50 dark:bg-zinc-900/50">
+                <div className="flex-1 flex flex-col min-w-0 bg-zinc-50/50 dark:bg-zinc-800/50">
 
                     {/* Status Summary & Exceptions */}
                     <div className="p-6 pb-2">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                             {/* Validated Stats */}
-                            <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
+                            <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
                                 <div>
                                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Validated Assets</p>
                                     <p className="text-2xl font-bold text-foreground mt-1">{stats.validated}</p>
@@ -444,7 +444,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </div>
 
                             {/* Total Value */}
-                            <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
+                            <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between">
                                 <div>
                                     <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Total Value</p>
                                     <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(stats.totalValue)}</p>
@@ -489,7 +489,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </button>
 
                             {isMappingExpanded && (
-                                <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 animate-in slide-in-from-top-2">
+                                <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 animate-in slide-in-from-top-2">
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         {mappingFields.slice(0, 4).map(field => (
                                             <div key={field.label} className="flex flex-col gap-1">
@@ -544,7 +544,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                     {/* Scrollable List */}
                     <div className="flex-1 overflow-y-auto px-6 pb-6 space-y-3 scrollbar-micro">
                         {filteredAssets.map(asset => (
-                            <div key={asset.id} className={`group bg-white dark:bg-zinc-900 rounded-xl border p-4 shadow-sm transition-all ${asset.status === 'review' || asset.status === 'suggestion'
+                            <div key={asset.id} className={`group bg-white dark:bg-zinc-800 rounded-xl border p-4 shadow-sm transition-all ${asset.status === 'review' || asset.status === 'suggestion'
                                 ? 'border-amber-200 dark:border-amber-800/30'
                                 : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700'
                                 }`}>
@@ -569,7 +569,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                                                     <span className="text-xs text-muted-foreground">Qty: {asset.qty}</span>
 
                                                     {asset.warranty && asset.warranty !== 'Standard Warranty' && (
-                                                        <span className="text-[10px] flex items-center gap-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded border border-purple-100 dark:border-purple-800/30">
+                                                        <span className="text-[10px] flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800/30">
                                                             <ShieldCheckIcon className="w-3 h-3" />
                                                             {asset.warranty}
                                                         </span>
@@ -633,7 +633,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                 </div>
 
                 {/* Right Panel: Preview / Context */}
-                <div className="w-[380px] border-l border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 hidden xl:flex flex-col">
+                <div className="w-[380px] border-l border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800 hidden xl:flex flex-col">
                     {pricingStep === 'discounts' ? (
                         <div className="h-full flex flex-col">
                             <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
@@ -656,7 +656,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                     ) : (
                         // Default PDF Preview (Simplified)
                         <div className="h-full flex flex-col">
-                            <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex justify-between items-center text-sm font-medium">
+                            <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 flex justify-between items-center text-sm font-medium">
                                 <span className="flex items-center gap-2">
                                     <DocumentTextIcon className="w-4 h-4" />
                                     Source Document
@@ -705,7 +705,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
 
             {/* Render 'Report' Step Overlay */}
             {currentStep === 'report' && (
-                <div className="absolute inset-0 z-20 bg-zinc-50 dark:bg-zinc-900 flex flex-col p-8 items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="absolute inset-0 z-20 bg-zinc-50 dark:bg-zinc-800 flex flex-col p-8 items-center justify-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="max-w-3xl w-full">
                         <div className="text-center mb-10">
                             <h2 className="text-3xl font-bold font-brand text-foreground mb-2">Analysis Complete</h2>
@@ -724,13 +724,13 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                                 </h3>
 
                                 <div className="space-y-4 relative z-10">
-                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                                         <span className="text-sm font-medium">Header Discrepancies</span>
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${headerIssues.length > 0 ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
                                             {headerIssues.length} Issues
                                         </span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                                         <span className="text-sm font-medium">Business Rule Alerts</span>
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${ruleIssues.length > 0 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
                                             {ruleIssues.length} Alerts
@@ -750,13 +750,13 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                                 </h3>
 
                                 <div className="space-y-4 relative z-10">
-                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                                         <span className="text-sm font-medium">Confident Matches</span>
                                         <span className="px-2 py-0.5 bg-green-100 text-green-600 rounded-full text-xs font-bold">
                                             {stats.validated} Items
                                         </span>
                                     </div>
-                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-900/50 rounded-lg">
+                                    <div className="flex justify-between items-center p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
                                         <span className="text-sm font-medium">Needs Verification</span>
                                         <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${stats.attention > 0 ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
                                             {stats.attention} Items
@@ -827,13 +827,13 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
             )}
 
             {currentStep === 'finalize' && (
-                <div className="absolute inset-0 z-20 bg-white dark:bg-zinc-900 flex flex-col animate-in slide-in-from-right duration-300">
-                    <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2 sticky top-0 bg-white dark:bg-zinc-900 z-10">
+                <div className="absolute inset-0 z-20 bg-white dark:bg-zinc-800 flex flex-col animate-in slide-in-from-right duration-300">
+                    <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center gap-2 sticky top-0 bg-white dark:bg-zinc-800 z-10">
                         <button onClick={() => setCurrentStep('review')} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1">
                             <ChevronDownIcon className="w-4 h-4 rotate-90" /> Back to Review
                         </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-900/50 scrollbar-micro p-4 md:p-8">
+                    <div className="flex-1 overflow-y-auto bg-zinc-50 dark:bg-zinc-800/50 scrollbar-micro p-4 md:p-8">
                         <div className="max-w-3xl mx-auto space-y-6 pb-20">
 
                             <div className="text-center mb-8">
@@ -842,7 +842,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </div>
 
                             {/* Accordion 1: Asset Summary */}
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                            <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
                                 <button
                                     className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     onClick={() => setActiveAccordion(activeAccordion === 'assets' ? null : 'assets')}
@@ -883,13 +883,13 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </div>
 
                             {/* Accordion 2: Warranties */}
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                            <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
                                 <button
                                     className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     onClick={() => setActiveAccordion(activeAccordion === 'warranties' ? null : 'warranties')}
                                 >
                                     <div className="flex items-center gap-3 font-bold text-lg">
-                                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-lg">
+                                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
                                             <ShieldCheckIcon className="w-5 h-5" />
                                         </div>
                                         Warranties
@@ -903,11 +903,11 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                                 {activeAccordion === 'warranties' && (
                                     <div className="p-6 animate-in slide-in-from-top-2 duration-200 border-t border-zinc-100 dark:border-zinc-800">
                                         <div className="space-y-4">
-                                            <div className="flex items-start gap-4 p-4 bg-purple-50 dark:bg-purple-900/10 rounded-lg border border-purple-100 dark:border-purple-800/30">
-                                                <ShieldCheckIcon className="w-6 h-6 text-purple-600 mt-1" />
+                                            <div className="flex items-start gap-4 p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-lg border border-indigo-100 dark:border-indigo-800/30">
+                                                <ShieldCheckIcon className="w-6 h-6 text-indigo-600 mt-1" />
                                                 <div>
-                                                    <h4 className="font-bold text-purple-900 dark:text-purple-300">Coverage Summary</h4>
-                                                    <p className="text-sm text-purple-700 dark:text-purple-400 mt-1">
+                                                    <h4 className="font-bold text-indigo-900 dark:text-indigo-300">Coverage Summary</h4>
+                                                    <p className="text-sm text-indigo-700 dark:text-indigo-400 mt-1">
                                                         Standard Manufacturer Warranty applies to all items unless otherwise specified.
                                                     </p>
                                                 </div>
@@ -926,7 +926,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </div>
 
                             {/* Accordion 3: Discounts */}
-                            <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
+                            <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm transition-all hover:shadow-md">
                                 <button
                                     className="w-full p-4 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-800/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                     onClick={() => setActiveAccordion(activeAccordion === 'discounts' ? null : 'discounts')}
@@ -958,7 +958,7 @@ export default function AssetReviewArtifact({ data, source = 'upload' }: { data:
                             </div>
 
                             {/* Totals & Submit Section */}
-                            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl p-6 md:p-8 mt-8 sticky bottom-4 z-20">
+                            <div className="bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-xl p-6 md:p-8 mt-8 sticky bottom-4 z-20">
                                 <div className="flex flex-col md:flex-row justify-between items-end mb-6 pb-6 border-b border-zinc-100 dark:border-zinc-800">
                                     <div className="mb-4 md:mb-0">
                                         <span className="block text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Estimated Total</span>

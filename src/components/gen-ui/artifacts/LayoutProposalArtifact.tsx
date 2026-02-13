@@ -16,11 +16,11 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
     };
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
-            <div className="bg-purple-50 dark:bg-purple-900/20 px-4 py-3 border-b border-purple-100 dark:border-purple-800 flex items-center gap-2">
-                <Square3Stack3DIcon className="w-4 h-4 text-purple-600 dark:text-purple-500" />
-                <h4 className="font-semibold text-purple-900 dark:text-purple-100 text-sm">Layout Generator</h4>
+            <div className="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800 flex items-center gap-2">
+                <Square3Stack3DIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
+                <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">Layout Generator</h4>
             </div>
 
             <div className="p-4 space-y-4">
@@ -35,12 +35,12 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
                             key={opt}
                             onClick={() => handleSelect(opt)}
                             className={`aspect-square rounded-lg border flex flex-col items-center justify-center gap-2 transition-all ${selectedOption === opt
-                                    ? 'bg-purple-50 dark:bg-purple-900/40 border-purple-500 ring-1 ring-purple-500'
-                                    : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-purple-300'
+                                ? 'bg-indigo-50 dark:bg-indigo-900/40 border-indigo-500 ring-1 ring-indigo-500'
+                                : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-indigo-300'
                                 }`}
                         >
-                            <CubeIcon className={`w-6 h-6 ${selectedOption === opt ? 'text-purple-600' : 'text-zinc-400'}`} />
-                            <span className={`text-[10px] font-medium ${selectedOption === opt ? 'text-purple-700 dark:text-purple-300' : 'text-zinc-500'}`}>{opt}</span>
+                            <CubeIcon className={`w-6 h-6 ${selectedOption === opt ? 'text-indigo-600' : 'text-zinc-400'}`} />
+                            <span className={`text-[10px] font-medium ${selectedOption === opt ? 'text-indigo-700 dark:text-indigo-300' : 'text-zinc-500'}`}>{opt}</span>
                         </button>
                     ))}
                 </div>
@@ -57,8 +57,8 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
                     onClick={handleConfirm}
                     disabled={!selectedOption}
                     className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2 ${selectedOption
-                            ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                            : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
+                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
                         }`}
                 >
                     Generate Project Board

@@ -11,7 +11,7 @@ import { Fragment } from 'react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import { useTheme } from './useTheme'
+import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
@@ -23,12 +23,12 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 const items = [
     { id: "SKU-OFF-2025-001", name: "Executive Chair Pro", category: "Premium Series", properties: "Leather / Black", stock: 285, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700", aiStatus: "info" },
     { id: "SKU-OFF-2025-002", name: "Ergonomic Task Chair", category: "Standard Series", properties: "Mesh / Gray", stock: 520, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
-    { id: "SKU-OFF-2025-003", name: "Conference Room Chair", category: "Meeting Series", properties: "Fabric / Navy", stock: 42, status: "Low Stock", statusColor: "bg-yellow-50 text-yellow-700 ring-yellow-600/20", aiStatus: "warning" },
+    { id: "SKU-OFF-2025-003", name: "Conference Room Chair", category: "Meeting Series", properties: "Fabric / Navy", stock: 42, status: "Low Stock", statusColor: "bg-amber-50 text-amber-700 ring-amber-600/20", aiStatus: "warning" },
     { id: "SKU-OFF-2025-004", name: "Visitor Stacking Chair", category: "Guest Series", properties: "Plastic / White", stock: 180, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "SKU-OFF-2025-005", name: "Gaming Office Chair", category: "Sport Series", properties: "Leather / Red", stock: 0, status: "Out of Stock", statusColor: "bg-red-50 text-red-700 ring-red-600/20" },
     { id: "SKU-OFF-2025-006", name: "Reception Lounge Chair", category: "Lobby Series", properties: "Velvet / Teal", stock: 95, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "SKU-OFF-2025-007", name: "Drafting Stool High", category: "Studio Series", properties: "Mesh / Black", stock: 340, status: "In Stock", statusColor: "bg-zinc-100 text-zinc-700" },
-    { id: "SKU-OFF-2025-008", name: "Bench Seating 3-Seat", category: "Waiting Series", properties: "Metal / Chrome", stock: 28, status: "Low Stock", statusColor: "bg-yellow-50 text-yellow-700 ring-yellow-600/20" },
+    { id: "SKU-OFF-2025-008", name: "Bench Seating 3-Seat", category: "Waiting Series", properties: "Metal / Chrome", stock: 28, status: "Low Stock", statusColor: "bg-amber-50 text-amber-700 ring-amber-600/20" },
 ]
 
 interface Message {
@@ -147,9 +147,9 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 {/* Collapsible Summary */}
                 {isSummaryExpanded ? (
                     <>
-                        <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
+                        <div className="bg-card p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
-                                <button onClick={() => setIsSummaryExpanded(false)} className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 transition-colors bg-zinc-100 dark:bg-zinc-800 hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
+                                <button onClick={() => setIsSummaryExpanded(false)} className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 transition-colors bg-zinc-100 dark:bg-card hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
                                     Hide Details <ChevronUpIcon className="w-3.5 h-3.5" />
                                 </button>
                             </div>
@@ -159,9 +159,9 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     { label: 'NET MARGIN', value: '29.2%', color: 'text-green-600 dark:text-green-400' },
                                     { label: 'PROBABILITY', value: 'High' },
                                     { label: 'VALID UNTIL', value: 'Feb 12' },
-                                    { label: 'STATUS', value: 'Negotiating', color: 'text-purple-600 dark:text-purple-400' },
+                                    { label: 'STATUS', value: 'Negotiating', color: 'text-indigo-600 dark:text-indigo-400' },
                                 ].map((stat, i) => (
-                                    <div key={i} className="bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-100 dark:border-white/5">
+                                    <div key={i} className="bg-zinc-50 dark:bg-card/50 p-4 rounded-xl border border-zinc-100 dark:border-white/5">
                                         <p className="text-[10px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider mb-1">{stat.label}</p>
                                         <p className={cn("text-2xl font-bold tracking-tight", stat.color || "text-zinc-900 dark:text-white")}>{stat.value}</p>
                                     </div>
@@ -195,7 +195,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             // Pending: Gray Background
 
                                             return (
-                                                <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1 group cursor-default">
+                                                <div key={i} className="flex flex-col items-center bg-card px-1 group cursor-default">
                                                     <div className={cn(
                                                         "h-6 w-6 rounded-full flex items-center justify-center transition-all duration-300",
                                                         isCompleted || isCurrent
@@ -222,12 +222,12 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         </div>
                     </>
                 ) : (
-                    <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="bg-card p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide">
                             {[
                                 { label: 'Quote Value', value: '$1.2M' },
                                 { label: 'Margin', value: '29.2%', color: 'text-green-600 dark:text-green-400' },
-                                { label: 'Probability', value: 'High', color: 'text-purple-600 dark:text-purple-400' },
+                                { label: 'Probability', value: 'High', color: 'text-indigo-600 dark:text-indigo-400' },
                                 { label: 'Status', value: 'Negotiating', color: 'text-zinc-600 dark:text-zinc-400' },
                             ].map((stat, i) => (
                                 <Fragment key={i}>
@@ -247,8 +247,8 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Current Phase</span>
                                     <span className="text-sm font-bold text-zinc-900 dark:text-white">Negotiating</span>
                                 </div>
-                                <div className="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white bg-white dark:bg-zinc-900">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 dark:bg-white" />
+                                <div className="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white bg-card">
+                                    <div className="w-2.5 h-2.5 rounded-full bg-foreground" />
                                 </div>
                             </div>
 
@@ -304,7 +304,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                             <TabPanel className="flex flex-col focus:outline-none">
                                 <div className="grid grid-cols-12 gap-6 p-6">
                                     {/* Left Panel: List */}
-                                    <div className="col-span-8 flex flex-col bg-white dark:bg-zinc-900 border border-border rounded-lg shadow-sm">
+                                    <div className="col-span-8 flex flex-col bg-card border border-border rounded-lg shadow-sm">
                                         {/* Search and Filter Bar */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <div className="flex-1 max-w-lg relative">
@@ -345,7 +345,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="bg-white dark:bg-zinc-900 divide-y divide-border">
+                                                <tbody className="bg-card divide-y divide-border">
                                                     {items.map((item) => (
                                                         <tr
                                                             key={item.id}
@@ -395,7 +395,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <span className={cn(
                                                                     "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                                                                    item.status === 'In Stock' ? "bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-200 dark:border-zinc-700" :
+                                                                    item.status === 'In Stock' ? "bg-zinc-100 text-zinc-800 border-zinc-200 dark:bg-card dark:text-zinc-200 dark:border-zinc-700" :
                                                                         item.status === 'Low Stock' ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-800" :
                                                                             "bg-red-50 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800"
                                                                 )}>
@@ -410,7 +410,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
 
                                     {/* Right Panel: Details */}
-                                    <div className="col-span-4 flex flex-col bg-white dark:bg-zinc-900 border border-border rounded-lg shadow-sm">
+                                    <div className="col-span-4 flex flex-col bg-card border border-border rounded-lg shadow-sm">
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
@@ -424,9 +424,9 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <PaperAirplaneIcon className="h-4 w-4" />
                                                 </button>
-                                                <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-purple-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <SparklesIcon className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-purple-500 ring-2 ring-white dark:ring-zinc-900" />
+                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
                                                 <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
@@ -444,11 +444,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         className="flex items-center justify-between w-full mb-2 group"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <SparklesIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                                            <SparklesIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                                             <span className="text-sm font-bold text-foreground">AI Suggestions</span>
                                                             <span className="relative flex h-2 w-2">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                                                             </span>
                                                         </div>
                                                         <ChevronDownIcon
@@ -461,7 +461,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                                     {sections.aiSuggestions && (
                                                         selectedItem.aiStatus === 'info' ? (
-                                                            <div className="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
+                                                            <div className="bg-zinc-50 dark:bg-card/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-4">
                                                                 <h4 className="text-sm font-bold text-foreground mb-2">Optimization Opportunity</h4>
                                                                 <div className="space-y-2">
                                                                     <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-primary transition-colors">
@@ -484,11 +484,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-purple-500 transition-colors">
+                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-indigo-500 transition-colors">
                                                                         <div className="flex gap-2">
                                                                             <div className="mt-1 h-3 w-3 rounded-full border border-muted-foreground"></div>
                                                                             <div>
-                                                                                <div className="text-sm font-medium text-purple-700 dark:text-purple-400">Premium {selectedItem.name}</div>
+                                                                                <div className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Premium {selectedItem.name}</div>
                                                                                 <div className="text-xs text-muted-foreground">+ High Durability Finish</div>
                                                                             </div>
                                                                         </div>
@@ -500,7 +500,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <div className="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
+                                                            <div className="bg-zinc-50 dark:bg-card/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
                                                                 <div className="flex gap-3">
                                                                     <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                     <div className="w-full">
@@ -613,7 +613,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     />
                                                 </button>
                                                 {sections.productOverview && (
-                                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-zinc-900 border border-border rounded-lg p-4">
+                                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-card border border-border rounded-lg p-4">
                                                         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                                                             <CubeIcon className="h-12 w-12 text-muted-foreground/50" />
                                                         </div>
@@ -653,7 +653,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     />
                                                 </button>
                                                 {sections.lifecycle && (
-                                                    <div className="pl-4 border-l border-border ml-2 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-zinc-900 border-r border-y border-border rounded-r-lg p-4">
+                                                    <div className="pl-4 border-l border-border ml-2 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-card border-r border-y border-border rounded-r-lg p-4">
                                                         {['Material Sourced', 'Manufacturing', 'Quality Control'].map((step, i) => (
                                                             <div key={i} className="relative pb-2 last:pb-0">
                                                                 <div className="absolute -left-[21px] top-1 h-2 w-2 rounded-full bg-primary" />
@@ -707,7 +707,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 {collaborators.map((c, i) => (
                                                     <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background">
                                                         {c.avatar === 'AI' ? (
-                                                            <div className="h-full w-full rounded-full bg-purple-600 flex items-center justify-center text-xs font-bold text-white">AI</div>
+                                                            <div className="h-full w-full rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">AI</div>
                                                         ) : (
                                                             <img className="h-full w-full rounded-full object-cover" src={c.avatar} alt={c.name} />
                                                         )}
@@ -738,8 +738,8 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                         </div>
                                                     ) : msg.avatar === 'AI' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center border border-purple-200 dark:border-purple-800">
-                                                            <SparklesIcon className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                                        <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
+                                                            <SparklesIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                         </div>
                                                     ) : msg.avatar ? (
                                                         <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />
@@ -806,11 +806,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <div className="p-5 border-b border-border bg-background/50">
                                         <div className="flex items-center justify-between mb-2">
                                             <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Context</h3>
-                                            <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse"></span>
+                                            <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
                                         </div>
                                         <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center border border-orange-200 dark:border-orange-500/30">
-                                                <ClockIcon className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center border border-amber-200 dark:border-amber-500/30">
+                                                <ClockIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-foreground">Pending Review</p>
@@ -843,12 +843,12 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     </div>
                                                 </button>
 
-                                                <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-orange-500/50 hover:shadow-md transition-all text-left">
-                                                    <div className="h-8 w-8 rounded-lg bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors text-orange-600 dark:text-orange-400">
+                                                <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:shadow-md transition-all text-left">
+                                                    <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600 dark:text-amber-400">
                                                         <PencilIcon className="h-5 w-5" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-medium text-foreground group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">Request Changes</p>
+                                                        <p className="text-sm font-medium text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Request Changes</p>
                                                         <p className="text-[10px] text-muted-foreground">Send feedback to vendor</p>
                                                     </div>
                                                 </button>

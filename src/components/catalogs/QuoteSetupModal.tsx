@@ -125,8 +125,8 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
-                                            <SparklesIcon className="w-4 h-4 text-purple-400" />
-                                            <div className="text-sm font-medium text-purple-100">Copilot Suggestions</div>
+                                            <SparklesIcon className="w-4 h-4 text-indigo-400" />
+                                            <div className="text-sm font-medium text-indigo-100">Copilot Suggestions</div>
                                         </div>
 
                                         {/* Business Rules Popover */}
@@ -196,7 +196,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                             )}
                                         </Popover>
                                     </div>
-                                    <div className="bg-purple-900/10 border border-purple-500/20 rounded-xl p-4 space-y-4">
+                                    <div className="bg-indigo-900/10 border border-indigo-500/20 rounded-xl p-4 space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div>
                                                 <div className="text-sm font-medium text-indigo-100">Recommended Assets Only</div>
@@ -206,15 +206,15 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                                 checked={copilotEnabled}
                                                 onChange={setCopilotEnabled}
                                                 className={clsx(
-                                                    copilotEnabled ? 'bg-purple-600' : 'bg-zinc-700',
-                                                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
+                                                    copilotEnabled ? 'bg-indigo-600' : 'bg-zinc-700',
+                                                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
                                                 )}
                                             >
                                                 <span className={clsx(copilotEnabled ? 'translate-x-6' : 'translate-x-1', 'inline-block h-4 w-4 transform rounded-full bg-white transition')} />
                                             </Switch>
                                         </div>
 
-                                        <div className="flex items-center justify-between border-t border-purple-500/10 pt-3">
+                                        <div className="flex items-center justify-between border-t border-indigo-500/10 pt-3">
                                             <div>
                                                 <div className="text-sm font-medium text-indigo-100">Apply Volume Discounts</div>
                                                 <div className="text-xs text-indigo-300/70">Using Tier 2 rates based on history</div>
@@ -223,8 +223,8 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                                 checked={volumeDiscount}
                                                 onChange={setVolumeDiscount}
                                                 className={clsx(
-                                                    volumeDiscount ? 'bg-purple-600' : 'bg-zinc-700',
-                                                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
+                                                    volumeDiscount ? 'bg-indigo-600' : 'bg-zinc-700',
+                                                    'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
                                                 )}
                                             >
                                                 <span className={clsx(volumeDiscount ? 'translate-x-6' : 'translate-x-1', 'inline-block h-4 w-4 transform rounded-full bg-white transition')} />
@@ -232,7 +232,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                         </div>
 
                                         {copilotEnabled && (
-                                            <div className="mt-2 text-xs text-purple-200 bg-purple-500/10 p-2 rounded border border-purple-500/20">
+                                            <div className="mt-2 text-xs text-indigo-200 bg-indigo-500/10 p-2 rounded border border-indigo-500/20">
                                                 AI Insight: Acme prefers "Task Seating" and "Herman Miller". We've highlighted these categories.
                                             </div>
                                         )}
@@ -242,8 +242,8 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 {/* Forecasting Widget */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <CalculatorIcon className="w-4 h-4 text-emerald-400" />
-                                        <div className="text-sm font-medium text-emerald-100">Forecast</div>
+                                        <CalculatorIcon className="w-4 h-4 text-green-400" />
+                                        <div className="text-sm font-medium text-green-100">Forecast</div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50 text-center">
@@ -258,7 +258,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                                 <CurrencyDollarIcon className="w-3.5 h-3.5" />
                                                 Proj. Margin
                                             </div>
-                                            <div className="text-xl font-semibold text-emerald-400">{volumeDiscount ? '22%' : '26%'}</div>
+                                            <div className="text-xl font-semibold text-green-400">{volumeDiscount ? '22%' : '26%'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -270,7 +270,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 </button>
                                 <button
                                     onClick={handleCreateQuote}
-                                    className="px-6 py-2 bg-primary text-black text-sm font-medium rounded-lg hover:bg-lime-400 transition-colors flex items-center gap-2"
+                                    className="px-6 py-2 bg-primary text-black text-sm font-medium rounded-lg hover:bg-brand-300 dark:bg-brand-500 transition-colors flex items-center gap-2"
                                 >
                                     Create Quote
                                     <span className="opacity-60">→</span>

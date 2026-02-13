@@ -8,38 +8,38 @@ export default {
     theme: {
         extend: {
             colors: {
-                border: "var(--border)",
-                input: "var(--input)",
-                ring: "var(--ring)",
-                background: "var(--background)",
-                foreground: "var(--foreground)",
+                border: "rgb(from var(--border) r g b / <alpha-value>)",
+                input: "rgb(from var(--input) r g b / <alpha-value>)",
+                ring: "rgb(from var(--ring) r g b / <alpha-value>)",
+                background: "rgb(from var(--background) r g b / <alpha-value>)",
+                foreground: "rgb(from var(--foreground) r g b / <alpha-value>)",
                 primary: {
-                    DEFAULT: "var(--primary)",
-                    foreground: "var(--primary-foreground)",
+                    DEFAULT: "rgb(from var(--primary) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--primary-foreground) r g b / <alpha-value>)",
                 },
                 secondary: {
-                    DEFAULT: "var(--secondary)",
-                    foreground: "var(--secondary-foreground)",
+                    DEFAULT: "rgb(from var(--secondary) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--secondary-foreground) r g b / <alpha-value>)",
                 },
                 destructive: {
-                    DEFAULT: "var(--destructive)",
-                    foreground: "var(--destructive-foreground)",
+                    DEFAULT: "rgb(from var(--destructive) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--destructive-foreground) r g b / <alpha-value>)",
                 },
                 muted: {
-                    DEFAULT: "var(--muted)",
-                    foreground: "var(--muted-foreground)",
+                    DEFAULT: "rgb(from var(--muted) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--muted-foreground) r g b / <alpha-value>)",
                 },
                 accent: {
-                    DEFAULT: "var(--accent)",
-                    foreground: "var(--accent-foreground)",
+                    DEFAULT: "rgb(from var(--accent) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--accent-foreground) r g b / <alpha-value>)",
                 },
                 popover: {
-                    DEFAULT: "var(--popover)",
-                    foreground: "var(--popover-foreground)",
+                    DEFAULT: "rgb(from var(--popover) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--popover-foreground) r g b / <alpha-value>)",
                 },
                 card: {
-                    DEFAULT: "var(--card)",
-                    foreground: "var(--card-foreground)",
+                    DEFAULT: "rgb(from var(--card) r g b / <alpha-value>)",
+                    foreground: "rgb(from var(--card-foreground) r g b / <alpha-value>)",
                 },
                 brand: {
                     50: "var(--color-brand-50)",
@@ -54,6 +54,19 @@ export default {
                     900: "var(--color-brand-900)",
                     950: "var(--color-brand-950)",
                     lime: "var(--color-brand-lime)",
+                },
+                zinc: {
+                    50: "rgb(from var(--color-zinc-50) r g b / <alpha-value>)",
+                    100: "rgb(from var(--color-zinc-100) r g b / <alpha-value>)",
+                    200: "rgb(from var(--color-zinc-200) r g b / <alpha-value>)",
+                    300: "rgb(from var(--color-zinc-300) r g b / <alpha-value>)",
+                    400: "rgb(from var(--color-zinc-400) r g b / <alpha-value>)",
+                    500: "rgb(from var(--color-zinc-500) r g b / <alpha-value>)",
+                    600: "rgb(from var(--color-zinc-600) r g b / <alpha-value>)",
+                    700: "rgb(from var(--color-zinc-700) r g b / <alpha-value>)",
+                    800: "rgb(from var(--color-zinc-800) r g b / <alpha-value>)",
+                    900: "rgb(from var(--color-zinc-900) r g b / <alpha-value>)",
+                    950: "rgb(from var(--color-zinc-950) r g b / <alpha-value>)",
                 },
             },
             borderRadius: {
