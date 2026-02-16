@@ -20,7 +20,7 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.unread).length,
             icon: Squares2X2Icon,
             colorTheme: {
-                activeBg: 'bg-primary text-primary-foreground',
+                activeBg: 'bg-zinc-800 dark:bg-white/10',
                 activeText: 'text-white',
                 activeBorder: 'border-white/10',
                 badgeBg: 'bg-white/20',
@@ -152,7 +152,7 @@ export default function ActionCenter() {
                         leaveTo="opacity-0 translate-y-2 scale-95"
                     >
                         <PopoverPanel className="fixed top-[90px] left-1/2 -translate-x-1/2 w-[95vw] max-h-[85vh] lg:w-[600px] lg:fixed lg:left-1/2 lg:-translate-x-1/2 p-0 z-50 focus:outline-none">
-                            <div className="bg-card/85 backdrop-blur-xl border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
+                            <div className="bg-zinc-100 dark:bg-zinc-900/85 backdrop-blur-xl border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
 
                                 {currentView === 'chat' ? (
                                     <ChatView onBack={() => setCurrentView('list')} />

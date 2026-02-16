@@ -64,7 +64,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
     };
 
     return (
-        <div className="group relative p-4 rounded-2xl bg-card border border-transparent hover:border-border hover:shadow-md transition-all duration-200">
+        <div className="group relative p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800 border border-transparent hover:border-border hover:shadow-md transition-all duration-200">
             <div className="flex justify-between items-start gap-4">
 
                 <div className="flex-1 min-w-0">
@@ -110,7 +110,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm",
                             action.primary
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-                                : "bg-muted text-muted-foreground hover:bg-accent",
+                                : "bg-muted text-zinc-900 dark:text-gray-200 hover:bg-accent",
                             actionState[i] === 'Sent!' && "!bg-green-500 !text-white"
                         )}
                         onClick={() => handleActionClick(action.label, i)}

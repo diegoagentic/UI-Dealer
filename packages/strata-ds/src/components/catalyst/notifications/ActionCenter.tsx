@@ -128,7 +128,7 @@ export function ActionPanelContent({ className }: { className?: string }) {
     const urgentCount = mockNotifications.filter(n => n.priority === 'high').length;
 
     return (
-        <div className={clsx("bg-white/85 dark:bg-zinc-900/85 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]", className)}>
+        <div className={clsx("bg-zinc-100 dark:bg-zinc-900/85 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]", className)}>
 
             {currentView === 'chat' ? (
                 <ChatView onBack={() => setCurrentView('list')} />
