@@ -85,10 +85,10 @@ const DEMO_STEPS: DemoStep[] = [
         id: '1.7',
         groupId: 1,
         groupTitle: 'Flow 1: RFQ to PO Processing',
-        title: 'Manager Approval',
-        description: 'Sarah Chen receives notification, reviews quote details with AI analysis, and approves the quote.',
+        title: 'Dealer Quote Approval',
+        description: 'Dealer receives quote notification, reviews pricing and line items with AI summary, and approves.',
         app: 'dashboard',
-        role: 'Expert',
+        role: 'Dealer',
         highlightId: 'manager-approval-view'
     },
     {

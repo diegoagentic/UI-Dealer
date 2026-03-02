@@ -336,16 +336,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
-    // Step 1.9 — Smart Notifications Animation
-    const [notifDelivered18, setNotifDelivered18] = useState<number[]>([])
-    useEffect(() => {
-        if (currentStep.id !== '1.9') { setNotifDelivered18([]); return; }
-        const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setNotifDelivered18([0]), 1500));
-        timeouts.push(setTimeout(() => setNotifDelivered18([0, 1]), 3000));
-        timeouts.push(setTimeout(() => setNotifDelivered18([0, 1, 2]), 4500));
-        return () => timeouts.forEach(clearTimeout);
-    }, [currentStep.id]);
+    // Step 1.9 — Smart Notifications (Action Center shows the notification)
 
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
     const [performanceTimePeriod, setPerformanceTimePeriod] = useState<'Day' | 'Month' | 'Sem' | 'Year'>('Month')
@@ -504,39 +495,39 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <p className="text-sm font-bold text-blue-700 dark:text-blue-300">New Quote Approval Request</p>
+                                            <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Quote Ready for Review</p>
                                             <span className="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[9px] font-bold">NEW</span>
                                         </div>
-                                        <p className="text-xs text-blue-600 dark:text-blue-400">Quote <span className="font-bold">QT-1025</span> from <span className="font-bold">Apex Furniture</span> — <span className="font-bold">$134,250</span></p>
-                                        <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-1">System Policy Engine pre-approved · Awaiting your Level 2 authorization</p>
+                                        <p className="text-xs text-blue-600 dark:text-blue-400">Quote <span className="font-bold">QT-1025</span> for your RFQ — <span className="font-bold">$134,250</span> · 5 SKUs</p>
+                                        <p className="text-[10px] text-blue-500 dark:text-blue-400 mt-1">AI-generated from your RFQ submission · Ready for your approval</p>
                                     </div>
                                     <span className="text-[10px] text-blue-500 dark:text-blue-400 font-medium shrink-0">Just now</span>
                                 </div>
                             </div>
                         )}
 
-                        {/* Main approval card — appears after notification */}
+                        {/* Main quote review card — appears after notification */}
                         {contentVisible17 && (
                             <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-lg animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-indigo-50/50 dark:bg-indigo-500/5">
+                                <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between bg-green-50/50 dark:bg-green-500/5">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-indigo-500 text-white flex items-center justify-center text-sm font-bold">SC</div>
+                                        <div className="w-10 h-10 rounded-xl bg-green-600 text-white flex items-center justify-center text-sm font-bold">AF</div>
                                         <div>
-                                            <h3 className="text-sm font-bold text-foreground">Approval Request — Sarah Chen</h3>
-                                            <p className="text-[10px] text-muted-foreground mt-0.5">Regional Sales Manager · Level 2 Authorization</p>
+                                            <h3 className="text-sm font-bold text-foreground">Quote Review — Apex Furniture</h3>
+                                            <p className="text-[10px] text-muted-foreground mt-0.5">New HQ RFQ · Austin, TX · Dealer Approval Required</p>
                                         </div>
                                     </div>
-                                    <ConfidenceScoreBadge score={94} label="Policy Match" />
+                                    <ConfidenceScoreBadge score={94} label="AI Accuracy" />
                                 </div>
 
                                 <div className="p-6 space-y-5">
-                                    {/* Quote summary — enhanced with customer info */}
+                                    {/* Quote summary */}
                                     <div>
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                                             {[
                                                 { label: 'Quote ID', value: 'QT-1025' },
-                                                { label: 'Customer', value: 'Apex Furniture' },
                                                 { label: 'Total Value', value: '$134,250' },
+                                                { label: 'Line Items', value: '5 SKUs' },
                                                 { label: 'Delivery Est.', value: 'Mar 15, 2026' },
                                             ].map(item => (
                                                 <div key={item.label} className="p-3 rounded-lg bg-muted/30 border border-border/50 text-center">
@@ -555,7 +546,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 <p className="text-xs font-bold text-foreground">Net 30 (2% early pay)</p>
                                             </div>
                                             <div className="p-2.5 rounded-lg bg-muted/20 border border-border/50">
-                                                <p className="text-[10px] text-muted-foreground">Discount</p>
+                                                <p className="text-[10px] text-muted-foreground">Discount Applied</p>
                                                 <p className="text-xs font-bold text-foreground">4% combined ($5,370)</p>
                                             </div>
                                         </div>
@@ -586,38 +577,23 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </table>
                                     </div>
 
-                                    {/* Approval triggers */}
-                                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
-                                        <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 mb-1.5">Why This Requires Approval</p>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                                <CurrencyDollarIcon className="w-3.5 h-3.5 shrink-0" />
-                                                <span>Quote total <span className="font-bold">$134,250</span> exceeds $100,000 threshold</span>
-                                            </div>
-                                            <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                                <ExclamationCircleIcon className="w-3.5 h-3.5 shrink-0" />
-                                                <span>Non-standard discounts: <span className="font-bold">Early Payment (2%) + Mixed Category (2%)</span></span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* AI Analysis */}
+                                    {/* AI Summary for dealer */}
                                     <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                                         <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                                         <div className="text-xs text-indigo-700 dark:text-indigo-300 space-y-1">
-                                            <p><span className="font-bold">AI Analysis:</span> All line items validated against catalog pricing. Discounts within authorized bracket for client tier. Armrest substitution eliminates 3-week lead time.</p>
-                                            <p>Recommendation: <span className="font-bold text-green-600 dark:text-green-400">Approve</span> — no anomalies detected.</p>
+                                            <p><span className="font-bold">AI Summary:</span> Quote generated from your RFQ email + attachments. All 5 SKUs matched to catalog. Pricing verified. Early payment discount (2%) + volume discount (2%) applied automatically.</p>
+                                            <p>Estimated savings vs. list price: <span className="font-bold text-green-600 dark:text-green-400">$5,370 (4%)</span></p>
                                         </div>
                                     </div>
 
-                                    {/* Resolved Discrepancies */}
+                                    {/* What was resolved */}
                                     <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-                                        <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 mb-2">Resolved by Expert (Step 1.5)</p>
+                                        <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 mb-2">Automatically Resolved</p>
                                         <div className="space-y-1">
                                             {[
-                                                'Freight rate adjusted: $0 → $2,450 (multi-zone LTL calculation)',
-                                                'Quantity confirmed: 125 units (PDF spec overrides email body)',
-                                                'Armrest substitution: Fixed → 4D Adjustable (+$750, eliminates 3-week lead)',
+                                                'Freight calculated: $2,450 (multi-zone LTL to Austin, TX)',
+                                                'Quantity confirmed: 125 units from PDF spec',
+                                                'Armrest upgraded: 4D Adjustable (faster delivery, +$750)',
                                             ].map((item, i) => (
                                                 <div key={i} className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                                                     <CheckCircleIcon className="w-3.5 h-3.5 shrink-0" />
@@ -640,7 +616,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                             {managerApproved17 ? <><CheckIcon className="w-4 h-4" /> Quote Approved</> : <><CheckBadgeIcon className="w-4 h-4" /> Approve Quote</>}
                                         </button>
                                         {managerApproved17 && (
-                                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium animate-pulse">Advancing to PO generation...</span>
+                                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium animate-pulse">Generating PO...</span>
                                         )}
                                     </div>
                                 </div>
@@ -683,7 +659,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 1.10: Smart Notifications (Action Center opens in Navbar) ===== */}
+                {/* ===== Step 1.9: Smart Notifications (Action Center opens in Navbar) ===== */}
                 {currentStep.id === '1.9' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* Pipeline Strip */}
@@ -695,40 +671,38 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
                             { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2 approved' },
                             { id: 'po', name: 'POBuilder', status: 'done', detail: 'PO-1029' },
-                            { id: 'notif', name: 'Notification', status: notifDelivered18.length === 3 ? 'done' : 'running', detail: `${notifDelivered18.length}/3 sent` },
+                            { id: 'notif', name: 'Notification', status: 'done' },
                         ]} accentColor="green" />
 
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                             <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">NotificationAgent:</span> Generated {notifDelivered18.length > 0 ? notifDelivered18.length + 2 : 2} persona-specific notifications from 8-agent pipeline. Each persona receives only role-relevant information.
+                                <span className="font-bold">NotificationAgent:</span> PO-1029 notification delivered to Dealer portal. Click "View PO" in Action Center to continue to pipeline.
                             </div>
                             <ConfidenceScoreBadge score={97} label="Relevance" />
                         </div>
 
                         {/* Completion Summary */}
-                        {notifDelivered18.length === 3 && (
-                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 space-y-3 animate-in fade-in duration-500">
-                                <div className="flex items-center gap-2">
-                                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
-                                    <span className="text-sm font-bold text-green-700 dark:text-green-300">Flow 1 Complete — RFQ to PO Processing</span>
-                                </div>
-                                <div className="grid grid-cols-4 gap-3">
-                                    {[
-                                        { label: 'Total Time', value: '4m 12s' },
-                                        { label: 'Agents Used', value: '8/8' },
-                                        { label: 'Human Touchpoints', value: '2' },
-                                        { label: 'Auto-Resolved', value: '94%' },
-                                    ].map(stat => (
-                                        <div key={stat.label} className="text-center">
-                                            <p className="text-[10px] text-green-600 dark:text-green-400">{stat.label}</p>
-                                            <p className="text-sm font-bold text-green-700 dark:text-green-300">{stat.value}</p>
-                                        </div>
-                                    ))}
-                                </div>
+                        <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 space-y-3 animate-in fade-in duration-500">
+                            <div className="flex items-center gap-2">
+                                <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                                <span className="text-sm font-bold text-green-700 dark:text-green-300">Flow 1 Complete — RFQ to PO Processing</span>
                             </div>
-                        )}
+                            <div className="grid grid-cols-4 gap-3">
+                                {[
+                                    { label: 'Total Time', value: '4m 12s' },
+                                    { label: 'Agents Used', value: '8/8' },
+                                    { label: 'Human Touchpoints', value: '2' },
+                                    { label: 'Auto-Resolved', value: '94%' },
+                                ].map(stat => (
+                                    <div key={stat.label} className="text-center">
+                                        <p className="text-[10px] text-green-600 dark:text-green-400">{stat.label}</p>
+                                        <p className="text-sm font-bold text-green-700 dark:text-green-300">{stat.value}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
 

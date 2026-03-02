@@ -41,42 +41,14 @@ const FLOW2_NOTIFICATIONS: Notification[] = [
     },
 ];
 
-// Flow 1 notifications for Step 1.8
+// Flow 1 notification for Step 1.9 — single focused notification
 const FLOW1_NOTIFICATIONS: Notification[] = [
     {
         id: 'f1-po', type: 'po_created', priority: 'high',
         title: 'PO Created from RFQ',
-        message: 'Order #PO-1029 generated for Apex Furniture',
-        meta: 'System Auto-PO', timestamp: 'Just now', unread: true,
+        message: 'Order #PO-1029 generated for Apex Furniture — $134,250. Quote QT-1025 approved (2/2). Ready for pipeline.',
+        meta: 'POBuilderAgent', timestamp: 'Just now', unread: true,
         actions: [{ label: 'View PO', primary: true }], persona: 'dealer',
-    },
-    {
-        id: 'f1-discrepancy', type: 'discrepancy', priority: 'high',
-        title: 'Quantity Mismatch',
-        message: 'Order vs Invoice: 24 → 22 units',
-        meta: '#DSC-112', timestamp: '2 min ago', unread: true,
-        actions: [{ label: 'Resolve', primary: true }], persona: 'expert',
-    },
-    {
-        id: 'f1-price', type: 'discrepancy', priority: 'high',
-        title: 'Price Discrepancy',
-        message: 'PO #4521 - $2,340 variance',
-        meta: '#DSC-118', timestamp: '15 min ago', unread: true,
-        actions: [{ label: 'Review', primary: true }], persona: 'expert',
-    },
-    {
-        id: 'f1-approval', type: 'approval', priority: 'high',
-        title: 'Approval Chain Complete — 3/3 Levels',
-        message: 'Quote QT-1025 approved: Sarah Chen (Sales) → David Park (Finance) → Policy Engine',
-        meta: 'ApprovalOrchestratorAgent', timestamp: '1 min ago', unread: true,
-        actions: [{ label: 'View Chain', primary: true }], persona: 'expert',
-    },
-    {
-        id: 'f1-quote', type: 'quote_update', priority: 'medium',
-        title: 'Quote QT-1025 — Warranties & Discounts Applied',
-        message: 'Extended warranties on 3 SKUs (+$2,400 margin). Discounts: Early Payment 2% + Mixed Category 2%',
-        meta: 'QuoteBuilderAgent', timestamp: '2 min ago', unread: true,
-        actions: [{ label: 'Review', primary: true }], persona: 'expert',
     },
 ];
 
@@ -87,18 +59,8 @@ export default function ActionCenter() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentView, setCurrentView] = useState<'list' | 'chat'>('list');
 
-    // Step 1.9: Auto-open with animated delivery
+    // Step 1.9: Auto-open with single notification
     const isStep19 = isDemoActive && currentStep?.id === '1.9';
-    const [notifDelivered, setNotifDelivered] = useState<number[]>([]);
-
-    useEffect(() => {
-        if (!isStep19) { setNotifDelivered([]); return; }
-        const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setNotifDelivered([0]), 1500));
-        timeouts.push(setTimeout(() => setNotifDelivered([0, 1]), 3000));
-        timeouts.push(setTimeout(() => setNotifDelivered([0, 1, 2]), 4500));
-        return () => timeouts.forEach(clearTimeout);
-    }, [isStep19]);
 
     // Step 2.7: Auto-open with animated delivery for Flow 2 ACK notifications
     const isStep27 = isDemoActive && currentStep?.id === '2.7';
@@ -257,12 +219,10 @@ export default function ActionCenter() {
     const urgentCount = mockNotifications.filter(n => n.priority === 'high').length;
     const totalCount = mockNotifications.filter(n => n.unread).length;
 
-    // Flow 1 tabs for step 1.9
+    // Flow 1 tabs for step 1.9 — single tab since only 1 notification
     const flow1Tabs: NotificationTab[] = [
         { id: 'all', label: 'All', count: FLOW1_NOTIFICATIONS.length, icon: Squares2X2Icon, colorTheme: { activeBg: 'bg-zinc-800 dark:bg-white/10', activeText: 'text-white', activeBorder: 'border-white/10', badgeBg: 'bg-white/20', badgeText: 'text-white' }, filter: () => true },
-        { id: 'discrepancy', label: 'Discrepancies', count: FLOW1_NOTIFICATIONS.filter(n => n.type === 'discrepancy').length, icon: ExclamationTriangleIcon, colorTheme: { activeBg: 'bg-red-500/15', activeText: 'text-red-500', activeBorder: 'border-red-500/20', badgeBg: 'bg-red-500/20', badgeText: 'text-red-500' }, filter: (n) => n.type === 'discrepancy' },
-        { id: 'quotes', label: 'Quotes & POs', count: FLOW1_NOTIFICATIONS.filter(n => n.type === 'po_created' || n.type === 'quote_update').length, icon: DocumentTextIcon, colorTheme: { activeBg: 'bg-blue-500/15', activeText: 'text-blue-500', activeBorder: 'border-blue-500/20', badgeBg: 'bg-blue-500/20', badgeText: 'text-blue-500' }, filter: (n) => n.type === 'po_created' || n.type === 'quote_update' },
-        { id: 'approval', label: 'Approvals', count: FLOW1_NOTIFICATIONS.filter(n => n.type === 'approval').length, icon: ClipboardDocumentCheckIcon, colorTheme: { activeBg: 'bg-green-500/15', activeText: 'text-green-500', activeBorder: 'border-green-500/20', badgeBg: 'bg-green-500/20', badgeText: 'text-green-500' }, filter: (n) => n.type === 'approval' },
+        { id: 'quotes', label: 'Quotes & POs', count: FLOW1_NOTIFICATIONS.length, icon: DocumentTextIcon, colorTheme: { activeBg: 'bg-blue-500/15', activeText: 'text-blue-500', activeBorder: 'border-blue-500/20', badgeBg: 'bg-blue-500/20', badgeText: 'text-blue-500' }, filter: (n) => n.type === 'po_created' || n.type === 'quote_update' },
     ];
 
     // Flow 2 tabs for step 2.7
@@ -399,31 +359,16 @@ export default function ActionCenter() {
                         <FilterTabs tabs={flow1Tabs} activeTab="all" onTabChange={() => {}} />
                     </div>
 
-                    {/* Flow 1 Notifications */}
+                    {/* Flow 1 — Single focused notification */}
                     <div className="flex-1 overflow-y-auto min-h-0 px-5 pb-4 space-y-3 scrollbar-minimal">
-                        {FLOW1_NOTIFICATIONS.map((notification, i) => (
-                            <div
-                                key={notification.id}
-                                className={clsx(
-                                    "transition-all duration-700",
-                                    i < 2 || notifDelivered.includes(i - 2)
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 translate-y-4 h-0 overflow-hidden'
-                                )}
-                            >
-                                <div className="relative">
-                                    <NotificationItem
-                                        notification={notification}
-                                        onActionClick={(action) => {
-                                            if (action === 'View PO') nextStep();
-                                        }}
-                                    />
-                                    {i >= 2 && notifDelivered.includes(i - 2) && (
-                                        <span className="absolute top-3 right-3 text-[9px] font-bold text-green-600 dark:text-green-400 flex items-center gap-1 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded-full">
-                                            <CheckCircleIcon className="w-3 h-3" /> Delivered
-                                        </span>
-                                    )}
-                                </div>
+                        {FLOW1_NOTIFICATIONS.map((notification) => (
+                            <div key={notification.id} className="animate-in fade-in slide-in-from-top-2 duration-500">
+                                <NotificationItem
+                                    notification={notification}
+                                    onActionClick={(action) => {
+                                        if (action === 'View PO') nextStep();
+                                    }}
+                                />
                             </div>
                         ))}
                     </div>
@@ -431,11 +376,11 @@ export default function ActionCenter() {
                     {/* Footer */}
                     <div className="px-5 py-3 border-t border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-black/20 backdrop-blur-md flex items-center justify-between shrink-0">
                         <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {Math.min(2 + notifDelivered.length, FLOW1_NOTIFICATIONS.length)} actions
+                            1 action
                         </p>
-                        <p className="text-xs font-bold text-red-500 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            {FLOW1_NOTIFICATIONS.filter(n => n.priority === 'high').length} urgent
+                        <p className="text-xs font-bold text-green-500 flex items-center gap-1.5">
+                            <CheckCircleIcon className="w-3.5 h-3.5" />
+                            PO generated
                         </p>
                     </div>
                 </div>
