@@ -191,7 +191,7 @@ export default function ActionCenter() {
         },
         {
             id: 'warranty_mac',
-            label: 'Warranty & MAC',
+            label: 'Warranty & Service',
             count: mockNotifications.filter(n => (n.type === 'warranty' || n.type === 'mac') && n.unread).length,
             icon: ShieldCheckIcon,
             colorTheme: {

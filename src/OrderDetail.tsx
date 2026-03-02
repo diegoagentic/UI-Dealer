@@ -808,7 +808,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 onClick={nextStep}
                                 className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
                             >
-                                Continue to MAC
+                                Continue to Service Center
                             </button>
                         </div>
                         <div className="space-y-0 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-zinc-200 dark:before:bg-zinc-700">

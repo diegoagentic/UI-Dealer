@@ -233,8 +233,8 @@ const DEMO_STEPS: DemoStep[] = [
         id: '3.4',
         groupId: 3,
         groupTitle: 'Flow 3: Punch List',
-        title: 'MAC (Move/Add/Change)',
-        description: 'MAC request validated against inventory and active orders. Plan created with approval for scope/cost impact.',
+        title: 'Service Center (Move/Add/Change)',
+        description: 'Service request validated against inventory and active orders. Plan created with approval for scope/cost impact.',
         app: 'mac',
         role: 'Expert',
         highlightId: 'mac-orchestrator'

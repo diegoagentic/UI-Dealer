@@ -202,7 +202,7 @@ function App() {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
             { name: 'Home', page: 'dashboard', icon: HomeIcon },
-            { name: 'MAC Requests', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
             { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
             { name: 'Orders', page: 'order-detail', icon: ClipboardDocumentListIcon },
           ]

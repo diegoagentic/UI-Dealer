@@ -44,7 +44,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
             }
         },
         {
-            title: "MAC & Punch List",
+            title: "Service Center",
             description: "Moves, Adds, Changes, and warranty claim tracking with logistics assignment.",
             icon: WrenchScrewdriverIcon,
             color: "text-green-500",

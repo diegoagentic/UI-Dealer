@@ -35,9 +35,9 @@ const DEMO_PROFILES: Record<string, { name: string; role: string; photo: string 
         photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face',
     },
     Expert: {
-        name: 'James Carter',
-        role: 'Operations Specialist',
-        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
+        name: 'Sarah Chen',
+        role: 'Regional Sales Manager',
+        photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80&h=80&fit=crop&crop=face',
     },
 };
 
@@ -54,7 +54,7 @@ function resolveProfileKey(role: string | undefined, app: string | undefined): s
 }
 
 // Update supported tabs
-export type NavTab = 'Overview' | 'Inventory' | 'Catalogs' | 'MAC' | 'Transactions' | 'CRM' | 'Pricing';
+export type NavTab = 'Overview' | 'Inventory' | 'Catalogs' | 'Service Center' | 'Transactions' | 'CRM' | 'Pricing';
 
 function NavItem({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
     return (
@@ -108,7 +108,7 @@ export default function Navbar({
         { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
         { name: 'Catalogs', page: 'catalogs', icon: BookOpenIcon },
         { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-        { name: 'MAC', page: 'mac', icon: ArrowPathRoundedSquareIcon },
+        { name: 'Service Center', page: 'mac', icon: ArrowPathRoundedSquareIcon },
         { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
         { name: 'CRM', page: 'crm', icon: UserGroupIcon },
         { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },

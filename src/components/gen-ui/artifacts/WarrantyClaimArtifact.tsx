@@ -32,7 +32,7 @@ export default function WarrantyClaimArtifact({ data }: { data: any }) {
                     }}
                     className="mt-2 w-full py-2 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-foreground border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-semibold transition-colors shadow-sm text-center"
                 >
-                    View in MAC Punch List
+                    View in Service Center
                 </button>
             </div>
         );

@@ -65,9 +65,9 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h1 className="text-3xl font-brand font-bold tracking-tight text-foreground">
-                            {currentTenant} MAC
+                            {currentTenant} Service Center
                         </h1>
-                        <p className="text-muted-foreground mt-1">Moves, Adds, and Changes management.</p>
+                        <p className="text-muted-foreground mt-1">Moves, Adds, Changes, and service request management.</p>
                     </div>
                 </div>
 
@@ -132,7 +132,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-sm font-bold text-green-700 dark:text-green-400">AI Validated MAC Requests</h3>
+                                        <h3 className="text-sm font-bold text-green-700 dark:text-green-400">AI Validated Service Requests</h3>
                                         <span className="px-2 py-0.5 bg-green-500/20 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full uppercase tracking-wider">AI Validated</span>
                                     </div>
                                     <div className="flex items-center gap-3 mt-1">

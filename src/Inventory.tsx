@@ -938,7 +938,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         onClick={() => onNavigate('mac')}
                                         className="text-xs font-semibold text-primary hover:underline"
                                     >
-                                        View in MAC
+                                        View in Service Center
                                     </button>
                                     <button
                                         onClick={() => setShowToast(false)}
