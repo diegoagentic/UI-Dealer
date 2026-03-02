@@ -6,7 +6,10 @@ import {
     DocumentTextIcon,
     CameraIcon,
     Bars4Icon,
-    TruckIcon
+    TruckIcon,
+    PhoneIcon,
+    ClipboardDocumentListIcon,
+    ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import TrackingModal, { type TrackingStep } from './TrackingModal';
@@ -55,35 +58,85 @@ const DEMO_PUNCH_TRACKING_STEPS: TrackingStep[] = [
 export default function MACPunchList() {
     const { currentStep, nextStep } = useDemo();
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
-    const [resolutionStatus, setResolutionStatus] = useState<'initial' | 'assembling' | 'submitted' | 'acknowledged' | 'assigning' | 'assigned'>('initial');
+    const [resolutionStatus, setResolutionStatus] = useState<'initial' | 'claiming' | 'claimed' | 'acknowledged' | 'assigning' | 'assigned'>('initial');
     const [isTrackModalOpen, setIsTrackModalOpen] = useState(false);
     const [showLiability, setShowLiability] = useState(false);
+    const [claimLogs, setClaimLogs] = useState<string[]>([]);
+    const [claimProgress, setClaimProgress] = useState(0);
 
-    // Step 3.5: Auto-select item and progress through claim
+    // Step 3.5: Auto-select item and progress through warranty claim
     useEffect(() => {
         if (currentStep?.id !== '3.5') {
             setShowLiability(false);
+            setClaimLogs([]);
+            setClaimProgress(0);
+            setResolutionStatus('initial');
             return;
         }
+        // Explicit reset when entering step 3.5
+        setResolutionStatus('initial');
+        setClaimLogs([]);
+        setClaimProgress(0);
+        setShowLiability(false);
         setSelectedItem('item-1');
         const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setResolutionStatus('assembling'), 2000));
-        timeouts.push(setTimeout(() => setResolutionStatus('submitted'), 3500));
+        // 4s — audience sees warranty action buttons first, then auto-trigger "Claim Warranty"
+        timeouts.push(setTimeout(() => {
+            setResolutionStatus('claiming');
+            setClaimLogs(['WarrantyAgent: Analyzing evidence photos...']);
+            setClaimProgress(15);
+        }, 4000));
+        // AI processing logs
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Cross-referencing serial SN-2025-88712 with warranty database...']);
+            setClaimProgress(35);
+        }, 5500));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Coverage confirmed — Active warranty until 2027-03.']);
+            setClaimProgress(60);
+        }, 7000));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Assembling claim package with photos, OCR data, and damage taxonomy...']);
+            setClaimProgress(85);
+        }, 8500));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Claim CLM-2026-114 submitted. Carrier liability assessment initiated.']);
+            setClaimProgress(100);
+            setResolutionStatus('claimed');
+        }, 10000));
         timeouts.push(setTimeout(() => {
             setResolutionStatus('acknowledged');
             setShowLiability(true);
-        }, 5500));
+        }, 12000));
         return () => timeouts.forEach(clearTimeout);
     }, [currentStep?.id]);
 
-    const handleAssembleClaim = () => {
-        setResolutionStatus('assembling');
-        setTimeout(() => {
-            setResolutionStatus('submitted');
-            setTimeout(() => {
-                setResolutionStatus('acknowledged');
-            }, 2000);
-        }, 1500);
+    const handleClaimWarranty = () => {
+        setResolutionStatus('claiming');
+        setClaimLogs(['WarrantyAgent: Analyzing evidence photos...']);
+        setClaimProgress(15);
+        const timeouts: ReturnType<typeof setTimeout>[] = [];
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Cross-referencing serial with warranty database...']);
+            setClaimProgress(35);
+        }, 1500));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Coverage confirmed — Active warranty.']);
+            setClaimProgress(60);
+        }, 3000));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Assembling claim package...']);
+            setClaimProgress(85);
+        }, 4500));
+        timeouts.push(setTimeout(() => {
+            setClaimLogs(prev => [...prev, 'WarrantyAgent: Claim submitted successfully.']);
+            setClaimProgress(100);
+            setResolutionStatus('claimed');
+        }, 6000));
+        timeouts.push(setTimeout(() => {
+            setResolutionStatus('acknowledged');
+            setShowLiability(true);
+        }, 8000));
     };
 
     return (
@@ -166,11 +219,17 @@ export default function MACPunchList() {
                                             <ConfidenceScoreBadge score={94} label="Match" size="sm" />
                                         </div>
                                         <div className="grid grid-cols-3 gap-3">
-                                            {['Front panel crack', 'Serial number label', 'Packaging damage'].map((label, i) => (
-                                                <div key={i} className="bg-muted/50 border border-border rounded-lg p-3 flex flex-col items-center gap-2 aspect-square justify-center">
-                                                    <CameraIcon className="w-8 h-8 text-muted-foreground/50" />
-                                                    <span className="text-[10px] font-medium text-muted-foreground text-center">{label}</span>
-                                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-500/10 text-green-600 dark:text-green-400 font-bold">Verified</span>
+                                            {[
+                                                { label: 'Upholstery damage — Chair 1', url: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?auto=format&fit=crop&w=400&q=80' },
+                                                { label: 'Upholstery damage — Chair 2', url: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?auto=format&fit=crop&w=400&q=80' },
+                                                { label: 'Damaged chair leg base', url: 'https://images.unsplash.com/photo-1589884629038-b631346a23c0?auto=format&fit=crop&w=400&q=80' },
+                                            ].map((photo, i) => (
+                                                <div key={i} className="relative bg-muted/50 border border-border rounded-lg overflow-hidden aspect-square group">
+                                                    <img src={photo.url} alt={photo.label} className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 pt-6">
+                                                        <span className="text-[10px] font-medium text-white block">{photo.label}</span>
+                                                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-500/20 text-green-400 font-bold inline-block mt-1">Verified</span>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
@@ -198,7 +257,7 @@ export default function MACPunchList() {
                                 </>
                             )}
 
-                            {/* AI Suggestion */}
+                            {/* AI Root Cause Analysis */}
                             <div className="flex items-start gap-3">
                                 <div className="p-2 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/30 dark:text-brand-400">
                                     <SparklesIcon className="w-5 h-5" />
@@ -206,33 +265,80 @@ export default function MACPunchList() {
                                 <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl rounded-tl-none shadow-sm border border-zinc-100 dark:border-zinc-700/50 flex-1">
                                     <p className="font-semibold text-sm text-zinc-900 dark:text-white mb-2">Root Cause Analysis</p>
                                     <p className="text-sm text-zinc-600 dark:text-zinc-300 mb-3">
-                                        I've linked this issue to Shipment <span className="font-mono text-xs bg-muted px-1 rounded">SHP-8821</span> and Line Item 3. Based on the installer's photos and barcode scans, this is **Freight Handling Damage — likely carrier responsibility**.
+                                        I've linked this issue to Shipment <span className="font-mono text-xs bg-muted px-1 rounded">SHP-8821</span> and Line Item 3. Based on the installer's photos and barcode scans, this is <strong>Freight Handling Damage — likely carrier responsibility</strong>.
                                     </p>
 
+                                    {/* Warranty Action Buttons */}
                                     {resolutionStatus === 'initial' && (
-                                        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-900/30">
-                                            <p className="text-xs font-medium text-blue-800 dark:text-blue-300 mb-2">Recommended Action:</p>
-                                            <button
-                                                onClick={handleAssembleClaim}
-                                                className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-lg transition-colors flex items-center justify-center gap-2 shadow-sm"
-                                            >
-                                                <DocumentTextIcon className="w-4 h-4" />
-                                                Assemble Warranty Claim
-                                            </button>
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Warranty Actions</p>
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <button className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors text-muted-foreground">
+                                                    <PhoneIcon className="w-5 h-5" />
+                                                    <span className="text-[10px] font-medium text-center leading-tight">Call Technician</span>
+                                                </button>
+                                                <button className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors text-muted-foreground">
+                                                    <ClipboardDocumentListIcon className="w-5 h-5" />
+                                                    <span className="text-[10px] font-medium text-center leading-tight">Review Contracts</span>
+                                                </button>
+                                                <button
+                                                    onClick={handleClaimWarranty}
+                                                    className="flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 border-brand-500 bg-brand-50 dark:bg-brand-900/20 hover:bg-brand-100 dark:hover:bg-brand-900/30 transition-colors text-brand-700 dark:text-brand-400 ring-2 ring-brand-500/20"
+                                                >
+                                                    <ShieldCheckIcon className="w-5 h-5" />
+                                                    <span className="text-[10px] font-bold text-center leading-tight">Claim Warranty</span>
+                                                </button>
+                                            </div>
+                                            <div className="flex items-center gap-1.5 px-2 py-1.5 rounded bg-brand-50 dark:bg-brand-900/10 border border-brand-100 dark:border-brand-500/20">
+                                                <SparklesIcon className="w-3.5 h-3.5 text-brand-500 shrink-0" />
+                                                <span className="text-[10px] text-brand-600 dark:text-brand-400 font-medium">AI Recommended: Claim Warranty — automated processing available</span>
+                                            </div>
                                         </div>
                                     )}
 
-                                    {resolutionStatus === 'assembling' && (
-                                        <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 font-medium">
-                                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                            Assembling claim with photos, serials, and damage taxonomy...
+                                    {/* AI Claiming Process */}
+                                    {resolutionStatus === 'claiming' && (
+                                        <div className="space-y-3 animate-in fade-in duration-300">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <ShieldCheckIcon className="w-4 h-4 text-brand-500" />
+                                                <span className="text-xs font-bold text-brand-600 dark:text-brand-400">Warranty Claim Processing</span>
+                                            </div>
+                                            {/* Progress Bar */}
+                                            <div className="h-1.5 w-full bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full rounded-full bg-brand-500 transition-all duration-700 ease-out"
+                                                    style={{ width: `${claimProgress}%` }}
+                                                />
+                                            </div>
+                                            {/* Agent Logs */}
+                                            <div className="bg-zinc-50 dark:bg-zinc-900 border border-border rounded-lg p-3 max-h-[160px] overflow-y-auto scrollbar-micro">
+                                                <div className="space-y-1.5">
+                                                    {claimLogs.map((log, i) => (
+                                                        <div key={i} className="flex items-start gap-1.5 animate-in slide-in-from-left-4 fade-in duration-300">
+                                                            <span className="text-zinc-400 font-mono text-[10px] mt-0.5 select-none">{'>'}</span>
+                                                            <span className={`text-[11px] font-mono ${i === claimLogs.length - 1 ? 'text-foreground animate-pulse' : 'text-muted-foreground'}`}>
+                                                                {log}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                    <div className="flex items-center gap-1.5 pt-1">
+                                                        <span className="text-zinc-400 font-mono text-[10px]">{'>'}</span>
+                                                        <div className="flex gap-1">
+                                                            <div className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                            <div className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                            <div className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
 
-                                    {resolutionStatus === 'submitted' && (
-                                        <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 font-medium">
+                                    {/* Claim Successful */}
+                                    {resolutionStatus === 'claimed' && (
+                                        <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400 font-medium animate-in fade-in duration-300">
                                             <CheckCircleIcon className="w-5 h-5" />
-                                            Claim assembled and submitted for priority processing.
+                                            Warranty claim CLM-2026-114 submitted. Awaiting manufacturer response...
                                         </div>
                                     )}
                                 </div>

@@ -392,12 +392,12 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
     const isDone = agentProgress >= 99;
 
     return (
-        <div className="fixed inset-0 z-[95] flex items-center justify-end pointer-events-none">
+        <div className="fixed inset-0 z-[101] flex items-center justify-end pointer-events-none">
             {/* Backdrop — fades in */}
             <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] pointer-events-auto animate-in fade-in duration-500" />
 
-            {/* Floating Panel — Lupa zoom-in effect */}
-            <div className="relative w-full max-w-2xl mx-4 mr-8 bg-zinc-900 border border-zinc-700/50 rounded-2xl shadow-2xl shadow-indigo-500/10 pointer-events-auto animate-in zoom-in-90 slide-in-from-right-8 fade-in duration-700 overflow-hidden max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-micro" style={{ transformOrigin: 'right center' }}>
+            {/* Floating Panel — Lupa zoom-in effect (no slide — feels like zoom, not modal) */}
+            <div className="relative w-full max-w-2xl mx-4 mr-8 bg-zinc-800 border border-indigo-500/30 ring-2 ring-indigo-500/50 rounded-2xl shadow-2xl shadow-indigo-500/15 pointer-events-auto animate-in zoom-in-95 fade-in duration-1000 overflow-hidden max-h-[calc(100vh-8rem)] overflow-y-auto scrollbar-micro" style={{ transformOrigin: 'center center' }}>
                 {/* Top glow bar */}
                 <div className={`absolute top-0 left-0 right-0 h-1 ${isDone ? 'bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-500' : 'bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500'}`} />
 

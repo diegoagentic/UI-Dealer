@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import {
     Settings,
     Search,
@@ -11,9 +10,64 @@ import {
     Clock,
     ArrowUpRight,
     Bot,
+    BrainCircuit,
+    FileText,
+    Cpu,
 } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
 import { useTheme } from 'strata-design-system';
+
+// Mini preview config for each lupa step — matches DemoProcessPanel titles/content
+const STEP_CARD_PREVIEW: Record<string, {
+    icon: React.ReactNode;
+    title: string;
+    subtitle: string;
+    detail: string;
+    accentClass: string;
+}> = {
+    '1.2': {
+        icon: <CheckCircle2 size={12} className="text-emerald-400" />,
+        title: 'Extraction Complete',
+        subtitle: '5 agents — 200 items extracted',
+        detail: 'OCR + Parser processed 2 PDF attachments. 4 delivery zones mapped.',
+        accentClass: 'border-emerald-500/20 bg-emerald-500/5',
+    },
+    '1.3': {
+        icon: <BrainCircuit size={12} className="text-green-400" />,
+        title: 'Normalization Pipeline',
+        subtitle: '4 agents — Parser + Normalizer',
+        detail: 'Mapping 200 line items to catalog schema. Generating confidence scores.',
+        accentClass: 'border-green-500/20 bg-green-500/5',
+    },
+    '1.4': {
+        icon: <FileText size={12} className="text-amber-400" />,
+        title: 'QuoteBuilder Agent',
+        subtitle: '4 agents — Building quote draft',
+        detail: 'Applying pricing rules and discounts. Multi-zone freight routing required.',
+        accentClass: 'border-amber-500/20 bg-amber-500/5',
+    },
+    '2.2': {
+        icon: <Cpu size={12} className="text-blue-400" />,
+        title: 'ERP Normalization',
+        subtitle: '8 agents — EDI/855 from eManage ONE',
+        detail: 'Mapping raw EDI fields to standard schema. Linking PO ↔ ACK entities.',
+        accentClass: 'border-blue-500/20 bg-blue-500/5',
+    },
+    '2.3': {
+        icon: <Cpu size={12} className="text-red-400" />,
+        title: 'Delta Engine',
+        subtitle: '8 agents — PO vs ACK comparison',
+        detail: 'Line-by-line comparison in progress. Checking for substitutions and price deltas.',
+        accentClass: 'border-red-500/20 bg-red-500/5',
+    },
+    '3.1': {
+        icon: <FileText size={12} className="text-indigo-400" />,
+        title: 'Document Intake Pipeline',
+        subtitle: '5 agents — DocIntake + Classifier',
+        detail: 'Processing PDF upload. OCR extraction → Classification → Entity linking.',
+        accentClass: 'border-indigo-500/20 bg-indigo-500/5',
+    },
+};
 
 const COLUMNS = [
     { id: 'awaiting', title: 'Awaiting Validation', count: 12 },
@@ -35,24 +89,9 @@ const CARD1_PANEL_STEPS = ['1.2', '1.3', '1.4'];
 const CARD5_PANEL_STEPS = ['2.2', '2.3'];
 const CARD6_PANEL_STEPS = ['3.1'];
 
-// Must match PANEL_REVEAL_DELAY in DemoProcessPanel
-const PANEL_REVEAL_DELAY = 1500;
-
 export default function DealerMonitorKanban(_props: { onNavigate?: (page: string) => void }) {
     const { theme } = useTheme();
     const { currentStep } = useDemo();
-
-    // Delay showing the "See Detail Panel" indicator to match panel reveal
-    const [showPanelIndicator, setShowPanelIndicator] = useState(false);
-    useEffect(() => {
-        const isPanel =
-            CARD1_PANEL_STEPS.includes(currentStep.id) ||
-            CARD5_PANEL_STEPS.includes(currentStep.id) ||
-            CARD6_PANEL_STEPS.includes(currentStep.id);
-        if (!isPanel) { setShowPanelIndicator(false); return; }
-        const timer = setTimeout(() => setShowPanelIndicator(true), PANEL_REVEAL_DELAY);
-        return () => { clearTimeout(timer); setShowPanelIndicator(false); };
-    }, [currentStep.id]);
 
     const displayCards = CARDS.filter(c => {
         if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id)) return false;
@@ -135,7 +174,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                         <div
                                             key={card.id}
                                             data-demo-target={demoTarget}
-                                            className={`bg-zinc-800 border border-zinc-700 p-4 rounded-2xl hover:border-zinc-600 transition-all cursor-pointer group shadow-sm ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''} ${hasPanel && showPanelIndicator ? 'ring-1 ring-indigo-500/30 border-indigo-500/20' : ''}`}
+                                            className={`bg-zinc-800 border p-4 rounded-2xl transition-all cursor-pointer group shadow-sm ${hasPanel ? 'ring-2 ring-indigo-500/50 border-indigo-500/30 shadow-lg shadow-indigo-500/10 scale-[1.02]' : `border-zinc-700 hover:border-zinc-600 ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''}`}`}
                                         >
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex items-start justify-between">
@@ -171,17 +210,30 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                     </div>
                                                 </div>
 
-                                                {/* Minimal panel indicator — appears after delay when lupa panel zooms in */}
-                                                {hasPanel && showPanelIndicator && (
-                                                    <div className="mt-2 pt-2 border-t border-zinc-700/50">
-                                                        <div className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
-                                                            <Sparkles size={12} className="text-indigo-400 animate-pulse" />
-                                                            <span className="text-[10px] text-indigo-300 font-medium">Processing — See Detail Panel →</span>
+                                                {/* Step-specific preview (matches lupa content) during panel steps */}
+                                                {hasPanel && STEP_CARD_PREVIEW[currentStep.id] && (() => {
+                                                    const preview = STEP_CARD_PREVIEW[currentStep.id];
+                                                    return (
+                                                        <div className={`mt-2 pt-3 border-t border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500`}>
+                                                            <div className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border ${preview.accentClass}`}>
+                                                                {preview.icon}
+                                                                <div className="flex flex-col min-w-0">
+                                                                    <span className="text-[11px] font-semibold text-zinc-200 leading-tight">{preview.title}</span>
+                                                                    <span className="text-[10px] text-zinc-500 font-medium">{preview.subtitle}</span>
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-[10px] leading-relaxed text-zinc-400 px-1">
+                                                                {preview.detail}
+                                                            </p>
+                                                            <div className="flex items-center gap-2 text-[10px] text-indigo-300/70 font-medium py-0.5 px-1">
+                                                                <Bot size={10} className="animate-pulse" />
+                                                                <span>Agent processing...</span>
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    );
+                                                })()}
 
-                                                {/* AI Insight — only for cards not currently in panel mode */}
+                                                {/* AI Insight — normal cards (not in panel mode) */}
                                                 {!hasPanel && card.aiInsight && (
                                                     <div className="mt-2 pt-3 border-t border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                                         <div className="flex items-center gap-2 text-indigo-400">
