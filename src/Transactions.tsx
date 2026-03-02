@@ -144,7 +144,7 @@ interface TransactionsProps {
 }
 
 export default function Transactions({ onLogout, onNavigateToDetail, onNavigateToWorkspace, onNavigate }: TransactionsProps) {
-    const { currentStep, nextStep } = useDemo();
+    const { currentStep, nextStep, isDemoActive } = useDemo();
     const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
     const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
@@ -438,8 +438,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Quotes Tab Content */}
                 {lifecycleTab === 'quotes' && (
                     <>
-                        {/* KPI Cards for Quotes */}
-                        {showMetrics ? (
+                        {/* KPI Cards for Quotes — hidden during demo */}
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -533,7 +533,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </button>
                                 </div>
                             </>
-                        )}
+                        ))}
                         <div className="mt-6"></div> {/* Spacer */}
                     </>
                 )}
@@ -541,8 +541,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Acknowledgments Tab Content */}
                 {lifecycleTab === 'acknowledgments' && (
                     <>
-                        {/* KPI Cards for Acks */}
-                        {showMetrics ? (
+                        {/* KPI Cards for Acks — hidden during demo */}
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -640,7 +640,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </button>
                                 </div>
                             </>
-                        )}
+                        ))}
                         <div className="mt-6"></div> {/* Spacer */}
                     </>
                 )}
@@ -648,8 +648,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Orders Content (Existing) */}
                 {lifecycleTab === 'orders' && (
                     <>
-                        {/* KPI Cards / Summary Panel */}
-                        {showMetrics ? (
+                        {/* KPI Cards / Summary Panel — hidden during demo */}
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -789,7 +789,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
                                 </button>
                             </div>
-                        )}
+                        ))}
 
 
 

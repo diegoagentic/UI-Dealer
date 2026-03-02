@@ -291,7 +291,7 @@ const DiscrepancyResolutionFlow = () => {
                         <DocumentTextIcon className="h-6 w-6" />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">PO_Revised_ORD-2055.pdf</p>
+                        <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">ACK_Revised_ORD-2055.pdf</p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">Updated just now</p>
                     </div>
                     <button className="p-2 hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary dark:hover:text-zinc-900 rounded-lg transition-colors group">
@@ -501,7 +501,7 @@ interface DetailProps {
 }
 
 export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onNavigate, initialTab }: DetailProps) {
-    const { currentStep } = useDemo()
+    const { currentStep, isDemoActive } = useDemo()
     const [activeTabIndex, setActiveTabIndex] = useState(initialTab || 0)
 
     // Auto-switch to AI Assistant tab when entering step 2.5
@@ -592,8 +592,8 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             </div>
 
             <div className="flex flex-col p-6 gap-6">
-                {/* Collapsible Summary */}
-                {isSummaryExpanded ? (
+                {/* Collapsible Summary — hidden during demo */}
+                {!isDemoActive && (isSummaryExpanded ? (
                     <>
                         <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
@@ -726,7 +726,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                             </button>
                         </div>
                     </div>
-                )}
+                ))}
 
 
 

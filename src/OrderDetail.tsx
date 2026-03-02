@@ -371,7 +371,7 @@ const SHIPMENT_STEPS = [
 ];
 
 export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, onNavigate }: DetailProps) {
-    const { currentStep, nextStep } = useDemo();
+    const { currentStep, nextStep, isDemoActive } = useDemo();
     const [isDemoOrder, setIsDemoOrder] = useState(false);
     const [isFlow1Order, setIsFlow1Order] = useState(false);
 
@@ -851,8 +851,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-                {/* Collapsible Summary */}
-                {isSummaryExpanded ? (
+                {/* Collapsible Summary — hidden during demo */}
+                {!isDemoActive && (isSummaryExpanded ? (
                     <>
                         <div className="bg-card p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
@@ -973,7 +973,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                             </Button>
                         </div>
                     </div>
-                )}
+                ))}
 
 
 

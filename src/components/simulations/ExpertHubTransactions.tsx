@@ -144,7 +144,7 @@ interface TransactionsProps {
 }
 
 export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, onNavigateToWorkspace, onNavigate }: TransactionsProps) {
-    const { currentStep, nextStep } = useDemo();
+    const { currentStep, nextStep, isDemoActive } = useDemo();
     const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
     const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
@@ -492,7 +492,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                 {lifecycleTab === 'quotes' && (
                     <>
-                        {showMetrics ? (
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -581,14 +581,14 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                 </button>
                             </div>
-                        )}
+                        ))}
                         <div className="mt-6"></div>
                     </>
                 )}
 
                 {lifecycleTab === 'acknowledgments' && (
                     <>
-                        {showMetrics ? (
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -681,14 +681,14 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                 </button>
                             </div>
-                        )}
+                        ))}
                         <div className="mt-6"></div>
                     </>
                 )}
 
                 {lifecycleTab === 'orders' && (
                     <>
-                        {showMetrics ? (
+                        {!isDemoActive && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -819,7 +819,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
                                 </button>
                             </div>
-                        )}
+                        ))}
                     </>
                 )}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 py-4 border-b border-zinc-200 dark:border-zinc-800">

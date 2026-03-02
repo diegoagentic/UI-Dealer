@@ -825,8 +825,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* KPI Cards / Executive Summary */}
-                {showMetrics ? (
+                {/* KPI Cards / Executive Summary — hidden during demo */}
+                {!isDemoActive && (showMetrics ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-foreground">Platform Executive Summary</h2>
@@ -1050,7 +1050,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         </button>
                     </div>
                 )
-                }
+                )}
 
                 {/* Main Tabs Navigation */}
                 <div className="flex items-center mt-8 mb-6">
