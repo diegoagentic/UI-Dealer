@@ -470,17 +470,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [resolutionMethod, setResolutionMethod] = useState<'local' | 'remote' | 'custom'>('remote')
     const [customValue, setCustomValue] = useState('')
 
-    // Step 1.7 — PO Generation Animation
-    const [poGenPhase, setPoGenPhase] = useState<'building' | 'mapping' | 'validating' | 'complete'>('building')
-    useEffect(() => {
-        if (currentStep?.id !== '1.7') { setPoGenPhase('building'); return; }
-        const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setPoGenPhase('mapping'), 1500));
-        timeouts.push(setTimeout(() => setPoGenPhase('validating'), 3000));
-        timeouts.push(setTimeout(() => setPoGenPhase('complete'), 4500));
-        return () => timeouts.forEach(clearTimeout);
-    }, [currentStep?.id]);
-
     const toggleSection = (key: keyof typeof sections) => {
         setSections(prev => ({ ...prev, [key]: !prev[key] }))
     }
@@ -600,8 +589,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-                {/* Step 1.7: PO Generation from Approved Quote */}
-                {currentStep?.id === '1.7' && (
+                {/* Step 1.7 PO Generation removed — now handled in ExpertHubTransactions step 1.8 */}
+                {false && (
                     <div data-demo-target="po-generation" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* Pipeline Strip */}
                         <AgentPipelineStrip agents={[
@@ -851,8 +840,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-                {/* Collapsible Summary — hidden during demo */}
-                {!isDemoActive && (isSummaryExpanded ? (
+                {/* Collapsible Summary — hidden for demo build */}
+                {false && (isSummaryExpanded ? (
                     <>
                         <div className="bg-card p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">

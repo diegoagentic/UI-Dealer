@@ -6,7 +6,8 @@ import {
     Circle,
     ChevronRight,
     ChevronLeft,
-    Play
+    Play,
+    Pause,
 } from 'lucide-react';
 
 // Apps belonging to Expert Hub — System steps in these show as "Expert"
@@ -20,7 +21,7 @@ function resolveRoleLabel(role: string, app: string): string {
 }
 
 export default function DemoSidebar() {
-    const { currentStepIndex, steps, nextStep, prevStep, goToStep, isDemoActive, setIsDemoActive, isSidebarCollapsed, setIsSidebarCollapsed } = useDemo();
+    const { currentStepIndex, steps, nextStep, prevStep, goToStep, isDemoActive, setIsDemoActive, isSidebarCollapsed, setIsSidebarCollapsed, isPaused, togglePause } = useDemo();
     const { theme } = useTheme();
 
     // Invert: when app is dark → sidebar is light, when app is light → sidebar is dark
@@ -109,7 +110,7 @@ export default function DemoSidebar() {
                     className={`flex items-center gap-2 px-4 py-3 rounded-full shadow-lg border transition-all font-semibold ${c.fab}`}
                 >
                     <Play size={20} fill="currentColor" />
-                    <span>Start Demo</span>
+                    <span>Start</span>
                 </button>
             </div>
         );
@@ -220,6 +221,14 @@ export default function DemoSidebar() {
                 })}
             </div>
 
+            {/* Paused Indicator */}
+            {isPaused && (
+                <div className={`mx-4 mb-2 flex items-center justify-center gap-2 py-2 rounded-lg border ${isDarkSidebar ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-600'} animate-pulse`}>
+                    <Pause size={14} />
+                    <span className="text-xs font-bold uppercase tracking-wider">Paused</span>
+                </div>
+            )}
+
             {/* Navigation Controls */}
             <div className={`p-4 border-t ${c.border} ${c.bgHeader}`}>
                 <div className="flex gap-2">
@@ -230,6 +239,16 @@ export default function DemoSidebar() {
                     >
                         <ChevronLeft size={16} />
                         Back
+                    </button>
+                    <button
+                        onClick={togglePause}
+                        className={`flex items-center justify-center w-10 rounded-lg text-sm font-semibold transition-colors ${isPaused
+                            ? (isDarkSidebar ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30' : 'bg-amber-100 text-amber-600 hover:bg-amber-200')
+                            : `${c.bgBtn} ${c.textBtn} ${c.bgBtnHover}`
+                        }`}
+                        title={isPaused ? 'Resume' : 'Pause'}
+                    >
+                        {isPaused ? <Play size={16} /> : <Pause size={16} />}
                     </button>
                     <button
                         onClick={nextStep}

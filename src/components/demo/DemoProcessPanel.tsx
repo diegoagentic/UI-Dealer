@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
     CheckCircle2,
     ArrowUpRight,
@@ -30,13 +30,27 @@ interface DemoProcessPanelProps {
 const PANEL_REVEAL_DELAY = 1500;
 
 export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) {
-    const { currentStep, nextStep, isDemoActive } = useDemo();
+    const { currentStep, nextStep, isDemoActive, isPaused } = useDemo();
 
     const [panelVisible, setPanelVisible] = useState(false);
     const [agentProgress, setAgentProgress] = useState(0);
     const [agentLogs, setAgentLogs] = useState<string[]>([]);
     const [pipelineAgents, setPipelineAgents] = useState<AgentStep[]>([]);
     const [confidenceFields, setConfidenceFields] = useState<{ field: string; score: number }[]>([]);
+
+    // Ref tracks pause state so timer callbacks can check it without re-triggering effects
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+
+    // Helper: wraps a callback so it waits while paused before executing
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 300);
+        };
+    }, []);
 
     // Delayed panel reveal — audience sees the kanban first, then the lupa zooms in
     useEffect(() => {
@@ -64,7 +78,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
         if (currentStep.id === '1.2') {
             // Show completed state when panel appears (processing happened in modal at 1.1)
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentProgress(100);
                 setPipelineAgents([
                     { id: 'intake', name: 'EmailIntake', status: 'done' },
@@ -79,12 +93,12 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { field: 'Ship-To', score: 92 },
                     { field: 'Freight', score: 42 },
                 ]);
-            }, D));
-            // Auto-advance after panel is visible for 7s
-            timers.push(setTimeout(() => nextStep(), D + 7000));
+            }), D));
+            // Auto-advance after panel is visible for 15s (presenter explains extraction results)
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 15000));
 
         } else if (currentStep.id === '1.3') {
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing Normalization Pipeline...']);
                 setPipelineAgents([
                     { id: 'email', name: 'EmailIntake', status: 'done' },
@@ -92,17 +106,17 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { id: 'parser', name: 'Parser', status: 'running' },
                     { id: 'normalizer', name: 'Normalizer', status: 'pending' },
                 ]);
-            }, D));
+            }), D));
 
             const timeline = [
-                { delay: D + 1200, log: 'Parser: Tokenizing extracted text fields...' },
-                { delay: D + 2800, log: 'Parser: Mapped 200 line items to catalog schema.' },
-                { delay: D + 4200, log: 'Normalizer: Resolving product codes against master catalog...' },
-                { delay: D + 6000, log: 'Normalizer: Complete. Field confidence scores generated.' },
+                { delay: D + 3000, log: 'Parser: Tokenizing extracted text fields...' },
+                { delay: D + 7000, log: 'Parser: Mapped 200 line items to catalog schema.' },
+                { delay: D + 11000, log: 'Normalizer: Resolving product codes against master catalog...' },
+                { delay: D + 15000, log: 'Normalizer: Complete. Field confidence scores generated.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(() => {
+                timers.push(setTimeout(pauseAware(() => {
                     setAgentProgress((index + 1) * 25);
                     setAgentLogs(prev => [...prev, log]);
 
@@ -123,11 +137,11 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             { field: 'Freight', score: 42 },
                         ]);
                     }
-                }, delay));
+                }), delay));
             });
 
         } else if (currentStep.id === '1.4') {
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing QuoteBuilder Agent...']);
                 setPipelineAgents([
                     { id: 'email', name: 'EmailIntake', status: 'done' },
@@ -135,17 +149,17 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { id: 'normalizer', name: 'Normalizer', status: 'done' },
                     { id: 'quotebuilder', name: 'QuoteBuilder', status: 'running' },
                 ]);
-            }, D));
+            }), D));
 
             const timeline = [
-                { delay: D + 1000, log: 'QuoteBuilder: Loading normalized line items...' },
-                { delay: D + 2500, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
-                { delay: D + 4000, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
-                { delay: D + 5500, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
+                { delay: D + 3000, log: 'QuoteBuilder: Loading normalized line items...' },
+                { delay: D + 7000, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
+                { delay: D + 11000, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
+                { delay: D + 15000, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(() => {
+                timers.push(setTimeout(pauseAware(() => {
                     setAgentProgress((index + 1) * 25);
                     setAgentLogs(prev => [...prev, log]);
 
@@ -154,11 +168,11 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             a.id === 'quotebuilder' ? { ...a, status: 'done' as const, detail: 'Needs Attention' } : a
                         ));
                     }
-                }, delay));
+                }), delay));
             });
 
         } else if (currentStep.id === '2.2') {
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing ERP Normalization Pipeline...']);
                 setPipelineAgents([
                     { id: 'erp', name: 'ERPConnector', status: 'done', detail: 'EDI/855' },
@@ -170,18 +184,18 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
                     { id: 'notif', name: 'Notification', status: 'pending' },
                 ]);
-            }, D));
+            }), D));
 
             const timeline = [
-                { delay: D + 1000, log: 'ERPConnectorAgent: ACK data received from eManage ONE (EDI/855).' },
-                { delay: D + 2500, log: 'DataNormalizationAgent: Mapping raw EDI fields to standard schema...' },
-                { delay: D + 4000, log: 'ACKIngestAgent: Parsing 4 acknowledgment line items.' },
-                { delay: D + 5500, log: 'DataNormalizationAgent: Unified 4 raw fields to standard model.' },
-                { delay: D + 7000, log: 'EntityLinker: Linked PO #ORD-2055 ↔ ACK #ACK-2055. Ready for Delta Engine.' },
+                { delay: D + 2500, log: 'ERPConnectorAgent: ACK data received from eManage ONE (EDI/855).' },
+                { delay: D + 6000, log: 'DataNormalizationAgent: Mapping raw EDI fields to standard schema...' },
+                { delay: D + 10000, log: 'ACKIngestAgent: Parsing 4 acknowledgment line items.' },
+                { delay: D + 14000, log: 'DataNormalizationAgent: Unified 4 raw fields to standard model.' },
+                { delay: D + 18000, log: 'EntityLinker: Linked PO #ORD-2055 ↔ ACK #ACK-2055. Ready for Delta Engine.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(() => {
+                timers.push(setTimeout(pauseAware(() => {
                     setAgentProgress((index + 1) * 20);
                     setAgentLogs(prev => [...prev, log]);
 
@@ -227,11 +241,11 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             { field: 'Freight', score: 72 },
                         ]);
                     }
-                }, delay));
+                }), delay));
             });
 
         } else if (currentStep.id === '2.3') {
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing Delta Engine...']);
                 setPipelineAgents([
                     { id: 'erp', name: 'ERPConnector', status: 'done' },
@@ -243,19 +257,19 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
                     { id: 'notif', name: 'Notification', status: 'pending' },
                 ]);
-            }, D));
+            }), D));
 
             const timeline = [
-                { delay: D + 1000, log: 'POvsACKAgent: Loading PO #ORD-2055 (4 lines).' },
-                { delay: D + 2500, log: 'POvsACKAgent: Loading ACK #ACK-2055 (4 lines).' },
-                { delay: D + 4000, log: 'POvsACKAgent: Line-by-line comparison in progress...' },
-                { delay: D + 5500, log: 'POvsACKAgent: EXCEPTION — Line 2 substitution SKU-B→SKU-C.' },
-                { delay: D + 7000, log: 'POvsACKAgent: EXCEPTION — Freight $45→$150 (+233%).' },
-                { delay: D + 8500, log: 'DiscrepancyResolver: 2 exceptions flagged. Escalating to Expert Hub.' },
+                { delay: D + 2000, log: 'POvsACKAgent: Loading PO #ORD-2055 (4 lines).' },
+                { delay: D + 5000, log: 'POvsACKAgent: Loading ACK #ACK-2055 (4 lines).' },
+                { delay: D + 8500, log: 'POvsACKAgent: Line-by-line comparison in progress...' },
+                { delay: D + 12000, log: 'POvsACKAgent: EXCEPTION — Line 2 substitution SKU-B→SKU-C.' },
+                { delay: D + 15500, log: 'POvsACKAgent: EXCEPTION — Freight $45→$150 (+233%).' },
+                { delay: D + 19000, log: 'DiscrepancyResolver: 2 exceptions flagged. Escalating to Expert Hub.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(() => {
+                timers.push(setTimeout(pauseAware(() => {
                     setAgentProgress((index + 1) * 16.6);
                     setAgentLogs(prev => [...prev, log]);
 
@@ -271,11 +285,11 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             { id: 'notif', name: 'Notification', status: 'pending' },
                         ]);
                     }
-                }, delay));
+                }), delay));
             });
 
         } else if (currentStep.id === '3.1') {
-            timers.push(setTimeout(() => {
+            timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing Document Intake Pipeline...']);
                 setPipelineAgents([
                     { id: 'docintake', name: 'DocIntake', status: 'running' },
@@ -284,19 +298,19 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { id: 'classifier', name: 'Classifier', status: 'pending' },
                     { id: 'linker', name: 'EntityLinker', status: 'pending' },
                 ]);
-            }, D));
+            }), D));
 
             const timeline = [
-                { delay: D + 1000, log: 'DocIntakeAgent: Received document upload (PDF, 3 pages).' },
-                { delay: D + 2200, log: 'OCRAgent: Extracting text from scanned invoice...' },
-                { delay: D + 3500, log: 'ParserAgent: Structured 12 fields from invoice text.' },
-                { delay: D + 5000, log: 'ClassifierAgent: Document TYPE → INVOICE (confidence: 97%).' },
-                { delay: D + 6500, log: 'EntityLinkerAgent: Linked to PO #ORD-2055 and ACK #ACK-2055.' },
-                { delay: D + 8000, log: 'Router: Routed to 3-Way Match Engine.' },
+                { delay: D + 2000, log: 'DocIntakeAgent: Received document upload (PDF, 3 pages).' },
+                { delay: D + 5000, log: 'OCRAgent: Extracting text from scanned invoice...' },
+                { delay: D + 8000, log: 'ParserAgent: Structured 12 fields from invoice text.' },
+                { delay: D + 11500, log: 'ClassifierAgent: Document TYPE → INVOICE (confidence: 97%).' },
+                { delay: D + 15000, log: 'EntityLinkerAgent: Linked to PO #ORD-2055 and ACK #ACK-2055.' },
+                { delay: D + 18000, log: 'Router: Routed to 3-Way Match Engine.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(() => {
+                timers.push(setTimeout(pauseAware(() => {
                     setAgentProgress((index + 1) * 16.6);
                     setAgentLogs(prev => [...prev, log]);
 
@@ -324,12 +338,12 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         ],
                     };
                     if (statusMap[index]) setPipelineAgents(statusMap[index]);
-                }, delay));
+                }), delay));
             });
         }
 
         return () => timers.forEach(clearTimeout);
-    }, [isDemoActive, currentStep.id, nextStep]);
+    }, [isDemoActive, currentStep.id, nextStep, pauseAware]);
 
     // Don't render at all if not in a panel step
     if (!isDemoActive || !PANEL_STEPS.includes(currentStep.id)) return null;

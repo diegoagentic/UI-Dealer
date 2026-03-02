@@ -97,8 +97,8 @@ export default function Navbar({
     const { isDemoActive, currentStep, isSidebarCollapsed } = useDemo()
     const sidebarExpanded = isDemoActive && !isSidebarCollapsed
 
-    // Demo profile — System steps inherit the human of their parent app
-    const demoProfile = isDemoActive ? DEMO_PROFILES[resolveProfileKey(currentStep?.role, currentStep?.app)] : null;
+    // Demo profile — always show a profile (default to Dealer for initial screen)
+    const demoProfile = isDemoActive ? DEMO_PROFILES[resolveProfileKey(currentStep?.role, currentStep?.app)] : DEMO_PROFILES['Dealer'];
 
     const displayName = demoProfile?.name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User'
     const userInitials = displayName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
@@ -114,9 +114,9 @@ export default function Navbar({
         { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
     ];
 
-    // During demo, only show pages that appear in the demo flow
+    // Demo build: only show pages that appear in the demo flow
     const DEMO_NAV_PAGES = ['dashboard', 'transactions', 'mac'];
-    const navigation = isDemoActive ? allNavigation.filter(n => DEMO_NAV_PAGES.includes(n.page)) : allNavigation;
+    const navigation = allNavigation.filter(n => DEMO_NAV_PAGES.includes(n.page));
 
     return (
         <div className={`fixed top-6 z-50 flex justify-center px-4 transition-all duration-300 ${sidebarExpanded ? 'left-80 right-0' : 'left-0 right-0'}`}>
@@ -132,50 +132,11 @@ export default function Navbar({
 
                     <div className="h-6 w-px bg-border mx-1 hidden lg:block"></div>
 
-                    {/* App Name + Company — static during demo, tenant selector otherwise */}
-                    {isDemoActive ? (
-                        <div className="hidden lg:flex flex-col items-start text-left px-2 py-1.5">
-                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">{appName || 'Application'}</span>
-                            <span className="text-sm font-bold text-foreground leading-tight">{companyName || currentTenant}</span>
-                        </div>
-                    ) : (
-                        <Menu as="div" className="relative hidden lg:block">
-                            <MenuButton className="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-muted transition-colors outline-none">
-                                <div className="flex flex-col items-start text-left">
-                                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">Tenant</span>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-sm font-bold text-foreground leading-tight">{currentTenant}</span>
-                                        <ChevronDownIcon className="w-3 h-3 text-muted-foreground" />
-                                    </div>
-                                </div>
-                            </MenuButton>
-                            <Transition
-                                as={Fragment}
-                                enter="transition ease-out duration-100"
-                                enterFrom="transform opacity-0 scale-95"
-                                enterTo="transform opacity-100 scale-100"
-                                leave="transition ease-in duration-75"
-                                leaveFrom="transform opacity-100 scale-100"
-                                leaveTo="transform opacity-0 scale-95"
-                            >
-                                <MenuItems className="absolute left-0 top-full mt-2 w-48 origin-top-left rounded-xl bg-popover shadow-xl ring-1 ring-black ring-opacity-5 focus:outline-none border border-border p-1 z-50">
-                                    {tenants.map((tenant) => (
-                                        <MenuItem key={tenant}>
-                                            {({ focus }) => (
-                                                <button
-                                                    onClick={() => setTenant(tenant)}
-                                                    className={`${focus ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground rounded-lg transition-colors hover:bg-accent`}
-                                                >
-                                                    {tenant}
-                                                    {currentTenant === tenant && <CheckIcon className="ml-auto w-4 h-4 text-foreground" />}
-                                                </button>
-                                            )}
-                                        </MenuItem>
-                                    ))}
-                                </MenuItems>
-                            </Transition>
-                        </Menu>
-                    )}
+                    {/* App Name + Company — always static for demo build */}
+                    <div className="hidden lg:flex flex-col items-start text-left px-2 py-1.5">
+                        <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">{appName || 'Dealer Experience'}</span>
+                        <span className="text-sm font-bold text-foreground leading-tight">{companyName || 'Acme Corp'}</span>
+                    </div>
                 </div>
 
 
@@ -202,8 +163,8 @@ export default function Navbar({
 
                     <div className="h-4 w-px bg-border mx-1"></div>
 
-                    {/* My Apps - Hidden during demo */}
-                    {!isDemoActive && <Popover className="relative">
+                    {/* My Apps - Hidden for demo build */}
+                    {false && <Popover className="relative">
                         <PopoverButton className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors outline-none">
                             <Squares2X2Icon className="w-5 h-5" />
                         </PopoverButton>
@@ -371,8 +332,8 @@ export default function Navbar({
                         </Transition>
                     </Popover>}
 
-                    {/* Demo Guide - Hidden during demo */}
-                    {!isDemoActive && onOpenDemoGuide && (
+                    {/* Demo Guide - Hidden for demo build */}
+                    {false && onOpenDemoGuide && (
                         <button
                             onClick={onOpenDemoGuide}
                             className="flex p-2 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-400 hover:bg-purple-200 dark:hover:bg-purple-500/30 transition-colors animate-pulse ring-2 ring-purple-500/60 ring-offset-2 ring-offset-background shadow-sm"

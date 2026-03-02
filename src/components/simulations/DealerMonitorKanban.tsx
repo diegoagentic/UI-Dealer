@@ -91,7 +91,7 @@ const CARD6_PANEL_STEPS = ['3.1'];
 
 export default function DealerMonitorKanban(_props: { onNavigate?: (page: string) => void }) {
     const { theme } = useTheme();
-    const { currentStep, isDemoActive } = useDemo();
+    const { currentStep } = useDemo();
 
     const displayCards = CARDS.filter(c => {
         if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id)) return false;
@@ -102,8 +102,8 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
     return (
         <div className="bg-zinc-950 text-zinc-100 font-sans selection:bg-primary selection:text-primary-foreground">
             <main className="p-6 space-y-6 flex flex-col">
-                {/* Summary Bar — hidden during demo to reduce visual noise */}
-                {!isDemoActive && (
+                {/* Summary Bar — hidden for demo build */}
+                {false && (
                 <div className="bg-zinc-900 backdrop-blur-md rounded-2xl p-4 border border-zinc-800 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
                         {[

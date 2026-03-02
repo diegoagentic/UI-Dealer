@@ -55,8 +55,8 @@ export default function ActionCenter() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentView, setCurrentView] = useState<'list' | 'chat'>('list');
 
-    // Step 1.8: Auto-open with animated delivery
-    const isStep18 = isDemoActive && currentStep?.id === '1.8';
+    // Step 1.10: Auto-open with animated delivery (renumbered from old 1.8)
+    const isStep18 = isDemoActive && currentStep?.id === '1.10';
     const [notifDelivered, setNotifDelivered] = useState<number[]>([]);
 
     useEffect(() => {

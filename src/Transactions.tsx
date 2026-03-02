@@ -439,7 +439,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {lifecycleTab === 'quotes' && (
                     <>
                         {/* KPI Cards for Quotes — hidden during demo */}
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -542,7 +542,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {lifecycleTab === 'acknowledgments' && (
                     <>
                         {/* KPI Cards for Acks — hidden during demo */}
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -649,7 +649,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {lifecycleTab === 'orders' && (
                     <>
                         {/* KPI Cards / Summary Panel — hidden during demo */}
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">

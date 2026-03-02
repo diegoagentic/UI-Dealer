@@ -356,10 +356,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const approvedCount27 = approvalStates.filter(s => s === 'approved').length
     const allApproved27 = approvedCount27 === 3
 
-    // Step 1.8 — Smart Notifications Animation
+    // Step 1.10 — Smart Notifications Animation (renumbered from old 1.8)
     const [notifDelivered18, setNotifDelivered18] = useState<number[]>([])
     useEffect(() => {
-        if (currentStep.id !== '1.8') { setNotifDelivered18([]); return; }
+        if (currentStep.id !== '1.10') { setNotifDelivered18([]); return; }
         const timeouts: ReturnType<typeof setTimeout>[] = [];
         timeouts.push(setTimeout(() => setNotifDelivered18([0]), 1500));
         timeouts.push(setTimeout(() => setNotifDelivered18([0, 1]), 3000));
@@ -487,7 +487,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             <h1 className="text-3xl font-brand font-bold tracking-tight text-foreground">
                                 {currentTenant} Overview
                             </h1>
-                            {!isDemoActive && (
+                            {false && (
                             <button
                                 onClick={() => onNavigate('tenant-settings')}
                                 className="text-sm font-medium text-muted-foreground hover:text-foreground hover:underline transition-colors"
@@ -734,7 +734,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                         {/* Smart Notifications Panel */}
                         {notificationsVisible && (
-                            <div data-demo-target={currentStep.id === '1.8' ? 'action-center-notifications' : 'action-center-ack-notify'} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div data-demo-target={currentStep.id === '1.10' ? 'action-center-notifications' : 'action-center-ack-notify'} className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="p-6 border-b border-border">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-indigo-100 dark:bg-indigo-500/15 rounded-xl">
@@ -778,8 +778,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 1.8: Smart Notifications (Action Center opens in Navbar) ===== */}
-                {currentStep.id === '1.8' && (
+                {/* ===== Step 1.10: Smart Notifications (Action Center opens in Navbar) ===== */}
+                {currentStep.id === '1.10' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* Pipeline Strip */}
                         <AgentPipelineStrip agents={[
@@ -788,7 +788,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             { id: 'norm', name: 'DataNorm', status: 'done' },
                             { id: 'valid', name: 'Validator', status: 'done' },
                             { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '3/3 approved' },
+                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2 approved' },
                             { id: 'po', name: 'POBuilder', status: 'done', detail: 'PO-1029' },
                             { id: 'notif', name: 'Notification', status: notifDelivered18.length === 3 ? 'done' : 'running', detail: `${notifDelivered18.length}/3 sent` },
                         ]} accentColor="green" />
@@ -827,8 +827,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* KPI Cards / Executive Summary — hidden during demo */}
-                {!isDemoActive && (showMetrics ? (
+                {/* KPI Cards / Executive Summary — hidden for demo build */}
+                {false && (showMetrics ? (
                     <>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-foreground">Platform Executive Summary</h2>

@@ -152,7 +152,43 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false)
     const [showExpertReview, setShowExpertReview] = useState(false)
-    const [reviewCorrections, setReviewCorrections] = useState<Record<string, 'accepted' | 'rejected' | null>>({ freight: null, quantity: null, armrest: null, warranty: null, discount: null });
+    const [reviewCorrections, setReviewCorrections] = useState<Record<string, 'accepted' | 'rejected' | null>>({ freight: null, quantity: null, armrest: null, discount: null });
+
+    // Expert review detail panels — expanded state, editable values, notes
+    const [expandedReviewItems, setExpandedReviewItems] = useState<Record<string, boolean>>({});
+    const [editingField, setEditingField] = useState<string | null>(null);
+    const [freightEditValue, setFreightEditValue] = useState('2,450.00');
+    const [quantityEditValue, setQuantityEditValue] = useState('125');
+    const [expertNotes, setExpertNotes] = useState<Record<string, string>>({ freight: '', quantity: '', armrest: '' });
+    const [reviewAuditLog, setReviewAuditLog] = useState<{ time: string; action: string; field: string; icon: 'check' | 'edit' | 'reject' | 'note' }[]>([]);
+
+    const toggleReviewItemExpand = (id: string) => setExpandedReviewItems(p => ({ ...p, [id]: !p[id] }));
+
+    const addAuditEntry = (action: string, field: string, icon: 'check' | 'edit' | 'reject' | 'note') => {
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        setReviewAuditLog(p => [{ time, action, field, icon }, ...p]);
+    };
+
+    const handleReviewAction = (field: string, action: 'accepted' | 'rejected') => {
+        setReviewCorrections(p => ({ ...p, [field]: action }));
+        addAuditEntry(
+            action === 'accepted' ? 'Accepted' : 'Rejected',
+            field.charAt(0).toUpperCase() + field.slice(1),
+            action === 'accepted' ? 'check' : 'reject'
+        );
+    };
+
+    const handleFieldEdit = (field: string, value: string) => {
+        addAuditEntry(`Value edited to ${value}`, field.charAt(0).toUpperCase() + field.slice(1), 'edit');
+        setEditingField(null);
+    };
+
+    const handleNoteSave = (field: string) => {
+        if (expertNotes[field]?.trim()) {
+            addAuditEntry(`Note added: "${expertNotes[field].slice(0, 40)}${expertNotes[field].length > 40 ? '...' : ''}"`, field.charAt(0).toUpperCase() + field.slice(1), 'note');
+        }
+    };
 
     // Warranty & Discount state for step 1.5 expert review
     const [warrantySelections, setWarrantySelections] = useState<Record<string, string>>({});
@@ -180,24 +216,67 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     ]);
     const [discountPage, setDiscountPage] = useState(0);
 
-    // Step 1.6 — Approval Chain Animation
-    const [approvalStates16, setApprovalStates16] = useState<('pending' | 'approved')[]>(['pending', 'pending', 'pending'])
-    const [approvalChainComplete16, setApprovalChainComplete16] = useState(false)
+    // Step 1.6 — Quote Approval Chain (2 approvers: System Policy auto → Sarah Chen pending → auto-advance)
+    const [approvalStates16, setApprovalStates16] = useState<('pending' | 'approved')[]>(['pending', 'pending'])
     useEffect(() => {
         if (currentStep.id !== '1.6') {
-            setApprovalStates16(['pending', 'pending', 'pending']);
-            setApprovalChainComplete16(false);
+            setApprovalStates16(['pending', 'pending']);
             return;
         }
         const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'pending', 'pending']), 2000));
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'approved', 'pending']), 4000));
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'approved', 'approved']), 5500));
-        timeouts.push(setTimeout(() => setApprovalChainComplete16(true), 6500));
+        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'pending']), 1500));
+        timeouts.push(setTimeout(() => nextStep(), 3500));
         return () => timeouts.forEach(clearTimeout);
     }, [currentStep.id]);
     const approvedCount16 = approvalStates16.filter(s => s === 'approved').length;
-    const allApproved16 = approvedCount16 === 3;
+
+    // Step 1.7 — Manager Approval (interactive)
+    const [managerApproved17, setManagerApproved17] = useState(false)
+    useEffect(() => {
+        if (currentStep.id !== '1.7') { setManagerApproved17(false); }
+    }, [currentStep.id]);
+
+    // Step 1.8 — PO Generation + Order Approval Chain (fully automated)
+    const [phase18, setPhase18] = useState<'showing-approvals' | 'po-generating' | 'po-complete' | 'order-chain' | 'order-complete' | 'done'>('showing-approvals')
+    const [poGenPhase18, setPoGenPhase18] = useState<'building' | 'mapping' | 'validating' | 'complete'>('building')
+    const [orderApprovalStates18, setOrderApprovalStates18] = useState<('pending' | 'approved')[]>(['pending', 'pending', 'pending'])
+    useEffect(() => {
+        if (currentStep.id !== '1.8') {
+            setPhase18('showing-approvals');
+            setPoGenPhase18('building');
+            setOrderApprovalStates18(['pending', 'pending', 'pending']);
+            return;
+        }
+        const t: ReturnType<typeof setTimeout>[] = [];
+        t.push(setTimeout(() => setPhase18('po-generating'), 1500));
+        t.push(setTimeout(() => setPoGenPhase18('mapping'), 2500));
+        t.push(setTimeout(() => setPoGenPhase18('validating'), 3500));
+        t.push(setTimeout(() => { setPoGenPhase18('complete'); setPhase18('po-complete'); }, 4500));
+        t.push(setTimeout(() => setPhase18('order-chain'), 5500));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'pending', 'pending']), 6000));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'pending']), 7000));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'approved']), 8000));
+        t.push(setTimeout(() => setPhase18('order-complete'), 8500));
+        t.push(setTimeout(() => { setPhase18('done'); nextStep(); }, 10000));
+        return () => t.forEach(clearTimeout);
+    }, [currentStep.id]);
+    const orderApprovedCount18 = orderApprovalStates18.filter(s => s === 'approved').length;
+
+    // Step 1.9 — Pipeline View with animated card
+    const [pipelineNotifShown19, setPipelineNotifShown19] = useState(false)
+    const [cardAnimationStage19, setCardAnimationStage19] = useState<'hidden' | 'appearing' | 'arrived'>('hidden')
+    useEffect(() => {
+        if (currentStep.id !== '1.9') {
+            setPipelineNotifShown19(false);
+            setCardAnimationStage19('hidden');
+            return;
+        }
+        const t: ReturnType<typeof setTimeout>[] = [];
+        t.push(setTimeout(() => setPipelineNotifShown19(true), 500));
+        t.push(setTimeout(() => setCardAnimationStage19('appearing'), 1500));
+        t.push(setTimeout(() => setCardAnimationStage19('arrived'), 3000));
+        return () => t.forEach(clearTimeout);
+    }, [currentStep.id]);
 
     const warrantyItems = [
         { sku: 'ERG-5100', name: 'Ergonomic Task Chair', base: '$350', qty: 125, current: 'Standard 5yr' },
@@ -333,8 +412,12 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
             setLifecycleTab('quotes');
             setSearchQuery('QT-1025');
             setExpandedIds(new Set(['QT-1025']));
-        } else if (currentStep.id === '1.6') {
+        } else if (['1.6', '1.7', '1.8'].includes(currentStep.id)) {
             setLifecycleTab('quotes');
+            setSearchQuery('');
+        } else if (currentStep.id === '1.9') {
+            setLifecycleTab('orders');
+            setViewMode('pipeline');
             setSearchQuery('');
         } else if (currentStep.id === '2.4') {
             setLifecycleTab('acknowledgments');
@@ -492,7 +575,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                 {lifecycleTab === 'quotes' && (
                     <>
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -588,7 +671,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                 {lifecycleTab === 'acknowledgments' && (
                     <>
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -688,7 +771,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                 {lifecycleTab === 'orders' && (
                     <>
-                        {!isDemoActive && (showMetrics ? (
+                        {false && (showMetrics ? (
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -1055,60 +1138,289 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             <div className="col-span-5 space-y-4">
                                 {/* Discrepancies */}
                                 <div className="bg-card border border-border rounded-2xl shadow-sm p-4 space-y-3">
-                                    <h3 className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Discrepancies to Resolve</h3>
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Discrepancies to Resolve</h3>
+                                        <span className="text-[10px] text-muted-foreground">{Object.values(reviewCorrections).filter(v => v !== null).length}/{Object.keys(reviewCorrections).length} resolved</span>
+                                    </div>
 
-                                    {/* Freight */}
-                                    <div className={cn("p-3 rounded-xl border transition-all", reviewCorrections.freight === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.freight === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <ExclamationTriangleIcon className="w-3.5 h-3.5 text-amber-500" />
-                                                <span className="text-xs font-medium text-foreground">Freight Rate</span>
+                                    {/* ——— Freight Rate ——— */}
+                                    <div className={cn("rounded-xl border transition-all overflow-hidden", reviewCorrections.freight === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.freight === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
+                                        <div className="p-3">
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center gap-2">
+                                                    <ExclamationTriangleIcon className="w-3.5 h-3.5 text-amber-500" />
+                                                    <span className="text-xs font-medium text-foreground">Freight Rate</span>
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 font-medium">High Priority</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <ConfidenceScoreBadge score={42} size="sm" />
+                                                    <button onClick={() => toggleReviewItemExpand('freight')} className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
+                                                        <ChevronDownIcon className={cn("w-3.5 h-3.5 transition-transform", expandedReviewItems.freight && "rotate-180")} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <ConfidenceScoreBadge score={42} size="sm" />
+                                            <div className="flex items-center gap-2 text-[11px] mb-2">
+                                                <span className="text-muted-foreground line-through">$0.00</span>
+                                                <ArrowRightIcon className="w-3 h-3 text-muted-foreground/40" />
+                                                {editingField === 'freight' ? (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="text-[10px] text-muted-foreground">$</span>
+                                                        <input
+                                                            type="text"
+                                                            value={freightEditValue}
+                                                            onChange={(e) => setFreightEditValue(e.target.value)}
+                                                            className="w-24 px-2 py-0.5 text-[11px] font-medium bg-background border border-primary rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                                                            autoFocus
+                                                        />
+                                                        <button onClick={() => handleFieldEdit('freight', `$${freightEditValue}`)} className="px-2 py-0.5 bg-primary text-primary-foreground text-[9px] font-medium rounded-md">Save</button>
+                                                        <button onClick={() => setEditingField(null)} className="px-2 py-0.5 bg-muted text-muted-foreground text-[9px] font-medium rounded-md">Cancel</button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="font-medium text-foreground group/edit cursor-pointer" onClick={() => setEditingField('freight')}>
+                                                        ${freightEditValue} (LTL Austin, TX)
+                                                        <PencilSquareIcon className="w-3 h-3 inline ml-1 text-muted-foreground opacity-0 group-hover/edit:opacity-100 transition-opacity" />
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Action buttons */}
+                                            {reviewCorrections.freight ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn("text-[10px] font-medium flex items-center gap-1", reviewCorrections.freight === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                                                        {reviewCorrections.freight === 'accepted' ? <><CheckCircleIcon className="w-3 h-3" /> Accepted</> : <><XMarkIcon className="w-3 h-3" /> Rejected</>}
+                                                    </span>
+                                                    <button onClick={() => setReviewCorrections(p => ({ ...p, freight: null }))} className="text-[9px] text-muted-foreground underline ml-1">undo</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1.5">
+                                                    <button onClick={() => handleReviewAction('freight', 'accepted')} className="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white text-[10px] font-medium rounded-md transition-colors flex items-center gap-1"><CheckIcon className="w-3 h-3" /> Accept</button>
+                                                    <button onClick={() => handleReviewAction('freight', 'rejected')} className="px-2.5 py-1 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] font-medium rounded-md transition-colors hover:bg-red-500/20 flex items-center gap-1"><XMarkIcon className="w-3 h-3" /> Reject</button>
+                                                    <button onClick={() => setEditingField('freight')} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80 flex items-center gap-1"><PencilSquareIcon className="w-3 h-3" /> Edit Value</button>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center gap-2 text-[11px] mb-2">
-                                            <span className="text-muted-foreground line-through">$0.00</span>
-                                            <ArrowRightIcon className="w-3 h-3 text-muted-foreground/40" />
-                                            <span className="font-medium text-foreground">$2,450.00 (LTL Austin, TX)</span>
-                                        </div>
-                                        {reviewCorrections.freight ? (
-                                            <span className={cn("text-[10px] font-medium", reviewCorrections.freight === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
-                                                {reviewCorrections.freight === 'accepted' ? 'Accepted' : 'Rejected'} — click to change
-                                            </span>
-                                        ) : (
-                                            <div className="flex gap-1.5">
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, freight: 'accepted' }))} className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-medium rounded-md transition-colors">Accept</button>
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, freight: 'rejected' }))} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80">Reject</button>
-                                                <div className="flex items-center gap-1 ml-auto">
-                                                    <span className="text-[10px] text-muted-foreground">or enter:</span>
-                                                    <input type="text" placeholder="$" className="w-16 px-2 py-0.5 text-[10px] bg-background border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-primary" />
+
+                                        {/* Expanded Detail Panel */}
+                                        {expandedReviewItems.freight && (
+                                            <div className="border-t border-border bg-muted/10 p-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                {/* Source Documents */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Source Documents</p>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div className="flex items-start gap-2 p-2 bg-background rounded-lg border border-border/50">
+                                                            <DocumentTextIcon className="w-3.5 h-3.5 text-blue-500 mt-0.5 shrink-0" />
+                                                            <div>
+                                                                <p className="text-[10px] font-medium text-foreground">RFQ Email Body</p>
+                                                                <p className="text-[9px] text-muted-foreground">No freight terms specified</p>
+                                                                <p className="text-[9px] text-amber-600 dark:text-amber-400 mt-0.5">Missing data</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-start gap-2 p-2 bg-background rounded-lg border border-border/50">
+                                                            <DocumentDuplicateIcon className="w-3.5 h-3.5 text-indigo-500 mt-0.5 shrink-0" />
+                                                            <div>
+                                                                <p className="text-[10px] font-medium text-foreground">PDF Attachment</p>
+                                                                <p className="text-[9px] text-muted-foreground">Delivery: "Austin, TX 78701"</p>
+                                                                <p className="text-[9px] text-green-600 dark:text-green-400 mt-0.5">Address extracted</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* AI Reasoning */}
+                                                <div className="p-2.5 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-lg">
+                                                    <div className="flex items-center gap-1.5 mb-1">
+                                                        <SparklesIcon className="w-3 h-3 text-indigo-500" />
+                                                        <p className="text-[9px] font-medium text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">AI Reasoning</p>
+                                                    </div>
+                                                    <p className="text-[10px] text-indigo-600 dark:text-indigo-300 leading-relaxed">
+                                                        RFQ did not specify freight terms. Destination is a multi-story commercial building in downtown Austin with loading dock restrictions (floors 12-15). LTL carrier rate calculated using TMS at $2,450 based on: 125 units × 48 lbs/unit = 6,000 lbs total, Class 150, requiring liftgate + inside delivery surcharge. Building has restricted delivery windows (6-9 AM only).
+                                                    </p>
+                                                </div>
+
+                                                {/* Freight Breakdown */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Rate Breakdown</p>
+                                                    <div className="space-y-1">
+                                                        {[
+                                                            { label: 'Base LTL Rate (6,000 lbs, Class 150)', value: '$1,850.00' },
+                                                            { label: 'Liftgate Surcharge', value: '$175.00' },
+                                                            { label: 'Inside Delivery (floors 12-15)', value: '$325.00' },
+                                                            { label: 'Restricted Access Window', value: '$100.00' },
+                                                        ].map((line, i) => (
+                                                            <div key={i} className="flex items-center justify-between px-2 py-1 rounded bg-background border border-border/30">
+                                                                <span className="text-[10px] text-muted-foreground">{line.label}</span>
+                                                                <span className="text-[10px] font-medium text-foreground">{line.value}</span>
+                                                            </div>
+                                                        ))}
+                                                        <div className="flex items-center justify-between px-2 py-1.5 rounded bg-foreground/5 border border-border">
+                                                            <span className="text-[10px] font-bold text-foreground">Total Freight</span>
+                                                            <span className="text-[10px] font-bold text-foreground">$2,450.00</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Comparable Quotes */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Historical Comparison</p>
+                                                    <div className="grid grid-cols-3 gap-1.5">
+                                                        {[
+                                                            { id: 'QT-0987', route: 'Houston, TX', weight: '5,200 lbs', cost: '$2,100', date: 'Nov 2025' },
+                                                            { id: 'QT-0921', route: 'Dallas, TX', weight: '6,500 lbs', cost: '$2,380', date: 'Oct 2025' },
+                                                            { id: 'QT-0856', route: 'Austin, TX', weight: '4,800 lbs', cost: '$2,250', date: 'Sep 2025' },
+                                                        ].map(q => (
+                                                            <div key={q.id} className="p-2 bg-background rounded-lg border border-border/50 text-center">
+                                                                <p className="text-[9px] font-medium text-foreground">{q.id}</p>
+                                                                <p className="text-[9px] text-muted-foreground">{q.route}</p>
+                                                                <p className="text-[10px] font-bold text-foreground mt-0.5">{q.cost}</p>
+                                                                <p className="text-[8px] text-muted-foreground">{q.weight} · {q.date}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* Expert Notes */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Expert Notes</p>
+                                                    <textarea
+                                                        value={expertNotes.freight}
+                                                        onChange={(e) => setExpertNotes(p => ({ ...p, freight: e.target.value }))}
+                                                        onBlur={() => handleNoteSave('freight')}
+                                                        placeholder="Add review notes for audit trail..."
+                                                        className="w-full px-3 py-2 text-[10px] bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                                                        rows={2}
+                                                    />
                                                 </div>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Quantity */}
-                                    <div className={cn("p-3 rounded-xl border transition-all", reviewCorrections.quantity === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.quantity === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <SparklesIcon className="w-3.5 h-3.5 text-indigo-500" />
-                                                <span className="text-xs font-medium text-foreground">Quantity Mismatch</span>
+                                    {/* ——— Quantity Mismatch ——— */}
+                                    <div className={cn("rounded-xl border transition-all overflow-hidden", reviewCorrections.quantity === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.quantity === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
+                                        <div className="p-3">
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center gap-2">
+                                                    <SparklesIcon className="w-3.5 h-3.5 text-indigo-500" />
+                                                    <span className="text-xs font-medium text-foreground">Quantity Mismatch</span>
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-medium">AI Resolved</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <ConfidenceScoreBadge score={88} size="sm" />
+                                                    <button onClick={() => toggleReviewItemExpand('quantity')} className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
+                                                        <ChevronDownIcon className={cn("w-3.5 h-3.5 transition-transform", expandedReviewItems.quantity && "rotate-180")} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <ConfidenceScoreBadge score={88} size="sm" />
+                                            <div className="flex items-center gap-2 text-[11px] mb-2">
+                                                <span className="text-muted-foreground line-through">200 (RFQ body text)</span>
+                                                <ArrowRightIcon className="w-3 h-3 text-muted-foreground/40" />
+                                                {editingField === 'quantity' ? (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <input
+                                                            type="text"
+                                                            value={quantityEditValue}
+                                                            onChange={(e) => setQuantityEditValue(e.target.value)}
+                                                            className="w-16 px-2 py-0.5 text-[11px] font-medium bg-background border border-primary rounded-md focus:outline-none focus:ring-1 focus:ring-primary"
+                                                            autoFocus
+                                                        />
+                                                        <span className="text-[10px] text-muted-foreground">units</span>
+                                                        <button onClick={() => handleFieldEdit('quantity', quantityEditValue)} className="px-2 py-0.5 bg-primary text-primary-foreground text-[9px] font-medium rounded-md">Save</button>
+                                                        <button onClick={() => setEditingField(null)} className="px-2 py-0.5 bg-muted text-muted-foreground text-[9px] font-medium rounded-md">Cancel</button>
+                                                    </div>
+                                                ) : (
+                                                    <span className="font-medium text-foreground group/edit cursor-pointer" onClick={() => setEditingField('quantity')}>
+                                                        {quantityEditValue} (verified from PDF attachment)
+                                                        <PencilSquareIcon className="w-3 h-3 inline ml-1 text-muted-foreground opacity-0 group-hover/edit:opacity-100 transition-opacity" />
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            {/* Action buttons */}
+                                            {reviewCorrections.quantity ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn("text-[10px] font-medium flex items-center gap-1", reviewCorrections.quantity === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                                                        {reviewCorrections.quantity === 'accepted' ? <><CheckCircleIcon className="w-3 h-3" /> Accepted (AI suggestion)</> : <><XMarkIcon className="w-3 h-3" /> Rejected — using original</>}
+                                                    </span>
+                                                    <button onClick={() => setReviewCorrections(p => ({ ...p, quantity: null }))} className="text-[9px] text-muted-foreground underline ml-1">undo</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1.5">
+                                                    <button onClick={() => handleReviewAction('quantity', 'accepted')} className="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white text-[10px] font-medium rounded-md transition-colors flex items-center gap-1"><CheckIcon className="w-3 h-3" /> Accept (125)</button>
+                                                    <button onClick={() => handleReviewAction('quantity', 'rejected')} className="px-2.5 py-1 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 text-[10px] font-medium rounded-md transition-colors hover:bg-red-500/20 flex items-center gap-1"><XMarkIcon className="w-3 h-3" /> Keep Original (200)</button>
+                                                    <button onClick={() => setEditingField('quantity')} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80 flex items-center gap-1"><PencilSquareIcon className="w-3 h-3" /> Edit</button>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center gap-2 text-[11px] mb-2">
-                                            <span className="text-muted-foreground">200 (RFQ body text)</span>
-                                            <ArrowRightIcon className="w-3 h-3 text-muted-foreground/40" />
-                                            <span className="font-medium text-foreground">125 (verified from PDF attachment)</span>
-                                        </div>
-                                        {reviewCorrections.quantity ? (
-                                            <span className={cn("text-[10px] font-medium", reviewCorrections.quantity === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
-                                                {reviewCorrections.quantity === 'accepted' ? 'Accepted' : 'Rejected'} — click to change
-                                            </span>
-                                        ) : (
-                                            <div className="flex gap-1.5">
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, quantity: 'accepted' }))} className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-medium rounded-md transition-colors">Accept</button>
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, quantity: 'rejected' }))} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80">Reject</button>
+
+                                        {/* Expanded Detail Panel */}
+                                        {expandedReviewItems.quantity && (
+                                            <div className="border-t border-border bg-muted/10 p-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                {/* Source Comparison */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Source Comparison</p>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div className="p-2.5 bg-red-50 dark:bg-red-500/5 rounded-lg border border-red-200 dark:border-red-500/20">
+                                                            <div className="flex items-center gap-1.5 mb-1">
+                                                                <EnvelopeIcon className="w-3 h-3 text-red-500" />
+                                                                <p className="text-[9px] font-medium text-red-700 dark:text-red-400 uppercase">Email Body</p>
+                                                            </div>
+                                                            <p className="text-[11px] font-bold text-red-600 dark:text-red-400 line-through">200 units</p>
+                                                            <p className="text-[9px] text-red-600 dark:text-red-300 mt-0.5 italic">"...requesting quote for 200 ergonomic chairs for the new building..."</p>
+                                                            <p className="text-[9px] text-red-500 mt-1 font-medium">Likely outdated — email sent 3 days before attachment</p>
+                                                        </div>
+                                                        <div className="p-2.5 bg-green-50 dark:bg-green-500/5 rounded-lg border border-green-200 dark:border-green-500/20">
+                                                            <div className="flex items-center gap-1.5 mb-1">
+                                                                <DocumentTextIcon className="w-3 h-3 text-green-500" />
+                                                                <p className="text-[9px] font-medium text-green-700 dark:text-green-400 uppercase">PDF Spec Sheet</p>
+                                                            </div>
+                                                            <p className="text-[11px] font-bold text-green-600 dark:text-green-400">125 units</p>
+                                                            <p className="text-[9px] text-green-600 dark:text-green-300 mt-0.5 italic">"Floor plan: 125 workstations, floors 12-15, Building C"</p>
+                                                            <p className="text-[9px] text-green-500 mt-1 font-medium">Matches floor plan count exactly</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* AI Reasoning */}
+                                                <div className="p-2.5 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-lg">
+                                                    <div className="flex items-center gap-1.5 mb-1">
+                                                        <SparklesIcon className="w-3 h-3 text-indigo-500" />
+                                                        <p className="text-[9px] font-medium text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">AI Reasoning</p>
+                                                    </div>
+                                                    <p className="text-[10px] text-indigo-600 dark:text-indigo-300 leading-relaxed">
+                                                        Email mentions 200 units but the attached PDF specification (dated 2 days later) details a floor plan for 125 workstations across 4 floors. The PDF is a more recent and detailed source. Cross-referenced with the building directory: floors 12-15 have 31-32 workstations each = 125 total. Confidence: 88%.
+                                                    </p>
+                                                </div>
+
+                                                {/* Impact Analysis */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Impact Analysis</p>
+                                                    <div className="grid grid-cols-3 gap-1.5">
+                                                        <div className="p-2 bg-background rounded-lg border border-border/50 text-center">
+                                                            <p className="text-[9px] text-muted-foreground">If 200 units</p>
+                                                            <p className="text-[11px] font-bold text-foreground">$70,000</p>
+                                                        </div>
+                                                        <div className="p-2 bg-green-50 dark:bg-green-500/5 rounded-lg border border-green-200 dark:border-green-500/20 text-center">
+                                                            <p className="text-[9px] text-green-600 dark:text-green-400">If 125 units (AI)</p>
+                                                            <p className="text-[11px] font-bold text-green-600 dark:text-green-400">$43,750</p>
+                                                        </div>
+                                                        <div className="p-2 bg-background rounded-lg border border-border/50 text-center">
+                                                            <p className="text-[9px] text-muted-foreground">Difference</p>
+                                                            <p className="text-[11px] font-bold text-amber-600">-$26,250</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Expert Notes */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Expert Notes</p>
+                                                    <textarea
+                                                        value={expertNotes.quantity}
+                                                        onChange={(e) => setExpertNotes(p => ({ ...p, quantity: e.target.value }))}
+                                                        onBlur={() => handleNoteSave('quantity')}
+                                                        placeholder="Add review notes for audit trail..."
+                                                        className="w-full px-3 py-2 text-[10px] bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                                                        rows={2}
+                                                    />
+                                                </div>
                                             </div>
                                         )}
                                     </div>
@@ -1116,171 +1428,135 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                                 {/* Substitution Proposals */}
                                 <div className="bg-card border border-border rounded-2xl shadow-sm p-4 space-y-3">
-                                    <h3 className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">AI Substitution Proposals</h3>
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">AI Substitution Proposals</h3>
+                                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 font-medium">1 suggestion</span>
+                                    </div>
 
-                                    <div className={cn("p-3 rounded-xl border transition-all", reviewCorrections.armrest === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.armrest === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <div className="flex items-center gap-2">
-                                                <ArrowPathIcon className="w-3.5 h-3.5 text-blue-500" />
-                                                <span className="text-xs font-medium text-foreground">Armrest Upgrade</span>
+                                    <div className={cn("rounded-xl border transition-all overflow-hidden", reviewCorrections.armrest === 'accepted' ? 'border-green-500/30 bg-green-500/5' : reviewCorrections.armrest === 'rejected' ? 'border-red-500/30 bg-red-500/5' : 'border-border bg-muted/20')}>
+                                        <div className="p-3">
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center gap-2">
+                                                    <ArrowPathIcon className="w-3.5 h-3.5 text-blue-500" />
+                                                    <span className="text-xs font-medium text-foreground">Armrest Upgrade</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <ConfidenceScoreBadge score={91} size="sm" />
+                                                    <button onClick={() => toggleReviewItemExpand('armrest')} className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground transition-colors">
+                                                        <ChevronDownIcon className={cn("w-3.5 h-3.5 transition-transform", expandedReviewItems.armrest && "rotate-180")} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <ConfidenceScoreBadge score={91} size="sm" />
+                                            <div className="grid grid-cols-2 gap-2 mb-2">
+                                                <div className="bg-muted/30 rounded-lg p-2">
+                                                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Current (RFQ)</p>
+                                                    <p className="text-[11px] font-medium text-foreground mt-0.5">Fixed Armrest</p>
+                                                    <p className="text-[10px] text-muted-foreground">$12/unit · 3-week lead</p>
+                                                </div>
+                                                <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-2">
+                                                    <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider">Suggested</p>
+                                                    <p className="text-[11px] font-medium text-foreground mt-0.5">Adjustable 4D</p>
+                                                    <p className="text-[10px] text-muted-foreground">$18/unit · In Stock</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] text-muted-foreground mb-2">+$750 total · +2.1% margin uplift · eliminates 3-week lead time</p>
+
+                                            {/* Action buttons */}
+                                            {reviewCorrections.armrest ? (
+                                                <div className="flex items-center gap-2">
+                                                    <span className={cn("text-[10px] font-medium flex items-center gap-1", reviewCorrections.armrest === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                                                        {reviewCorrections.armrest === 'accepted' ? <><CheckCircleIcon className="w-3 h-3" /> Substitution Accepted</> : <><XMarkIcon className="w-3 h-3" /> Keeping Original</>}
+                                                    </span>
+                                                    <button onClick={() => setReviewCorrections(p => ({ ...p, armrest: null }))} className="text-[9px] text-muted-foreground underline ml-1">undo</button>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1.5">
+                                                    <button onClick={() => handleReviewAction('armrest', 'accepted')} className="px-2.5 py-1 bg-green-600 hover:bg-green-700 text-white text-[10px] font-medium rounded-md transition-colors flex items-center gap-1"><CheckIcon className="w-3 h-3" /> Accept Substitution</button>
+                                                    <button onClick={() => handleReviewAction('armrest', 'rejected')} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80 flex items-center gap-1"><XMarkIcon className="w-3 h-3" /> Keep Original</button>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="grid grid-cols-2 gap-2 mb-2">
-                                            <div className="bg-muted/30 rounded-lg p-2">
-                                                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Current (RFQ)</p>
-                                                <p className="text-[11px] font-medium text-foreground mt-0.5">Fixed Armrest</p>
-                                                <p className="text-[10px] text-muted-foreground">$12/unit · 3-week lead</p>
-                                            </div>
-                                            <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-2">
-                                                <p className="text-[10px] text-blue-600 dark:text-blue-400 uppercase tracking-wider">Suggested</p>
-                                                <p className="text-[11px] font-medium text-foreground mt-0.5">Adjustable 4D</p>
-                                                <p className="text-[10px] text-muted-foreground">$18/unit · In Stock</p>
-                                            </div>
-                                        </div>
-                                        <p className="text-[10px] text-muted-foreground mb-2">+$750 total · +2.1% margin uplift · eliminates 3-week lead time</p>
-                                        {reviewCorrections.armrest ? (
-                                            <span className={cn("text-[10px] font-medium", reviewCorrections.armrest === 'accepted' ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
-                                                {reviewCorrections.armrest === 'accepted' ? 'Substitution Accepted' : 'Keeping Original'} — click to change
-                                            </span>
-                                        ) : (
-                                            <div className="flex gap-1.5">
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, armrest: 'accepted' }))} className="px-2.5 py-1 bg-primary text-primary-foreground text-[10px] font-medium rounded-md transition-colors">Accept Substitution</button>
-                                                <button onClick={() => setReviewCorrections(p => ({ ...p, armrest: 'rejected' }))} className="px-2.5 py-1 bg-muted text-muted-foreground text-[10px] font-medium rounded-md transition-colors hover:bg-muted/80">Keep Original</button>
+
+                                        {/* Expanded Detail Panel */}
+                                        {expandedReviewItems.armrest && (
+                                            <div className="border-t border-border bg-muted/10 p-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                {/* Detailed Product Comparison */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Detailed Comparison</p>
+                                                    <div className="border border-border rounded-lg overflow-hidden">
+                                                        <table className="w-full text-left">
+                                                            <thead>
+                                                                <tr className="bg-muted/30 border-b border-border/50">
+                                                                    <th className="px-3 py-1.5 text-[9px] font-medium text-muted-foreground uppercase">Spec</th>
+                                                                    <th className="px-3 py-1.5 text-[9px] font-medium text-muted-foreground uppercase text-center">Current</th>
+                                                                    <th className="px-3 py-1.5 text-[9px] font-medium text-blue-600 dark:text-blue-400 uppercase text-center">Suggested</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-border/30">
+                                                                {[
+                                                                    { spec: 'Model', current: 'ARM-FX-100', suggested: 'ARM-4D10' },
+                                                                    { spec: 'Adjustment', current: 'Fixed height only', suggested: '4D: height, width, depth, pivot' },
+                                                                    { spec: 'Material', current: 'Molded plastic', suggested: 'Soft PU pad + metal frame' },
+                                                                    { spec: 'Unit Price', current: '$12.00', suggested: '$18.00' },
+                                                                    { spec: 'Lead Time', current: '3 weeks (backordered)', suggested: 'In Stock — ships same day' },
+                                                                    { spec: 'Warranty', current: '2 years', suggested: '5 years' },
+                                                                    { spec: 'Ergonomic Rating', current: 'Basic', suggested: 'BIFMA Level 3 Certified' },
+                                                                ].map((row, i) => (
+                                                                    <tr key={i}>
+                                                                        <td className="px-3 py-1.5 text-[10px] font-medium text-foreground">{row.spec}</td>
+                                                                        <td className="px-3 py-1.5 text-[10px] text-muted-foreground text-center">{row.current}</td>
+                                                                        <td className="px-3 py-1.5 text-[10px] text-blue-600 dark:text-blue-400 text-center font-medium">{row.suggested}</td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                {/* Financial Impact */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Financial Impact</p>
+                                                    <div className="grid grid-cols-4 gap-1.5">
+                                                        {[
+                                                            { label: 'Price Delta', value: '+$6/unit', color: 'text-amber-600 dark:text-amber-400' },
+                                                            { label: 'Total Impact', value: '+$750', color: 'text-amber-600 dark:text-amber-400' },
+                                                            { label: 'Margin Uplift', value: '+2.1%', color: 'text-green-600 dark:text-green-400' },
+                                                            { label: 'Lead Time Saved', value: '3 weeks', color: 'text-green-600 dark:text-green-400' },
+                                                        ].map(item => (
+                                                            <div key={item.label} className="p-2 bg-background rounded-lg border border-border/50 text-center">
+                                                                <p className="text-[9px] text-muted-foreground">{item.label}</p>
+                                                                <p className={cn("text-[11px] font-bold", item.color)}>{item.value}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+
+                                                {/* AI Reasoning */}
+                                                <div className="p-2.5 bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-lg">
+                                                    <div className="flex items-center gap-1.5 mb-1">
+                                                        <SparklesIcon className="w-3 h-3 text-indigo-500" />
+                                                        <p className="text-[9px] font-medium text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">AI Reasoning</p>
+                                                    </div>
+                                                    <p className="text-[10px] text-indigo-600 dark:text-indigo-300 leading-relaxed">
+                                                        ARM-FX-100 is currently backordered (3-week ETA). ARM-4D10 is in stock with 500+ units available. The 4D adjustable armrest has a higher ergonomic rating (BIFMA Level 3) which aligns with the client's request for "ergonomic task chairs." Price increase of $6/unit ($750 total) is offset by eliminating the 3-week delay and providing better client value. Historical data shows 78% of similar RFQs accepted this substitution.
+                                                    </p>
+                                                </div>
+
+                                                {/* Expert Notes */}
+                                                <div>
+                                                    <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider mb-1.5">Expert Notes</p>
+                                                    <textarea
+                                                        value={expertNotes.armrest}
+                                                        onChange={(e) => setExpertNotes(p => ({ ...p, armrest: e.target.value }))}
+                                                        onBlur={() => handleNoteSave('armrest')}
+                                                        placeholder="Add review notes for audit trail..."
+                                                        className="w-full px-3 py-2 text-[10px] bg-background border border-border rounded-lg focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                                                        rows={2}
+                                                    />
+                                                </div>
                                             </div>
                                         )}
                                     </div>
-                                </div>
-
-                                {/* Extended Warranty Configuration */}
-                                <div className={cn("bg-card border rounded-2xl shadow-sm overflow-hidden transition-all", reviewCorrections.warranty === 'accepted' ? 'border-green-500/30' : 'border-border')}>
-                                    {/* Warranty Header */}
-                                    <div className="p-4 border-b border-border">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <div className="p-1.5 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg">
-                                                    <WrenchScrewdriverIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                                                </div>
-                                                <h3 className="text-xs font-medium text-foreground">Extended Warranty</h3>
-                                            </div>
-                                            {reviewCorrections.warranty === 'accepted' && (
-                                                <span className="text-[10px] text-green-600 dark:text-green-400 font-medium flex items-center gap-1"><CheckCircleIcon className="w-3 h-3" /> Confirmed</span>
-                                            )}
-                                        </div>
-                                        <p className="text-[10px] text-muted-foreground leading-relaxed">Activate extended warranties for eligible products. Select coverage tier per item — time-based options available for all categories.</p>
-                                    </div>
-
-                                    {/* Warranty Summary Bar */}
-                                    <div className="px-4 py-2.5 bg-indigo-50/50 dark:bg-indigo-500/5 border-b border-border flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium">{warrantyItemsConfigured} extended</span>
-                                            <span className="text-[10px] text-muted-foreground">·</span>
-                                            <span className="text-[10px] text-muted-foreground">{warrantyItems.length - warrantyItemsConfigured} standard</span>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="text-[10px] text-muted-foreground">Added cost: </span>
-                                            <span className="text-xs font-semibold text-indigo-600 dark:text-indigo-400">{formatCurrencyShort(warrantyTotalCost)}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Quick Bulk Actions */}
-                                    <div className="px-4 py-2.5 border-b border-border bg-muted/10">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Quick Actions — Apply to All 40 Items</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                            {warrantyTiers.map((tier) => (
-                                                <button
-                                                    key={tier.id}
-                                                    onClick={() => applyWarrantyToAll(tier.id)}
-                                                    className={cn(
-                                                        "px-2.5 py-1.5 rounded-lg border text-[10px] font-medium transition-all",
-                                                        Object.values(warrantySelections).length === warrantyItems.length && Object.values(warrantySelections).every(v => v === tier.id)
-                                                            ? "border-indigo-500/40 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300"
-                                                            : "border-border bg-card text-muted-foreground hover:border-indigo-500/30 hover:text-foreground"
-                                                    )}
-                                                >
-                                                    All {tier.label} {tier.id !== 'standard' && <span className="text-[9px] ml-0.5 opacity-70">{tier.cost}</span>}
-                                                </button>
-                                            ))}
-                                            <div className="w-px h-5 bg-border mx-0.5" />
-                                            <button
-                                                onClick={applyAIRecommendedWarranties}
-                                                className="px-2.5 py-1.5 rounded-lg border border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 text-[10px] font-medium text-blue-700 dark:text-blue-300 transition-all hover:bg-blue-100 dark:hover:bg-blue-500/20 flex items-center gap-1"
-                                            >
-                                                <SparklesIcon className="w-3 h-3" />
-                                                AI Recommended
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Warranty Items */}
-                                    <div className="divide-y divide-border">
-                                        {warrantyItems.map((item) => {
-                                            const selected = warrantySelections[item.sku] || 'standard';
-                                            return (
-                                                <div key={item.sku} className="px-4 py-3">
-                                                    <div className="flex items-center justify-between mb-2">
-                                                        <div>
-                                                            <span className="text-[11px] font-medium text-foreground">{item.name}</span>
-                                                            <span className="ml-2 text-[10px] text-muted-foreground">{item.sku} · Qty {item.qty}</span>
-                                                        </div>
-                                                        <span className="text-[10px] text-muted-foreground">{item.base}/ea</span>
-                                                    </div>
-                                                    <div className="flex gap-1.5">
-                                                        {warrantyTiers.map((tier) => {
-                                                            const isActive = selected === tier.id;
-                                                            return (
-                                                                <button
-                                                                    key={tier.id}
-                                                                    onClick={() => setWarrantySelections(p => ({ ...p, [item.sku]: tier.id }))}
-                                                                    className={cn(
-                                                                        "flex-1 py-1.5 px-2 rounded-lg border text-center transition-all relative",
-                                                                        isActive
-                                                                            ? "border-indigo-500/40 bg-indigo-50 dark:bg-indigo-500/10"
-                                                                            : "border-border bg-muted/20 hover:border-border/60"
-                                                                    )}
-                                                                >
-                                                                    {tier.badge && (
-                                                                        <span className="absolute -top-1.5 left-1/2 -translate-x-1/2 text-[7px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/20 px-1.5 rounded-full border border-indigo-200 dark:border-indigo-500/30">{tier.badge}</span>
-                                                                    )}
-                                                                    <div className={cn("text-[10px] font-medium", isActive ? "text-indigo-700 dark:text-indigo-300" : "text-foreground")}>{tier.label}</div>
-                                                                    <div className={cn("text-[9px]", isActive ? "text-indigo-600 dark:text-indigo-400" : "text-muted-foreground")}>{tier.cost}</div>
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-
-                                    {/* Pagination */}
-                                    <div className="px-4 py-2.5 border-t border-border flex items-center justify-between bg-muted/10">
-                                        <span className="text-[10px] text-muted-foreground">Showing 1-5 of 40 items</span>
-                                        <div className="flex items-center gap-1">
-                                            <button disabled className="px-2 py-0.5 text-[10px] text-muted-foreground/40 border border-border/30 rounded">Prev</button>
-                                            <button className="px-2 py-0.5 text-[10px] font-medium text-primary-foreground bg-primary rounded">1</button>
-                                            <button className="px-2 py-0.5 text-[10px] text-muted-foreground border border-border/30 rounded hover:bg-muted/30">2</button>
-                                            <button className="px-2 py-0.5 text-[10px] text-muted-foreground border border-border/30 rounded hover:bg-muted/30">3</button>
-                                            <span className="text-[10px] text-muted-foreground">...</span>
-                                            <button className="px-2 py-0.5 text-[10px] text-muted-foreground border border-border/30 rounded hover:bg-muted/30">8</button>
-                                            <button className="px-2 py-0.5 text-[10px] text-muted-foreground border border-border/30 rounded hover:bg-muted/30">Next</button>
-                                        </div>
-                                    </div>
-
-                                    {/* Warranty Confirm Footer */}
-                                    {!reviewCorrections.warranty && (
-                                        <div className="px-4 py-3 border-t border-border bg-muted/20 flex items-center justify-between">
-                                            <p className="text-[10px] text-muted-foreground">Review warranty selections then confirm to proceed.</p>
-                                            <button
-                                                onClick={() => setReviewCorrections(p => ({ ...p, warranty: 'accepted' }))}
-                                                className="px-3 py-1.5 bg-primary text-primary-foreground text-[10px] font-medium rounded-lg transition-colors"
-                                            >
-                                                Confirm Warranties
-                                            </button>
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Discount Structure */}
@@ -1412,31 +1688,76 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             </div>
                         </div>
 
-                        {/* Approve Footer */}
-                        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm flex items-center justify-between">
-                            <div>
-                                <p className="text-xs text-muted-foreground">
-                                    {Object.values(reviewCorrections).filter(v => v !== null).length}/{Object.keys(reviewCorrections).length} items reviewed
-                                </p>
-                                <p className="text-[10px] text-muted-foreground mt-0.5">
-                                    Revised total: <span className="text-foreground font-medium">{formatCurrencyShort(discountFinalTotal + warrantyTotalCost)}</span> (incl. discounts + warranty) · Savings: <span className="text-green-600 dark:text-green-400 font-medium">{formatCurrencyShort(discountTotalAmount)}</span>
-                                </p>
+                        {/* Review Audit Trail */}
+                        {reviewAuditLog.length > 0 && (
+                            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
+                                <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <ClipboardDocumentCheckIcon className="w-4 h-4 text-muted-foreground" />
+                                        <h3 className="text-xs font-medium text-foreground">Review Activity Log</h3>
+                                    </div>
+                                    <span className="text-[10px] text-muted-foreground">{reviewAuditLog.length} actions</span>
+                                </div>
+                                <div className="divide-y divide-border/50 max-h-40 overflow-y-auto">
+                                    {reviewAuditLog.map((entry, i) => (
+                                        <div key={i} className="px-4 py-2 flex items-center gap-3 hover:bg-muted/20 transition-colors">
+                                            <div className={cn("w-5 h-5 rounded-full flex items-center justify-center shrink-0",
+                                                entry.icon === 'check' ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400' :
+                                                entry.icon === 'reject' ? 'bg-red-100 dark:bg-red-500/20 text-red-600 dark:text-red-400' :
+                                                entry.icon === 'edit' ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' :
+                                                'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                                            )}>
+                                                {entry.icon === 'check' ? <CheckIcon className="w-3 h-3" /> :
+                                                 entry.icon === 'reject' ? <XMarkIcon className="w-3 h-3" /> :
+                                                 entry.icon === 'edit' ? <PencilSquareIcon className="w-3 h-3" /> :
+                                                 <DocumentTextIcon className="w-3 h-3" />}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-[10px] text-foreground font-medium">{entry.field}</span>
+                                                <span className="text-[10px] text-muted-foreground ml-1.5">— {entry.action}</span>
+                                            </div>
+                                            <span className="text-[9px] text-muted-foreground shrink-0 font-mono">{entry.time}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    onClick={() => setShowExpertReview(false)}
-                                    className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-muted rounded-lg transition-colors hover:bg-muted/80"
-                                >
-                                    Back to Queue
-                                </button>
-                                <button
-                                    onClick={() => nextStep()}
-                                    className="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-lg transition-colors shadow-sm flex items-center gap-1.5 disabled:opacity-50"
-                                    disabled={Object.values(reviewCorrections).some(v => v === null)}
-                                >
-                                    <CheckBadgeIcon className="w-3.5 h-3.5" />
-                                    Approve & Send to Approval Chain
-                                </button>
+                        )}
+
+                        {/* Approve Footer */}
+                        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <p className="text-xs font-medium text-foreground">
+                                            {Object.values(reviewCorrections).filter(v => v !== null).length}/{Object.keys(reviewCorrections).length} items reviewed
+                                        </p>
+                                        {Object.values(reviewCorrections).every(v => v !== null) && (
+                                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 font-medium flex items-center gap-0.5"><CheckCircleIcon className="w-3 h-3" /> All reviewed</span>
+                                        )}
+                                    </div>
+                                    <p className="text-[10px] text-muted-foreground">
+                                        Revised total: <span className="text-foreground font-medium">{formatCurrencyShort(discountFinalTotal)}</span> (incl. discounts) · Savings: <span className="text-green-600 dark:text-green-400 font-medium">{formatCurrencyShort(discountTotalAmount)}</span>
+                                    </p>
+                                    {reviewAuditLog.length > 0 && (
+                                        <p className="text-[9px] text-muted-foreground mt-0.5">{reviewAuditLog.length} review actions logged · Expert: Dr. James Wilson</p>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setShowExpertReview(false)}
+                                        className="px-3 py-1.5 text-xs font-medium text-muted-foreground bg-muted rounded-lg transition-colors hover:bg-muted/80"
+                                    >
+                                        Back to Queue
+                                    </button>
+                                    <button
+                                        onClick={() => nextStep()}
+                                        className="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-lg transition-colors shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+                                        disabled={Object.values(reviewCorrections).some(v => v === null)}
+                                    >
+                                        <CheckBadgeIcon className="w-3.5 h-3.5" />
+                                        Approve & Send to Approval Chain
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1570,75 +1891,49 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                     </div>
                 )}
 
-                {/* Step 1.6 — Approval Chain */}
+                {/* Step 1.6 — Quote Approval Chain (System auto → Sarah pending → auto-advance) */}
                 {currentStep.id === '1.6' && (
                     <div data-demo-target="approval-chain-progress" className="space-y-4">
-                        {/* Agent Pipeline */}
                         <AgentPipelineStrip agents={[
                             { id: 'email', name: 'EmailIntake', status: 'done' },
                             { id: 'ocr', name: 'OCR/Parser', status: 'done' },
                             { id: 'norm', name: 'DataNorm', status: 'done' },
                             { id: 'valid', name: 'Validator', status: 'done' },
                             { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: allApproved16 ? 'done' : 'running', detail: allApproved16 ? '3/3 approved' : `${approvedCount16}/3` },
+                            { id: 'approval', name: 'ApprovalOrch', status: 'running', detail: `${approvedCount16}/2` },
                             { id: 'po', name: 'POBuilder', status: 'pending' },
                             { id: 'notif', name: 'Notification', status: 'pending' },
                         ]} accentColor="purple" />
 
                         <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-lg">
-                            {/* Header */}
                             <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center">
                                         <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
                                     </div>
                                     <div>
-                                        <h3 className="text-sm font-bold text-foreground">Approval Chain Required</h3>
-                                        <p className="text-[10px] text-muted-foreground mt-0.5">Quote QT-1025 triggered policy-based approval workflow</p>
+                                        <h3 className="text-sm font-bold text-foreground">Quote Approval Chain</h3>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">Quote QT-1025 ($134,250) triggered policy-based approval workflow</p>
                                     </div>
                                 </div>
                                 <ConfidenceScoreBadge score={94} label="Policy Match" />
                             </div>
 
                             <div className="p-6 space-y-5">
-                                {/* Trigger Reason */}
-                                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
-                                    <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 mb-1.5">Approval Trigger</p>
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                            <CurrencyDollarIcon className="w-3.5 h-3.5 shrink-0" />
-                                            <span>Quote total <span className="font-bold">$134,250</span> exceeds $100,000 threshold</span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                            <ExclamationCircleIcon className="w-3.5 h-3.5 shrink-0" />
-                                            <span>Non-standard discounts applied: <span className="font-bold">Early Payment (2%) + Mixed Category (2%)</span></span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
-                                            <ClipboardDocumentCheckIcon className="w-3.5 h-3.5 shrink-0" />
-                                            <span>Extended warranty options selected for 3 SKUs</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* AI Analysis */}
                                 <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                                     <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                                     <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                        <span className="font-bold">ApprovalOrchestratorAgent:</span> Identified 3 policy triggers. Routing to sequential 3-level approval chain based on quote value bracket ($100k-$250k) and discount policy.
+                                        <span className="font-bold">ApprovalOrchestratorAgent:</span> Routing to 2-level approval chain — automated compliance check first, then manager sign-off for quote value bracket ($100k-$250k).
                                     </div>
                                 </div>
 
-                                {/* Approval Chain */}
                                 <div className="space-y-0">
                                     {[
-                                        { name: 'Sarah Chen', role: 'Regional Sales Manager', reason: 'Quote value > $100k', level: 'Level 1' },
-                                        { name: 'David Park', role: 'Finance Director', reason: 'Non-standard discounts applied', level: 'Level 2' },
-                                        { name: 'System Policy Engine', role: 'Automated Compliance Check', reason: 'Warranty + pricing validation', level: 'Level 3' },
+                                        { name: 'System Policy Engine', role: 'Automated Compliance Check', reason: 'Pricing + discount + policy validation', level: 'Level 1' },
+                                        { name: 'Sarah Chen', role: 'Regional Sales Manager', reason: 'Quote value > $100k', level: 'Level 2' },
                                     ].map((approver, i) => (
                                         <div key={i}>
-                                            {i > 0 && (
-                                                <div className="ml-5 h-6 border-l-2 border-dashed border-border" />
-                                            )}
+                                            {i > 0 && <div className="ml-5 h-6 border-l-2 border-dashed border-border" />}
                                             <div className={`flex items-center gap-4 p-3 rounded-xl transition-all duration-500 ${
                                                 approvalStates16[i] === 'approved'
                                                     ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20'
@@ -1647,19 +1942,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                         : 'bg-muted/30 border border-border/50'
                                             }`}>
                                                 <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${
-                                                    approvalStates16[i] === 'approved'
-                                                        ? 'bg-emerald-500 text-white'
-                                                        : i === approvedCount16
-                                                            ? 'bg-blue-500 text-white'
-                                                            : 'bg-muted text-muted-foreground'
+                                                    approvalStates16[i] === 'approved' ? 'bg-emerald-500 text-white' : i === approvedCount16 ? 'bg-blue-500 text-white' : 'bg-muted text-muted-foreground'
                                                 }`}>
-                                                    {approvalStates16[i] === 'approved' ? (
-                                                        <CheckIcon className="w-5 h-5" />
-                                                    ) : i === approvedCount16 ? (
-                                                        <ArrowPathIcon className="w-5 h-5 animate-spin" />
-                                                    ) : (
-                                                        <ClockIcon className="w-4 h-4" />
-                                                    )}
+                                                    {approvalStates16[i] === 'approved' ? <CheckIcon className="w-5 h-5" /> : i === approvedCount16 ? <ArrowPathIcon className="w-5 h-5 animate-spin" /> : <ClockIcon className="w-4 h-4" />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2">
@@ -1671,11 +1956,11 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                 </div>
                                                 <div className="text-right shrink-0">
                                                     {approvalStates16[i] === 'approved' ? (
-                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Approved</span>
+                                                        <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">Auto-Approved</span>
                                                     ) : i === approvedCount16 ? (
                                                         <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">Reviewing...</span>
                                                     ) : (
-                                                        <span className="text-[10px] text-muted-foreground">Pending</span>
+                                                        <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium">Pending Approval</span>
                                                     )}
                                                 </div>
                                             </div>
@@ -1683,70 +1968,132 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     ))}
                                 </div>
 
-                                {/* Progress bar */}
                                 <div>
                                     <div className="flex items-center justify-between mb-1.5">
                                         <span className="text-[10px] font-bold text-muted-foreground">Approval Progress</span>
-                                        <span className="text-[10px] font-bold text-foreground">{approvedCount16}/3</span>
+                                        <span className="text-[10px] font-bold text-foreground">{approvedCount16}/2</span>
                                     </div>
                                     <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full rounded-full transition-all duration-700 ${allApproved16 ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                                            style={{ width: `${(approvedCount16 / 3) * 100}%` }}
-                                        />
+                                        <div className="h-full rounded-full transition-all duration-700 bg-blue-500" style={{ width: `${(approvedCount16 / 2) * 100}%` }} />
                                     </div>
                                 </div>
 
-                                {/* Success banner */}
-                                {allApproved16 && (
-                                    <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-3">
-                                        <CheckCircleIcon className="w-5 h-5 text-emerald-500 shrink-0" />
-                                        <div className="flex-1">
-                                            <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">All Approvals Complete</p>
-                                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">Quote QT-1025 ($134,250) approved through all 3 levels. Ready for PO generation.</p>
+                                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 flex items-center gap-2">
+                                    <ClockIcon className="w-4 h-4 text-amber-500 shrink-0" />
+                                    <span className="text-[10px] text-amber-700 dark:text-amber-300">Awaiting manager approval — notification sent to Sarah Chen</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Step 1.7 — Manager Approval (Sarah Chen's perspective) */}
+                {currentStep.id === '1.7' && (
+                    <div data-demo-target="manager-approval-view" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <AgentPipelineStrip agents={[
+                            { id: 'email', name: 'EmailIntake', status: 'done' },
+                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
+                            { id: 'norm', name: 'DataNorm', status: 'done' },
+                            { id: 'valid', name: 'Validator', status: 'done' },
+                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
+                            { id: 'approval', name: 'ApprovalOrch', status: 'running', detail: '1/2 approved' },
+                            { id: 'po', name: 'POBuilder', status: 'pending' },
+                            { id: 'notif', name: 'Notification', status: 'pending' },
+                        ]} accentColor="purple" />
+
+                        {/* Notification banner */}
+                        <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                            <BellIcon className="w-5 h-5 text-blue-500 shrink-0" />
+                            <div className="flex-1">
+                                <p className="text-xs font-bold text-blue-700 dark:text-blue-300">New Quote Approval Request</p>
+                                <p className="text-[10px] text-blue-600 dark:text-blue-400">Quote QT-1025 ($134,250) requires your review — System Policy Engine has pre-approved compliance checks</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-lg">
+                            <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                                        <UserIcon className="w-5 h-5 text-indigo-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-foreground">Quote Review — Sarah Chen</h3>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">Regional Sales Manager · Level 2 Approval</p>
+                                    </div>
+                                </div>
+                                <ConfidenceScoreBadge score={94} label="Policy Match" />
+                            </div>
+
+                            <div className="p-6 space-y-5">
+                                {/* Quote summary */}
+                                <div className="grid grid-cols-4 gap-3">
+                                    {[
+                                        { label: 'Quote ID', value: 'QT-1025' },
+                                        { label: 'Total Value', value: '$134,250' },
+                                        { label: 'Line Items', value: '5 SKUs' },
+                                        { label: 'Discount Applied', value: '4% combined' },
+                                    ].map(item => (
+                                        <div key={item.label} className="p-3 rounded-lg bg-muted/30 border border-border/50 text-center">
+                                            <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium">{item.label}</p>
+                                            <p className="text-sm font-bold text-foreground mt-1">{item.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Approval trigger */}
+                                <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+                                    <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300 mb-1.5">Approval Triggers</p>
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                                            <CurrencyDollarIcon className="w-3.5 h-3.5 shrink-0" />
+                                            <span>Quote total <span className="font-bold">$134,250</span> exceeds $100,000 threshold</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                                            <ExclamationCircleIcon className="w-3.5 h-3.5 shrink-0" />
+                                            <span>Non-standard discounts: <span className="font-bold">Early Payment (2%) + Mixed Category (2%)</span></span>
                                         </div>
                                     </div>
-                                )}
+                                </div>
 
-                                {/* Quote Summary */}
-                                {approvalChainComplete16 && (
-                                    <div className="p-4 rounded-xl bg-muted/30 border border-border/50 space-y-3">
-                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Approved Quote Summary</p>
-                                        <div className="grid grid-cols-4 gap-3">
-                                            {[
-                                                { label: 'Quote ID', value: 'QT-1025' },
-                                                { label: 'Total Value', value: '$134,250' },
-                                                { label: 'Line Items', value: '5 SKUs' },
-                                                { label: 'Discount Applied', value: '4% combined' },
-                                            ].map(item => (
-                                                <div key={item.label} className="text-center">
-                                                    <p className="text-[10px] text-muted-foreground">{item.label}</p>
-                                                    <p className="text-sm font-bold text-foreground">{item.value}</p>
-                                                </div>
-                                            ))}
-                                        </div>
+                                {/* AI Analysis */}
+                                <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                    <div className="text-xs text-indigo-700 dark:text-indigo-300 space-y-1">
+                                        <p><span className="font-bold">AI Analysis:</span> All line items validated against catalog pricing. Discounts within authorized bracket for client tier. Substitution approved per policy guidelines.</p>
+                                        <p>Recommendation: <span className="font-bold text-green-600 dark:text-green-400">Approve</span> — no anomalies detected.</p>
                                     </div>
-                                )}
+                                </div>
 
-                                {/* CTA */}
+                                {/* Resolved Discrepancies */}
+                                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+                                    <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 mb-2">Resolved Discrepancies (Expert Review)</p>
+                                    <div className="space-y-1">
+                                        {[
+                                            'Freight rate adjusted: $0 → $2,450 (multi-zone LTL calculation)',
+                                            'Quantity confirmed: 125 units (PDF spec overrides email body)',
+                                            'Armrest substitution: Fixed → 4D Adjustable (+$750, eliminates 3-week lead)',
+                                        ].map((item, i) => (
+                                            <div key={i} className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
+                                                <CheckCircleIcon className="w-3.5 h-3.5 shrink-0" />
+                                                <span>{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Approve button */}
                                 <div className="flex items-center gap-3">
                                     <button
-                                        onClick={nextStep}
-                                        disabled={!approvalChainComplete16}
+                                        onClick={() => { setManagerApproved17(true); setTimeout(() => nextStep(), 1000); }}
+                                        disabled={managerApproved17}
                                         className={`px-5 py-2.5 text-xs font-bold rounded-lg transition-all shadow-sm flex items-center gap-2 ${
-                                            approvalChainComplete16
-                                                ? 'bg-primary text-primary-foreground hover:opacity-90'
-                                                : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                            managerApproved17 ? 'bg-emerald-500 text-white' : 'bg-primary text-primary-foreground hover:opacity-90'
                                         }`}
                                     >
-                                        Generate Purchase Order
-                                        <ArrowRightIcon className="w-3.5 h-3.5" />
+                                        {managerApproved17 ? <><CheckIcon className="w-3.5 h-3.5" /> Quote Approved</> : <><CheckBadgeIcon className="w-3.5 h-3.5" /> Approve Quote</>}
                                     </button>
-                                    {approvalChainComplete16 && (
-                                        <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
-                                            <SparklesIcon className="w-3 h-3" />
-                                            POBuilderAgent will auto-generate PO from approved quote
-                                        </span>
+                                    {managerApproved17 && (
+                                        <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium animate-pulse">Advancing to PO generation...</span>
                                     )}
                                 </div>
                             </div>
@@ -1754,8 +2101,256 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                     </div>
                 )}
 
-                {/* Hide table/pipeline when expert review panel is open */}
-                {!(currentStep.id === '1.5' && showExpertReview) && !(currentStep.id === '1.6') && (viewMode === 'list' ? (
+                {/* Step 1.8 — PO Generation & Order Approval (fully automated) */}
+                {currentStep.id === '1.8' && (
+                    <div data-demo-target="po-order-approval" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <AgentPipelineStrip agents={[
+                            { id: 'email', name: 'EmailIntake', status: 'done' },
+                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
+                            { id: 'norm', name: 'DataNorm', status: 'done' },
+                            { id: 'valid', name: 'Validator', status: 'done' },
+                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
+                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2 approved' },
+                            { id: 'po', name: 'POBuilder', status: poGenPhase18 === 'complete' ? 'done' : ['po-generating', 'po-complete'].includes(phase18) || phase18 === 'po-generating' ? 'running' : 'pending', detail: poGenPhase18 === 'complete' ? 'PO-1029' : phase18 === 'po-generating' ? 'Generating...' : '' },
+                            { id: 'notif', name: 'Notification', status: 'pending' },
+                        ]} accentColor="green" />
+
+                        {/* Quote Approval Complete */}
+                        <div className="bg-card border border-emerald-200 dark:border-emerald-500/20 rounded-2xl overflow-hidden shadow-sm">
+                            <div className="px-5 py-3 bg-emerald-50 dark:bg-emerald-500/10 flex items-center gap-3">
+                                <CheckCircleIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Quote Approval Chain — Complete</p>
+                                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400">QT-1025 approved by System Policy Engine + Sarah Chen</p>
+                                </div>
+                            </div>
+                            <div className="p-4 flex items-center gap-6">
+                                {[
+                                    { name: 'System Policy Engine', status: 'Auto-Approved' },
+                                    { name: 'Sarah Chen', status: 'Approved' },
+                                ].map((a, i) => (
+                                    <div key={i} className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center"><CheckIcon className="w-3.5 h-3.5" /></div>
+                                        <div>
+                                            <span className="text-[11px] font-medium text-foreground">{a.name}</span>
+                                            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 ml-1.5">· {a.status}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* PO Generation (compact) */}
+                        {['po-generating', 'po-complete', 'order-chain', 'order-complete', 'done'].includes(phase18) && (
+                            <div className="bg-card border border-border rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-500/10">
+                                        <DocumentPlusIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-sm font-bold text-foreground">PO Generation</h3>
+                                        <p className="text-[10px] text-muted-foreground">POBuilderAgent generating purchase order from QT-1025</p>
+                                    </div>
+                                    {poGenPhase18 === 'complete' && <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5" /> PO-1029</span>}
+                                </div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {[
+                                        { label: 'Extracting quote', phase: 'building' },
+                                        { label: 'Mapping to PO format', phase: 'mapping' },
+                                        { label: 'Validating catalog', phase: 'validating' },
+                                        { label: 'PO finalized', phase: 'complete' },
+                                    ].map((step) => {
+                                        const phases = ['building', 'mapping', 'validating', 'complete'];
+                                        const stepIdx = phases.indexOf(step.phase);
+                                        const currentIdx = phases.indexOf(poGenPhase18);
+                                        const isDone = currentIdx > stepIdx || (currentIdx === stepIdx && poGenPhase18 === 'complete' && step.phase === 'complete');
+                                        const isActive = currentIdx === stepIdx && poGenPhase18 !== 'complete';
+                                        return (
+                                            <div key={step.phase} className={cn("p-2.5 rounded-lg border text-center transition-all", isDone ? 'border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/5' : isActive ? 'border-blue-500/30 bg-blue-50 dark:bg-blue-500/5 animate-pulse' : 'border-border bg-muted/20')}>
+                                                <div className={cn("w-5 h-5 rounded-full mx-auto mb-1 flex items-center justify-center", isDone ? 'bg-emerald-500 text-white' : isActive ? 'bg-blue-500 text-white' : 'bg-muted text-muted-foreground')}>
+                                                    {isDone ? <CheckIcon className="w-3 h-3" /> : isActive ? <ArrowPathIcon className="w-3 h-3 animate-spin" /> : <ClockIcon className="w-3 h-3" />}
+                                                </div>
+                                                <p className={cn("text-[9px] font-medium", isDone ? 'text-emerald-600 dark:text-emerald-400' : isActive ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground')}>{step.label}</p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Order Approval Chain (automated) */}
+                        {['order-chain', 'order-complete', 'done'].includes(phase18) && (
+                            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className="px-5 py-3 border-b border-border flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-500/10">
+                                            <ClipboardDocumentCheckIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-foreground">Order Approval Chain</h3>
+                                            <p className="text-[10px] text-muted-foreground">Automated approval for PO-1029 ($134,256)</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-foreground">{orderApprovedCount18}/3</span>
+                                </div>
+                                <div className="p-5 space-y-0">
+                                    {[
+                                        { name: 'Operations Manager', role: 'Automated Order Validation', level: 'Level 1' },
+                                        { name: 'Finance System', role: 'Budget & Payment Terms', level: 'Level 2' },
+                                        { name: 'Compliance Engine', role: 'Regulatory Check', level: 'Level 3' },
+                                    ].map((approver, i) => (
+                                        <div key={i}>
+                                            {i > 0 && <div className="ml-5 h-4 border-l-2 border-dashed border-border" />}
+                                            <div className={`flex items-center gap-3 p-2.5 rounded-lg transition-all duration-500 ${
+                                                orderApprovalStates18[i] === 'approved'
+                                                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20'
+                                                    : i === orderApprovedCount18
+                                                        ? 'bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-pulse'
+                                                        : 'bg-muted/30 border border-border/50'
+                                            }`}>
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-500 ${
+                                                    orderApprovalStates18[i] === 'approved' ? 'bg-emerald-500 text-white' : i === orderApprovedCount18 ? 'bg-blue-500 text-white' : 'bg-muted text-muted-foreground'
+                                                }`}>
+                                                    {orderApprovalStates18[i] === 'approved' ? <CheckIcon className="w-4 h-4" /> : i === orderApprovedCount18 ? <ArrowPathIcon className="w-4 h-4 animate-spin" /> : <ClockIcon className="w-3.5 h-3.5" />}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <span className="text-[11px] font-bold text-foreground">{approver.name}</span>
+                                                    <span className="text-[10px] text-muted-foreground ml-1.5">· {approver.role}</span>
+                                                </div>
+                                                <span className={cn("text-[10px] font-bold", orderApprovalStates18[i] === 'approved' ? 'text-emerald-600 dark:text-emerald-400' : i === orderApprovedCount18 ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground')}>
+                                                    {orderApprovalStates18[i] === 'approved' ? 'Approved' : i === orderApprovedCount18 ? 'Reviewing...' : 'Pending'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {phase18 === 'order-complete' || phase18 === 'done' ? (
+                                    <div className="px-5 pb-4">
+                                        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-3">
+                                            <CheckCircleIcon className="w-5 h-5 text-emerald-500 shrink-0" />
+                                            <div>
+                                                <p className="text-xs font-bold text-emerald-700 dark:text-emerald-300">Order PO-1029 Fully Approved</p>
+                                                <p className="text-[10px] text-emerald-600 dark:text-emerald-400">All 3 approval levels complete — order entering production pipeline</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Step 1.9 — Pipeline View with animated order card */}
+                {currentStep.id === '1.9' && (
+                    <div data-demo-target="order-pipeline-view" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <AgentPipelineStrip agents={[
+                            { id: 'email', name: 'EmailIntake', status: 'done' },
+                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
+                            { id: 'norm', name: 'DataNorm', status: 'done' },
+                            { id: 'valid', name: 'Validator', status: 'done' },
+                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
+                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2' },
+                            { id: 'po', name: 'POBuilder', status: 'done', detail: 'PO-1029' },
+                            { id: 'notif', name: 'Notification', status: 'pending' },
+                        ]} accentColor="green" />
+
+                        {/* Notification toast */}
+                        {pipelineNotifShown19 && (
+                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+                                <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-300">Order #ORD-2056 Created from PO-1029</p>
+                                    <p className="text-[10px] text-green-600 dark:text-green-400">Apex Furniture — $134,256 — Automatically added to pipeline</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Pipeline columns */}
+                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 pt-2 min-h-[500px]">
+                            {pipelineStages.map((stage) => {
+                                const stageOrders = recentOrders.filter(item => item.status === stage);
+                                const showNewCard = (stage === 'Order Received' && cardAnimationStage19 !== 'hidden');
+                                return (
+                                    <div key={stage} className="flex flex-col h-full">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="text-[11px] font-black text-muted-foreground uppercase tracking-widest">{stage}</h3>
+                                                <span className="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-[10px] font-bold text-muted-foreground ring-1 ring-inset ring-black/5">
+                                                    {stageOrders.length + (showNewCard ? 1 : 0)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="flex-1 bg-zinc-100/50 dark:bg-zinc-900/50 rounded-2xl p-3 border-2 border-dashed border-zinc-200 dark:border-zinc-800 space-y-3">
+                                            {/* New animated card */}
+                                            {showNewCard && (
+                                                <div className={cn(
+                                                    "bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-md border-2 transition-all duration-700",
+                                                    cardAnimationStage19 === 'appearing' ? 'border-brand-500 ring-2 ring-brand-500/20 animate-in fade-in zoom-in duration-500' :
+                                                    cardAnimationStage19 === 'arrived' ? 'border-brand-500 ring-2 ring-brand-500/20' : 'border-brand-500/50 opacity-0'
+                                                )}>
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <span className="px-1.5 py-0.5 rounded bg-brand-50 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 text-[8px] font-bold uppercase">New</span>
+                                                        <span className="text-[10px] font-bold text-foreground font-black tracking-tight">#ORD-2056</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-bold text-foreground leading-tight italic">Apex Furniture</h4>
+                                                    <p className="text-[10px] text-muted-foreground mt-1 font-medium">New HQ RFQ</p>
+                                                    <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-700 flex items-center justify-between">
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <MapPinIcon className="w-3 h-3" />
+                                                            <span className="text-[10px] font-bold uppercase tracking-tight italic">Austin</span>
+                                                        </div>
+                                                        <div className="text-[10px] font-black text-brand-600 dark:text-brand-400">$134,256</div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Existing orders */}
+                                            {stageOrders.map((item) => (
+                                                <div key={item.id} className="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 hover:border-brand-500 hover:shadow-lg hover:shadow-brand-500/10 transition-all cursor-move">
+                                                    <div className="flex items-center gap-2 mb-3">
+                                                        <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[8px] ring-1 ring-inset ring-black/5 uppercase shadow-sm font-black", item.statusColor.replace('bg-', 'text-').replace('text-', 'bg-'))}>
+                                                            {item.initials}
+                                                        </div>
+                                                        <span className="text-[10px] font-bold text-foreground font-black tracking-tight">{item.id}</span>
+                                                    </div>
+                                                    <h4 className="text-xs font-bold text-foreground leading-tight italic line-clamp-1">{item.customer}</h4>
+                                                    <p className="text-[10px] text-muted-foreground mt-1 font-medium capitalize truncate">{item.project}</p>
+                                                    <div className="mt-4 pt-3 border-t border-zinc-100 dark:border-zinc-700 flex items-center justify-between">
+                                                        <div className="flex items-center gap-2 text-muted-foreground">
+                                                            <MapPinIcon className="w-3 h-3" />
+                                                            <span className="text-[10px] font-bold uppercase tracking-tight italic">{item.location}</span>
+                                                        </div>
+                                                        <div className="text-[10px] font-black text-brand-600 dark:text-brand-400">{item.amount}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {stageOrders.length === 0 && !showNewCard && (
+                                                <div className="h-24 flex items-center justify-center border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl opacity-40">
+                                                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-tighter">No items</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* CTA */}
+                        {cardAnimationStage19 === 'arrived' && (
+                            <div className="flex items-center gap-3">
+                                <button onClick={nextStep} className="px-5 py-2.5 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:opacity-90 shadow-sm flex items-center gap-2">
+                                    Send Notifications <ArrowRightIcon className="w-3.5 h-3.5" />
+                                </button>
+                                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
+                                    <SparklesIcon className="w-3 h-3" />
+                                    NotificationAgent will deliver persona-aware digests
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Hide table/pipeline when expert review panel or demo steps are active */}
+                {!(currentStep.id === '1.5' && showExpertReview) && !['1.6', '1.7', '1.8', '1.9'].includes(currentStep.id) && (viewMode === 'list' ? (
                     <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[1000px]">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
     SparklesIcon,
     XMarkIcon,
@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import AgentPipelineStrip from '../simulations/AgentPipelineStrip';
 import type { AgentStep } from '../simulations/AgentPipelineStrip';
+import { useDemo } from '../../context/DemoContext';
 
 interface AIProcessingModalProps {
     open: boolean;
@@ -33,11 +34,25 @@ const EXTRACTED_ITEMS = [
 ];
 
 export default function AIProcessingModal({ open, onComplete }: AIProcessingModalProps) {
+    const { isPaused } = useDemo();
     const [progress, setProgress] = useState(0);
     const [logs, setLogs] = useState<ProcessingLog[]>([]);
     const [pipeline, setPipeline] = useState<AgentStep[]>([]);
     const [phase, setPhase] = useState<'processing' | 'complete'>('processing');
     const [extractedCount, setExtractedCount] = useState(0);
+
+    // Ref tracks pause state so timer callbacks can check without re-triggering effects
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 300);
+        };
+    }, []);
 
     const reset = useCallback(() => {
         setProgress(0);
@@ -64,7 +79,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
             pipelineUpdate: AgentStep[];
         }> = [
             {
-                delay: 800,
+                delay: 1500,
                 log: { agent: 'EmailIntakeAgent', message: 'Parsing email body — identified RFQ request with 2 attachments.', type: 'info' },
                 progress: 10,
                 pipelineUpdate: [
@@ -76,7 +91,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 2000,
+                delay: 4000,
                 log: { agent: 'EmailIntakeAgent', message: 'Extracted sender: Apex Furniture, subject: RFQ for 200 Executive Task Chairs.', type: 'extract' },
                 progress: 20,
                 pipelineUpdate: [
@@ -88,7 +103,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 3200,
+                delay: 6500,
                 log: { agent: 'OCR/TextExtract', message: 'Processing Specs.pdf — extracted ergonomic feature requirements and dimensions.', type: 'info' },
                 progress: 35,
                 pipelineUpdate: [
@@ -100,7 +115,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 4500,
+                delay: 9000,
                 log: { agent: 'OCR/TextExtract', message: 'Processing OrderData.csv — 200 line items with quantities, finishes, and ship-to addresses.', type: 'extract' },
                 progress: 50,
                 pipelineUpdate: [
@@ -112,7 +127,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 5800,
+                delay: 11500,
                 log: { agent: 'DataParser', message: 'Mapped 200 line items to catalog schema. Identified 4 delivery zones.', type: 'info' },
                 progress: 65,
                 pipelineUpdate: [
@@ -124,7 +139,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 7000,
+                delay: 14000,
                 log: { agent: 'Normalizer', message: 'Unified product codes, quantities, and shipping addresses to standard RFQ model.', type: 'info' },
                 progress: 80,
                 pipelineUpdate: [
@@ -136,7 +151,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 8200,
+                delay: 16500,
                 log: { agent: 'Validator', message: 'Validation complete. Confidence: 82%. Flagged: multi-zone freight routing needs Expert review.', type: 'success' },
                 progress: 100,
                 pipelineUpdate: [
@@ -153,38 +168,38 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
 
         timeline.forEach(({ delay, log, progress: p, pipelineUpdate }) => {
             timers.push(
-                setTimeout(() => {
+                setTimeout(pauseAware(() => {
                     setProgress(p);
                     setLogs(prev => [...prev, log]);
                     setPipeline(pipelineUpdate);
-                }, delay)
+                }), delay)
             );
         });
 
         // Show extracted items one by one after processing completes
         timers.push(
-            setTimeout(() => {
+            setTimeout(pauseAware(() => {
                 setPhase('complete');
-            }, 9000)
+            }), 18000)
         );
 
         EXTRACTED_ITEMS.forEach((_, i) => {
             timers.push(
-                setTimeout(() => {
+                setTimeout(pauseAware(() => {
                     setExtractedCount(i + 1);
-                }, 9400 + i * 300)
+                }), 18500 + i * 500)
             );
         });
 
-        // Auto-advance after showing results
+        // Auto-advance after showing results (presenter has time to explain)
         timers.push(
-            setTimeout(() => {
+            setTimeout(pauseAware(() => {
                 onComplete();
-            }, 12500)
+            }), 25000)
         );
 
         return () => timers.forEach(clearTimeout);
-    }, [open, reset, onComplete]);
+    }, [open, reset, onComplete, pauseAware]);
 
     if (!open) return null;
 

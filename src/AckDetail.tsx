@@ -592,8 +592,8 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             </div>
 
             <div className="flex flex-col p-6 gap-6">
-                {/* Collapsible Summary — hidden during demo */}
-                {!isDemoActive && (isSummaryExpanded ? (
+                {/* Collapsible Summary — hidden for demo build */}
+                {false && (isSummaryExpanded ? (
                     <>
                         <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">

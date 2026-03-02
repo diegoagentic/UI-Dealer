@@ -75,8 +75,8 @@ const DEMO_STEPS: DemoStep[] = [
         id: '1.6',
         groupId: 1,
         groupTitle: 'Flow 1: Email Intake',
-        title: 'Approval Chain',
-        description: 'Total exceeds threshold or non-standard discounts detected → approval chain fires.',
+        title: 'Quote Approval Chain',
+        description: 'System Policy Engine auto-approves. Manager shown as pending approval. Auto-advances.',
         app: 'expert-hub',
         role: 'System',
         highlightId: 'approval-chain-progress'
@@ -85,14 +85,34 @@ const DEMO_STEPS: DemoStep[] = [
         id: '1.7',
         groupId: 1,
         groupTitle: 'Flow 1: Email Intake',
-        title: 'PO Generation',
-        description: 'Quote approved → POBuilderAgent generates clean PO with mapped line items.',
-        app: 'order-detail',
-        role: 'Dealer',
-        highlightId: 'po-generation'
+        title: 'Manager Approval',
+        description: 'Sarah Chen receives notification, reviews quote details with AI analysis, and approves the quote.',
+        app: 'expert-hub',
+        role: 'Expert',
+        highlightId: 'manager-approval-view'
     },
     {
         id: '1.8',
+        groupId: 1,
+        groupTitle: 'Flow 1: Email Intake',
+        title: 'PO Generation & Order Approval',
+        description: 'Both approvers shown approved. PO auto-generated. Followed by automated order approval chain.',
+        app: 'expert-hub',
+        role: 'System',
+        highlightId: 'po-order-approval'
+    },
+    {
+        id: '1.9',
+        groupId: 1,
+        groupTitle: 'Flow 1: Email Intake',
+        title: 'Pipeline View',
+        description: 'Order creation notification. Pipeline view shows new order card with animated column transition.',
+        app: 'expert-hub',
+        role: 'Dealer',
+        highlightId: 'order-pipeline-view'
+    },
+    {
+        id: '1.10',
         groupId: 1,
         groupTitle: 'Flow 1: Email Intake',
         title: 'Smart Notifications',
@@ -242,6 +262,8 @@ interface DemoContextType {
     setIsDemoActive: (active: boolean) => void;
     isSidebarCollapsed: boolean;
     setIsSidebarCollapsed: (collapsed: boolean) => void;
+    isPaused: boolean;
+    togglePause: () => void;
 }
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
@@ -250,6 +272,9 @@ export const DemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
     const [isDemoActive, setIsDemoActive] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+
+    const togglePause = () => setIsPaused(prev => !prev);
 
     const nextStep = () => {
         if (currentStepIndex < DEMO_STEPS.length - 1) {
@@ -281,7 +306,9 @@ export const DemoProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 isDemoActive,
                 setIsDemoActive,
                 isSidebarCollapsed,
-                setIsSidebarCollapsed
+                setIsSidebarCollapsed,
+                isPaused,
+                togglePause
             }}
         >
             {children}
