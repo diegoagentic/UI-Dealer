@@ -47,28 +47,40 @@ export default function DealerMonitorKanban({ onNavigate }: { onNavigate?: (page
     const [agentLogs, setAgentLogs] = React.useState<string[]>([]);
     const [pipelineAgents, setPipelineAgents] = React.useState<AgentStep[]>([]);
     const [confidenceFields, setConfidenceFields] = React.useState<{ field: string; score: number }[]>([]);
+    const [autoClickHighlight, setAutoClickHighlight] = React.useState(false);
+
+    // Auto-advance from step 1.2 after 6s with simulated card click
+    React.useEffect(() => {
+        if (currentStep.id !== '1.2') {
+            setAutoClickHighlight(false);
+            return;
+        }
+        const highlightTimer = setTimeout(() => setAutoClickHighlight(true), 6000);
+        const advanceTimer = setTimeout(() => nextStep(), 7000);
+        return () => {
+            clearTimeout(highlightTimer);
+            clearTimeout(advanceTimer);
+        };
+    }, [currentStep.id, nextStep]);
 
     React.useEffect(() => {
         if (currentStep.id === '1.2') {
-            setAgentProgress(0);
-            setAgentLogs(['Initializing Intelligence Engine...']);
-            setPipelineAgents([]);
-            setConfidenceFields([]);
-
-            const timeline = [
-                { delay: 1000, log: 'EmailIntakeAgent: Parsed RFQ email.' },
-                { delay: 2500, log: 'OCR/TextExtractAgent: Extracted 200 items from PDF.' },
-                { delay: 4000, log: 'DataNormalizationAgent: Normalizing product codes...' },
-                { delay: 5500, log: 'ValidationAgent: Flagged missing routing info.' },
-                { delay: 7000, log: 'QuoteBuilderAgent: Drafted Quote. Requires Expert Review.' }
-            ];
-
-            timeline.forEach(({ delay, log }, index) => {
-                setTimeout(() => {
-                    setAgentProgress((index + 1) * 20);
-                    setAgentLogs(prev => [...prev, log]);
-                }, delay);
-            });
+            // Step 1.2 now shows completed state (processing happened in modal at step 1.1)
+            setAgentProgress(100);
+            setAgentLogs([]);
+            setPipelineAgents([
+                { id: 'intake', name: 'EmailIntake', status: 'done' },
+                { id: 'ocr', name: 'OCR/TextExtract', status: 'done', detail: '2 files' },
+                { id: 'parser', name: 'DataParser', status: 'done', detail: '200 items' },
+                { id: 'normalizer', name: 'Normalizer', status: 'done' },
+                { id: 'validator', name: 'Validator', status: 'done', detail: '82% confidence' },
+            ]);
+            setConfidenceFields([
+                { field: 'Product', score: 95 },
+                { field: 'Quantity', score: 88 },
+                { field: 'Ship-To', score: 92 },
+                { field: 'Freight', score: 42 },
+            ]);
         } else if (currentStep.id === '1.3') {
             // Normalization step — shows agent pipeline strip + field confidence
             setAgentProgress(0);
@@ -382,7 +394,7 @@ export default function DealerMonitorKanban({ onNavigate }: { onNavigate?: (page
 
                             <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-micro bg-zinc-900/50 rounded-2xl p-3 border border-zinc-800/50">
                                 {displayCards.filter(card => card.column === column.id).map(card => (
-                                    <div key={card.id} className={`bg-zinc-800 border border-zinc-700 p-4 rounded-2xl hover:border-zinc-600 transition-all cursor-pointer group shadow-sm ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''}`}>
+                                    <div key={card.id} className={`bg-zinc-800 border border-zinc-700 p-4 rounded-2xl hover:border-zinc-600 transition-all cursor-pointer group shadow-sm ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''} ${card.id === 1 && autoClickHighlight && currentStep.id === '1.2' ? 'ring-2 ring-primary/60 scale-[0.97] border-primary/40 shadow-lg shadow-primary/10' : ''}`}>
                                         <div className="flex flex-col gap-3">
                                             <div className="flex items-start justify-between">
                                                 <span className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded-full ring-1 ring-inset ${card.priority === 'critical' ? 'bg-red-500/10 text-red-400 ring-red-500/30' :
@@ -433,53 +445,94 @@ export default function DealerMonitorKanban({ onNavigate }: { onNavigate?: (page
                                                 </div>
                                             )}
 
-                                            {/* Step 1.2: AI Processing Simulation for Card 1 */}
+                                            {/* Step 1.2: Completed Extraction Summary + Flow Diagram */}
                                             {card.id === 1 && currentStep.id === '1.2' && (
-                                                <div className="mt-3 p-4 rounded-xl border border-zinc-700 bg-zinc-900 animate-in fade-in zoom-in duration-500">
-                                                    <div className="flex items-center gap-2 mb-3">
-                                                        <Bot className={`text-indigo-400 ${agentProgress < 100 ? 'animate-pulse' : ''}`} size={14} />
-                                                        <span className="text-[10px] font-medium text-zinc-300 uppercase tracking-wider">
-                                                            {agentProgress < 100 ? 'AI Agents Processing...' : 'Processing Complete'}
-                                                        </span>
-                                                        {agentProgress < 100 && <Loader2 size={12} className="text-zinc-500 animate-spin ml-auto" />}
-                                                    </div>
-
-                                                    {/* Progress Bar */}
-                                                    <div className="h-1 w-full bg-zinc-700 rounded-full overflow-hidden mb-3">
-                                                        <div
-                                                            className="h-full bg-indigo-500 transition-all duration-500 ease-out"
-                                                            style={{ width: `${agentProgress}%` }}
-                                                        />
-                                                    </div>
-
-                                                    {/* Agent Logs */}
-                                                    <div className="space-y-1.5 text-[10px] font-mono text-zinc-500 max-h-[100px] overflow-y-auto pr-1 scrollbar-micro">
-                                                        {agentLogs.map((log, i) => (
-                                                            <div key={i} className="flex items-start gap-2 animate-in slide-in-from-left-2 fade-in">
-                                                                <span className="text-zinc-600 mt-0.5">{'>'}</span>
-                                                                <span className={i === agentLogs.length - 1 && agentProgress < 100 ? 'text-zinc-300 animate-pulse' : ''}>{log}</span>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-
-                                                    {agentProgress === 100 && (
-                                                        <div className="mt-3 pt-3 border-t border-zinc-700">
-                                                            <div className="flex items-center justify-between text-xs mb-2">
-                                                                <span className="text-zinc-500">Confidence Score:</span>
-                                                                <span className="text-amber-400 font-medium">82% (Needs Attention)</span>
-                                                            </div>
-                                                            <p className="text-[11px] leading-relaxed text-zinc-400 italic bg-zinc-800 p-3 rounded-xl border border-zinc-700/50 mb-3">
-                                                                "{card.aiInsight}"
-                                                            </p>
-                                                            <button
-                                                                onClick={nextStep}
-                                                                className="w-full flex items-center justify-center gap-2 py-2 bg-primary text-primary-foreground text-xs font-medium rounded-lg transition-colors shadow-sm"
-                                                            >
-                                                                Route to Expert Hub
-                                                                <ArrowUpRight size={14} />
-                                                            </button>
+                                                <div className="mt-3 space-y-3 animate-in fade-in zoom-in duration-500">
+                                                    {/* Completed Header */}
+                                                    <div className="p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <CheckCircle2 className="text-emerald-400" size={14} />
+                                                            <span className="text-[10px] font-bold text-emerald-300 uppercase tracking-wider">Extraction Complete</span>
+                                                            <ConfidenceScoreBadge score={82} label="Overall" size="sm" />
                                                         </div>
-                                                    )}
+                                                        <AgentPipelineStrip agents={pipelineAgents} accentColor="green" />
+                                                    </div>
+
+                                                    {/* Extracted Items Summary */}
+                                                    <div className="p-3 rounded-xl border border-zinc-700 bg-zinc-900">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <FileText className="text-zinc-400" size={12} />
+                                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Extracted Data</span>
+                                                        </div>
+                                                        <div className="space-y-1.5">
+                                                            {[
+                                                                { label: 'Products', value: '200 Executive Task Chairs', badge: '200 items' },
+                                                                { label: 'Specs', value: 'Ergonomic features from PDF', badge: 'Parsed' },
+                                                                { label: 'Ship-To', value: '4 delivery zones mapped', badge: '4 zones' },
+                                                                { label: 'Freight', value: 'Multi-zone routing required', badge: 'Needs Review' },
+                                                            ].map((item, i) => (
+                                                                <div key={i} className="flex items-center justify-between bg-zinc-800/60 rounded-lg px-2.5 py-1.5">
+                                                                    <div className="flex items-center gap-2 min-w-0">
+                                                                        <span className="text-[10px] font-bold text-zinc-500 w-14 shrink-0">{item.label}</span>
+                                                                        <span className="text-[11px] text-zinc-300 truncate">{item.value}</span>
+                                                                    </div>
+                                                                    <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${
+                                                                        item.badge === 'Needs Review'
+                                                                            ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                                            : 'bg-zinc-700 text-zinc-400'
+                                                                    }`}>{item.badge}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                        {/* Field Confidence */}
+                                                        <div className="mt-2 grid grid-cols-2 gap-1.5">
+                                                            {confidenceFields.map(f => (
+                                                                <div key={f.field} className="flex items-center justify-between bg-zinc-800 rounded-lg px-2.5 py-1">
+                                                                    <span className="text-[10px] text-zinc-500">{f.field}</span>
+                                                                    <ConfidenceScoreBadge score={f.score} size="sm" />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Automation Flow Diagram */}
+                                                    <div className="p-3 rounded-xl border border-zinc-700 bg-zinc-900">
+                                                        <div className="flex items-center gap-2 mb-3">
+                                                            <Sparkles className="text-indigo-400" size={12} />
+                                                            <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Automation Flow</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-0 overflow-x-auto pb-1 scrollbar-micro">
+                                                            {[
+                                                                { icon: '📧', label: 'Email RFQ', sub: 'Detected', color: 'border-blue-500/30 bg-blue-500/5' },
+                                                                { icon: '📄', label: 'OCR Extract', sub: '2 files', color: 'border-purple-500/30 bg-purple-500/5' },
+                                                                { icon: '🔍', label: 'Data Parse', sub: '200 items', color: 'border-indigo-500/30 bg-indigo-500/5' },
+                                                                { icon: '🔗', label: 'Normalize', sub: 'Mapped', color: 'border-cyan-500/30 bg-cyan-500/5' },
+                                                                { icon: '⚡', label: 'Validate', sub: '82%', color: 'border-amber-500/30 bg-amber-500/5' },
+                                                            ].map((step, i, arr) => (
+                                                                <React.Fragment key={i}>
+                                                                    <div className={`flex flex-col items-center gap-1 px-2 py-1.5 rounded-lg border ${step.color} min-w-[64px] shrink-0`}>
+                                                                        <span className="text-sm">{step.icon}</span>
+                                                                        <span className="text-[9px] font-bold text-zinc-300 text-center leading-tight">{step.label}</span>
+                                                                        <span className="text-[8px] text-zinc-500">{step.sub}</span>
+                                                                    </div>
+                                                                    {i < arr.length - 1 && (
+                                                                        <div className="flex items-center shrink-0 px-0.5">
+                                                                            <div className="w-3 h-px bg-zinc-600" />
+                                                                            <div className="w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-l-[4px] border-l-zinc-600" />
+                                                                        </div>
+                                                                    )}
+                                                                </React.Fragment>
+                                                            ))}
+                                                        </div>
+                                                        {/* AI Attribution */}
+                                                        <div className="mt-2 flex items-start gap-2 px-2.5 py-2 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                                                            <Sparkles size={10} className="text-indigo-400 mt-0.5 shrink-0" />
+                                                            <p className="text-[10px] text-indigo-300/80 leading-relaxed">
+                                                                5 AI agents processed this RFQ in 8.2s. Freight routing flagged for Expert review due to multi-zone complexity.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             )}
 

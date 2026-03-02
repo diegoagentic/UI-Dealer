@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import {
     Bars3Icon,
@@ -37,16 +37,43 @@ import {
 import { StarIcon as StarIconSolid, EllipsisHorizontalIcon } from '@heroicons/react/24/solid';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import AIProcessingModal from '../modals/AIProcessingModal';
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs));
 }
 
 export default function EmailSimulation() {
-    const { isDemoActive, nextStep } = useDemo();
+    const { isDemoActive, nextStep, currentStep } = useDemo();
     const [selectedEmail, setSelectedEmail] = useState<number | null>(null);
     const [starred, setStarred] = useState<Record<number, boolean>>({ 1: true });
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [showProcessingModal, setShowProcessingModal] = useState(false);
+
+    // Auto-open RFQ email and trigger processing modal during demo step 1.1
+    useEffect(() => {
+        if (!isDemoActive || currentStep.id !== '1.1') return;
+
+        // Auto-click on email #1 after a short delay
+        const openTimer = setTimeout(() => {
+            setSelectedEmail(1);
+        }, 800);
+
+        // After viewing the email for 5 seconds, trigger the processing modal
+        const modalTimer = setTimeout(() => {
+            setShowProcessingModal(true);
+        }, 5800);
+
+        return () => {
+            clearTimeout(openTimer);
+            clearTimeout(modalTimer);
+        };
+    }, [isDemoActive, currentStep.id]);
+
+    const handleProcessingComplete = useCallback(() => {
+        setShowProcessingModal(false);
+        nextStep();
+    }, [nextStep]);
 
     const emails: Array<{ id: number; sender: string; senderEmail: string; subject: string; snippet: string; time: string; unread: boolean; labels: string[] }> = [
         { id: 1, sender: 'Apex Furniture Procurement', senderEmail: 'orders@apexfurniture.com', subject: 'RFQ: 200 Executive Task Chairs & Specs', snippet: 'Please review the attached RFQ data and PDF specifications for 200 Task Chairs...', time: '10:42 AM', unread: true, labels: ['Inbox', 'Urgent'] },
@@ -293,35 +320,29 @@ export default function EmailSimulation() {
                                             <p>Thanks,<br />Apex Furniture</p>
                                         </div>
 
-                                        {/* Material Action Card */}
-                                        <div className="bg-brand-50/30 dark:bg-brand-500/5 border-2 border-brand-100 dark:border-brand-500/10 p-8 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative group shadow-lg shadow-brand-500/5 transition-all hover:shadow-brand-500/10 hover:scale-[1.01] border-dashed">
-                                            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none group-hover:opacity-10 transition-opacity">
-                                                <SparklesIcon className="w-32 h-32 text-brand-500" />
-                                            </div>
-
-                                            <div className="flex items-center gap-6 relative z-10">
-                                                <div className="relative">
-                                                    <div className="w-16 h-16 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center text-brand-600 shadow-lg border border-brand-100 dark:border-zinc-700 transform group-hover:-rotate-3 transition-transform">
-                                                        <SparklesIcon className="w-10 h-10" />
-                                                    </div>
-                                                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-brand-500 rounded-full border-2 border-white dark:border-zinc-900 animate-pulse" />
+                                        {/* AI Monitoring Strip — replaces manual button during demo */}
+                                        <div id="email-rfq-incoming" className="bg-indigo-500/5 dark:bg-indigo-500/5 border border-indigo-200/50 dark:border-indigo-500/20 p-5 rounded-2xl flex items-center gap-5 overflow-hidden relative group shadow-sm transition-all">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-transparent to-purple-500/5 animate-pulse" />
+                                            <div className="relative shrink-0">
+                                                <div className="w-12 h-12 rounded-xl bg-indigo-500/10 dark:bg-indigo-500/20 border border-indigo-500/20 dark:border-indigo-500/30 flex items-center justify-center">
+                                                    <SparklesIcon className="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
                                                 </div>
-                                                <div>
-                                                    <h4 className="text-lg font-bold text-brand-900 dark:text-brand-100 tracking-tight">AI Agent Processing Available</h4>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <span className="text-[10px] font-black text-brand-700/60 dark:text-brand-300/60 uppercase tracking-[0.2em]">Automated Ingestion</span>
-                                                    </div>
-                                                </div>
+                                                <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-500 rounded-full animate-pulse" />
                                             </div>
-                                            <button
-                                                id="email-rfq-incoming"
-                                                onClick={() => { if (isDemoActive) { nextStep(); } }}
-                                                className="px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-brand-500/40 transform hover:-translate-y-1 active:translate-y-0 transition-all flex items-center gap-4 group/btn relative z-10 overflow-hidden shrink-0"
-                                            >
-                                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
-                                                Send to AI Agent
-                                                <ArrowRightIcon className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                                            </button>
+                                            <div className="relative z-10 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                    <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-100">AI Agent Monitoring</h4>
+                                                    <span className="px-2 py-0.5 text-[9px] font-black uppercase tracking-widest bg-indigo-500/10 text-indigo-600 dark:text-indigo-300 rounded-full border border-indigo-500/20">Live</span>
+                                                </div>
+                                                <p className="text-[11px] text-indigo-700/60 dark:text-indigo-300/60 mt-0.5">
+                                                    EmailIntakeAgent detected RFQ with attachments — processing will begin automatically...
+                                                </p>
+                                            </div>
+                                            <div className="relative z-10 flex items-center gap-1.5 shrink-0">
+                                                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping" />
+                                                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping" style={{ animationDelay: '300ms' }} />
+                                                <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping" style={{ animationDelay: '600ms' }} />
+                                            </div>
                                         </div>
 
                                         {/* Refined Attachments */}
@@ -449,6 +470,9 @@ export default function EmailSimulation() {
                 <div className="h-px w-6 bg-zinc-200 dark:bg-zinc-800" />
                 <PlusIcon className="w-5 h-5 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 cursor-pointer" />
             </aside>
+
+            {/* AI Processing Modal — auto-triggered during demo step 1.1 */}
+            <AIProcessingModal open={showProcessingModal} onComplete={handleProcessingComplete} />
         </div>
     );
 }
