@@ -60,13 +60,6 @@ const STEP_CARD_PREVIEW: Record<string, {
         detail: 'Line-by-line comparison in progress. Checking for substitutions and price deltas.',
         accentClass: 'border-red-500/20 bg-red-500/5',
     },
-    '3.1': {
-        icon: <FileText size={12} className="text-indigo-400" />,
-        title: 'Document Intake Pipeline',
-        subtitle: '5 agents — DocIntake + Classifier',
-        detail: 'Processing PDF upload. OCR extraction → Classification → Entity linking.',
-        accentClass: 'border-indigo-500/20 bg-indigo-500/5',
-    },
 };
 
 const COLUMNS = [
@@ -87,7 +80,7 @@ const CARDS = [
 // Steps where each card gets a minimal "processing" indicator (detail is in DemoProcessPanel)
 const CARD1_PANEL_STEPS = ['1.2', '1.3', '1.4'];
 const CARD5_PANEL_STEPS = ['2.2', '2.3'];
-const CARD6_PANEL_STEPS = ['3.1'];
+const CARD6_PANEL_STEPS: string[] = [];
 
 export default function DealerMonitorKanban(_props: { onNavigate?: (page: string) => void }) {
     const { theme } = useTheme();
@@ -95,7 +88,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
 
     const displayCards = CARDS.filter(c => {
         if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id)) return false;
-        if (c.id === 6 && currentStep.id !== '3.1') return false;
+        if (c.id === 6) return false;
         return true;
     });
 

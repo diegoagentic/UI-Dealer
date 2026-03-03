@@ -24,16 +24,6 @@ import Breadcrumbs from './components/Breadcrumbs'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { useDemo } from './context/DemoContext'
-import ThreeWayMatchView from './components/widgets/ThreeWayMatchView'
-import type { MatchLine } from './components/widgets/ThreeWayMatchView'
-import AgentPipelineStrip from './components/simulations/AgentPipelineStrip'
-import { AIAgentAvatar } from './components/simulations/DemoAvatars'
-
-const THREE_WAY_MATCH_LINES: MatchLine[] = [
-    { lineItem: 'Ergonomic Task Chair x125', sku: 'SKU-OFF-2025-002', poValue: '$34,375.00', ackValue: '$34,375.00', invoiceValue: '$34,375.00', status: 'match' },
-    { lineItem: 'LTL Freight (Austin, TX)', sku: 'FREIGHT-LTL', poValue: '$2,450.00', ackValue: '$2,450.00', invoiceValue: '$2,450.03', status: 'mismatch', delta: '+$0.03' },
-];
-
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
 }
@@ -373,43 +363,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                         ]}
                     />
                 </div>
-
-                {/* Step 3.2: 3-Way Match View */}
-                {currentStep?.id === '3.2' && (
-                    <div data-demo-target="three-way-match" className="space-y-4">
-                        {/* Unified Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'doc-class', name: 'DocClassifier', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Extract', status: 'done' },
-                            { id: 'data-norm', name: 'DataNorm', status: 'done' },
-                            { id: 'match', name: '3-WayMatch', status: 'running', detail: 'PO vs ACK vs Invoice' },
-                            { id: 'logistics', name: 'LogisticsAI', status: 'pending' },
-                            { id: 'mac', name: 'MACOrch', status: 'pending' },
-                            { id: 'warranty', name: 'WarrantyAgent', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="purple" />
-
-                        {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">3-WayMatchAgent:</span> Compared PO #ORD-2055 against ACK and Invoice line-by-line. 1 of 2 lines matched perfectly. $0.03 tax rounding discrepancy auto-identified on freight line.
-                            </div>
-                        </div>
-
-                        <ThreeWayMatchView
-                            orderId="#ORD-2055"
-                            lines={THREE_WAY_MATCH_LINES}
-                            onAutoFix={() => {
-                                alert('Auto-fixing $0.03 tax rounding difference...');
-                            }}
-                            onResolve={() => {
-                                nextStep();
-                                onNavigate('order-detail');
-                            }}
-                        />
-                    </div>
-                )}
 
                 {/* Lifecycle Tabs Navigation */}
                 <div className="flex items-center mb-6">

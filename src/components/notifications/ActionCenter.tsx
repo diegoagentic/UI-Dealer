@@ -41,12 +41,12 @@ const FLOW2_NOTIFICATIONS: Notification[] = [
     },
 ];
 
-// Flow 1 notification for Step 1.9 — single focused notification
+// Flow 1 notification for Step 1.10 — single focused notification
 const FLOW1_NOTIFICATIONS: Notification[] = [
     {
         id: 'f1-po', type: 'po_created', priority: 'high',
         title: 'PO Created from RFQ',
-        message: 'Order #PO-1029 generated for Apex Furniture — $134,250. Quote QT-1025 approved (2/2). Ready for pipeline.',
+        message: 'Order #PO-1029 generated for Home Exteriors — $134,250. Quote QT-1025 approved (2/2). Ready for pipeline.',
         meta: 'POBuilderAgent', timestamp: 'Just now', unread: true,
         actions: [{ label: 'View PO', primary: true }], persona: 'dealer',
     },
@@ -59,8 +59,8 @@ export default function ActionCenter() {
     const [searchQuery, setSearchQuery] = useState('');
     const [currentView, setCurrentView] = useState<'list' | 'chat'>('list');
 
-    // Step 1.9: Auto-open with single notification
-    const isStep19 = isDemoActive && currentStep?.id === '1.9';
+    // Step 1.10: Auto-open with single notification
+    const isStep19 = isDemoActive && currentStep?.id === '1.10';
 
     // Step 2.7: Auto-open with animated delivery for Flow 2 ACK notifications
     const isStep27 = isDemoActive && currentStep?.id === '2.7';
@@ -219,7 +219,7 @@ export default function ActionCenter() {
     const urgentCount = mockNotifications.filter(n => n.priority === 'high').length;
     const totalCount = mockNotifications.filter(n => n.unread).length;
 
-    // Flow 1 tabs for step 1.9 — single tab since only 1 notification
+    // Flow 1 tabs for step 1.10 — single tab since only 1 notification
     const flow1Tabs: NotificationTab[] = [
         { id: 'all', label: 'All', count: FLOW1_NOTIFICATIONS.length, icon: Squares2X2Icon, colorTheme: { activeBg: 'bg-gray-200 dark:bg-white/10', activeText: 'text-zinc-900 dark:text-white', activeBorder: 'border-gray-300 dark:border-white/10', badgeBg: 'bg-zinc-500/20 dark:bg-white/20', badgeText: 'text-zinc-900 dark:text-white' }, filter: () => true },
         { id: 'quotes', label: 'Quotes & POs', count: FLOW1_NOTIFICATIONS.length, icon: DocumentTextIcon, colorTheme: { activeBg: 'bg-blue-500/15', activeText: 'text-blue-500', activeBorder: 'border-blue-500/20', badgeBg: 'bg-blue-500/20', badgeText: 'text-blue-500' }, filter: (n) => n.type === 'po_created' || n.type === 'quote_update' },
@@ -336,7 +336,7 @@ export default function ActionCenter() {
             )}
         </Popover>
 
-        {/* Step 1.9: Always-visible Action Center with Flow 1 notifications */}
+        {/* Step 1.10: Always-visible Action Center with Flow 1 notifications */}
         {isStep19 && (
             <div className={clsx("fixed top-[90px] -translate-x-1/2 w-[95vw] max-h-[85vh] lg:w-[600px] p-0 z-50 animate-in fade-in slide-in-from-top-2 duration-300", sidebarExpanded ? 'left-[calc(50%+10rem)]' : 'left-1/2')}>
                 <div className="bg-zinc-100 dark:bg-zinc-900/85 backdrop-blur-xl border border-border shadow-2xl rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">

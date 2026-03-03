@@ -362,21 +362,10 @@ const BACKORDER_LINES: BackorderLine[] = [
     { sku: 'SKU-OFF-2025-008', name: 'Bench Seating 3-Seat', originalQty: 20, fulfilledQty: 12, backorderedQty: 8, eta: 'Mar 22, 2026', impact: 'Lobby installation delayed. Chrome finish supplier capacity constraint.' },
 ];
 
-const SHIPMENT_STEPS = [
-    { status: 'Order Placed', date: 'Jan 15, 2026', detail: 'PO #ORD-2055 confirmed', completed: true },
-    { status: 'In Production', date: 'Jan 22, 2026', detail: 'Manufacturing started at Plant B', completed: true },
-    { status: 'Ready to Ship', date: 'Feb 10, 2026', detail: '35 of 50 units packaged', completed: true },
-    { status: 'Shipped', date: 'Feb 12, 2026', detail: 'Tracking: FX-2026-887744', completed: true },
-    { status: 'In Transit', date: 'Feb 14, 2026', detail: 'FedEx Hub — Memphis, TN', completed: false, current: true },
-    { status: 'Delivered', date: 'Est. Feb 18', detail: 'Austin, TX Warehouse', completed: false },
-];
-
 export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, onNavigate }: DetailProps) {
     const { currentStep, nextStep, isDemoActive } = useDemo();
     const [isDemoOrder, setIsDemoOrder] = useState(false);
     const [isFlow1Order, setIsFlow1Order] = useState(false);
-    const [shipPhase33, setShipPhase33] = useState<'scanning' | 'delay-check' | 'insights' | 'complete'>('scanning');
-
     useEffect(() => {
         const demoId = localStorage.getItem('demo_view_order_id');
         const urlParams = new URLSearchParams(window.location.search);
@@ -390,18 +379,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
             setSelectedItem(flow1Items[0]);
         }
     }, []);
-
-    // Step 3.3: Shipment Intelligence — auto-advance with progressive AI insights
-    useEffect(() => {
-        if (currentStep?.id !== '3.3') return;
-        setShipPhase33('scanning');
-        const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setShipPhase33('delay-check'), 6000));
-        t.push(setTimeout(() => setShipPhase33('insights'), 12000));
-        t.push(setTimeout(() => setShipPhase33('complete'), 18000));
-        t.push(setTimeout(() => nextStep(), 22000));
-        return () => t.forEach(clearTimeout);
-    }, [currentStep?.id]);
 
     const currentItems = isFlow1Order ? flow1Items : (isDemoOrder ? demoItems : items);
     const orderId = isFlow1Order ? '#PO-1029' : (isDemoOrder ? '#ORD-7829' : '#ORD-2055');
@@ -527,18 +504,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 {/* Step 2.6: Backorder Trace Panel + Agent Attribution */}
                 {currentStep?.id === '2.6' && (
                     <div data-demo-target="backorder-split" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        {/* Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngest', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done', detail: '2 exceptions' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'done', detail: '1 auto, 1 manual' },
-                            { id: 'bo', name: 'Backorder', status: 'done', detail: '2 lines split' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="blue" />
-
                         {/* AI Attribution Header */}
                         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
                             <div className="flex items-center gap-2">
@@ -606,18 +571,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 {/* Step 1.7 PO Generation removed — now handled in ExpertHubTransactions step 1.8 */}
                 {false && (
                     <div data-demo-target="po-generation" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        {/* Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '3/3 approved' },
-                            { id: 'po', name: 'POBuilder', status: poGenPhase === 'complete' ? 'done' : 'running', detail: poGenPhase === 'complete' ? 'PO-1029' : 'Generating...' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
-
                         {/* AI Attribution */}
                         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
                             <div className="flex items-center gap-2">
@@ -807,104 +760,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 </div>
                             </div>
                         </div>
-                    </div>
-                )}
-
-                {/* Step 3.3: Shipment Intelligence (AUTO — 14s) */}
-                {currentStep?.id === '3.3' && (
-                    <div data-demo-target="shipment-timeline" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        {/* Unified Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'doc-class', name: 'DocClassifier', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Extract', status: 'done' },
-                            { id: 'data-norm', name: 'DataNorm', status: 'done' },
-                            { id: 'match', name: '3-WayMatch', status: 'done' },
-                            { id: 'logistics', name: 'LogisticsAI', status: shipPhase33 === 'complete' ? 'done' : 'running', detail: shipPhase33 === 'scanning' ? 'Scanning...' : shipPhase33 === 'delay-check' ? 'Delay analysis' : shipPhase33 === 'insights' ? 'Fulfillment gaps' : 'Complete' },
-                            { id: 'mac', name: 'MACOrch', status: 'pending' },
-                            { id: 'warranty', name: 'WarrantyAgent', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="blue" />
-
-                        {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">LogisticsAI:</span> Analyzing shipment FX-2026-887744 — cross-referencing carrier data, hub congestion, and fulfillment records to predict delivery timeline.
-                            </div>
-                        </div>
-
-                        {/* Shipment Timeline Card */}
-                        <div className="bg-card border border-border rounded-2xl p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <div>
-                                    <h3 className="text-sm font-bold text-foreground">Shipment Tracking — #ORD-2055</h3>
-                                    <p className="text-xs text-muted-foreground mt-0.5">FedEx — Tracking: FX-2026-887744</p>
-                                </div>
-                            </div>
-                            <div className="space-y-0 relative before:absolute before:inset-y-0 before:left-3.5 before:w-px before:bg-zinc-200 dark:before:bg-zinc-700">
-                                {SHIPMENT_STEPS.map((step, idx) => (
-                                    <div key={idx} className="flex gap-4 relative pb-6 last:pb-0">
-                                        <div className={cn(
-                                            "w-7 h-7 rounded-full flex items-center justify-center shrink-0 z-10 transition-all",
-                                            step.completed ? "bg-green-500 text-white shadow-lg shadow-green-500/20" :
-                                            (step as any).current ? "bg-blue-500 text-white shadow-lg shadow-blue-500/20 animate-pulse" :
-                                            "bg-zinc-200 dark:bg-zinc-700 text-muted-foreground"
-                                        )}>
-                                            {step.completed ? <CheckIcon className="w-4 h-4" /> :
-                                             (step as any).current ? <ClockIcon className="w-4 h-4" /> :
-                                             <div className="w-1.5 h-1.5 rounded-full bg-current" />}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center justify-between">
-                                                <span className={cn(
-                                                    "text-xs font-bold",
-                                                    step.completed || (step as any).current ? "text-foreground" : "text-muted-foreground"
-                                                )}>{step.status}</span>
-                                                <span className="text-[10px] text-muted-foreground font-medium">{step.date}</span>
-                                            </div>
-                                            <p className="text-[10px] text-muted-foreground mt-0.5">{step.detail}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* AI Insight Cards — appear progressively */}
-                        {shipPhase33 !== 'scanning' && (
-                            <div className="space-y-3">
-                                {/* Delay Risk */}
-                                <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <div className="flex items-start gap-3">
-                                        <ExclamationTriangleIcon className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                                        <div>
-                                            <p className="text-xs font-bold text-amber-700 dark:text-amber-300">Delay Risk Detected</p>
-                                            <p className="text-[11px] text-amber-600 dark:text-amber-400 mt-1">FedEx Memphis hub congestion — estimated +2 days on delivery. New ETA: Feb 20, 2026.</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Partial Fulfillment */}
-                                {(shipPhase33 === 'insights' || shipPhase33 === 'complete') && (
-                                    <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-in fade-in slide-in-from-top-2 duration-500">
-                                        <div className="flex items-start gap-3">
-                                            <ExclamationCircleIcon className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Partial Fulfillment Gap</p>
-                                                <p className="text-[11px] text-blue-600 dark:text-blue-400 mt-1">35 of 50 units shipped. 15 units pending — backorder recommended for remaining inventory.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Auto-advance indicator */}
-                                {shipPhase33 === 'complete' && (
-                                    <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse py-2">
-                                        <ArrowPathIcon className="w-3.5 h-3.5 animate-spin" />
-                                        <span>Auto-routing to Service Center for MAC processing...</span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
                 )}
 

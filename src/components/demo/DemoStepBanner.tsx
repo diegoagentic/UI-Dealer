@@ -19,8 +19,9 @@ export const STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '1.6':  { mode: 'auto', duration: 14, aiSummary: 'Policy engine and approval chain running automatically' },
     '1.7':  { mode: 'interactive', userAction: 'Review quote details, then click "Approve Quote"' },
     '1.8':  { mode: 'auto', duration: 37, aiSummary: 'Generating PO and running automated order approval chain' },
-    '1.9':  { mode: 'interactive', userAction: 'Review smart notifications' },
-    '1.10': { mode: 'interactive', userAction: 'Review pipeline resolution, click "Send Notifications"' },
+    '1.9':  { mode: 'interactive', userAction: 'Review PO notification on mobile, tap "Acknowledge"' },
+    '1.10': { mode: 'interactive', userAction: 'Review smart notifications' },
+    '1.11': { mode: 'interactive', userAction: 'Review pipeline resolution, click "Send Notifications"' },
     // Flow 2: PO & ACK Comparison
     '2.1':  { mode: 'auto', duration: 10, aiSummary: 'Two ACKs arriving in pipeline — AIS and HAT' },
     '2.2':  { mode: 'auto', duration: 20, aiSummary: 'Normalizing ACK data and running smart comparison' },
@@ -30,9 +31,6 @@ export const STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '2.6':  { mode: 'interactive', userAction: 'Review pipeline resolution, click "Send Notifications"' },
     '2.7':  { mode: 'interactive', userAction: 'Review notification digests' },
     // Flow 3: Punch List
-    '3.1':  { mode: 'auto', duration: 28, aiSummary: 'DocClassifier identifying document type and routing to pipeline' },
-    '3.2':  { mode: 'interactive', userAction: 'Review 3-way match results, then click "Resolve & Approve"' },
-    '3.3':  { mode: 'auto', duration: 22, aiSummary: 'LogisticsAI analyzing shipment — predicting delays and detecting fulfillment gaps' },
     '3.4':  { mode: 'interactive', userAction: 'Review MAC validation results, then click "Continue to Warranty"' },
     '3.5':  { mode: 'interactive', userAction: 'Watch AI process warranty claim and liability analysis' },
 };

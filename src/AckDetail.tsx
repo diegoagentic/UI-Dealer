@@ -730,22 +730,6 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
 
 
-                {/* Step 2.5: Agent Pipeline Strip */}
-                {currentStep.id === '2.5' && (
-                    <div className="px-4 pt-4">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngest', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done', detail: '2 exceptions' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'running', detail: 'Expert review' },
-                            { id: 'bo', name: 'Backorder', status: 'pending' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="purple" />
-                    </div>
-                )}
-
                 {/* Main Content Area */}
                 <div className="flex flex-col">
                     <TabGroup className="flex flex-col" selectedIndex={activeTabIndex} onChange={setActiveTabIndex}>

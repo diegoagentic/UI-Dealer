@@ -105,6 +105,16 @@ const DEMO_STEPS: DemoStep[] = [
         id: '1.9',
         groupId: 1,
         groupTitle: 'Flow 1: RFQ to PO Processing',
+        title: 'Dealer Mobile Approval',
+        description: 'Dealer receives PO approval notification on mobile. Reviews and acknowledges from their phone.',
+        app: 'dashboard',
+        role: 'Dealer',
+        highlightId: 'mobile-dealer-approval'
+    },
+    {
+        id: '1.10',
+        groupId: 1,
+        groupTitle: 'Flow 1: RFQ to PO Processing',
         title: 'Smart Notifications',
         description: 'Dealer: "RFQ received, Quote ready, PO approved." Expert: only exceptions, digest by priority.',
         app: 'dashboard',
@@ -112,7 +122,7 @@ const DEMO_STEPS: DemoStep[] = [
         highlightId: 'action-center-notifications'
     },
     {
-        id: '1.10',
+        id: '1.11',
         groupId: 1,
         groupTitle: 'Flow 1: RFQ to PO Processing',
         title: 'Pipeline View',
@@ -199,36 +209,6 @@ const DEMO_STEPS: DemoStep[] = [
     // ═══════════════════════════════════════════
     // FLOW 3: Punch List
     // ═══════════════════════════════════════════
-    {
-        id: '3.1',
-        groupId: 3,
-        groupTitle: 'Flow 3: Punch List',
-        title: 'Document Upload & Classification',
-        description: 'Dealer uploads SIF/PDF/CSV/XML/JSON. DocumentClassifierAgent identifies type: Invoice, BOL, MAC, Claim.',
-        app: 'dealer-kanban',
-        role: 'System',
-        highlightId: 'doc-classification'
-    },
-    {
-        id: '3.2',
-        groupId: 3,
-        groupTitle: 'Flow 3: Punch List',
-        title: 'Invoice / Bills (3-Way Match)',
-        description: 'PO vs ACK vs Invoice comparison. Match → auto-create Invoice. Mismatch → discrepancy + auto-fix proposal.',
-        app: 'transactions',
-        role: 'Expert',
-        highlightId: 'three-way-match'
-    },
-    {
-        id: '3.3',
-        groupId: 3,
-        groupTitle: 'Flow 3: Punch List',
-        title: 'Shipment Intelligence',
-        description: 'LogisticsAI analyzes shipment data, predicts delays, detects partial fulfillment, and generates backorder recommendations.',
-        app: 'order-detail',
-        role: 'Dealer',
-        highlightId: 'shipment-timeline'
-    },
     {
         id: '3.4',
         groupId: 3,

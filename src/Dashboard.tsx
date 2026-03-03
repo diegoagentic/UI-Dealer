@@ -57,6 +57,7 @@ import { Card } from 'strata-design-system';
 import { useDemo } from './context/DemoContext'
 import AgentPipelineStrip from './components/simulations/AgentPipelineStrip'
 import { AIAgentAvatar } from './components/simulations/DemoAvatars'
+import MobileDeviceFrame from './components/simulations/MobileDeviceFrame'
 import ConfidenceScoreBadge from './components/widgets/ConfidenceScoreBadge'
 
 // Urgent Actions Data (Dealer Persona)
@@ -73,7 +74,7 @@ const urgentActions = [
     {
         id: 1,
         title: 'Quote #QT-2941 Expiring',
-        description: 'Quote for "Office Expansion" expires in 2 hours.',
+        description: 'Quote for "Office Images" expires in 2 hours.',
         time: '2h remaining',
         type: 'critical',
         action: 'Renew Quote',
@@ -339,7 +340,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
-    // Step 1.9 — Smart Notifications (Action Center shows the notification)
+    // Step 1.10 — Smart Notifications (Action Center shows the notification)
 
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
     const [performanceTimePeriod, setPerformanceTimePeriod] = useState<'Day' | 'Month' | 'Sem' | 'Year'>('Month')
@@ -451,9 +452,126 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
     return (
         <div className="min-h-screen bg-background font-sans text-foreground pb-10">
-            <GenUIContainer />
-            {/* Main Content Content - Padded top to account for floating nav */}
-            <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6">
+            {currentStep.id !== '1.9' && <GenUIContainer />}
+
+            {/* ===== Step 1.9: Dealer Mobile Approval — Fullscreen overlay ===== */}
+            {currentStep.id === '1.9' && (
+                <div data-demo-target="mobile-dealer-approval" className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950 animate-in fade-in duration-500">
+                    {/* Mobile Device Frame — centered, nothing else */}
+                    <MobileDeviceFrame>
+                        {/* Mobile Navbar */}
+                        <div className="flex items-center justify-between px-4 pt-10 pb-3 border-b border-border">
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                                    <span className="text-[10px] font-black text-primary-foreground">S</span>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground font-medium leading-none">Dealer Experience</p>
+                                    <p className="text-xs font-bold text-foreground leading-tight">Acme Corp</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <BellIcon className="w-5 h-5 text-foreground" />
+                                    <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center">1</div>
+                                </div>
+                                <img
+                                    src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face"
+                                    alt="Sarah Mitchell"
+                                    className="w-7 h-7 rounded-full object-cover ring-1 ring-border"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Push Notification Banner */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-start gap-2.5">
+                                <div className="p-1.5 bg-blue-500/20 rounded-lg shrink-0">
+                                    <BellIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-blue-500 font-medium">Just now</p>
+                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Purchase Order Approved</p>
+                                    <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">PO-1029 for Apex Furniture has been fully approved and transmitted.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* PO Summary Card */}
+                        <div className="mx-3 mt-3 p-4 rounded-xl bg-card border border-border space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Purchase Order</p>
+                                    <p className="text-base font-bold text-foreground">PO-1029</p>
+                                </div>
+                                <span className="px-2 py-0.5 bg-green-500/15 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full">Approved</span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { label: 'Supplier', value: 'Apex Furniture' },
+                                    { label: 'Total Value', value: '$134,250' },
+                                    { label: 'Line Items', value: '50 SKUs' },
+                                    { label: 'Delivery Est.', value: 'Mar 15, 2026' },
+                                ].map(item => (
+                                    <div key={item.label} className="p-2 rounded-lg bg-muted/50">
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{item.label}</p>
+                                        <p className="text-xs font-bold text-foreground">{item.value}</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Mini Approval Chain */}
+                            <div className="pt-2 border-t border-border">
+                                <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Approval Chain — Complete</p>
+                                <div className="flex items-center gap-3">
+                                    {[
+                                        { name: 'Operations Manager', status: 'Approved' },
+                                        { name: 'Finance System', status: 'Approved' },
+                                        { name: 'Compliance Engine', status: 'Approved' },
+                                    ].map((approver, i) => (
+                                        <div key={i} className="flex items-center gap-1.5">
+                                            <div className="relative">
+                                                <div className="w-6 h-6 rounded-full bg-indigo-500/15 flex items-center justify-center">
+                                                    <CpuChipIcon className="w-3 h-3 text-indigo-500" />
+                                                </div>
+                                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 text-white flex items-center justify-center ring-1 ring-white dark:ring-zinc-900">
+                                                    <CheckIcon className="w-1.5 h-1.5" />
+                                                </div>
+                                            </div>
+                                            <p className="text-[9px] text-muted-foreground font-medium">{approver.name.split(' ')[0]}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quote Reference */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+                            <div className="flex items-center gap-2">
+                                <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-[10px] font-medium text-foreground">From Quote QT-1025</p>
+                                    <p className="text-[9px] text-muted-foreground">Auto-generated by POBuilderAgent</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mx-3 mt-4 mb-4">
+                            <button
+                                onClick={() => nextStep()}
+                                className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
+                            >
+                                Acknowledge & View Order
+                            </button>
+                        </div>
+                    </MobileDeviceFrame>
+                </div>
+            )}
+
+            {/* Main Content — hidden during step 1.9 (fullscreen mobile overlay) */}
+            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${currentStep.id === '1.9' ? 'hidden' : ''}`}>
                 {/* Page Title & Search */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
@@ -478,17 +596,6 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {/* ===== Step 1.7: Manager Approval (Sara's Dashboard) ===== */}
                 {currentStep.id === '1.7' && (
                     <div data-demo-target="manager-approval-view" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'running', detail: '1/2 approved' },
-                            { id: 'po', name: 'POBuilder', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="purple" />
-
                         {/* Notification arrival toast */}
                         {notifArrived17 && (
                             <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border-2 border-blue-300 dark:border-blue-500/30 shadow-lg animate-in fade-in slide-in-from-top-4 duration-500">
@@ -772,18 +879,6 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {/* ===== Step 2.7: Smart Notifications (Action Center opens in Navbar) ===== */}
                 {currentStep.id === '2.7' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        {/* Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done', detail: '3 exceptions' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'done', detail: '2 auto, 1 manual' },
-                            { id: 'bo', name: 'Backorder', status: 'done', detail: 'BO-1064B' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done' },
-                            { id: 'notif', name: 'Notification', status: 'done' },
-                        ]} accentColor="green" />
-
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -803,21 +898,11 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 1.9: Smart Notifications (Action Center opens in Navbar) ===== */}
-                {currentStep.id === '1.9' && (
-                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        {/* Pipeline Strip */}
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2 approved' },
-                            { id: 'po', name: 'POBuilder', status: 'done', detail: 'PO-1029' },
-                            { id: 'notif', name: 'Notification', status: 'done' },
-                        ]} accentColor="green" />
+                {/* Step 1.9 renders as fullscreen overlay — see portal below GenUIContainer */}
 
+                {/* ===== Step 1.10: Smart Notifications (Action Center opens in Navbar) ===== */}
+                {currentStep.id === '1.10' && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />

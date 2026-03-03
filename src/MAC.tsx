@@ -73,33 +73,16 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                     </div>
                 </div>
 
-                {/* Step 3.4: Service Center Pipeline */}
-                {currentStep?.id === '3.4' && (
-                    <AgentPipelineStrip agents={[
-                        { id: 'doc-class', name: 'DocClassifier', status: 'done' },
-                        { id: 'ocr', name: 'OCR/Extract', status: 'done' },
-                        { id: 'data-norm', name: 'DataNorm', status: 'done' },
-                        { id: 'match', name: '3-WayMatch', status: 'done' },
-                        { id: 'logistics', name: 'LogisticsAI', status: 'done' },
-                        { id: 'mac', name: 'MACOrch', status: 'running', detail: 'Validating 3 requests' },
-                        { id: 'warranty', name: 'WarrantyAgent', status: 'pending' },
-                        { id: 'notif', name: 'Notification', status: 'pending' },
-                    ]} accentColor="green" />
-                )}
-
                 {/* Step 3.5: Warranty Claims Pipeline (unified) */}
                 {currentStep?.id === '3.5' && (
-                    <div data-demo-target="warranty-claim-package">
-                        <AgentPipelineStrip agents={[
-                            { id: 'doc-class', name: 'DocClassifier', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Extract', status: 'done' },
-                            { id: 'data-norm', name: 'DataNorm', status: 'done' },
-                            { id: 'match', name: '3-WayMatch', status: 'done' },
-                            { id: 'logistics', name: 'LogisticsAI', status: 'done' },
-                            { id: 'mac', name: 'MACOrch', status: 'done' },
-                            { id: 'warranty', name: 'WarrantyAgent', status: 'running', detail: 'Claim assembly' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="amber" />
+                    <div data-demo-target="warranty-claim-package" className="space-y-3">
+                        {/* AI Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">WarrantyAgent:</span> Analyzing punch list item — cross-referencing serial number, warranty database, and damage evidence to determine claim eligibility and carrier vs manufacturer liability.
+                            </div>
+                        </div>
                     </div>
                 )}
 

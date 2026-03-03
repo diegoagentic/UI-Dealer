@@ -304,11 +304,11 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     }, [currentStep.id]);
     const orderApprovedCount18 = orderApprovalStates18.filter(s => s === 'approved').length;
 
-    // Step 1.10 — Pipeline View with animated card
+    // Step 1.11 — Pipeline View with animated card
     const [pipelineNotifShown19, setPipelineNotifShown19] = useState(false)
     const [cardAnimationStage19, setCardAnimationStage19] = useState<'hidden' | 'appearing' | 'arrived'>('hidden')
     useEffect(() => {
-        if (currentStep.id !== '1.10') {
+        if (currentStep.id !== '1.11') {
             setPipelineNotifShown19(false);
             setCardAnimationStage19('hidden');
             return;
@@ -551,7 +551,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
         } else if (['1.6', '1.8'].includes(currentStep.id)) {
             setLifecycleTab('quotes');
             setSearchQuery('');
-        } else if (currentStep.id === '1.10') {
+        } else if (currentStep.id === '1.11') {
             setLifecycleTab('orders');
             setViewMode('pipeline');
             setSearchQuery('');
@@ -1124,6 +1124,16 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                         className="w-44"
                     />
                 </div>
+
+                {/* Step 1.5: AI Context */}
+                {currentStep.id === '1.5' && (
+                    <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3 animate-in fade-in duration-500">
+                        <AIAgentAvatar className="mt-0.5" />
+                        <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                            <span className="font-bold">ValidatorAgent:</span> RFQ extraction complete — freight calculation for Austin, TX failed due to multi-zone delivery complexity. Escalating to expert for manual validation.
+                        </div>
+                    </div>
+                )}
 
                 {/* Step 1.5: Needs Attention Banner for Expert Review */}
                 {currentStep.id === '1.5' && lifecycleTab === 'quotes' && !showExpertReview && (
@@ -1910,17 +1920,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.1 — ACK Intake Pipeline */}
                 {currentStep.id === '2.1' && (
                     <div data-demo-target="ack-pipeline-intake" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done', detail: '2 ACKs received' },
-                            { id: 'norm', name: 'DataNorm', status: 'pending' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'pending' },
-                            { id: 'comp', name: 'POvsACK', status: 'pending' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'pending' },
-                            { id: 'bo', name: 'Backorder', status: 'pending' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="blue" />
-
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -2002,17 +2001,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.2 — Normalization & Smart Comparison */}
                 {currentStep.id === '2.2' && (
                     <div data-demo-target="ack-dual-normalization" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: ['norm-hat', 'norm-ais'].includes(normPhase22) ? 'running' : (normPhase22 !== 'idle' ? 'done' : 'pending'), detail: normPhase22 === 'norm-hat' ? 'HAT...' : normPhase22 === 'norm-ais' ? 'AIS...' : undefined },
-                            { id: 'ack', name: 'ACKIngestion', status: ['comparing-hat', 'hat-ai-rule', 'comparing-ais'].includes(normPhase22) ? 'running' : (['hat-confirmed', 'norm-ais', 'ais-flagged'].includes(normPhase22) ? 'done' : 'pending') },
-                            { id: 'comp', name: 'POvsACK', status: normPhase22 === 'ais-flagged' ? 'done' : 'pending', detail: normPhase22 === 'ais-flagged' ? '1 flagged' : undefined },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'pending' },
-                            { id: 'bo', name: 'Backorder', status: 'pending' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="blue" />
-
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -2143,16 +2131,13 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.3 — AIS ACK Delta Engine */}
                 {currentStep.id === '2.3' && (
                     <div data-demo-target="ack-delta-results" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done', detail: '3 exceptions' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: deltaPhase23 === 'complete' ? 'done' : 'running', detail: deltaPhase23 === 'complete' ? '2 auto, 1 escalated' : 'analyzing...' },
-                            { id: 'bo', name: 'Backorder', status: 'pending' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="blue" />
+                        {/* AI Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">DiscrepResolverAgent:</span> Analyzing 3 exceptions from PO vs ACK comparison — resolving grommet config error, date shifts, and quantity shortfalls against auto-fix thresholds.
+                            </div>
+                        </div>
 
                         <div className="space-y-3">
                             {/* Grommet Config Error */}
@@ -2285,17 +2270,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.4 — Expert Review (50 Line Items) — Interactive */}
                 {currentStep.id === '2.4' && (
                     <div data-demo-target="expert-ack-review" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done', detail: '3 exceptions' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'done', detail: '2 auto, 1 escalated' },
-                            { id: 'bo', name: 'Backorder', status: expertApproved24 ? 'running' : 'pending' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
-
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -2487,17 +2461,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.5 — Backorder & Approval Chain */}
                 {currentStep.id === '2.5' && (
                     <div data-demo-target="backorder-approval-chain" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'done' },
-                            { id: 'bo', name: 'Backorder', status: boPhase25 === 'generating' ? 'running' : 'done', detail: boPhase25 !== 'generating' ? 'BO-1064B' : 'creating...' },
-                            { id: 'approval', name: 'ApprovalOrch', status: boPhase25 === 'complete' ? 'done' : (boPhase25 === 'approval' ? 'running' : 'pending'), detail: boPhase25 === 'approval' ? `${approvedCount25}/3` : undefined },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
-
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -2603,16 +2566,13 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 2.6 — Pipeline Resolution */}
                 {currentStep.id === '2.6' && (
                     <div data-demo-target="ack-pipeline-resolved" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'erp', name: 'ERPConnector', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'ack', name: 'ACKIngestion', status: 'done' },
-                            { id: 'comp', name: 'POvsACK', status: 'done' },
-                            { id: 'discrep', name: 'DiscrepResolver', status: 'done' },
-                            { id: 'bo', name: 'Backorder', status: 'done', detail: 'BO-1064B' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '3/3' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
+                        {/* AI Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">NotificationAgent:</span> Both ACKs resolved — HAT confirmed via AI vendor rule, AIS processed with backorder BO-1064B approved. Preparing stakeholder notification digests.
+                            </div>
+                        </div>
 
                         {/* Success Banner */}
                         <div className="p-4 rounded-2xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
@@ -2701,17 +2661,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 1.6 — Quote Approval Chain (System auto → Sarah pending → auto-advance) */}
                 {currentStep.id === '1.6' && (
                     <div data-demo-target="approval-chain-progress" className="space-y-4">
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'running', detail: `${approvedCount16}/2` },
-                            { id: 'po', name: 'POBuilder', status: 'pending' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="purple" />
-
                         <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-lg">
                             <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -2810,17 +2759,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {/* Step 1.8 — PO Generation & Order Approval (fully automated) */}
                 {currentStep.id === '1.8' && (
                     <div data-demo-target="po-order-approval" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2 approved' },
-                            { id: 'po', name: 'POBuilder', status: poGenPhase18 === 'complete' ? 'done' : ['po-generating', 'po-complete'].includes(phase18) || phase18 === 'po-generating' ? 'running' : 'pending', detail: poGenPhase18 === 'complete' ? 'PO-1029' : phase18 === 'po-generating' ? 'Generating...' : '' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
-
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
@@ -2961,19 +2899,16 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                     </div>
                 )}
 
-                {/* Step 1.10 — Pipeline View with animated order card */}
-                {currentStep.id === '1.10' && (
+                {/* Step 1.11 — Pipeline View with animated order card */}
+                {currentStep.id === '1.11' && (
                     <div data-demo-target="order-pipeline-view" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                        <AgentPipelineStrip agents={[
-                            { id: 'email', name: 'EmailIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR/Parser', status: 'done' },
-                            { id: 'norm', name: 'DataNorm', status: 'done' },
-                            { id: 'valid', name: 'Validator', status: 'done' },
-                            { id: 'quote', name: 'QuoteBuilder', status: 'done', detail: 'QT-1025' },
-                            { id: 'approval', name: 'ApprovalOrch', status: 'done', detail: '2/2' },
-                            { id: 'po', name: 'POBuilder', status: 'done', detail: 'PO-1029' },
-                            { id: 'notif', name: 'Notification', status: 'pending' },
-                        ]} accentColor="green" />
+                        {/* AI Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">NotificationAgent:</span> Order #ORD-2056 created from PO-1029 and placed in pipeline. Preparing persona-aware notification digests for all stakeholders.
+                            </div>
+                        </div>
 
                         {/* Notification toast */}
                         {pipelineNotifShown19 && (
@@ -3071,7 +3006,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 )}
 
                 {/* Hide table/pipeline when expert review panel or demo steps are active */}
-                {!(currentStep.id === '1.5' && showExpertReview) && !['1.6', '1.8', '1.10', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6'].includes(currentStep.id) && (viewMode === 'list' ? (
+                {!(currentStep.id === '1.5' && showExpertReview) && !['1.6', '1.8', '1.11', '2.1', '2.2', '2.3', '2.4', '2.5', '2.6'].includes(currentStep.id) && (viewMode === 'list' ? (
                     <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
                         <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse min-w-[1000px]">

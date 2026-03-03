@@ -3,7 +3,6 @@ import {
     CheckCircle2,
     ArrowUpRight,
     Bot,
-    Loader2,
     FileText,
     Cpu,
     Sparkles,
@@ -16,7 +15,7 @@ import type { AgentStep } from '../simulations/AgentPipelineStrip';
 import ConfidenceScoreBadge from '../widgets/ConfidenceScoreBadge';
 
 // Steps that show the floating lupa panel
-const PANEL_STEPS = ['1.2', '1.3', '1.4', '3.1'];
+const PANEL_STEPS = ['1.2', '1.3', '1.4'];
 
 interface DemoProcessPanelProps {
     onNavigate?: (page: string) => void;
@@ -284,64 +283,6 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 }), delay));
             });
 
-        } else if (currentStep.id === '3.1') {
-            timers.push(setTimeout(pauseAware(() => {
-                setAgentLogs(['Initializing Document Intake Pipeline...']);
-                setPipelineAgents([
-                    { id: 'docintake', name: 'DocIntake', status: 'running' },
-                    { id: 'ocr', name: 'OCR', status: 'pending' },
-                    { id: 'parser', name: 'Parser', status: 'pending' },
-                    { id: 'classifier', name: 'Classifier', status: 'pending' },
-                    { id: 'linker', name: 'EntityLinker', status: 'pending' },
-                ]);
-            }), D));
-
-            const timeline = [
-                { delay: D + 3000, log: 'DocIntakeAgent: Received document upload (PDF, 3 pages).' },
-                { delay: D + 7000, log: 'OCRAgent: Extracting text from scanned invoice...' },
-                { delay: D + 11000, log: 'ParserAgent: Structured 12 fields from invoice text.' },
-                { delay: D + 15500, log: 'ClassifierAgent: Document TYPE → INVOICE (confidence: 97%).' },
-                { delay: D + 20000, log: 'EntityLinkerAgent: Linked to PO #ORD-2055 and ACK #ACK-2055.' },
-                { delay: D + 24000, log: 'Router: Routed to 3-Way Match Engine.' },
-            ];
-
-            timeline.forEach(({ delay, log }, index) => {
-                timers.push(setTimeout(pauseAware(() => {
-                    setAgentProgress((index + 1) * 16.6);
-                    setAgentLogs(prev => [...prev, log]);
-
-                    const statusMap: Record<number, AgentStep[]> = {
-                        0: [
-                            { id: 'docintake', name: 'DocIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR', status: 'running' },
-                            { id: 'parser', name: 'Parser', status: 'pending' },
-                            { id: 'classifier', name: 'Classifier', status: 'pending' },
-                            { id: 'linker', name: 'EntityLinker', status: 'pending' },
-                        ],
-                        2: [
-                            { id: 'docintake', name: 'DocIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR', status: 'done' },
-                            { id: 'parser', name: 'Parser', status: 'done' },
-                            { id: 'classifier', name: 'Classifier', status: 'running' },
-                            { id: 'linker', name: 'EntityLinker', status: 'pending' },
-                        ],
-                        4: [
-                            { id: 'docintake', name: 'DocIntake', status: 'done' },
-                            { id: 'ocr', name: 'OCR', status: 'done' },
-                            { id: 'parser', name: 'Parser', status: 'done' },
-                            { id: 'classifier', name: 'Classifier', status: 'done' },
-                            { id: 'linker', name: 'EntityLinker', status: 'done' },
-                        ],
-                    };
-                    if (statusMap[index]) setPipelineAgents(statusMap[index]);
-                }), delay));
-            });
-
-            // Auto-advance after pipeline completes
-            timers.push(setTimeout(pauseAware(() => {
-                nextStep();
-                onNavigate?.('transactions');
-            }), D + 28000));
         }
 
         return () => timers.forEach(clearTimeout);
@@ -361,7 +302,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         progressColor: string;
     }> = {
         '1.2': {
-            icon: <CheckCircle2 className="text-emerald-400" size={18} />,
+            icon: <Sparkles className="text-emerald-400 animate-pulse" size={18} />,
             title: 'Extraction Complete',
             titleDone: 'Extraction Complete',
             accentColor: 'green',
@@ -375,7 +316,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             progressColor: 'bg-green-500',
         },
         '1.4': {
-            icon: <FileText className="text-amber-400" size={18} />,
+            icon: <Sparkles className="text-amber-400 animate-pulse" size={18} />,
             title: 'QuoteBuilder Agent...',
             titleDone: 'Quote Draft Ready',
             accentColor: 'amber',
@@ -394,13 +335,6 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             titleDone: 'Comparison Complete — 2 Exceptions',
             accentColor: 'amber',
             progressColor: 'bg-red-500',
-        },
-        '3.1': {
-            icon: <FileText className="text-indigo-400" size={18} />,
-            title: 'Document Intake Pipeline...',
-            titleDone: 'Classification Complete',
-            accentColor: 'purple',
-            progressColor: 'bg-indigo-500',
         },
     };
 
@@ -790,41 +724,6 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg transition-colors shadow-sm hover:opacity-90"
                         >
                             Escalate 2 Exceptions to Expert Hub
-                            <ArrowUpRight size={14} />
-                        </button>
-                    </div>
-                )}
-
-                {/* Step 3.1: Classification Result */}
-                {currentStep.id === '3.1' && isDone && (
-                    <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
-                        {/* Classification Result Badge */}
-                        <div className="flex items-center gap-3">
-                            <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg px-4 py-2.5 flex items-center gap-2">
-                                <span className="text-[11px] font-medium text-zinc-400 dark:text-zinc-500 uppercase">Type:</span>
-                                <span className="text-[13px] font-bold text-indigo-400">INVOICE</span>
-                            </div>
-                            <ConfidenceScoreBadge score={97} label="Classification" size="sm" />
-                        </div>
-
-                        <p className="text-[12px] text-zinc-500 dark:text-zinc-400">
-                            Routed to 3-Way Match Engine (PO + ACK + Invoice)
-                        </p>
-
-                        {/* Auto-advance indicator */}
-                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
-                            <Loader2 size={12} className="animate-spin" />
-                            <span>Auto-routing to 3-Way Match...</span>
-                        </div>
-
-                        <button
-                            onClick={() => {
-                                nextStep();
-                                onNavigate?.('transactions');
-                            }}
-                            className="w-full flex items-center justify-center gap-2 py-2.5 bg-primary text-primary-foreground text-xs font-medium rounded-lg transition-colors shadow-sm hover:opacity-90"
-                        >
-                            View 3-Way Match
                             <ArrowUpRight size={14} />
                         </button>
                     </div>
