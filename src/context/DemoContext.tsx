@@ -77,8 +77,8 @@ const DEMO_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: RFQ to PO Processing',
         title: 'Quote Approval Chain',
         description: 'System Policy Engine auto-approves. Manager shown as pending approval. Auto-advances.',
-        app: 'expert-hub',
-        role: 'System',
+        app: 'dashboard',
+        role: 'Dealer',
         highlightId: 'approval-chain-progress'
     },
     {
@@ -97,8 +97,8 @@ const DEMO_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: RFQ to PO Processing',
         title: 'PO Generation & Order Approval',
         description: 'Both approvers shown approved. PO auto-generated. Followed by automated order approval chain.',
-        app: 'expert-hub',
-        role: 'System',
+        app: 'dashboard',
+        role: 'Dealer',
         highlightId: 'po-order-approval'
     },
     {
