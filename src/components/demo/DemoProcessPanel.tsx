@@ -469,7 +469,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         </span>
                         <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">{Math.min(Math.round(agentProgress), 100)}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-white dark:bg-zinc-800 rounded-full overflow-hidden">
+                    <div className="h-1.5 w-full bg-gray-200 dark:bg-zinc-800 rounded-full overflow-hidden">
                         <div
                             className={`h-full rounded-full transition-all duration-700 ease-out ${isDone ? 'bg-gradient-to-r from-emerald-500 to-emerald-400' : config.progressColor}`}
                             style={{ width: `${Math.min(agentProgress, 100)}%` }}
@@ -485,7 +485,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                 {agentLogs.map((log, i) => (
                                     <div key={i} className="flex items-start gap-2 animate-in slide-in-from-left-4 fade-in duration-300">
                                         <span className="text-zinc-600 font-mono text-[11px] mt-0.5 select-none">{'>'}</span>
-                                        <span className={`text-[12px] font-mono ${i === agentLogs.length - 1 && !isDone ? 'text-zinc-200 animate-pulse' : 'text-zinc-400 dark:text-zinc-500'}`}>
+                                        <span className={`text-[12px] font-mono ${i === agentLogs.length - 1 && !isDone ? 'text-zinc-800 dark:text-zinc-200 animate-pulse' : 'text-zinc-500 dark:text-zinc-500'}`}>
                                             {log}
                                         </span>
                                     </div>
@@ -531,7 +531,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
                                             item.badge === 'Needs Review'
                                                 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                                                : 'bg-zinc-700 text-zinc-500 dark:text-zinc-400'
+                                                : 'bg-gray-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
                                         }`}>{item.badge}</span>
                                     </div>
                                 ))}
@@ -570,8 +570,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         </div>
                                         {i < arr.length - 1 && (
                                             <div className="flex items-center shrink-0 px-0.5">
-                                                <div className="w-4 h-px bg-zinc-600" />
-                                                <div className="w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-l-[4px] border-l-zinc-600" />
+                                                <div className="w-4 h-px bg-zinc-300 dark:bg-zinc-600" />
+                                                <div className="w-0 h-0 border-t-[3px] border-t-transparent border-b-[3px] border-b-transparent border-l-[4px] border-l-zinc-300 dark:border-l-zinc-600" />
                                             </div>
                                         )}
                                     </React.Fragment>
@@ -582,7 +582,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* AI Attribution */}
                         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
                             <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0" />
-                            <p className="text-[11px] text-indigo-300/80 leading-relaxed">
+                            <p className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 leading-relaxed">
                                 5 AI agents processed this RFQ in 8.2s. Freight routing flagged for Expert review due to multi-zone complexity.
                             </p>
                         </div>
@@ -681,7 +681,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                 <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Schema Mapping (Raw → Normalized)</span>
                             </div>
                             <table className="w-full text-[12px]">
-                                <tbody className="divide-y divide-zinc-800">
+                                <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
                                     {[
                                         { raw: 'PO1*VP*ERG-5100', normalized: 'product_sku: ERG-5100' },
                                         { raw: 'PO1*25*EA', normalized: 'quantity: 25' },
@@ -735,7 +735,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         <th className="text-left px-4 py-1.5 text-zinc-400 dark:text-zinc-500 font-medium">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-zinc-800">
+                                <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
                                     <tr>
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">1</td>
                                         <td className="px-4 py-2 text-zinc-600 dark:text-zinc-300">Task Chair</td>
@@ -745,7 +745,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                     </tr>
                                     <tr className="bg-amber-500/5">
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">2</td>
-                                        <td className="px-4 py-2 text-amber-300 font-medium">Desk</td>
+                                        <td className="px-4 py-2 text-amber-700 dark:text-amber-300 font-medium">Desk</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">DSK-B</td>
                                         <td className="px-4 py-2 font-mono text-amber-400">DSK-C</td>
                                         <td className="px-4 py-2"><span className="text-amber-400 font-medium">Substitution</span></td>
@@ -759,7 +759,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                     </tr>
                                     <tr className="bg-red-500/5">
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">4</td>
-                                        <td className="px-4 py-2 text-red-300 font-medium">Freight</td>
+                                        <td className="px-4 py-2 text-red-700 dark:text-red-300 font-medium">Freight</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">$45</td>
                                         <td className="px-4 py-2 font-mono text-red-400">$150</td>
                                         <td className="px-4 py-2"><span className="text-red-400 font-medium">+233%</span></td>

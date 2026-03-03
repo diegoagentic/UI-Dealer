@@ -100,7 +100,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
     });
 
     return (
-        <div className="bg-zinc-950 text-zinc-100 font-sans selection:bg-primary selection:text-primary-foreground">
+        <div className="bg-gray-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-primary selection:text-primary-foreground">
             <main className="p-6 space-y-6 flex flex-col">
                 {/* Summary Bar — hidden for demo build */}
                 {false && (
@@ -150,14 +150,14 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                     {COLUMNS.map(column => (
                         <div key={column.id} className="flex flex-col gap-4 overflow-hidden">
                             <div className="flex items-center justify-between mb-1 px-2">
-                                <h4 className="font-medium text-zinc-100 flex items-center gap-2">
+                                <h4 className="font-medium text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                                     {column.title}
-                                    <span className="bg-zinc-800 text-zinc-400 text-xs px-2 py-0.5 rounded-full">{column.count}</span>
+                                    <span className="bg-gray-200 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-xs px-2 py-0.5 rounded-full">{column.count}</span>
                                 </h4>
-                                <MoreHorizontal size={16} className="text-zinc-500 cursor-pointer hover:text-zinc-300 transition-colors" />
+                                <MoreHorizontal size={16} className="text-zinc-400 dark:text-zinc-500 cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors" />
                             </div>
 
-                            <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-micro bg-zinc-900/50 rounded-2xl p-3 border border-zinc-800/50">
+                            <div className="flex-1 overflow-y-auto space-y-3 pr-1 scrollbar-micro bg-gray-100/50 dark:bg-zinc-900/50 rounded-2xl p-3 border border-gray-200/50 dark:border-zinc-800/50">
                                 {displayCards.filter(card => card.column === column.id).map(card => {
                                     // Determine data-demo-target for spotlight
                                     const demoTarget =
@@ -176,13 +176,13 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                         <div
                                             key={card.id}
                                             data-demo-target={demoTarget}
-                                            className={`bg-zinc-800 border p-4 rounded-2xl transition-all cursor-pointer group shadow-sm ${hasPanel ? 'ring-2 ring-indigo-500/50 border-indigo-500/30 shadow-lg shadow-indigo-500/10 scale-[1.02]' : `border-zinc-700 hover:border-zinc-600 ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''}`}`}
+                                            className={`bg-white dark:bg-zinc-800 border p-4 rounded-2xl transition-all cursor-pointer group shadow-sm ${hasPanel ? 'ring-2 ring-indigo-500/50 border-indigo-500/30 shadow-lg shadow-indigo-500/10 scale-[1.02]' : `border-gray-200 dark:border-zinc-700 hover:border-gray-300 dark:hover:border-zinc-600 ${card.priority === 'critical' ? 'ring-1 ring-red-500/20' : ''}`}`}
                                         >
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex items-start justify-between">
                                                     <span className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded-full ring-1 ring-inset ${card.priority === 'critical' ? 'bg-red-500/10 text-red-400 ring-red-500/30' :
                                                         card.priority === 'high' ? 'bg-amber-500/10 text-amber-400 ring-amber-500/30' :
-                                                            'bg-zinc-700 text-zinc-400 ring-zinc-600'
+                                                            'bg-gray-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 ring-gray-300 dark:ring-zinc-600'
                                                         }`}>
                                                         {card.priority}
                                                     </span>
@@ -193,14 +193,14 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 </div>
 
                                                 <div className="space-y-1">
-                                                    <h4 className="text-sm font-semibold text-zinc-100 group-hover:text-primary transition-colors">{card.title}</h4>
+                                                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors">{card.title}</h4>
                                                     <p className="text-xs text-zinc-500 font-medium">{card.dealer}</p>
                                                 </div>
 
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex -space-x-2">
                                                         {[1, 2].map(i => (
-                                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-zinc-800 bg-zinc-700 flex items-center justify-center text-[10px] font-medium text-zinc-300">
+                                                            <div key={i} className="w-6 h-6 rounded-full border-2 border-white dark:border-zinc-800 bg-gray-300 dark:bg-zinc-700 flex items-center justify-center text-[10px] font-medium text-zinc-600 dark:text-zinc-300">
                                                                 {i === 1 ? 'AI' : 'JD'}
                                                             </div>
                                                         ))}
@@ -216,18 +216,18 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 {hasPanel && STEP_CARD_PREVIEW[currentStep.id] && (() => {
                                                     const preview = STEP_CARD_PREVIEW[currentStep.id];
                                                     return (
-                                                        <div className={`mt-2 pt-3 border-t border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500`}>
+                                                        <div className={`mt-2 pt-3 border-t border-gray-200/50 dark:border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500`}>
                                                             <div className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border ${preview.accentClass}`}>
                                                                 {preview.icon}
                                                                 <div className="flex flex-col min-w-0">
-                                                                    <span className="text-[11px] font-semibold text-zinc-200 leading-tight">{preview.title}</span>
+                                                                    <span className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200 leading-tight">{preview.title}</span>
                                                                     <span className="text-[10px] text-zinc-500 font-medium">{preview.subtitle}</span>
                                                                 </div>
                                                             </div>
                                                             <p className="text-[10px] leading-relaxed text-zinc-400 px-1">
                                                                 {preview.detail}
                                                             </p>
-                                                            <div className="flex items-center gap-2 text-[10px] text-indigo-300/70 font-medium py-0.5 px-1">
+                                                            <div className="flex items-center gap-2 text-[10px] text-indigo-600/70 dark:text-indigo-300/70 font-medium py-0.5 px-1">
                                                                 <Bot size={10} className="animate-pulse" />
                                                                 <span>Agent processing...</span>
                                                             </div>
@@ -237,12 +237,12 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
 
                                                 {/* AI Insight — normal cards (not in panel mode) */}
                                                 {!hasPanel && card.aiInsight && (
-                                                    <div className="mt-2 pt-3 border-t border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                    <div className="mt-2 pt-3 border-t border-gray-200/50 dark:border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                                         <div className="flex items-center gap-2 text-indigo-400">
                                                             <Sparkles size={12} />
                                                             <span className="text-[10px] font-medium uppercase tracking-wider">AI Insight</span>
                                                         </div>
-                                                        <p className="text-[11px] leading-relaxed text-zinc-400 italic bg-zinc-900 p-3 rounded-xl border border-zinc-700/50">
+                                                        <p className="text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400 italic bg-gray-50 dark:bg-zinc-900 p-3 rounded-xl border border-gray-200/50 dark:border-zinc-700/50">
                                                             "{card.aiInsight}"
                                                         </p>
                                                         <button className="w-full flex items-center justify-center gap-2 text-xs font-medium text-primary hover:underline group/btn">
@@ -256,7 +256,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                     );
                                 })}
 
-                                <button className="w-full py-3 border border-dashed border-zinc-700 rounded-2xl text-zinc-600 hover:border-zinc-600 hover:text-zinc-400 transition-all text-xs font-medium">
+                                <button className="w-full py-3 border border-dashed border-gray-300 dark:border-zinc-700 rounded-2xl text-zinc-400 dark:text-zinc-600 hover:border-gray-400 dark:hover:border-zinc-600 hover:text-zinc-500 dark:hover:text-zinc-400 transition-all text-xs font-medium">
                                     + Add Item
                                 </button>
                             </div>
