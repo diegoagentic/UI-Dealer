@@ -70,6 +70,16 @@
     }
 }
 
+/* AI Agent Avatar Glow Animation */
+@keyframes ai-glow {
+    0%, 100% { box-shadow: 0 0 4px rgba(16, 185, 129, 0.2), 0 0 0 1px rgba(16, 185, 129, 0.15); }
+    50% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.35), 0 0 0 1px rgba(16, 185, 129, 0.3); }
+}
+
+.animate-ai-glow {
+    animation: ai-glow 2.5s ease-in-out infinite;
+}
+
 /* Demo Spotlight Animations */
 @keyframes scan {
     0%, 100% { top: 0%; }

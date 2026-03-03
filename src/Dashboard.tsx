@@ -29,7 +29,6 @@ import {
     LightBulbIcon,
     Bars3BottomLeftIcon,
     Bars3Icon,
-    CpuChipIcon,
     CheckBadgeIcon,
     ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
@@ -582,8 +581,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     ].map((approver, i) => (
                                         <div key={i} className="flex items-center gap-1.5">
                                             <div className="relative">
-                                                <div className="w-6 h-6 rounded-full bg-indigo-500/15 flex items-center justify-center">
-                                                    <CpuChipIcon className="w-3 h-3 text-indigo-500" />
+                                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center ring-1 ring-emerald-500/30 animate-ai-glow">
+                                                    <SparklesIcon className="w-3 h-3 text-emerald-500" />
                                                 </div>
                                                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 text-white flex items-center justify-center ring-1 ring-white dark:ring-zinc-900">
                                                     <CheckIcon className="w-1.5 h-1.5" />

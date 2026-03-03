@@ -1,4 +1,4 @@
-import { CpuChipIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon } from '@heroicons/react/24/solid';
 import { clsx } from 'clsx';
 
 // ─── Persona Avatar Registry ─────────────────────────────────────────────────
@@ -90,14 +90,14 @@ export default function DemoAvatar({ name, size = 'md', className }: DemoAvatarP
         );
     }
 
-    // AI / System actor — robot chip icon
+    // AI / System actor — sparkles icon with glow
     return (
         <div className={clsx(
             sizes[size],
-            'rounded-full bg-indigo-500/15 dark:bg-indigo-500/25 flex items-center justify-center shrink-0 ring-2 ring-white dark:ring-zinc-800',
+            'rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 dark:from-emerald-400/25 dark:to-teal-400/25 flex items-center justify-center shrink-0 ring-1 ring-emerald-500/30 dark:ring-emerald-400/30 animate-ai-glow',
             className,
         )}>
-            <CpuChipIcon className={clsx(iconSizes[size], 'text-indigo-500 dark:text-indigo-400')} />
+            <SparklesIcon className={clsx(iconSizes[size], 'text-emerald-500 dark:text-emerald-400')} />
         </div>
     );
 }
@@ -107,10 +107,10 @@ export default function DemoAvatar({ name, size = 'md', className }: DemoAvatarP
 export function AIAgentAvatar({ className }: { className?: string }) {
     return (
         <div className={clsx(
-            'w-6 h-6 rounded-full bg-indigo-500/15 dark:bg-indigo-500/25 flex items-center justify-center shrink-0',
+            'w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 dark:from-emerald-400/25 dark:to-teal-400/25 flex items-center justify-center shrink-0 ring-1 ring-emerald-500/30 dark:ring-emerald-400/30 animate-ai-glow',
             className,
         )}>
-            <CpuChipIcon className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+            <SparklesIcon className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
     CheckCircleIcon,
-    CpuChipIcon,
+    SparklesIcon,
     DocumentTextIcon,
     ShieldCheckIcon,
     TagIcon,
@@ -200,9 +200,9 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
     return (
         <div className="h-full flex flex-col p-6 animate-in fade-in duration-500 overflow-hidden">
             <div className="text-center mb-6 shrink-0">
-                <div className="inline-flex items-center justify-center p-3.5 bg-indigo-50 dark:bg-indigo-900/10 rounded-full mb-3 relative">
-                    <div className="absolute inset-0 rounded-full border border-indigo-500/20 w-full h-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                    <CpuChipIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                <div className="inline-flex items-center justify-center p-3.5 bg-emerald-50 dark:bg-emerald-900/10 rounded-2xl mb-3 relative">
+                    <div className="absolute inset-0 rounded-2xl border border-emerald-500/20 w-full h-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
+                    <SparklesIcon className="w-8 h-8 text-emerald-500 dark:text-emerald-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">Autonomous Processing</h3>
                 <p className="text-xs font-mono text-muted-foreground mt-1 uppercase tracking-wider h-4 overflow-visible whitespace-nowrap">{currentLog}</p>

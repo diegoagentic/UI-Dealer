@@ -4,7 +4,6 @@ import {
     SparklesIcon,
     ArrowPathIcon,
     DocumentChartBarIcon,
-    CpuChipIcon,
     ChevronLeftIcon,
     ClockIcon,
     CheckCircleIcon,
@@ -484,7 +483,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                            <CpuChipIcon className="w-4 h-4" />
+                            <SparklesIcon className="w-4 h-4" />
                             <span>Logistics Provider "FastTrack" assigned.</span>
                         </div>
                         <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
@@ -550,7 +549,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                         </button>
                         <h1 className="text-sm font-bold flex items-center gap-2 text-gray-800 dark:text-gray-100">
                             <div className="bg-primary text-zinc-900 p-1 rounded-md">
-                                <CpuChipIcon className="w-5 h-5" />
+                                <SparklesIcon className="w-5 h-5" />
                             </div>
                             {currentTenant} Workspace
                         </h1>

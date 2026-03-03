@@ -5,7 +5,6 @@ import {
     EnvelopeOpenIcon,
     DocumentTextIcon,
     TableCellsIcon,
-    CpuChipIcon,
     CheckCircleIcon,
     ArrowRightIcon,
 } from '@heroicons/react/24/outline';
@@ -342,7 +341,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 {/* Footer */}
                 <div className="px-6 pb-5 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-[11px] text-zinc-500">
-                        <CpuChipIcon className="w-3.5 h-3.5" />
+                        <SparklesIcon className="w-3.5 h-3.5" />
                         <span>Strata Intelligence Engine v2.0</span>
                     </div>
                     {phase === 'complete' && (
