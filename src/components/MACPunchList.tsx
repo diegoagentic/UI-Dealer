@@ -292,7 +292,7 @@ export default function MACPunchList() {
                             </div>
                         </div>
 
-                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px]">
+                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px] scrollbar-micro">
 
                             {/* ── Email Extraction Phase ── */}
                             {extractionPhase !== 'review' && (
@@ -673,7 +673,7 @@ export default function MACPunchList() {
                             </div>
                         </div>
 
-                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px]">
+                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px] scrollbar-micro">
                             {/* Labor Header Card */}
                             <div className="p-4 bg-card border border-border rounded-xl">
                                 <div className="flex items-center justify-between mb-3">
@@ -858,7 +858,7 @@ export default function MACPunchList() {
                             </div>
                         </div>
 
-                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px]">
+                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px] scrollbar-micro">
                             {/* Progress Bar */}
                             <div>
                                 <div className="flex items-center justify-between mb-2">
@@ -1004,7 +1004,7 @@ export default function MACPunchList() {
                                         className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm flex items-center gap-2"
                                     >
                                         <CheckCircleIcon className="w-4 h-4" />
-                                        Complete Flow 3
+                                        Approve and Send to Client
                                     </button>
                                 </div>
                             )}
@@ -1012,7 +1012,7 @@ export default function MACPunchList() {
                             {/* Review Changes Modal */}
                             {showReviewModal && (
                                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowReviewModal(false)}>
-                                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto mx-4 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
+                                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto scrollbar-micro mx-4 animate-in zoom-in-95 slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
                                         {/* Modal Header */}
                                         <div className="px-5 py-4 border-b border-border flex items-center justify-between sticky top-0 bg-white dark:bg-zinc-900 rounded-t-2xl z-10">
                                             <div>
