@@ -395,10 +395,10 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
         if (currentStep?.id !== '3.3') return;
         setShipPhase33('scanning');
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setShipPhase33('delay-check'), 4000));
-        t.push(setTimeout(() => setShipPhase33('insights'), 8000));
-        t.push(setTimeout(() => setShipPhase33('complete'), 12000));
-        t.push(setTimeout(() => nextStep(), 14000));
+        t.push(setTimeout(() => setShipPhase33('delay-check'), 6000));
+        t.push(setTimeout(() => setShipPhase33('insights'), 12000));
+        t.push(setTimeout(() => setShipPhase33('complete'), 18000));
+        t.push(setTimeout(() => nextStep(), 22000));
         return () => t.forEach(clearTimeout);
     }, [currentStep?.id]);
 
@@ -541,7 +541,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         {/* AI Attribution Header */}
                         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
                             <div className="flex items-center gap-2">
-                                <SparklesIcon className="w-4 h-4 text-indigo-500" />
+                                <SparklesIcon className="w-4 h-4 text-indigo-500 animate-pulse" />
                                 <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">BackorderAgent split order into fulfilled/backordered from ACK data</span>
                             </div>
                             <ConfidenceScoreBadge score={98} label="Accuracy" size="md" />
@@ -620,7 +620,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         {/* AI Attribution */}
                         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
                             <div className="flex items-center gap-2">
-                                <SparklesIcon className="w-4 h-4 text-indigo-500" />
+                                <SparklesIcon className="w-4 h-4 text-indigo-500 animate-pulse" />
                                 <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">POBuilderAgent generating Purchase Order from approved Quote QT-1025</span>
                             </div>
                             <ConfidenceScoreBadge score={99} label="Mapping" size="md" />
@@ -826,7 +826,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">LogisticsAI:</span> Analyzing shipment FX-2026-887744 — cross-referencing carrier data, hub congestion, and fulfillment records to predict delivery timeline.
                             </div>

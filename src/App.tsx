@@ -22,6 +22,7 @@ import DemoSidebar from "./components/demo/DemoSidebar"
 import DemoSpotlight from "./components/demo/DemoSpotlight"
 import DemoProcessPanel from "./components/demo/DemoProcessPanel"
 import DemoStepBanner from "./components/demo/DemoStepBanner"
+import DemoAIIndicator from "./components/demo/DemoAIIndicator"
 
 // Simulations
 import ExpertHubTransactions from "./components/simulations/ExpertHubTransactions"
@@ -370,7 +371,8 @@ function App() {
       )}
 
       {/* MAIN CONTENT VIEWPORT */}
-      <main className={`transition-all duration-300 ${(isDemoActive ? currentStep.app !== 'email-marketplace' : currentPage !== 'detail' && currentPage !== 'workspace') ? (isDemoActive ? 'pt-[96px]' : 'pt-16') : ''} ${isDemoActive ? (isSidebarCollapsed ? 'pl-0' : 'pl-80') + ' animate-in fade-in duration-500' : ''} min-h-screen bg-background`}>
+      <main className={`transition-all duration-300 ${(isDemoActive ? currentStep.app !== 'email-marketplace' : currentPage !== 'detail' && currentPage !== 'workspace') ? 'pt-16' : ''} ${isDemoActive ? (isSidebarCollapsed ? 'pl-0' : 'pl-80') + ' animate-in fade-in duration-500' : ''} min-h-screen bg-background`}>
+        {isDemoActive && <DemoAIIndicator />}
         {isDemoActive ? renderSimulation() : renderCurrentPage()}
       </main>
 

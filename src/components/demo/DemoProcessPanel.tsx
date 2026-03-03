@@ -5,15 +5,11 @@ import {
     Bot,
     Loader2,
     FileText,
-    BrainCircuit,
     Cpu,
     Sparkles,
     Users,
     SearchIcon,
 } from 'lucide-react';
-import {
-    SparklesIcon,
-} from '@heroicons/react/24/outline';
 import { useDemo } from '../../context/DemoContext';
 import AgentPipelineStrip from '../simulations/AgentPipelineStrip';
 import type { AgentStep } from '../simulations/AgentPipelineStrip';
@@ -94,8 +90,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { field: 'Freight', score: 42 },
                 ]);
             }), D));
-            // Auto-advance after panel is visible for 15s (presenter explains extraction results)
-            timers.push(setTimeout(pauseAware(() => nextStep()), D + 15000));
+            // Auto-advance after panel is visible for 20s (presenter explains extraction results)
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 20000));
 
         } else if (currentStep.id === '1.3') {
             timers.push(setTimeout(pauseAware(() => {
@@ -109,10 +105,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 3000, log: 'Parser: Tokenizing extracted text fields...' },
-                { delay: D + 7000, log: 'Parser: Mapped 200 line items to catalog schema.' },
-                { delay: D + 11000, log: 'Normalizer: Resolving product codes against master catalog...' },
-                { delay: D + 15000, log: 'Normalizer: Complete. Field confidence scores generated.' },
+                { delay: D + 4000, log: 'Parser: Tokenizing extracted text fields...' },
+                { delay: D + 9000, log: 'Parser: Mapped 200 line items to catalog schema.' },
+                { delay: D + 15000, log: 'Normalizer: Resolving product codes against master catalog...' },
+                { delay: D + 20000, log: 'Normalizer: Complete. Field confidence scores generated.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -152,10 +148,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 3000, log: 'QuoteBuilder: Loading normalized line items...' },
-                { delay: D + 7000, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
-                { delay: D + 11000, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
-                { delay: D + 15000, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
+                { delay: D + 4000, log: 'QuoteBuilder: Loading normalized line items...' },
+                { delay: D + 9000, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
+                { delay: D + 15000, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
+                { delay: D + 20000, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -301,12 +297,12 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 2000, log: 'DocIntakeAgent: Received document upload (PDF, 3 pages).' },
-                { delay: D + 5000, log: 'OCRAgent: Extracting text from scanned invoice...' },
-                { delay: D + 8000, log: 'ParserAgent: Structured 12 fields from invoice text.' },
-                { delay: D + 11500, log: 'ClassifierAgent: Document TYPE → INVOICE (confidence: 97%).' },
-                { delay: D + 15000, log: 'EntityLinkerAgent: Linked to PO #ORD-2055 and ACK #ACK-2055.' },
-                { delay: D + 18000, log: 'Router: Routed to 3-Way Match Engine.' },
+                { delay: D + 3000, log: 'DocIntakeAgent: Received document upload (PDF, 3 pages).' },
+                { delay: D + 7000, log: 'OCRAgent: Extracting text from scanned invoice...' },
+                { delay: D + 11000, log: 'ParserAgent: Structured 12 fields from invoice text.' },
+                { delay: D + 15500, log: 'ClassifierAgent: Document TYPE → INVOICE (confidence: 97%).' },
+                { delay: D + 20000, log: 'EntityLinkerAgent: Linked to PO #ORD-2055 and ACK #ACK-2055.' },
+                { delay: D + 24000, log: 'Router: Routed to 3-Way Match Engine.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -345,7 +341,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             timers.push(setTimeout(pauseAware(() => {
                 nextStep();
                 onNavigate?.('transactions');
-            }), D + 20000));
+            }), D + 28000));
         }
 
         return () => timers.forEach(clearTimeout);
@@ -372,7 +368,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             progressColor: 'bg-emerald-500',
         },
         '1.3': {
-            icon: <BrainCircuit className="text-green-400" size={18} />,
+            icon: <Sparkles className="text-green-400" size={18} />,
             title: 'Normalization Pipeline...',
             titleDone: 'Normalization Complete',
             accentColor: 'green',
@@ -557,7 +553,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* Automation Flow Diagram */}
                         <div className="p-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
                             <div className="flex items-center gap-2 mb-3">
-                                <Sparkles className="text-indigo-400" size={14} />
+                                <Sparkles className="text-indigo-400 animate-pulse" size={14} />
                                 <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Automation Flow</span>
                             </div>
                             <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-micro">
@@ -587,7 +583,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
                         {/* AI Attribution */}
                         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
-                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0" />
+                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
                             <p className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 leading-relaxed">
                                 5 AI agents processed this RFQ in 8.2s. Freight routing flagged for Expert review due to multi-zone complexity.
                             </p>
@@ -707,7 +703,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* Confidence + AI */}
                         <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                             <div className="flex items-center gap-1.5">
-                                <Sparkles size={12} className="text-indigo-400" />
+                                <Sparkles size={12} className="text-indigo-400 animate-pulse" />
                                 <span className="text-[11px] text-indigo-400 font-medium">DataNormalizationAgent unified 4 raw fields to standard schema</span>
                             </div>
                             <ConfidenceScoreBadge score={94} label="Norm" />
@@ -782,7 +778,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
                         {/* AI Recommendation */}
                         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0" />
+                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
                             <span className="text-[11px] text-indigo-400">Substitution within catalog equivalents. Freight exceeds $50 guardrail — escalating to Expert Hub.</span>
                         </div>
 

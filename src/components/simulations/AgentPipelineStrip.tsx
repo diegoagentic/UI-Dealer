@@ -45,6 +45,15 @@ function StatusIcon({ status, accent }: { status: AgentStep['status']; accent: s
     }
 }
 
+// Convert PascalCase/camelCase to spaced words (e.g. "EmailIntake" → "Email Intake")
+// Preserves uppercase acronyms (e.g. "ACKIngestion" → "ACK Ingestion", "POvsACK" → "PO vs ACK")
+function spaceName(name: string): string {
+    return name
+        .replace(/([a-z])([A-Z])/g, '$1 $2')         // camelCase boundary
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')   // ACRONYMWord boundary
+        .replace(/\//g, ' / ');                        // "OCR/Parser" → "OCR / Parser"
+}
+
 export default function AgentPipelineStrip({ agents, accentColor = 'blue' }: AgentPipelineStripProps) {
     const colors = colorMap[accentColor];
 
@@ -68,7 +77,7 @@ export default function AgentPipelineStrip({ agents, accentColor = 'blue' }: Age
                                 agent.status === 'error' && 'text-red-500',
                                 agent.status === 'pending' && 'text-muted-foreground/50',
                             )}>
-                                {agent.name}
+                                {spaceName(agent.name)}
                             </span>
                             {agent.detail && (
                                 <span className="text-[8px] text-muted-foreground leading-tight">{agent.detail}</span>

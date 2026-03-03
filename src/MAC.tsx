@@ -142,7 +142,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                     <div data-demo-target="mac-orchestrator" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">MACOrchestrator:</span> Validated 3 service requests against live inventory, active order commitments, and compliance rules. Scope and cost impact assessed.
                             </div>

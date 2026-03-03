@@ -264,12 +264,12 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
             return;
         }
         const timeouts: ReturnType<typeof setTimeout>[] = [];
-        // T+3s: System Policy Engine finishes compliance review
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'pending']), 3000));
-        // T+6s: Sarah Chen approves after reviewing
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'approved']), 6000));
-        // T+9s: advance to next step (3s to see both approved)
-        timeouts.push(setTimeout(() => nextStep(), 9000));
+        // T+5s: System Policy Engine finishes compliance review
+        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'pending']), 5000));
+        // T+10s: Sarah Chen approves after reviewing
+        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'approved']), 10000));
+        // T+14s: advance to next step (4s to see both approved)
+        timeouts.push(setTimeout(() => nextStep(), 14000));
         return () => timeouts.forEach(clearTimeout);
     }, [currentStep.id]);
     const approvedCount16 = approvalStates16.filter(s => s === 'approved').length;
@@ -286,19 +286,19 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
             return;
         }
         const t: ReturnType<typeof setTimeout>[] = [];
-        // PO Generation phase (0-6s)
-        t.push(setTimeout(() => setPhase18('po-generating'), 1500));
-        t.push(setTimeout(() => setPoGenPhase18('mapping'), 3000));
-        t.push(setTimeout(() => setPoGenPhase18('validating'), 4500));
-        t.push(setTimeout(() => { setPoGenPhase18('complete'); setPhase18('po-complete'); }, 6000));
-        // Order Approval Chain (8s-19s) — 3s per approver for readability
-        t.push(setTimeout(() => setPhase18('order-chain'), 8000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'pending', 'pending']), 11000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'pending']), 14000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'approved']), 17000));
-        // Completion (19s) + advance (22s)
-        t.push(setTimeout(() => setPhase18('order-complete'), 19000));
-        t.push(setTimeout(() => { setPhase18('done'); nextStep(); }, 22000));
+        // PO Generation phase (0-8s)
+        t.push(setTimeout(() => setPhase18('po-generating'), 2000));
+        t.push(setTimeout(() => setPoGenPhase18('mapping'), 4000));
+        t.push(setTimeout(() => setPoGenPhase18('validating'), 6000));
+        t.push(setTimeout(() => { setPoGenPhase18('complete'); setPhase18('po-complete'); }, 8000));
+        // Order Approval Chain (10s-25s) — 5s per approver for readability
+        t.push(setTimeout(() => setPhase18('order-chain'), 10000));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'pending', 'pending']), 15000));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'pending']), 20000));
+        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'approved']), 25000));
+        // Completion (29s) + advance (37s)
+        t.push(setTimeout(() => setPhase18('order-complete'), 29000));
+        t.push(setTimeout(() => { setPhase18('done'); nextStep(); }, 37000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
     const orderApprovedCount18 = orderApprovalStates18.filter(s => s === 'approved').length;
@@ -314,8 +314,8 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
         }
         const t: ReturnType<typeof setTimeout>[] = [];
         t.push(setTimeout(() => setPipelineNotifShown19(true), 500));
-        t.push(setTimeout(() => setCardAnimationStage19('appearing'), 1500));
-        t.push(setTimeout(() => setCardAnimationStage19('arrived'), 3000));
+        t.push(setTimeout(() => setCardAnimationStage19('appearing'), 2000));
+        t.push(setTimeout(() => setCardAnimationStage19('arrived'), 5000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
@@ -328,11 +328,11 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.1') { setAckArrival21({ AIS: 'hidden', HAT: 'hidden' }); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'appearing' })), 1000));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'placed' })), 2000));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'appearing' })), 2500));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'placed' })), 3500));
-        t.push(setTimeout(() => nextStep(), 6000));
+        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'appearing' })), 1500));
+        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'placed' })), 3000));
+        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'appearing' })), 4500));
+        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'placed' })), 6000));
+        t.push(setTimeout(() => nextStep(), 10000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
@@ -341,14 +341,14 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.2') { setNormPhase22('idle'); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setNormPhase22('norm-hat'), 1000));
-        t.push(setTimeout(() => setNormPhase22('comparing-hat'), 3000));
-        t.push(setTimeout(() => setNormPhase22('hat-ai-rule'), 5000));
-        t.push(setTimeout(() => setNormPhase22('hat-confirmed'), 6500));
-        t.push(setTimeout(() => setNormPhase22('norm-ais'), 8000));
-        t.push(setTimeout(() => setNormPhase22('comparing-ais'), 10000));
-        t.push(setTimeout(() => setNormPhase22('ais-flagged'), 12000));
-        t.push(setTimeout(() => nextStep(), 14000));
+        t.push(setTimeout(() => setNormPhase22('norm-hat'), 1500));
+        t.push(setTimeout(() => setNormPhase22('comparing-hat'), 4000));
+        t.push(setTimeout(() => setNormPhase22('hat-ai-rule'), 7000));
+        t.push(setTimeout(() => setNormPhase22('hat-confirmed'), 9000));
+        t.push(setTimeout(() => setNormPhase22('norm-ais'), 11500));
+        t.push(setTimeout(() => setNormPhase22('comparing-ais'), 14000));
+        t.push(setTimeout(() => setNormPhase22('ais-flagged'), 16500));
+        t.push(setTimeout(() => nextStep(), 20000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
@@ -358,22 +358,27 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.3') { setDeltaPhase23('idle'); setBackorderTriggered23(false); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setDeltaPhase23('scanning'), 1000));
-        t.push(setTimeout(() => setDeltaPhase23('grommet-found'), 3000));
-        t.push(setTimeout(() => setDeltaPhase23('grommet-fixed'), 5000));
-        t.push(setTimeout(() => setDeltaPhase23('dates-found'), 7000));
-        t.push(setTimeout(() => setDeltaPhase23('dates-fixed'), 9000));
-        t.push(setTimeout(() => setDeltaPhase23('qty-found'), 11000));
-        t.push(setTimeout(() => setDeltaPhase23('complete'), 13000));
+        t.push(setTimeout(() => setDeltaPhase23('scanning'), 1500));
+        t.push(setTimeout(() => setDeltaPhase23('grommet-found'), 4000));
+        t.push(setTimeout(() => setDeltaPhase23('grommet-fixed'), 7000));
+        t.push(setTimeout(() => setDeltaPhase23('dates-found'), 10000));
+        t.push(setTimeout(() => setDeltaPhase23('dates-fixed'), 13000));
+        t.push(setTimeout(() => setDeltaPhase23('qty-found'), 16000));
+        t.push(setTimeout(() => setDeltaPhase23('complete'), 19000));
         // No auto-advance — user clicks "Generate Backorder" on qty card
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
-    // Step 2.4 — Expert review table (auto-advance since backorder already triggered in 2.3)
+    // Step 2.4 — Expert review table (interactive — expert can edit flagged items)
+    const [editingLine24, setEditingLine24] = useState<number | null>(null);
+    const [editedItems24, setEditedItems24] = useState<Record<number, { qtyAck?: number; note?: string }>>({});
+    const [expertApproved24, setExpertApproved24] = useState(false);
     useEffect(() => {
-        if (currentStep.id !== '2.4') return;
-        const t = setTimeout(() => nextStep(), 8000);
-        return () => clearTimeout(t);
+        if (currentStep.id !== '2.4') {
+            setEditingLine24(null);
+            setEditedItems24({});
+            setExpertApproved24(false);
+        }
     }, [currentStep.id]);
 
     // Step 2.5 — Backorder & approval chain
@@ -382,16 +387,16 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.5') { setBoPhase25('generating'); setApprovalStates25(['pending', 'pending', 'pending']); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        // Backorder generation (0-2s)
-        t.push(setTimeout(() => setBoPhase25('generated'), 2000));
-        // Approval chain begins (4s) — 3s per approver for readability
-        t.push(setTimeout(() => setBoPhase25('approval'), 4000));
-        t.push(setTimeout(() => setApprovalStates25(['approved', 'pending', 'pending']), 7000));
-        t.push(setTimeout(() => setApprovalStates25(['approved', 'approved', 'pending']), 10000));
-        t.push(setTimeout(() => setApprovalStates25(['approved', 'approved', 'approved']), 13000));
-        // Completion (15s) + advance (18s)
-        t.push(setTimeout(() => setBoPhase25('complete'), 15000));
-        t.push(setTimeout(() => nextStep(), 18000));
+        // Backorder generation (0-3s)
+        t.push(setTimeout(() => setBoPhase25('generated'), 3000));
+        // Approval chain begins (6s) — 5s per approver for readability
+        t.push(setTimeout(() => setBoPhase25('approval'), 6000));
+        t.push(setTimeout(() => setApprovalStates25(['approved', 'pending', 'pending']), 11000));
+        t.push(setTimeout(() => setApprovalStates25(['approved', 'approved', 'pending']), 16000));
+        t.push(setTimeout(() => setApprovalStates25(['approved', 'approved', 'approved']), 21000));
+        // Completion (24s) + advance (28s)
+        t.push(setTimeout(() => setBoPhase25('complete'), 24000));
+        t.push(setTimeout(() => nextStep(), 28000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
     const approvedCount25 = approvalStates25.filter(s => s === 'approved').length;
@@ -402,9 +407,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
         if (currentStep.id !== '2.6') { setResolvedCards26({ AIS: 'hidden', HAT: 'hidden' }); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
         t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, HAT: 'appearing' })), 500));
-        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, HAT: 'placed' })), 1500));
-        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, AIS: 'appearing' })), 2500));
-        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, AIS: 'placed' })), 3500));
+        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, HAT: 'placed' })), 2000));
+        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, AIS: 'appearing' })), 3500));
+        t.push(setTimeout(() => setResolvedCards26(p => ({ ...p, AIS: 'placed' })), 6000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id]);
 
@@ -1917,7 +1922,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">ERPConnectorAgent:</span> 2 new acknowledgments detected — AIS (EDI/855) and HAT Contract (vendor email). Routing to ACK processing pipeline.
                             </div>
@@ -2009,7 +2014,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">DataNormAgent:</span> Normalizing and comparing ACK data field-by-field against PO-1064B. Smart rules applying corrections automatically.
                             </div>
@@ -2076,7 +2081,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                         {['hat-ai-rule', 'hat-confirmed', 'norm-ais', 'comparing-ais', 'ais-flagged'].includes(normPhase22) && (
                                             <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 animate-in fade-in duration-300">
                                                 <div className="flex items-start gap-2">
-                                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                                                     <div>
                                                         <p className="text-[10px] font-bold text-indigo-700 dark:text-indigo-400">AI Vendor Rule: HAT Contract</p>
                                                         <p className="text-[10px] text-indigo-600 dark:text-indigo-300 mt-0.5">Part number match is sufficient per client directive. Color and description variations accepted.</p>
@@ -2244,7 +2249,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     {deltaPhase23 === 'complete' && (
                                         <div className="mt-3 ml-11 flex items-center gap-3 animate-in fade-in duration-300">
                                             <button
-                                                onClick={() => { setBackorderTriggered23(true); setTimeout(() => nextStep(), 1500); }}
+                                                onClick={() => { setBackorderTriggered23(true); setTimeout(() => nextStep(), 2500); }}
                                                 disabled={backorderTriggered23}
                                                 className={cn(
                                                     'px-4 py-2 text-xs font-bold rounded-lg shadow-sm flex items-center gap-2 transition-all',
@@ -2268,7 +2273,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             {/* Summary Banner */}
                             {deltaPhase23 === 'complete' && (
                                 <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center gap-3 animate-in fade-in duration-300">
-                                    <SparklesIcon className="w-4 h-4 text-indigo-500 shrink-0" />
+                                    <SparklesIcon className="w-4 h-4 text-indigo-500 shrink-0 animate-pulse" />
                                     <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">3 discrepancies analyzed: 2 auto-resolved (grommet corrected, dates accepted), 1 requires expert action (quantity shortfall).</span>
                                 </div>
                             )}
@@ -2276,7 +2281,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                     </div>
                 )}
 
-                {/* Step 2.4 — Expert Review (50 Line Items) */}
+                {/* Step 2.4 — Expert Review (50 Line Items) — Interactive */}
                 {currentStep.id === '2.4' && (
                     <div data-demo-target="expert-ack-review" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         <AgentPipelineStrip agents={[
@@ -2285,16 +2290,16 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             { id: 'ack', name: 'ACKIngestion', status: 'done' },
                             { id: 'comp', name: 'POvsACK', status: 'done', detail: '3 exceptions' },
                             { id: 'discrep', name: 'DiscrepResolver', status: 'done', detail: '2 auto, 1 escalated' },
-                            { id: 'bo', name: 'Backorder', status: 'pending' },
+                            { id: 'bo', name: 'Backorder', status: expertApproved24 ? 'running' : 'pending' },
                             { id: 'approval', name: 'ApprovalOrch', status: 'pending' },
                             { id: 'notif', name: 'Notification', status: 'pending' },
                         ]} accentColor="green" />
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">DiscrepResolverAgent:</span> AI reviewed 50 line items — 2 corrections applied automatically, 1 quantity shortfall escalated to expert review.
+                                <span className="font-bold">DiscrepResolverAgent:</span> AI reviewed 50 line items — 2 corrections applied automatically, 1 quantity shortfall escalated to expert review. <span className="font-medium">Click the edit icon on flagged rows to modify.</span>
                             </div>
                         </div>
 
@@ -2310,6 +2315,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        {Object.keys(editedItems24).length > 0 && (
+                                            <span className="px-2 py-1 rounded-lg bg-blue-100 dark:bg-blue-500/20 text-[10px] font-bold text-blue-700 dark:text-blue-400">{Object.keys(editedItems24).length} edited</span>
+                                        )}
                                         <span className="px-2 py-1 rounded-lg bg-muted text-[10px] font-bold text-foreground">{ACK_AIS.lineItems} lines</span>
                                         <span className="px-2 py-1 rounded-lg bg-muted text-[10px] font-bold text-foreground">{ACK_AIS.total}</span>
                                     </div>
@@ -2318,7 +2326,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                 <div className="flex items-center gap-2">
                                     <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-[9px] font-bold text-green-700 dark:text-green-400">✓ Grommet corrected</span>
                                     <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-[9px] font-bold text-green-700 dark:text-green-400">✓ Dates accepted</span>
-                                    <span className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-[9px] font-bold text-amber-700 dark:text-amber-400">⚠ Qty shortfall</span>
+                                    <span className={cn('px-2 py-0.5 rounded-full text-[9px] font-bold', editedItems24[23] || editedItems24[47] ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400' : 'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400')}>{editedItems24[23] || editedItems24[47] ? '✎ Qty modified' : '⚠ Qty shortfall'}</span>
                                 </div>
                             </div>
 
@@ -2334,46 +2342,144 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                             <th className="text-center px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">ACK Qty</th>
                                             <th className="text-right px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">Price</th>
                                             <th className="text-center px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">Status</th>
+                                            <th className="text-center px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase w-16">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-border">
-                                        {ACK_LINE_ITEMS_50.map(item => (
-                                            <tr key={item.line} className={cn(
-                                                'transition-colors',
-                                                item.status === 'grommet-error' && 'bg-green-50/50 dark:bg-green-500/5',
-                                                item.status === 'qty-short' && 'bg-amber-50/50 dark:bg-amber-500/5',
-                                                item.status === 'date-shift' && 'bg-blue-50/50 dark:bg-blue-500/5',
-                                            )}>
-                                                <td className="px-3 py-2 font-mono text-muted-foreground">{item.line}</td>
-                                                <td className="px-3 py-2 font-bold text-foreground">{item.sku}</td>
-                                                <td className="px-3 py-2 text-foreground">{item.desc}</td>
-                                                <td className="px-3 py-2 text-center">{item.qty}</td>
-                                                <td className={cn('px-3 py-2 text-center font-bold', item.status === 'qty-short' ? 'text-amber-600 dark:text-amber-400' : 'text-foreground')}>{item.qtyAck}</td>
-                                                <td className="px-3 py-2 text-right text-muted-foreground">{item.price}</td>
-                                                <td className="px-3 py-2 text-center">
-                                                    {item.status === 'match' && <span className="text-green-600 dark:text-green-400 font-bold">✓</span>}
-                                                    {item.status === 'grommet-error' && <span className="px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/20 text-[9px] font-bold text-green-700 dark:text-green-400">AI Fixed</span>}
-                                                    {item.status === 'date-shift' && <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/20 text-[9px] font-bold text-blue-700 dark:text-blue-400">{item.dateShift}</span>}
-                                                    {item.status === 'qty-short' && <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/20 text-[9px] font-bold text-amber-700 dark:text-amber-400">-{item.shortfall}</span>}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {ACK_LINE_ITEMS_50.map(item => {
+                                            const isEditing = editingLine24 === item.line;
+                                            const wasEdited = !!editedItems24[item.line];
+                                            const isFlagged = item.status !== 'match';
+                                            return (
+                                                <Fragment key={item.line}>
+                                                    <tr className={cn(
+                                                        'transition-colors',
+                                                        isEditing && 'ring-2 ring-inset ring-blue-500/30',
+                                                        wasEdited && 'bg-blue-50/50 dark:bg-blue-500/5',
+                                                        !wasEdited && item.status === 'grommet-error' && 'bg-green-50/50 dark:bg-green-500/5',
+                                                        !wasEdited && item.status === 'qty-short' && 'bg-amber-50/50 dark:bg-amber-500/5',
+                                                        !wasEdited && item.status === 'date-shift' && 'bg-blue-50/50 dark:bg-blue-500/5',
+                                                    )}>
+                                                        <td className="px-3 py-2 font-mono text-muted-foreground">{item.line}</td>
+                                                        <td className="px-3 py-2 font-bold text-foreground">{item.sku}</td>
+                                                        <td className="px-3 py-2 text-foreground">{item.desc}</td>
+                                                        <td className="px-3 py-2 text-center">{item.qty}</td>
+                                                        <td className={cn('px-3 py-2 text-center font-bold', wasEdited ? 'text-blue-600 dark:text-blue-400' : item.status === 'qty-short' ? 'text-amber-600 dark:text-amber-400' : 'text-foreground')}>
+                                                            {wasEdited && editedItems24[item.line]?.qtyAck != null ? editedItems24[item.line].qtyAck : item.qtyAck}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right text-muted-foreground">{item.price}</td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            {wasEdited && <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/20 text-[9px] font-bold text-blue-700 dark:text-blue-400">Edited</span>}
+                                                            {!wasEdited && item.status === 'match' && <span className="text-green-600 dark:text-green-400 font-bold">✓</span>}
+                                                            {!wasEdited && item.status === 'grommet-error' && <span className="px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/20 text-[9px] font-bold text-green-700 dark:text-green-400">AI Fixed</span>}
+                                                            {!wasEdited && item.status === 'date-shift' && <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-500/20 text-[9px] font-bold text-blue-700 dark:text-blue-400">{item.dateShift}</span>}
+                                                            {!wasEdited && item.status === 'qty-short' && <span className="px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/20 text-[9px] font-bold text-amber-700 dark:text-amber-400">-{item.shortfall}</span>}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-center">
+                                                            {isFlagged && !isEditing && (
+                                                                <button onClick={() => setEditingLine24(item.line)} className="p-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors text-muted-foreground hover:text-foreground" title="Edit line item">
+                                                                    <PencilSquareIcon className="w-3.5 h-3.5" />
+                                                                </button>
+                                                            )}
+                                                            {isEditing && (
+                                                                <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400">Editing</span>
+                                                            )}
+                                                        </td>
+                                                    </tr>
+                                                    {/* Inline edit form */}
+                                                    {isEditing && (
+                                                        <tr className="bg-blue-50/80 dark:bg-blue-500/10">
+                                                            <td colSpan={8} className="px-4 py-3">
+                                                                <div className="flex items-end gap-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                                    {item.status === 'qty-short' && (
+                                                                        <div className="flex-shrink-0">
+                                                                            <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Corrected ACK Qty</label>
+                                                                            <input
+                                                                                type="number"
+                                                                                defaultValue={editedItems24[item.line]?.qtyAck ?? item.qtyAck}
+                                                                                min={0}
+                                                                                max={item.qty}
+                                                                                className="w-20 px-2 py-1.5 text-xs font-bold rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                                                                id={`edit-qty-${item.line}`}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                    <div className="flex-1">
+                                                                        <label className="block text-[10px] font-bold text-muted-foreground uppercase mb-1">Expert Note</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            defaultValue={editedItems24[item.line]?.note ?? ''}
+                                                                            placeholder={item.status === 'qty-short' ? 'e.g. Accept partial, backorder remainder' : item.status === 'grommet-error' ? 'e.g. Confirm grommet spec correction' : 'Add note...'}
+                                                                            className="w-full px-2 py-1.5 text-xs rounded-lg border border-border bg-card text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-blue-500/30"
+                                                                            id={`edit-note-${item.line}`}
+                                                                        />
+                                                                    </div>
+                                                                    <div className="flex items-center gap-2 shrink-0">
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                const qtyEl = document.getElementById(`edit-qty-${item.line}`) as HTMLInputElement | null;
+                                                                                const noteEl = document.getElementById(`edit-note-${item.line}`) as HTMLInputElement | null;
+                                                                                setEditedItems24(prev => ({
+                                                                                    ...prev,
+                                                                                    [item.line]: {
+                                                                                        qtyAck: qtyEl ? parseInt(qtyEl.value) : item.qtyAck,
+                                                                                        note: noteEl?.value || '',
+                                                                                    }
+                                                                                }));
+                                                                                setEditingLine24(null);
+                                                                            }}
+                                                                            className="px-3 py-1.5 text-[10px] font-bold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                                                                        >
+                                                                            Save
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => setEditingLine24(null)}
+                                                                            className="px-3 py-1.5 text-[10px] font-bold rounded-lg bg-zinc-200 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-600 text-foreground transition-colors"
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    )}
+                                                </Fragment>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="px-3 py-2 bg-muted/30 border-t border-border text-[10px] text-muted-foreground">
-                                Showing 8 of {ACK_AIS.lineItems} line items (flagged items highlighted)
+                            <div className="px-3 py-2 bg-muted/30 border-t border-border text-[10px] text-muted-foreground flex items-center justify-between">
+                                <span>Showing 8 of {ACK_AIS.lineItems} line items (flagged items highlighted)</span>
+                                {Object.keys(editedItems24).length > 0 && (
+                                    <span className="text-blue-600 dark:text-blue-400 font-bold">{Object.keys(editedItems24).length} item(s) modified by expert</span>
+                                )}
                             </div>
                         </div>
 
-                        {/* Backorder initiated badge */}
-                        <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800">
-                            <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
-                            <div>
-                                <p className="text-xs font-bold text-green-700 dark:text-green-400">Backorder BO-1064B Initiated</p>
-                                <p className="text-[10px] text-green-600 dark:text-green-500">3 SKUs, 6 units — awaiting approval chain</p>
+                        {/* Approve & Continue */}
+                        {!expertApproved24 ? (
+                            <div className="flex items-center gap-3">
+                                <button
+                                    onClick={() => {
+                                        setExpertApproved24(true);
+                                        setTimeout(() => nextStep(), 1500);
+                                    }}
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold transition-colors shadow-sm"
+                                >
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                    Approve & Generate Backorder
+                                </button>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 animate-in fade-in zoom-in duration-300">
+                                <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+                                <div>
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Expert Review Approved — Generating Backorder</p>
+                                    <p className="text-[10px] text-green-600 dark:text-green-500">3 SKUs, 6 units — routing to approval chain{Object.keys(editedItems24).length > 0 ? ` · ${Object.keys(editedItems24).length} expert correction(s) applied` : ''}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -2393,7 +2499,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">BackorderAgent:</span> Creating backorder BO-1064B for 3 shortfall SKUs (6 units), then routing to automated 3-approver chain.
                             </div>
@@ -2576,7 +2682,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                         {/* Send Notifications Button */}
                         <div className="flex items-center justify-between p-4 rounded-2xl bg-card border border-border shadow-sm">
                             <div className="flex items-center gap-2">
-                                <SparklesIcon className="w-4 h-4 text-indigo-500" />
+                                <SparklesIcon className="w-4 h-4 text-indigo-500 animate-pulse" />
                                 <span className="text-xs font-bold text-indigo-700 dark:text-indigo-400">NotificationAgent ready — persona-aware digests for both ACKs</span>
                             </div>
                             <button
@@ -2620,7 +2726,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                             <div className="p-6 space-y-5">
                                 <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                                     <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                         <span className="font-bold">ApprovalOrchestratorAgent:</span> Routing to 2-level approval chain — automated compliance check first, then manager sign-off for quote value bracket ($100k-$250k).
                                     </div>
@@ -2711,7 +2817,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">POBuilderAgent:</span> Auto-generating purchase order PO-1029 from approved quote QT-1025, then routing to automated order approval chain.
                             </div>

@@ -328,8 +328,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [managerApproved17, setManagerApproved17] = useState(false)
     const [notifArrived17, setNotifArrived17] = useState(false)
     const [contentVisible17, setContentVisible17] = useState(false)
+    const [lineItemPage17, setLineItemPage17] = useState(0)
+    const [requestChangesOpen17, setRequestChangesOpen17] = useState(false)
     useEffect(() => {
-        if (currentStep.id !== '1.7') { setManagerApproved17(false); setNotifArrived17(false); setContentVisible17(false); return; }
+        if (currentStep.id !== '1.7') { setManagerApproved17(false); setNotifArrived17(false); setContentVisible17(false); setLineItemPage17(0); setRequestChangesOpen17(false); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
         t.push(setTimeout(() => setNotifArrived17(true), 800));
         t.push(setTimeout(() => setContentVisible17(true), 2000));
@@ -526,8 +528,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
                                             {[
                                                 { label: 'Quote ID', value: 'QT-1025' },
-                                                { label: 'Total Value', value: '$134,250' },
-                                                { label: 'Line Items', value: '5 SKUs' },
+                                                { label: 'Total Value', value: '$687,430' },
+                                                { label: 'Line Items', value: '50 SKUs' },
                                                 { label: 'Delivery Est.', value: 'Mar 15, 2026' },
                                             ].map(item => (
                                                 <div key={item.label} className="p-3 rounded-lg bg-muted/30 border border-border/50 text-center">
@@ -552,37 +554,136 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </div>
                                     </div>
 
-                                    {/* Line item breakdown */}
-                                    <div className="rounded-xl border border-border overflow-hidden">
-                                        <div className="px-3 py-2 bg-muted/50 border-b border-border">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Line Item Summary — 5 SKUs</p>
-                                        </div>
-                                        <table className="w-full text-xs">
-                                            <tbody className="divide-y divide-border">
-                                                {[
-                                                    { sku: 'ERG-5100', name: 'Ergonomic Task Chair', qty: 125, subtotal: '$43,750' },
-                                                    { sku: 'DSK-2200', name: 'Height-Adjustable Desk', qty: 80, subtotal: '$46,400' },
-                                                    { sku: 'ARM-4D10', name: '4D Adjustable Armrest', qty: 125, subtotal: '$2,250' },
-                                                    { sku: 'MON-3400', name: 'Monitor Arm Dual', qty: 60, subtotal: '$8,700' },
-                                                    { sku: 'CAB-1100', name: 'Mobile Pedestal Cabinet', qty: 40, subtotal: '$8,800' },
-                                                ].map(ln => (
-                                                    <tr key={ln.sku}>
-                                                        <td className="px-3 py-2 font-mono text-[10px] text-muted-foreground w-20">{ln.sku}</td>
-                                                        <td className="px-3 py-2 text-foreground">{ln.name}</td>
-                                                        <td className="px-3 py-2 text-center text-muted-foreground w-16">×{ln.qty}</td>
-                                                        <td className="px-3 py-2 text-right font-bold text-foreground w-24">{ln.subtotal}</td>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                    {/* Line item breakdown — 50 SKUs with pagination */}
+                                    {(() => {
+                                        const allLineItems = [
+                                            { sku: 'ERG-5100', name: 'Ergonomic Task Chair', qty: 125, subtotal: '$43,750' },
+                                            { sku: 'DSK-2200', name: 'Height-Adjustable Desk', qty: 80, subtotal: '$46,400' },
+                                            { sku: 'ARM-4D10', name: '4D Adjustable Armrest', qty: 125, subtotal: '$2,250' },
+                                            { sku: 'MON-3400', name: 'Monitor Arm Dual', qty: 60, subtotal: '$8,700' },
+                                            { sku: 'CAB-1100', name: 'Mobile Pedestal Cabinet', qty: 40, subtotal: '$8,800' },
+                                            { sku: 'CHP-6200', name: 'Conference Chair Pro', qty: 48, subtotal: '$19,200' },
+                                            { sku: 'TBL-3300', name: 'Conference Table 8ft', qty: 12, subtotal: '$14,400' },
+                                            { sku: 'FIL-2100', name: 'Lateral File Cabinet 4-Drawer', qty: 30, subtotal: '$8,100' },
+                                            { sku: 'WBD-1500', name: 'Whiteboard Mobile 72"', qty: 15, subtotal: '$6,750' },
+                                            { sku: 'LMP-0800', name: 'LED Desk Lamp Adjustable', qty: 200, subtotal: '$9,800' },
+                                            { sku: 'PNL-4400', name: 'Acoustic Privacy Panel', qty: 60, subtotal: '$12,600' },
+                                            { sku: 'SHF-7700', name: 'Bookshelf Unit Modular', qty: 24, subtotal: '$7,200' },
+                                            { sku: 'STL-9900', name: 'Standing Mat Anti-Fatigue', qty: 80, subtotal: '$3,200' },
+                                            { sku: 'KBT-0100', name: 'Keyboard Tray Sliding', qty: 80, subtotal: '$4,800' },
+                                            { sku: 'PWR-5500', name: 'Power Hub Desktop 6-Port', qty: 200, subtotal: '$11,800' },
+                                            { sku: 'HDR-6600', name: 'Cable Management Tray', qty: 200, subtotal: '$5,000' },
+                                            { sku: 'SCR-2100', name: 'Monitor Privacy Screen 27"', qty: 80, subtotal: '$7,920' },
+                                            { sku: 'FTP-3200', name: 'Footrest Ergonomic Tilt', qty: 80, subtotal: '$4,000' },
+                                            { sku: 'DRW-1100', name: 'Desk Drawer Organizer', qty: 125, subtotal: '$3,125' },
+                                            { sku: 'WPC-8800', name: 'Wireless Charging Pad', qty: 200, subtotal: '$7,800' },
+                                            { sku: 'PHN-4100', name: 'Phone Stand Adjustable', qty: 200, subtotal: '$3,400' },
+                                            { sku: 'CPH-5200', name: 'CPU Holder Under-Desk', qty: 80, subtotal: '$4,720' },
+                                            { sku: 'DSK-2201', name: 'L-Shaped Corner Desk', qty: 20, subtotal: '$15,800' },
+                                            { sku: 'CHP-6300', name: 'Guest Chair Stacking', qty: 60, subtotal: '$8,400' },
+                                            { sku: 'RCK-9100', name: 'Coat Rack Freestanding', qty: 20, subtotal: '$2,600' },
+                                            { sku: 'TBL-3301', name: 'Round Meeting Table 48"', qty: 8, subtotal: '$5,600' },
+                                            { sku: 'LCK-7100', name: 'Locker Unit Personal 4-Door', qty: 10, subtotal: '$7,500' },
+                                            { sku: 'SOF-8200', name: 'Lounge Sofa 2-Seat', qty: 6, subtotal: '$10,800' },
+                                            { sku: 'OTM-8300', name: 'Ottoman Round Fabric', qty: 12, subtotal: '$3,600' },
+                                            { sku: 'PLT-0200', name: 'Indoor Planter Large', qty: 20, subtotal: '$3,400' },
+                                            { sku: 'BIN-1300', name: 'Recycling Bin Triple Sort', qty: 30, subtotal: '$4,350' },
+                                            { sku: 'SGN-2400', name: 'Wayfinding Sign Set', qty: 5, subtotal: '$2,250' },
+                                            { sku: 'CRT-3500', name: 'AV Cart Mobile', qty: 4, subtotal: '$3,200' },
+                                            { sku: 'PRJ-4600', name: 'Projector Ceiling Mount', qty: 8, subtotal: '$2,400' },
+                                            { sku: 'SPK-5700', name: 'Conference Speaker System', qty: 8, subtotal: '$6,400' },
+                                            { sku: 'CAM-6800', name: 'Video Conference Camera', qty: 8, subtotal: '$7,200' },
+                                            { sku: 'MIC-7900', name: 'Ceiling Microphone Array', qty: 8, subtotal: '$4,800' },
+                                            { sku: 'DSP-8000', name: 'Digital Display 55" Wall', qty: 6, subtotal: '$10,200' },
+                                            { sku: 'KSK-9200', name: 'Kiosk Stand Interactive', qty: 2, subtotal: '$5,400' },
+                                            { sku: 'UMB-0300', name: 'Umbrella Stand Entry', qty: 4, subtotal: '$480' },
+                                            { sku: 'MAT-1400', name: 'Entry Mat Commercial', qty: 6, subtotal: '$900' },
+                                            { sku: 'CLK-2500', name: 'Wall Clock Analog 14"', qty: 20, subtotal: '$1,400' },
+                                            { sku: 'FRM-3600', name: 'Art Frame 24×36"', qty: 20, subtotal: '$2,000' },
+                                            { sku: 'CUR-4700', name: 'Window Shade Motorized', qty: 40, subtotal: '$18,000' },
+                                            { sku: 'RUG-5800', name: 'Area Rug 8×10 Commercial', qty: 10, subtotal: '$8,500' },
+                                            { sku: 'TRH-6900', name: 'Trash Can Sensor Lid', qty: 30, subtotal: '$4,050' },
+                                            { sku: 'SAN-7000', name: 'Hand Sanitizer Station', qty: 10, subtotal: '$2,500' },
+                                            { sku: 'FAN-8100', name: 'Desk Fan USB Quiet', qty: 80, subtotal: '$2,400' },
+                                            { sku: 'HTR-9300', name: 'Space Heater Under-Desk', qty: 40, subtotal: '$3,600' },
+                                            { sku: 'AIR-0400', name: 'Air Purifier HEPA Room', qty: 12, subtotal: '$5,880' },
+                                        ];
+                                        const perPage = 10;
+                                        const totalPages = Math.ceil(allLineItems.length / perPage);
+                                        const pageItems = allLineItems.slice(lineItemPage17 * perPage, (lineItemPage17 + 1) * perPage);
+                                        const startIdx = lineItemPage17 * perPage + 1;
+                                        const endIdx = Math.min((lineItemPage17 + 1) * perPage, allLineItems.length);
+
+                                        return (
+                                            <div className="rounded-xl border border-border overflow-hidden">
+                                                <div className="px-3 py-2 bg-muted/50 border-b border-border flex items-center justify-between">
+                                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Line Item Summary — 50 SKUs</p>
+                                                    <p className="text-[10px] text-muted-foreground">Showing {startIdx}–{endIdx} of {allLineItems.length}</p>
+                                                </div>
+                                                <table className="w-full text-xs">
+                                                    <thead>
+                                                        <tr className="border-b border-border/50 bg-muted/20">
+                                                            <th className="px-3 py-1.5 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider w-20">SKU</th>
+                                                            <th className="px-3 py-1.5 text-left text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Product</th>
+                                                            <th className="px-3 py-1.5 text-center text-[10px] font-medium text-muted-foreground uppercase tracking-wider w-16">Qty</th>
+                                                            <th className="px-3 py-1.5 text-right text-[10px] font-medium text-muted-foreground uppercase tracking-wider w-24">Subtotal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-border">
+                                                        {pageItems.map(ln => (
+                                                            <tr key={ln.sku} className="hover:bg-muted/30 transition-colors">
+                                                                <td className="px-3 py-2 font-mono text-[10px] text-muted-foreground">{ln.sku}</td>
+                                                                <td className="px-3 py-2 text-foreground">{ln.name}</td>
+                                                                <td className="px-3 py-2 text-center text-muted-foreground">×{ln.qty}</td>
+                                                                <td className="px-3 py-2 text-right font-bold text-foreground">{ln.subtotal}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </table>
+                                                {/* Pagination */}
+                                                <div className="px-3 py-2 bg-muted/30 border-t border-border flex items-center justify-between">
+                                                    <p className="text-[10px] text-muted-foreground">Page {lineItemPage17 + 1} of {totalPages}</p>
+                                                    <div className="flex items-center gap-1">
+                                                        <button
+                                                            onClick={() => setLineItemPage17(p => Math.max(0, p - 1))}
+                                                            disabled={lineItemPage17 === 0}
+                                                            className="p-1 rounded hover:bg-muted disabled:opacity-30 transition-colors"
+                                                        >
+                                                            <ChevronLeftIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                                                        </button>
+                                                        {Array.from({ length: totalPages }, (_, i) => (
+                                                            <button
+                                                                key={i}
+                                                                onClick={() => setLineItemPage17(i)}
+                                                                className={cn(
+                                                                    'w-5 h-5 rounded text-[10px] font-bold transition-colors',
+                                                                    i === lineItemPage17
+                                                                        ? 'bg-primary text-primary-foreground'
+                                                                        : 'text-muted-foreground hover:bg-muted'
+                                                                )}
+                                                            >
+                                                                {i + 1}
+                                                            </button>
+                                                        ))}
+                                                        <button
+                                                            onClick={() => setLineItemPage17(p => Math.min(totalPages - 1, p + 1))}
+                                                            disabled={lineItemPage17 === totalPages - 1}
+                                                            className="p-1 rounded hover:bg-muted disabled:opacity-30 transition-colors"
+                                                        >
+                                                            <ChevronRightIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* AI Summary for dealer */}
                                     <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                                        <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                        <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                                         <div className="text-xs text-indigo-700 dark:text-indigo-300 space-y-1">
-                                            <p><span className="font-bold">AI Summary:</span> Quote generated from your RFQ email + attachments. All 5 SKUs matched to catalog. Pricing verified. Early payment discount (2%) + volume discount (2%) applied automatically.</p>
-                                            <p>Estimated savings vs. list price: <span className="font-bold text-green-600 dark:text-green-400">$5,370 (4%)</span></p>
+                                            <p><span className="font-bold">AI Summary:</span> Quote generated from your RFQ email + attachments. All 50 SKUs matched to catalog across 8 product categories. Pricing verified. Early payment discount (2%) + volume discount (2%) applied automatically.</p>
+                                            <p>Estimated savings vs. list price: <span className="font-bold text-green-600 dark:text-green-400">$27,497 (4%)</span></p>
                                         </div>
                                     </div>
 
@@ -591,9 +692,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 mb-2">Automatically Resolved</p>
                                         <div className="space-y-1">
                                             {[
-                                                'Freight calculated: $2,450 (multi-zone LTL to Austin, TX)',
-                                                'Quantity confirmed: 125 units from PDF spec',
+                                                'Freight calculated: $12,850 (multi-zone LTL to Austin, TX — 50 SKUs)',
+                                                'All 50 quantities confirmed from PDF spec + CSV cross-reference',
                                                 'Armrest upgraded: 4D Adjustable (faster delivery, +$750)',
+                                                '8 vendor substitutions applied (equivalent or better specs)',
                                             ].map((item, i) => (
                                                 <div key={i} className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                                                     <CheckCircleIcon className="w-3.5 h-3.5 shrink-0" />
@@ -603,22 +705,63 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </div>
                                     </div>
 
-                                    {/* Approve button */}
+                                    {/* Action buttons */}
                                     <div className="flex items-center gap-3 pt-1">
                                         <button
                                             onClick={() => { setManagerApproved17(true); setTimeout(() => nextStep(), 1000); }}
-                                            disabled={managerApproved17}
+                                            disabled={managerApproved17 || requestChangesOpen17}
                                             className={cn(
                                                 'px-6 py-3 text-sm font-bold rounded-xl transition-all shadow-sm flex items-center gap-2',
-                                                managerApproved17 ? 'bg-emerald-500 text-white' : 'bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.02]'
+                                                managerApproved17 ? 'bg-emerald-500 text-white' : 'bg-primary text-primary-foreground hover:opacity-90 hover:scale-[1.02] disabled:opacity-50'
                                             )}
                                         >
                                             {managerApproved17 ? <><CheckIcon className="w-4 h-4" /> Quote Approved</> : <><CheckBadgeIcon className="w-4 h-4" /> Approve Quote</>}
+                                        </button>
+                                        <button
+                                            onClick={() => setRequestChangesOpen17(!requestChangesOpen17)}
+                                            disabled={managerApproved17}
+                                            className={cn(
+                                                'px-5 py-3 text-sm font-bold rounded-xl transition-all shadow-sm flex items-center gap-2 border',
+                                                requestChangesOpen17
+                                                    ? 'bg-amber-500 text-white border-amber-500'
+                                                    : 'bg-card text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-500/30 hover:bg-amber-50 dark:hover:bg-amber-500/10 disabled:opacity-50'
+                                            )}
+                                        >
+                                            <PencilSquareIcon className="w-4 h-4" /> Request Changes
                                         </button>
                                         {managerApproved17 && (
                                             <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium animate-pulse">Generating PO...</span>
                                         )}
                                     </div>
+
+                                    {/* Request Changes panel */}
+                                    {requestChangesOpen17 && (
+                                        <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                            <div className="flex items-center gap-2">
+                                                <ExclamationTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                                <p className="text-xs font-bold text-amber-700 dark:text-amber-300">Request Changes to Expert</p>
+                                            </div>
+                                            <p className="text-[11px] text-amber-600 dark:text-amber-400">Describe any inconsistencies found in the 50 line items. The quote will be sent back to the Expert for revision.</p>
+                                            <textarea
+                                                placeholder="e.g. Line items 12-15 show incorrect unit pricing for Acoustic Panels. Also, SKU-PLT-0200 quantity should be 30 not 20..."
+                                                className="w-full h-20 px-3 py-2 text-xs rounded-lg bg-white dark:bg-zinc-900 border border-amber-200 dark:border-amber-500/30 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-400 resize-none"
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setRequestChangesOpen17(false)}
+                                                    className="px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors flex items-center gap-1.5"
+                                                >
+                                                    <EnvelopeIcon className="w-3.5 h-3.5" /> Send to Expert
+                                                </button>
+                                                <button
+                                                    onClick={() => setRequestChangesOpen17(false)}
+                                                    className="px-4 py-2 text-xs font-medium rounded-lg text-muted-foreground hover:text-foreground transition-colors"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -642,7 +785,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">NotificationAgent:</span> Generated 4 persona-specific notifications from 8-agent ACK pipeline. Dealer receives full lifecycle summary. Expert receives only actionable items — reducing noise by 60%.
                             </div>
@@ -676,7 +819,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                            <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                             <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
                                 <span className="font-bold">NotificationAgent:</span> PO-1029 notification delivered to Dealer portal. Click "View PO" in Action Center to continue to pipeline.
                             </div>
@@ -1141,7 +1284,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         {item.aiSuggestion && (
                                                             <div className="rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 p-3">
                                                                 <div className="flex items-start gap-3">
-                                                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0 animate-pulse" />
                                                                     <div className="flex-1">
                                                                         <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">
                                                                             AI Insight
