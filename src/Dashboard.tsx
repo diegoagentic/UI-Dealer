@@ -509,7 +509,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 </div>
                                 <div>
                                     <p className="text-[10px] text-muted-foreground font-medium leading-none">End User</p>
-                                    <p className="text-xs font-bold text-foreground leading-tight">Acme Corp</p>
+                                    <p className="text-xs font-bold text-foreground leading-tight">Diego Sabatini</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
