@@ -120,9 +120,8 @@ export default function Navbar({
         { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
     ];
 
-    // Demo build: only show pages that appear in the demo flow
-    const DEMO_NAV_PAGES = ['dashboard', 'transactions', 'mac'];
-    const navigation = allNavigation.filter(n => DEMO_NAV_PAGES.includes(n.page));
+    // Use the full custom navigation provided by each simulation app
+    const navigation = allNavigation;
 
     return (
         <div className={`fixed top-6 z-50 flex justify-center px-4 transition-all duration-300 ${sidebarExpanded ? 'left-80 right-0' : 'left-0 right-0'}`}>

@@ -35,19 +35,7 @@ import ConversationalSurvey from "./components/simulations/ConversationalSurvey"
 import {
   HomeIcon,
   BanknotesIcon,
-  DocumentTextIcon,
-  ClipboardDocumentListIcon,
-  ChartBarIcon,
   WrenchScrewdriverIcon,
-  ExclamationCircleIcon,
-  BookOpenIcon,
-  Squares2X2Icon,
-  CubeTransparentIcon,
-  BellIcon,
-  SparklesIcon,
-  TruckIcon,
-  EnvelopeIcon,
-  FolderIcon
 } from '@heroicons/react/24/outline'
 
 import logoLightBrand from './assets/logo-light-brand.png'
@@ -111,51 +99,45 @@ function App() {
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Home', page: 'dashboard', icon: HomeIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
             { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
-            { name: 'Quotes', page: 'quote-detail', icon: DocumentTextIcon },
-            { name: 'Orders', page: 'order-detail', icon: ClipboardDocumentListIcon },
-            { name: 'Analytics', page: '_sim_analytics', icon: ChartBarIcon },
           ]
         };
       case 'service-now':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Service Portal', page: 'dashboard', icon: HomeIcon },
-            { name: 'IT Desk', page: '_sim_itdesk', icon: WrenchScrewdriverIcon },
-            { name: 'Incidents', page: '_sim_incidents', icon: ExclamationCircleIcon },
-            { name: 'Requests', page: '_sim_requests', icon: ClipboardDocumentListIcon },
-            { name: 'Knowledge', page: '_sim_knowledge', icon: BookOpenIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'dealer-kanban':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Kanban Board', page: 'dashboard', icon: Squares2X2Icon },
-            { name: 'Automated Agents', page: '_sim_agents', icon: CubeTransparentIcon },
-            { name: 'Performance', page: '_sim_perf', icon: ChartBarIcon },
-            { name: 'Alerts', page: '_sim_alerts', icon: BellIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'catalog':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Product Catalog', page: 'dashboard', icon: BookOpenIcon },
-            { name: 'AI Assistant', page: '_sim_ai', icon: SparklesIcon },
-            { name: 'My Orders', page: '_sim_orders', icon: TruckIcon },
-            { name: 'Settings', page: '_sim_settings', icon: WrenchScrewdriverIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'email-marketplace':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Inbox', page: 'dashboard', icon: EnvelopeIcon },
-            { name: 'Archive', page: '_sim_archive', icon: FolderIcon },
-            { name: 'Spam', page: '_sim_spam', icon: ExclamationCircleIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'quote-po':
@@ -163,9 +145,8 @@ function App() {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
             { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
-            { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-            { name: 'Quotes & Orders', page: 'quote-detail', icon: ClipboardDocumentListIcon },
-            { name: 'Projects', page: '_sim_projects', icon: FolderIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'dashboard':
@@ -173,60 +154,53 @@ function App() {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
             { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
-            { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-            { name: 'Quotes & Orders', page: 'quote-detail', icon: ClipboardDocumentListIcon },
-            { name: 'Projects', page: '_sim_projects', icon: FolderIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'ack-detail':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Home', page: 'dashboard', icon: HomeIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
             { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
-            { name: 'Quotes', page: 'quote-detail', icon: DocumentTextIcon },
-            { name: 'Orders', page: 'order-detail', icon: ClipboardDocumentListIcon },
-            { name: 'Analytics', page: '_sim_analytics', icon: ChartBarIcon },
           ]
         };
       case 'transactions':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Home', page: '_sim_home', icon: HomeIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
             { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
-            { name: 'Invoices', page: '_sim_invoices', icon: DocumentTextIcon },
-            { name: 'Analytics', page: '_sim_analytics', icon: ChartBarIcon },
           ]
         };
       case 'mac':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Home', page: 'dashboard', icon: HomeIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
             { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
-            { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-            { name: 'Orders', page: 'order-detail', icon: ClipboardDocumentListIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'quote-detail':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Home', page: '_sim_home', icon: HomeIcon },
-            { name: 'Quotes', page: 'quote-detail', icon: DocumentTextIcon },
-            { name: 'Orders', page: 'order-detail', icon: ClipboardDocumentListIcon },
-            { name: 'Analytics', page: '_sim_analytics', icon: ChartBarIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       case 'inventory':
         return {
           appName: resolvedAppName, companyName: resolvedCompany,
           customNavigation: [
-            { name: 'Dashboard', page: '_sim_home', icon: HomeIcon },
-            { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-            { name: 'Shipments', page: 'order-detail', icon: TruckIcon },
-            { name: 'Projects', page: '_sim_projects', icon: FolderIcon },
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'Service Center', page: 'mac', icon: WrenchScrewdriverIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
       default:
