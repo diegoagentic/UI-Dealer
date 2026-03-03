@@ -2099,6 +2099,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     const feature = features.find(f => f.id === toolId)
                                     // Only render if feature exists and is enabled
                                     if (!feature || !feature.enabled) return null;
+                                    // Hide Quick Quote during steps 2.1 and 2.2
+                                    if (toolId === 'quick_quote' && ['2.1', '2.2'].includes(currentStep.id)) return null;
 
                                     return (
                                         <Reorder.Item

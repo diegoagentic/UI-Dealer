@@ -127,6 +127,10 @@ export default function MACPunchList() {
     const [claimPhase, setClaimPhase] = useState<'processing' | 'acknowledged' | 'complete'>('processing');
     const [showLiability, setShowLiability] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
+    const [showDealerRequest, setShowDealerRequest] = useState(false);
+    const [dealerMessage, setDealerMessage] = useState('');
+    const [dealerPhotos, setDealerPhotos] = useState<string[]>([]);
+    const [dealerRequestSent, setDealerRequestSent] = useState(false);
 
     // Auto-select first item when entering Flow 3
     useEffect(() => {
@@ -181,6 +185,10 @@ export default function MACPunchList() {
             setClaimPhase('processing');
             setShowLiability(false);
             setShowReviewModal(false);
+            setShowDealerRequest(false);
+            setDealerMessage('');
+            setDealerPhotos([]);
+            setDealerRequestSent(false);
             return;
         }
         setClaimLogs([]);
@@ -188,6 +196,10 @@ export default function MACPunchList() {
         setClaimPhase('processing');
         setShowLiability(false);
         setShowReviewModal(false);
+        setShowDealerRequest(false);
+        setDealerMessage('');
+        setDealerPhotos([]);
+        setDealerRequestSent(false);
 
         const timeouts: ReturnType<typeof setTimeout>[] = [];
         CLAIM_LOG_ENTRIES.forEach((entry, i) => {
@@ -1108,8 +1120,94 @@ export default function MACPunchList() {
                                             </div>
                                         </div>
 
+                                        {/* Request to Dealer Section */}
+                                        {showDealerRequest && !dealerRequestSent && (
+                                            <div className="mx-5 mb-3 p-3 border border-amber-300 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/5 rounded-xl space-y-2.5 animate-in slide-in-from-bottom-2 fade-in duration-300">
+                                                <div className="flex items-center gap-2">
+                                                    <ChatBubbleLeftRightIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                                    <p className="text-[10px] font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">Request Additional Info from Dealer</p>
+                                                </div>
+                                                <textarea
+                                                    value={dealerMessage}
+                                                    onChange={(e) => setDealerMessage(e.target.value)}
+                                                    placeholder="Describe what additional information or evidence you need from the dealer..."
+                                                    className="w-full px-3 py-2 text-xs border border-border rounded-lg bg-white dark:bg-zinc-900 text-foreground placeholder:text-muted-foreground focus:ring-1 focus:ring-amber-500 focus:border-amber-500 focus:outline-none resize-none"
+                                                    rows={3}
+                                                />
+                                                <div className="flex items-center justify-between">
+                                                    <button
+                                                        onClick={() => {
+                                                            if (dealerPhotos.length < 3) {
+                                                                const photoUrls = [
+                                                                    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=100&h=100&fit=crop',
+                                                                    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=100&h=100&fit=crop',
+                                                                    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=100&h=100&fit=crop',
+                                                                ];
+                                                                setDealerPhotos(prev => [...prev, photoUrls[prev.length]]);
+                                                            }
+                                                        }}
+                                                        className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-medium text-muted-foreground border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                                                    >
+                                                        <PaperClipIcon className="w-3.5 h-3.5" />
+                                                        Attach Photo {dealerPhotos.length > 0 && `(${dealerPhotos.length})`}
+                                                    </button>
+                                                    <div className="flex items-center gap-2">
+                                                        <button
+                                                            onClick={() => { setShowDealerRequest(false); setDealerMessage(''); setDealerPhotos([]); }}
+                                                            className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setDealerRequestSent(true)}
+                                                            disabled={!dealerMessage.trim()}
+                                                            className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] font-bold rounded-lg transition-colors"
+                                                        >
+                                                            Send Request
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                {dealerPhotos.length > 0 && (
+                                                    <div className="flex gap-2 pt-1">
+                                                        {dealerPhotos.map((url, i) => (
+                                                            <div key={i} className="relative w-12 h-12 rounded-lg overflow-hidden border border-border animate-in fade-in zoom-in-90 duration-300">
+                                                                <img src={url} alt={`Attachment ${i + 1}`} className="w-full h-full object-cover" />
+                                                                <button
+                                                                    onClick={() => setDealerPhotos(prev => prev.filter((_, idx) => idx !== i))}
+                                                                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center"
+                                                                >
+                                                                    <XMarkIcon className="w-2.5 h-2.5 text-white" />
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Sent Confirmation */}
+                                        {dealerRequestSent && (
+                                            <div className="mx-5 mb-3 p-3 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 rounded-xl animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                                <div className="flex items-center gap-2">
+                                                    <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Request sent to dealer</p>
+                                                </div>
+                                                <p className="text-[11px] text-green-600/80 dark:text-green-400/70 mt-1 ml-6">The dealer will be notified and can respond with additional evidence or clarifications.</p>
+                                            </div>
+                                        )}
+
                                         {/* Modal Footer */}
-                                        <div className="px-5 py-3 border-t border-border flex justify-end sticky bottom-0 bg-white dark:bg-zinc-900 rounded-b-2xl">
+                                        <div className="px-5 py-3 border-t border-border flex justify-between sticky bottom-0 bg-white dark:bg-zinc-900 rounded-b-2xl">
+                                            {!showDealerRequest && !dealerRequestSent && (
+                                                <button
+                                                    onClick={() => setShowDealerRequest(true)}
+                                                    className="flex items-center gap-1.5 px-3 py-2 border border-amber-300 dark:border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-lg hover:bg-amber-50 dark:hover:bg-amber-500/10 transition-colors"
+                                                >
+                                                    <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                                    Request to Dealer
+                                                </button>
+                                            )}
+                                            {(showDealerRequest || dealerRequestSent) && <div />}
                                             <button
                                                 onClick={() => setShowReviewModal(false)}
                                                 className="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-lg transition-colors"
