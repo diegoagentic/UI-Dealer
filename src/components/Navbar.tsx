@@ -8,8 +8,6 @@ import {
     BookOpenIcon, TruckIcon, TagIcon, UsersIcon,
     CalculatorIcon, CubeTransparentIcon,
     BanknotesIcon,
-    UserGroupIcon,
-    CurrencyDollarIcon,
     FolderIcon,
     WrenchScrewdriverIcon,
     PhotoIcon,
@@ -116,8 +114,6 @@ export default function Navbar({
         { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
         { name: 'Service Center', page: 'mac', icon: ArrowPathRoundedSquareIcon },
         { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
-        { name: 'CRM', page: 'crm', icon: UserGroupIcon },
-        { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
     ];
 
     // Use the full custom navigation provided by each simulation app
