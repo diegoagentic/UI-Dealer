@@ -33,7 +33,7 @@ import {
     ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
 import { Reorder } from 'framer-motion'
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
@@ -276,7 +276,19 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     // const { theme, toggleTheme } = useTheme() // Removed - useTheme not available
     const { currentTenant } = useTenant()
     const { sendMessage, setStreamOpen, setShowTriggers } = useGenUI()
-    const { currentStep, nextStep, isDemoActive } = useDemo()
+    const { currentStep, nextStep, isDemoActive, isPaused } = useDemo()
+
+    // Pause-aware timer helper (same pattern as DemoProcessPanel)
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 200);
+        };
+    }, []);
 
     // Step 3.4: End User mobile report state
     const [punchComment, setPunchComment] = useState('')
@@ -343,10 +355,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     useEffect(() => {
         if (currentStep.id !== '1.7') { setManagerApproved17(false); setNotifArrived17(false); setContentVisible17(false); setLineItemPage17(0); setRequestChangesOpen17(false); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setNotifArrived17(true), 800));
-        t.push(setTimeout(() => setContentVisible17(true), 2000));
+        t.push(setTimeout(pauseAware(() => setNotifArrived17(true)), 1080));
+        t.push(setTimeout(pauseAware(() => setContentVisible17(true)), 2700));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     // Step 1.6 — Quote Approval Chain (2 approvers: System Policy auto → David Park → auto-advance)
     const [approvalStates16, setApprovalStates16] = useState<('pending' | 'approved')[]>(['pending', 'pending'])
@@ -356,11 +368,11 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
             return;
         }
         const timeouts: ReturnType<typeof setTimeout>[] = [];
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'pending']), 5000));
-        timeouts.push(setTimeout(() => setApprovalStates16(['approved', 'approved']), 10000));
-        timeouts.push(setTimeout(() => nextStep(), 14000));
+        timeouts.push(setTimeout(pauseAware(() => setApprovalStates16(['approved', 'pending'])), 6750));
+        timeouts.push(setTimeout(pauseAware(() => setApprovalStates16(['approved', 'approved'])), 13500));
+        timeouts.push(setTimeout(pauseAware(() => nextStep()), 18900));
         return () => timeouts.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
     const approvedCount16 = approvalStates16.filter(s => s === 'approved').length;
 
     // Step 1.8 — PO Generation + Order Approval Chain (fully automated)
@@ -375,18 +387,18 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
             return;
         }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setPhase18('po-generating'), 2000));
-        t.push(setTimeout(() => setPoGenPhase18('mapping'), 4000));
-        t.push(setTimeout(() => setPoGenPhase18('validating'), 6000));
-        t.push(setTimeout(() => { setPoGenPhase18('complete'); setPhase18('po-complete'); }, 8000));
-        t.push(setTimeout(() => setPhase18('order-chain'), 10000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'pending', 'pending']), 15000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'pending']), 20000));
-        t.push(setTimeout(() => setOrderApprovalStates18(['approved', 'approved', 'approved']), 25000));
-        t.push(setTimeout(() => setPhase18('order-complete'), 29000));
-        t.push(setTimeout(() => { setPhase18('done'); nextStep(); }, 37000));
+        t.push(setTimeout(pauseAware(() => setPhase18('po-generating')), 2700));
+        t.push(setTimeout(pauseAware(() => setPoGenPhase18('mapping')), 5400));
+        t.push(setTimeout(pauseAware(() => setPoGenPhase18('validating')), 8100));
+        t.push(setTimeout(pauseAware(() => { setPoGenPhase18('complete'); setPhase18('po-complete'); }), 10800));
+        t.push(setTimeout(pauseAware(() => setPhase18('order-chain')), 13500));
+        t.push(setTimeout(pauseAware(() => setOrderApprovalStates18(['approved', 'pending', 'pending'])), 20250));
+        t.push(setTimeout(pauseAware(() => setOrderApprovalStates18(['approved', 'approved', 'pending'])), 27000));
+        t.push(setTimeout(pauseAware(() => setOrderApprovalStates18(['approved', 'approved', 'approved'])), 33750));
+        t.push(setTimeout(pauseAware(() => setPhase18('order-complete')), 39150));
+        t.push(setTimeout(pauseAware(() => { setPhase18('done'); nextStep(); }), 49950));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
     const orderApprovedCount18 = orderApprovalStates18.filter(s => s === 'approved').length;
 
     // Step 1.10 — Smart Notifications (Action Center shows the notification)
@@ -2098,8 +2110,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     const feature = features.find(f => f.id === toolId)
                                     // Only render if feature exists and is enabled
                                     if (!feature || !feature.enabled) return null;
-                                    // Hide Quick Quote during steps 2.1 and 2.2
-                                    if (toolId === 'quick_quote' && ['2.1', '2.2'].includes(currentStep.id)) return null;
+                                    // Hide Quick Quote entirely during demo mode
+                                    if (toolId === 'quick_quote' && isDemoActive) return null;
 
                                     return (
                                         <Reorder.Item

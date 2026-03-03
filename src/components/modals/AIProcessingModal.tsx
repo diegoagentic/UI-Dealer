@@ -78,7 +78,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
             pipelineUpdate: AgentStep[];
         }> = [
             {
-                delay: 1500,
+                delay: 2025,
                 log: { agent: 'EmailIntakeAgent', message: 'Parsing email body — identified RFQ request with 2 attachments.', type: 'info' },
                 progress: 10,
                 pipelineUpdate: [
@@ -90,7 +90,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 4000,
+                delay: 5400,
                 log: { agent: 'EmailIntakeAgent', message: 'Extracted sender: Apex Furniture, subject: RFQ for 200 Executive Task Chairs.', type: 'extract' },
                 progress: 20,
                 pipelineUpdate: [
@@ -102,7 +102,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 6500,
+                delay: 8775,
                 log: { agent: 'OCR/TextExtract', message: 'Processing Specs.pdf — extracted ergonomic feature requirements and dimensions.', type: 'info' },
                 progress: 35,
                 pipelineUpdate: [
@@ -114,7 +114,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 9000,
+                delay: 12150,
                 log: { agent: 'OCR/TextExtract', message: 'Processing OrderData.csv — 200 line items with quantities, finishes, and ship-to addresses.', type: 'extract' },
                 progress: 50,
                 pipelineUpdate: [
@@ -126,7 +126,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 11500,
+                delay: 15525,
                 log: { agent: 'DataParser', message: 'Mapped 200 line items to catalog schema. Identified 4 delivery zones.', type: 'info' },
                 progress: 65,
                 pipelineUpdate: [
@@ -138,7 +138,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 14000,
+                delay: 18900,
                 log: { agent: 'Normalizer', message: 'Unified product codes, quantities, and shipping addresses to standard RFQ model.', type: 'info' },
                 progress: 80,
                 pipelineUpdate: [
@@ -150,7 +150,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                 ],
             },
             {
-                delay: 16500,
+                delay: 22275,
                 log: { agent: 'Validator', message: 'Validation complete. Confidence: 82%. Flagged: multi-zone freight routing needs Expert review.', type: 'success' },
                 progress: 100,
                 pipelineUpdate: [
@@ -179,14 +179,14 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
         timers.push(
             setTimeout(pauseAware(() => {
                 setPhase('complete');
-            }), 18000)
+            }), 24300)
         );
 
         EXTRACTED_ITEMS.forEach((_, i) => {
             timers.push(
                 setTimeout(pauseAware(() => {
                     setExtractedCount(i + 1);
-                }), 18500 + i * 500)
+                }), 24975 + i * 675)
             );
         });
 
@@ -194,7 +194,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
         timers.push(
             setTimeout(pauseAware(() => {
                 onComplete();
-            }), 25000)
+            }), 33750)
         );
 
         return () => timers.forEach(clearTimeout);

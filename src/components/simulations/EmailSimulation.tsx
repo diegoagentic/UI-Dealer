@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import {
     Bars3Icon,
@@ -44,11 +44,23 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 }
 
 export default function EmailSimulation() {
-    const { isDemoActive, nextStep, currentStep } = useDemo();
+    const { isDemoActive, nextStep, currentStep, isPaused } = useDemo();
     const [selectedEmail, setSelectedEmail] = useState<number | null>(null);
     const [starred, setStarred] = useState<Record<number, boolean>>({ 1: true });
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [showProcessingModal, setShowProcessingModal] = useState(false);
+
+    // Pause-aware timer helper
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 200);
+        };
+    }, []);
 
     // Auto-open RFQ email and auto-start processing during demo step 1.1
     useEffect(() => {
@@ -56,12 +68,12 @@ export default function EmailSimulation() {
 
         const timers: ReturnType<typeof setTimeout>[] = [];
         // Auto-click on email #1 after a short delay
-        timers.push(setTimeout(() => setSelectedEmail(1), 800));
+        timers.push(setTimeout(pauseAware(() => setSelectedEmail(1)), 1080));
         // Auto-start processing after email opens
-        timers.push(setTimeout(() => setShowProcessingModal(true), 3000));
+        timers.push(setTimeout(pauseAware(() => setShowProcessingModal(true)), 4050));
 
         return () => timers.forEach(clearTimeout);
-    }, [isDemoActive, currentStep.id]);
+    }, [isDemoActive, currentStep.id, pauseAware]);
 
     const handleProcessingComplete = useCallback(() => {
         setShowProcessingModal(false);

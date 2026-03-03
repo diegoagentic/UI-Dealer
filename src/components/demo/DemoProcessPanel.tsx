@@ -22,7 +22,7 @@ interface DemoProcessPanelProps {
 }
 
 // Delay before the lupa panel appears (audience sees the normal page first)
-const PANEL_REVEAL_DELAY = 1500;
+const PANEL_REVEAL_DELAY = 2025;
 
 export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) {
     const { currentStep, nextStep, isDemoActive, isPaused } = useDemo();
@@ -89,8 +89,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     { field: 'Freight', score: 42 },
                 ]);
             }), D));
-            // Auto-advance after panel is visible for 20s (presenter explains extraction results)
-            timers.push(setTimeout(pauseAware(() => nextStep()), D + 20000));
+            // Auto-advance after panel is visible for ~27s (presenter explains extraction results)
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 27000));
 
         } else if (currentStep.id === '1.3') {
             timers.push(setTimeout(pauseAware(() => {
@@ -104,10 +104,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 4000, log: 'Parser: Tokenizing extracted text fields...' },
-                { delay: D + 9000, log: 'Parser: Mapped 200 line items to catalog schema.' },
-                { delay: D + 15000, log: 'Normalizer: Resolving product codes against master catalog...' },
-                { delay: D + 20000, log: 'Normalizer: Complete. Field confidence scores generated.' },
+                { delay: D + 5400, log: 'Parser: Tokenizing extracted text fields...' },
+                { delay: D + 12150, log: 'Parser: Mapped 200 line items to catalog schema.' },
+                { delay: D + 20250, log: 'Normalizer: Resolving product codes against master catalog...' },
+                { delay: D + 27000, log: 'Normalizer: Complete. Field confidence scores generated.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -147,10 +147,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 4000, log: 'QuoteBuilder: Loading normalized line items...' },
-                { delay: D + 9000, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
-                { delay: D + 15000, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
-                { delay: D + 20000, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
+                { delay: D + 5400, log: 'QuoteBuilder: Loading normalized line items...' },
+                { delay: D + 12150, log: 'QuoteBuilder: Applying pricing rules and discounts...' },
+                { delay: D + 20250, log: 'QuoteBuilder: Freight zone routing failed — multi-zone delivery.' },
+                { delay: D + 27000, log: 'QuoteBuilder: Draft complete. Flagged for Expert Attention.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -182,11 +182,11 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 2500, log: 'ERPConnectorAgent: ACK data received from eManage ONE (EDI/855).' },
-                { delay: D + 6000, log: 'DataNormalizationAgent: Mapping raw EDI fields to standard schema...' },
-                { delay: D + 10000, log: 'ACKIngestAgent: Parsing 4 acknowledgment line items.' },
-                { delay: D + 14000, log: 'DataNormalizationAgent: Unified 4 raw fields to standard model.' },
-                { delay: D + 18000, log: 'EntityLinker: Linked PO #ORD-2055 ↔ ACK #ACK-2055. Ready for Delta Engine.' },
+                { delay: D + 3375, log: 'ERPConnectorAgent: ACK data received from eManage ONE (EDI/855).' },
+                { delay: D + 8100, log: 'DataNormalizationAgent: Mapping raw EDI fields to standard schema...' },
+                { delay: D + 13500, log: 'ACKIngestAgent: Parsing 4 acknowledgment line items.' },
+                { delay: D + 18900, log: 'DataNormalizationAgent: Unified 4 raw fields to standard model.' },
+                { delay: D + 24300, log: 'EntityLinker: Linked PO #ORD-2055 ↔ ACK #ACK-2055. Ready for Delta Engine.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {
@@ -255,12 +255,12 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             }), D));
 
             const timeline = [
-                { delay: D + 2000, log: 'POvsACKAgent: Loading PO #ORD-2055 (4 lines).' },
-                { delay: D + 5000, log: 'POvsACKAgent: Loading ACK #ACK-2055 (4 lines).' },
-                { delay: D + 8500, log: 'POvsACKAgent: Line-by-line comparison in progress...' },
-                { delay: D + 12000, log: 'POvsACKAgent: EXCEPTION — Line 2 substitution SKU-B→SKU-C.' },
-                { delay: D + 15500, log: 'POvsACKAgent: EXCEPTION — Freight $45→$150 (+233%).' },
-                { delay: D + 19000, log: 'DiscrepancyResolver: 2 exceptions flagged. Escalating to Expert Hub.' },
+                { delay: D + 2700, log: 'POvsACKAgent: Loading PO #ORD-2055 (4 lines).' },
+                { delay: D + 6750, log: 'POvsACKAgent: Loading ACK #ACK-2055 (4 lines).' },
+                { delay: D + 11475, log: 'POvsACKAgent: Line-by-line comparison in progress...' },
+                { delay: D + 16200, log: 'POvsACKAgent: EXCEPTION — Line 2 substitution SKU-B→SKU-C.' },
+                { delay: D + 20925, log: 'POvsACKAgent: EXCEPTION — Freight $45→$150 (+233%).' },
+                { delay: D + 25650, log: 'DiscrepancyResolver: 2 exceptions flagged. Escalating to Expert Hub.' },
             ];
 
             timeline.forEach(({ delay, log }, index) => {

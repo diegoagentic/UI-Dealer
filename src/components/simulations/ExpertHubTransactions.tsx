@@ -11,7 +11,7 @@ import {
     ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
     FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon, CommandLineIcon, XMarkIcon, ArrowsPointingOutIcon, ArrowPathIcon
 } from '@heroicons/react/24/outline'
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
 import { useTheme } from 'strata-design-system'
@@ -179,7 +179,19 @@ interface TransactionsProps {
 }
 
 export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, onNavigateToWorkspace, onNavigate }: TransactionsProps) {
-    const { currentStep, nextStep, isDemoActive } = useDemo();
+    const { currentStep, nextStep, isDemoActive, isPaused } = useDemo();
+
+    // Pause-aware timer helper
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 200);
+        };
+    }, []);
     const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
     const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
@@ -261,11 +273,11 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
             return;
         }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setPipelineNotifShown19(true), 500));
-        t.push(setTimeout(() => setCardAnimationStage19('appearing'), 2000));
-        t.push(setTimeout(() => setCardAnimationStage19('arrived'), 5000));
+        t.push(setTimeout(pauseAware(() => setPipelineNotifShown19(true)), 675));
+        t.push(setTimeout(pauseAware(() => setCardAnimationStage19('appearing')), 2700));
+        t.push(setTimeout(pauseAware(() => setCardAnimationStage19('arrived')), 6750));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     // ═══════════════════════════════════════════
     // FLOW 2 STATE + EFFECTS
@@ -276,29 +288,29 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.1') { setAckArrival21({ AIS: 'hidden', HAT: 'hidden' }); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'appearing' })), 1500));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, HAT: 'placed' })), 3000));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'appearing' })), 4500));
-        t.push(setTimeout(() => setAckArrival21(p => ({ ...p, AIS: 'placed' })), 6000));
-        t.push(setTimeout(() => nextStep(), 10000));
+        t.push(setTimeout(pauseAware(() => setAckArrival21(p => ({ ...p, HAT: 'appearing' }))), 2025));
+        t.push(setTimeout(pauseAware(() => setAckArrival21(p => ({ ...p, HAT: 'placed' }))), 4050));
+        t.push(setTimeout(pauseAware(() => setAckArrival21(p => ({ ...p, AIS: 'appearing' }))), 6075));
+        t.push(setTimeout(pauseAware(() => setAckArrival21(p => ({ ...p, AIS: 'placed' }))), 8100));
+        t.push(setTimeout(pauseAware(() => nextStep()), 13500));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     // Step 2.2 — Normalization & smart comparison
     const [normPhase22, setNormPhase22] = useState<'idle' | 'norm-hat' | 'comparing-hat' | 'hat-ai-rule' | 'hat-confirmed' | 'norm-ais' | 'comparing-ais' | 'ais-flagged'>('idle');
     useEffect(() => {
         if (currentStep.id !== '2.2') { setNormPhase22('idle'); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setNormPhase22('norm-hat'), 1500));
-        t.push(setTimeout(() => setNormPhase22('comparing-hat'), 4000));
-        t.push(setTimeout(() => setNormPhase22('hat-ai-rule'), 7000));
-        t.push(setTimeout(() => setNormPhase22('hat-confirmed'), 9000));
-        t.push(setTimeout(() => setNormPhase22('norm-ais'), 11500));
-        t.push(setTimeout(() => setNormPhase22('comparing-ais'), 14000));
-        t.push(setTimeout(() => setNormPhase22('ais-flagged'), 16500));
-        t.push(setTimeout(() => nextStep(), 20000));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('norm-hat')), 2025));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('comparing-hat')), 5400));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('hat-ai-rule')), 9450));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('hat-confirmed')), 12150));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('norm-ais')), 15525));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('comparing-ais')), 18900));
+        t.push(setTimeout(pauseAware(() => setNormPhase22('ais-flagged')), 22275));
+        t.push(setTimeout(pauseAware(() => nextStep()), 27000));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     // Step 2.3 — Delta engine (3 discrepancy cards) — interactive: user clicks "Generate Backorder"
     const [deltaPhase23, setDeltaPhase23] = useState<'idle' | 'scanning' | 'grommet-found' | 'grommet-fixed' | 'dates-found' | 'dates-fixed' | 'qty-found' | 'complete'>('idle');
@@ -306,16 +318,16 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.3') { setDeltaPhase23('idle'); setBackorderTriggered23(false); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setDeltaPhase23('scanning'), 1500));
-        t.push(setTimeout(() => setDeltaPhase23('grommet-found'), 4000));
-        t.push(setTimeout(() => setDeltaPhase23('grommet-fixed'), 7000));
-        t.push(setTimeout(() => setDeltaPhase23('dates-found'), 10000));
-        t.push(setTimeout(() => setDeltaPhase23('dates-fixed'), 13000));
-        t.push(setTimeout(() => setDeltaPhase23('qty-found'), 16000));
-        t.push(setTimeout(() => setDeltaPhase23('complete'), 19000));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('scanning')), 2025));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('grommet-found')), 5400));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('grommet-fixed')), 9450));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('dates-found')), 13500));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('dates-fixed')), 17550));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('qty-found')), 21600));
+        t.push(setTimeout(pauseAware(() => setDeltaPhase23('complete')), 25650));
         // No auto-advance — user clicks "Generate Backorder" on qty card
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     // Step 2.4 — Expert review table (interactive — expert can edit flagged items)
     const [editingLine24, setEditingLine24] = useState<number | null>(null);
@@ -334,12 +346,12 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     useEffect(() => {
         if (currentStep.id !== '2.5') { setResolvedCards25({ AIS: 'hidden', HAT: 'hidden' }); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(() => setResolvedCards25(p => ({ ...p, HAT: 'appearing' })), 500));
-        t.push(setTimeout(() => setResolvedCards25(p => ({ ...p, HAT: 'placed' })), 2000));
-        t.push(setTimeout(() => setResolvedCards25(p => ({ ...p, AIS: 'appearing' })), 3500));
-        t.push(setTimeout(() => setResolvedCards25(p => ({ ...p, AIS: 'placed' })), 6000));
+        t.push(setTimeout(pauseAware(() => setResolvedCards25(p => ({ ...p, HAT: 'appearing' }))), 675));
+        t.push(setTimeout(pauseAware(() => setResolvedCards25(p => ({ ...p, HAT: 'placed' }))), 2700));
+        t.push(setTimeout(pauseAware(() => setResolvedCards25(p => ({ ...p, AIS: 'appearing' }))), 4725));
+        t.push(setTimeout(pauseAware(() => setResolvedCards25(p => ({ ...p, AIS: 'placed' }))), 8100));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id]);
+    }, [currentStep.id, pauseAware]);
 
     const warrantyItems = [
         { sku: 'ERG-5100', name: 'Ergonomic Task Chair', base: '$350', qty: 125, current: 'Standard 5yr' },
@@ -2818,7 +2830,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
             <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
             <AcknowledgementUploadModal isOpen={isAckModalOpen} onClose={() => setIsAckModalOpen(false)} />
             <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} />
-            {!['2.3', '2.4', '2.5'].includes(currentStep.id) && (
+            {!isDemoActive && !['2.3', '2.4', '2.5'].includes(currentStep.id) && (
                 <SmartQuoteHub isOpen={isQuoteWidgetOpen} onClose={() => setIsQuoteWidgetOpen(false)} />
             )}
 
