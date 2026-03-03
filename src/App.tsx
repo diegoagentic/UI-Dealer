@@ -86,7 +86,7 @@ function App() {
     if (!isDemoActive) return { appName: undefined, companyName: undefined, customNavigation: undefined };
 
     // Standardized app names and company per role
-    const isExpert = ['expert-hub', 'ack-detail', 'transactions', 'mac', 'quote-detail'].includes(currentStep.app);
+    const isExpert = ['expert-hub', 'dealer-kanban', 'ack-detail', 'transactions', 'mac', 'quote-detail'].includes(currentStep.app);
     const resolvedAppName = currentStep.app === 'email-marketplace' ? 'Wells Fargo Mail'
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
@@ -214,8 +214,8 @@ function App() {
   const getActiveTab = () => {
     if (!isDemoActive) return currentPage;
     const appToTab: Record<string, string> = {
-      'dealer-kanban': 'dashboard',
-      'expert-hub': 'dashboard',
+      'dealer-kanban': 'transactions',
+      'expert-hub': 'transactions',
       'service-now': 'dashboard',
       'catalog': 'dashboard',
       'email-marketplace': 'dashboard',
