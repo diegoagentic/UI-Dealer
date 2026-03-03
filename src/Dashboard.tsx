@@ -282,8 +282,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     // Step 3.4: End User mobile report state
     const [punchComment, setPunchComment] = useState('')
     const [punchCommentSent, setPunchCommentSent] = useState(false)
+    const [showAckModal, setShowAckModal] = useState(false)
     useEffect(() => {
-        if (currentStep.id !== '3.4') { setPunchComment(''); setPunchCommentSent(false); }
+        if (currentStep.id !== '3.4') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); }
     }, [currentStep.id])
 
     const handleGenUIAction = (prompt: string) => {
@@ -761,12 +762,126 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         {/* Acknowledge Button */}
                         <div className="mx-3 mt-4 mb-4">
                             <button
-                                onClick={() => nextStep()}
+                                onClick={() => setShowAckModal(true)}
                                 className="w-full py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
                             >
                                 Acknowledge Report
                             </button>
                         </div>
+
+                        {/* Acknowledgement Confirmation Modal */}
+                        {showAckModal && (
+                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 px-4">
+                                <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-h-[85%] overflow-y-auto scrollbar-micro animate-in zoom-in-95 slide-in-from-bottom-4 duration-300" onClick={(e) => e.stopPropagation()}>
+                                    {/* Modal Header */}
+                                    <div className="px-4 pt-4 pb-3 border-b border-border">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 bg-green-500/15 rounded-lg">
+                                                <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-bold text-foreground">Punch List Summary</p>
+                                                <p className="text-[10px] text-muted-foreground">REQ-PL-2026-047</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-4 space-y-3">
+                                        {/* Service Details */}
+                                        <div>
+                                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5">Service Details</p>
+                                            <div className="space-y-1">
+                                                {[
+                                                    { label: 'Product', value: '2x Conference Chairs (Azure)' },
+                                                    { label: 'Claim ID', value: 'CLM-2026-114' },
+                                                    { label: 'Requester', value: 'Carlos Rivera — ACME Corp' },
+                                                    { label: 'Resolution', value: 'Replacement Unit' },
+                                                ].map(item => (
+                                                    <div key={item.label} className="flex items-center justify-between">
+                                                        <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                                                        <span className="text-[10px] font-bold text-foreground">{item.value}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Validation & Evidence */}
+                                        <div className="pt-2 border-t border-border">
+                                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5">Validation & Evidence</p>
+                                            <div className="space-y-1">
+                                                {[
+                                                    'AI extracted 5 fields from email — all verified',
+                                                    'QR code scanned — SKU CC-AZ-2025 confirmed',
+                                                    '5 evidence photos validated',
+                                                    'Serial SN-2025-88712 within warranty',
+                                                ].map((item, i) => (
+                                                    <div key={i} className="flex items-center gap-1.5">
+                                                        <CheckCircleIcon className="w-3 h-3 text-green-500 shrink-0" />
+                                                        <span className="text-[10px] text-foreground">{item}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Labor & Cost */}
+                                        <div className="pt-2 border-t border-border">
+                                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5">Labor & Cost Approval</p>
+                                            <div className="space-y-1">
+                                                {[
+                                                    { label: 'Repair Threshold', value: '$495 (adjusted)' },
+                                                    { label: 'Labor Hours', value: '4 hrs (standard)' },
+                                                    { label: 'Expert Review', value: 'Approved by Claims Specialist' },
+                                                ].map(item => (
+                                                    <div key={item.label} className="flex items-center justify-between">
+                                                        <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                                                        <span className="text-[10px] font-bold text-foreground">{item.value}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Liability Split */}
+                                        <div className="pt-2 border-t border-border">
+                                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-1.5">Liability Split</p>
+                                            <div className="flex gap-2">
+                                                <div className="flex-1 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-center">
+                                                    <p className="text-[10px] text-red-400 font-medium">Carrier</p>
+                                                    <p className="text-sm font-bold text-red-500">65%</p>
+                                                </div>
+                                                <div className="flex-1 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
+                                                    <p className="text-[10px] text-amber-400 font-medium">Manufacturer</p>
+                                                    <p className="text-sm font-bold text-amber-500">35%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Delivery */}
+                                        <div className="pt-2 border-t border-border">
+                                            <div className="flex items-center justify-between p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                                <span className="text-[10px] text-blue-400 font-medium">Estimated Delivery</span>
+                                                <span className="text-xs font-bold text-blue-500">8 business days</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Modal Actions */}
+                                    <div className="px-4 pb-4 pt-1 flex gap-2">
+                                        <button
+                                            onClick={() => setShowAckModal(false)}
+                                            className="flex-1 py-2.5 border border-border text-foreground text-xs font-bold rounded-xl transition-colors hover:bg-muted/50"
+                                        >
+                                            Back
+                                        </button>
+                                        <button
+                                            onClick={() => nextStep()}
+                                            className="flex-1 py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
+                                        >
+                                            Confirm Acknowledgement
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </MobileDeviceFrame>
                 </div>
             )}
