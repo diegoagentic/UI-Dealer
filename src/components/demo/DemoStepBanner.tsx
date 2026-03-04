@@ -27,7 +27,7 @@ export const STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '2.2':  { mode: 'interactive', userAction: 'Review comparison results, click "Review Discrepancies" on AIS card' },
     '2.3':  { mode: 'interactive', userAction: 'Review delta results, click "Accept and Send to Client"' },
     '2.4':  { mode: 'interactive', userAction: 'Review AI corrections and edit flagged line items, then click "Approved & Send to System of Records"' },
-    '2.5':  { mode: 'auto', duration: 28, aiSummary: 'Creating backorder and running 3-approver chain' },
+    '2.5':  { mode: 'auto', duration: 20, aiSummary: 'Running 3-approver authorization chain' },
     '2.6':  { mode: 'interactive', userAction: 'Review pipeline resolution, click "Send Notifications"' },
     '2.7':  { mode: 'interactive', userAction: 'Review notification digests' },
     // Flow 3: Punch List / Warranty Claims

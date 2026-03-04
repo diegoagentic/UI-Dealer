@@ -180,7 +180,7 @@ const DEMO_STEPS: DemoStep[] = [
         groupId: 2,
         groupTitle: 'Flow 2: PO & Acknowledgement Comparison',
         title: 'Approval Chain',
-        description: 'Backorder created for 6 units (3 SKUs). Automated 3-approver approval chain.',
+        description: 'Expert review routed to automated 3-approver authorization chain for Acknowledgement processing.',
         app: 'expert-hub',
         role: 'System',
         highlightId: 'backorder-approval-chain'

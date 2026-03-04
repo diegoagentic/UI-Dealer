@@ -685,6 +685,72 @@ export default function MACPunchList() {
                     </div>
                 )}
 
+                {/* ═══ STEP 3.2: Labor Quote Requested — show completed validation from 3.1 ═══ */}
+                {currentStep?.id === '3.2' && (
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        {/* AI Context Header */}
+                        <div className="px-4 py-3 bg-green-50 dark:bg-green-500/10 border-b border-green-200 dark:border-green-500/20 flex items-center gap-2">
+                            <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                            <div>
+                                <span className="font-bold text-sm text-green-900 dark:text-green-300">IntakeValidationAgent</span>
+                                <span className="text-xs text-green-600 dark:text-green-400 ml-2">Validation complete — REQ-PL-2026-047</span>
+                            </div>
+                        </div>
+
+                        <div className="p-4 space-y-4 overflow-y-auto max-h-[700px] scrollbar-micro">
+                            {/* Request Context Card */}
+                            <div className="p-4 bg-card border border-border rounded-xl">
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Request Context</p>
+                                    <ConfidenceScoreBadge score={100} label="Completeness" size="sm" />
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    {[
+                                        { label: 'Request ID', value: 'REQ-PL-2026-047' },
+                                        { label: 'Product', value: '2x Conf. Room Chairs Azure' },
+                                        { label: 'Requester', value: 'Site Supervisor — Floor 2' },
+                                        { label: 'Order Ref', value: 'ORD-2055, Line 3' },
+                                    ].map((item, i) => (
+                                        <div key={i} className="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-2.5">
+                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-0.5">{item.label}</p>
+                                            <p className="text-xs font-bold text-foreground">{item.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Completed Validation Checklist */}
+                            <div>
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-3">AI Validation Checklist — All Items Verified</p>
+                                <div className="space-y-2">
+                                    {VALIDATION_ITEMS.map((item) => (
+                                        <div key={item.id} className="w-full p-3 rounded-lg border border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-3">
+                                            <CheckCircleIcon className="w-5 h-5 text-green-500 shrink-0" />
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-semibold text-foreground">{item.label}</span>
+                                                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold">Verified</span>
+                                                </div>
+                                                <p className="text-xs text-muted-foreground mt-0.5">{item.detail}</p>
+                                            </div>
+                                            <ConfidenceScoreBadge score={item.id === 'label-photo' ? 95 : item.id === 'box-photo' ? 92 : item.confidence} size="sm" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Summary */}
+                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 flex items-center gap-3">
+                                <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
+                                <div>
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">All Documentation Verified — Request Ready for Labor Quote</p>
+                                    <p className="text-[10px] text-green-600 dark:text-green-500">5/5 items validated · Label resolved via QR scan · Box photo uploaded</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* ═══ STEP 3.3: Labor Reimbursement Review ═══ */}
                 {currentStep?.id === '3.3' && (
                     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col">

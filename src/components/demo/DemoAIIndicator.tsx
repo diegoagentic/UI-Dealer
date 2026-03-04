@@ -95,9 +95,9 @@ const STEP_MESSAGES: Record<string, string[]> = {
         'Edit flagged items, then accept and send to client',
     ],
     '2.5': [
-        'Creating backorder for partial shipment items...',
+        'Routing expert review to approval chain...',
         'Running 3-approver authorization chain',
-        'Backorder BO-2031 confirmed and logged',
+        'All approvals complete — ready for pipeline resolution',
     ],
     '2.6': [
         'Pipeline resolved — review final summary',

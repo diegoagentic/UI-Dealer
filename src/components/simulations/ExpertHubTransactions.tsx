@@ -121,12 +121,6 @@ const ACK_LINE_ITEMS_50 = [
     { line: 68, sku: 'X-DSFM9624', desc: 'CB Desk Shell FM 96x24', qty: 1, qtyAck: 1, price: '$1,812.00', grommetACK: 'No Grommet', status: 'match' as const },
 ];
 
-const FLOW2_BACKORDER_LINES = [
-    { sku: 'X-W3060', desc: 'CB Wardrobe 30x60', qtyShort: 0, qtyBackorder: 3, reason: 'Full line backorder — vendor capacity' },
-    { sku: 'X-P2460', desc: 'CB Pedestal 24x60', qtyShort: 2, qtyBackorder: 2, reason: 'Partial — 6 of 8 acknowledged' },
-    { sku: 'X-QUADALDR', desc: 'CB Quad Alder Table', qtyShort: 2, qtyBackorder: 2, reason: 'Partial — 2 of 4 acknowledged' },
-];
-
 // Pipeline stages
 const pipelineStages = ['Order Received', 'In Production', 'Ready to Ship', 'In Transit', 'Delivered']
 const quoteStages = ['Draft', 'Sent', 'Negotiating', 'Approved', 'Lost']
@@ -347,19 +341,15 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
         }
     }, [currentStep.id]);
 
-    // Step 2.5 — Backorder & approval chain
-    const [boPhase25, setBoPhase25] = useState<'generating' | 'generated' | 'approval' | 'complete'>('generating');
+    // Step 2.5 — Approval chain
     const [approvalStates25, setApprovalStates25] = useState<('pending' | 'approved')[]>(['pending', 'pending', 'pending']);
     useEffect(() => {
-        if (currentStep.id !== '2.5') { setBoPhase25('generating'); setApprovalStates25(['pending', 'pending', 'pending']); return; }
+        if (currentStep.id !== '2.5') { setApprovalStates25(['pending', 'pending', 'pending']); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
-        t.push(setTimeout(pauseAware(() => setBoPhase25('generated')), 3000));
-        t.push(setTimeout(pauseAware(() => setBoPhase25('approval')), 6000));
-        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'pending', 'pending'])), 11000));
-        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'approved', 'pending'])), 16000));
-        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'approved', 'approved'])), 21000));
-        t.push(setTimeout(pauseAware(() => setBoPhase25('complete')), 24000));
-        t.push(setTimeout(pauseAware(() => nextStep()), 28000));
+        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'pending', 'pending'])), 5000));
+        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'approved', 'pending'])), 10000));
+        t.push(setTimeout(pauseAware(() => setApprovalStates25(['approved', 'approved', 'approved'])), 15000));
+        t.push(setTimeout(pauseAware(() => nextStep()), 20000));
         return () => t.forEach(clearTimeout);
     }, [currentStep.id, pauseAware]);
     const approvedCount25 = approvalStates25.filter(s => s === 'approved').length;
@@ -2418,116 +2408,79 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 animate-in fade-in zoom-in duration-300">
                                 <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
                                 <div>
-                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Expert Review Approved — Generating Backorder</p>
-                                    <p className="text-[10px] text-green-600 dark:text-green-500">3 SKUs, 6 units — routing to approval chain{Object.keys(editedItems24).length > 0 ? ` · ${Object.keys(editedItems24).length} expert correction(s) applied` : ''}</p>
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Expert Review Approved — Routing to Approval Chain</p>
+                                    <p className="text-[10px] text-green-600 dark:text-green-500">50 line items reviewed — routing to 3-approver authorization{Object.keys(editedItems24).length > 0 ? ` · ${Object.keys(editedItems24).length} expert correction(s) applied` : ''}</p>
                                 </div>
                             </div>
                         )}
                     </div>
                 )}
 
-                {/* Step 2.5 — Backorder & Approval Chain */}
+                {/* Step 2.5 — Approval Chain */}
                 {currentStep.id === '2.5' && (
                     <div data-demo-target="backorder-approval-chain" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                             <AIAgentAvatar className="mt-0.5" />
                             <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">BackorderAgent:</span> Creating backorder BO-1064B for 3 shortfall SKUs (6 units), then routing to automated 3-approver chain.
-                            </div>
-                        </div>
-
-                        {/* Backorder Card */}
-                        <div className={cn('p-4 rounded-2xl border shadow-sm transition-all duration-500', boPhase25 === 'generating' ? 'border-blue-200 dark:border-blue-800 bg-blue-50/30 dark:bg-blue-500/5' : 'border-green-200 dark:border-green-800 bg-green-50/30 dark:bg-green-500/5')}>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className={cn('p-2 rounded-xl', boPhase25 === 'generating' ? 'bg-blue-100 dark:bg-blue-500/15' : 'bg-green-100 dark:bg-green-500/15')}>
-                                    {boPhase25 === 'generating' ? <ClockIcon className="w-4 h-4 text-blue-600 dark:text-blue-400 animate-spin" /> : <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />}
-                                </div>
-                                <div>
-                                    <h4 className="text-xs font-bold text-foreground">Backorder BO-1064B</h4>
-                                    <p className="text-[10px] text-muted-foreground">3 SKUs · 6 units · From {ACK_AIS.id}</p>
-                                </div>
-                            </div>
-                            <div className="rounded-lg border border-border overflow-hidden">
-                                <table className="w-full text-[10px]">
-                                    <thead>
-                                        <tr className="bg-muted/50">
-                                            <th className="text-left px-3 py-1.5 font-bold text-muted-foreground">SKU</th>
-                                            <th className="text-left px-3 py-1.5 font-bold text-muted-foreground">Description</th>
-                                            <th className="text-center px-3 py-1.5 font-bold text-muted-foreground">Qty</th>
-                                            <th className="text-left px-3 py-1.5 font-bold text-muted-foreground">Reason</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-border">
-                                        {FLOW2_BACKORDER_LINES.map(ln => (
-                                            <tr key={ln.sku}>
-                                                <td className="px-3 py-1.5 font-bold text-foreground">{ln.sku}</td>
-                                                <td className="px-3 py-1.5 text-foreground">{ln.desc}</td>
-                                                <td className="px-3 py-1.5 text-center font-bold text-amber-600 dark:text-amber-400">{ln.qtyBackorder}</td>
-                                                <td className="px-3 py-1.5 text-muted-foreground">{ln.reason}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                <span className="font-bold">ApprovalAgent:</span> Expert review complete for {ACK_AIS.id} — routing to automated 3-approver authorization chain.
                             </div>
                         </div>
 
                         {/* Approval Chain */}
-                        {['approval', 'complete'].includes(boPhase25) && (
-                            <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
-                                <div className="p-4 border-b border-border">
-                                    <h3 className="text-sm font-bold text-foreground">Approval Chain — Backorder BO-1064B</h3>
-                                </div>
-                                <div className="p-4 space-y-4">
-                                    <div className="space-y-0 relative">
-                                        {[
-                                            { name: 'System Policy Engine', role: 'Auto-approval' },
-                                            { name: 'David Park', role: 'Regional Sales Manager' },
-                                            { name: 'James Liu', role: 'Finance Director' },
-                                        ].map((approver, i) => (
-                                            <div key={i} className="flex items-start gap-4 relative pb-5 last:pb-0">
-                                                {i < 2 && (
-                                                    <div className={cn('absolute left-[15px] top-8 w-0.5 h-[calc(100%-16px)]', approvalStates25[i] === 'approved' ? 'bg-green-500' : 'bg-border')} />
-                                                )}
-                                                <div className="relative shrink-0 z-10">
-                                                    <DemoAvatar name={approver.name} size="md" />
-                                                    {approvalStates25[i] === 'approved' && (
-                                                        <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-zinc-900"><CheckIcon className="w-2.5 h-2.5" /></div>
-                                                    )}
-                                                    {approvalStates25[i] === 'pending' && i === approvedCount25 && (
-                                                        <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 animate-pulse"><ClockIcon className="w-2.5 h-2.5" /></div>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center justify-between gap-2">
-                                                        <span className={cn('text-sm font-bold', approvalStates25[i] === 'approved' && 'text-green-700 dark:text-green-400', approvalStates25[i] === 'pending' && i === approvedCount25 && 'text-amber-700 dark:text-amber-400', approvalStates25[i] === 'pending' && i !== approvedCount25 && 'text-muted-foreground')}>{approver.name}</span>
-                                                        {approvalStates25[i] === 'approved' && <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Approved</span>}
-                                                    </div>
-                                                    <p className="text-xs text-muted-foreground">{approver.role}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                    {/* Progress bar */}
-                                    <div>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Progress</span>
-                                            <span className="text-[10px] font-bold text-foreground">{approvedCount25}/3</span>
-                                        </div>
-                                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                                            <div className={cn('h-full rounded-full transition-all duration-500', approvedCount25 === 3 ? 'bg-green-500' : 'bg-primary')} style={{ width: `${(approvedCount25 / 3) * 100}%` }} />
-                                        </div>
-                                    </div>
-                                    {approvedCount25 === 3 && (
-                                        <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 text-center animate-in fade-in zoom-in duration-300">
-                                            <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-1" />
-                                            <p className="text-xs font-bold text-green-700 dark:text-green-400">All Approvals Complete</p>
-                                            <p className="text-[10px] text-green-600 dark:text-green-500">Backorder BO-1064B approved for processing</p>
-                                        </div>
-                                    )}
-                                </div>
+                        <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="p-4 border-b border-border">
+                                <h3 className="text-sm font-bold text-foreground">Approval Chain — {ACK_AIS.id}</h3>
                             </div>
-                        )}
+                            <div className="p-4 space-y-4">
+                                <div className="space-y-0 relative">
+                                    {[
+                                        { name: 'System Policy Engine', role: 'Auto-approval' },
+                                        { name: 'David Park', role: 'Regional Sales Manager' },
+                                        { name: 'James Liu', role: 'Finance Director' },
+                                    ].map((approver, i) => (
+                                        <div key={i} className="flex items-start gap-4 relative pb-5 last:pb-0">
+                                            {i < 2 && (
+                                                <div className={cn('absolute left-[15px] top-8 w-0.5 h-[calc(100%-16px)]', approvalStates25[i] === 'approved' ? 'bg-green-500' : 'bg-border')} />
+                                            )}
+                                            <div className="relative shrink-0 z-10">
+                                                <DemoAvatar name={approver.name} size="md" />
+                                                {approvalStates25[i] === 'approved' && (
+                                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-zinc-900"><CheckIcon className="w-2.5 h-2.5" /></div>
+                                                )}
+                                                {approvalStates25[i] === 'pending' && i === approvedCount25 && (
+                                                    <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-zinc-900 animate-pulse"><ClockIcon className="w-2.5 h-2.5" /></div>
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2">
+                                                    <span className={cn('text-sm font-bold', approvalStates25[i] === 'approved' && 'text-green-700 dark:text-green-400', approvalStates25[i] === 'pending' && i === approvedCount25 && 'text-amber-700 dark:text-amber-400', approvalStates25[i] === 'pending' && i !== approvedCount25 && 'text-muted-foreground')}>{approver.name}</span>
+                                                    {approvalStates25[i] === 'approved' && <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Approved</span>}
+                                                </div>
+                                                <p className="text-xs text-muted-foreground">{approver.role}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Progress bar */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Progress</span>
+                                        <span className="text-[10px] font-bold text-foreground">{approvedCount25}/3</span>
+                                    </div>
+                                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                                        <div className={cn('h-full rounded-full transition-all duration-500', approvedCount25 === 3 ? 'bg-green-500' : 'bg-primary')} style={{ width: `${(approvedCount25 / 3) * 100}%` }} />
+                                    </div>
+                                </div>
+                                {approvedCount25 === 3 && (
+                                    <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 text-center animate-in fade-in zoom-in duration-300">
+                                        <CheckCircleIcon className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-1" />
+                                        <p className="text-xs font-bold text-green-700 dark:text-green-400">All Approvals Complete</p>
+                                        <p className="text-[10px] text-green-600 dark:text-green-500">{ACK_AIS.id} approved — ready for pipeline resolution</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 )}
 
