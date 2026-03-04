@@ -2388,14 +2388,14 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold transition-colors shadow-sm"
                                 >
                                     <CheckCircleIcon className="w-4 h-4" />
-                                    Accept and Send to Client
+                                    Approved & Send to System of Records
                                 </button>
                             </div>
                         ) : (
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 animate-in fade-in zoom-in duration-300">
                                 <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" />
                                 <div>
-                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Expert Review Approved — Sending to Client</p>
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-400">Expert Review Approved — Sending to System of Records</p>
                                     <p className="text-[10px] text-green-600 dark:text-green-500">50 line items reviewed, exceptions resolved{Object.keys(editedItems24).length > 0 ? ` · ${Object.keys(editedItems24).length} expert correction(s) applied` : ''}</p>
                                 </div>
                             </div>
