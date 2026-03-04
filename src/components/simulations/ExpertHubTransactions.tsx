@@ -2531,8 +2531,8 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                     <span className="text-[9px] text-green-600 dark:text-green-400 font-medium">AI vendor rule applied</span>
                                                 </div>
                                             )}
-                                            {/* AIS in Partial */}
-                                            {stage === 'Partial' && resolvedCards26.AIS !== 'hidden' && (
+                                            {/* AIS in Discrepancy */}
+                                            {stage === 'Discrepancy' && resolvedCards26.AIS !== 'hidden' && (
                                                 <div className={cn(
                                                     'p-3 rounded-xl border-2 border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-500/5 transition-all duration-500',
                                                     resolvedCards26.AIS === 'appearing' && 'opacity-70 scale-95',
