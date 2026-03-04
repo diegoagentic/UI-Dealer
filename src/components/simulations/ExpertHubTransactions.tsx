@@ -308,7 +308,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
         t.push(setTimeout(pauseAware(() => setNormPhase22('norm-ais')), 15525));
         t.push(setTimeout(pauseAware(() => setNormPhase22('comparing-ais')), 18900));
         t.push(setTimeout(pauseAware(() => setNormPhase22('ais-flagged')), 22275));
-        t.push(setTimeout(pauseAware(() => nextStep()), 27000));
+        // No auto-advance — user clicks "Review Discrepancies" on AIS card
         return () => t.forEach(clearTimeout);
     }, [currentStep.id, pauseAware]);
 
@@ -2048,12 +2048,21 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                 {normPhase22 === 'ais-flagged' && <span className="text-[10px] text-red-600 dark:text-red-400 font-bold">3 discrepancies found</span>}
                                             </div>
                                             {normPhase22 === 'ais-flagged' && (
-                                                <div className="p-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-500/5 animate-in fade-in duration-300">
-                                                    <p className="text-[10px] font-bold text-red-700 dark:text-red-400 mb-1">Line 41: Grommet Configuration Error</p>
-                                                    <div className="grid grid-cols-2 gap-2 text-[10px]">
-                                                        <div><span className="text-muted-foreground">PO spec:</span> <span className="font-medium text-foreground">No Grommet</span></div>
-                                                        <div><span className="text-muted-foreground">Acknowledgement:</span> <span className="font-medium text-red-600 dark:text-red-400">Grommet Option C - Left Rear Corner #2</span></div>
+                                                <div className="space-y-3 animate-in fade-in duration-300">
+                                                    <div className="p-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-500/5">
+                                                        <p className="text-[10px] font-bold text-red-700 dark:text-red-400 mb-1">Line 41: Grommet Configuration Error</p>
+                                                        <div className="grid grid-cols-2 gap-2 text-[10px]">
+                                                            <div><span className="text-muted-foreground">PO spec:</span> <span className="font-medium text-foreground">No Grommet</span></div>
+                                                            <div><span className="text-muted-foreground">Acknowledgement:</span> <span className="font-medium text-red-600 dark:text-red-400">Grommet Option C - Left Rear Corner #2</span></div>
+                                                        </div>
                                                     </div>
+                                                    <button
+                                                        onClick={() => nextStep()}
+                                                        className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition-all shadow-sm hover:shadow-md active:scale-[0.98] flex items-center justify-center gap-2"
+                                                    >
+                                                        <ExclamationTriangleIcon className="w-4 h-4" />
+                                                        Review Discrepancies
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
