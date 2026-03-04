@@ -96,7 +96,7 @@ const DEMO_STEPS: DemoStep[] = [
         groupId: 1,
         groupTitle: 'Flow 1: RFQ to PO Processing',
         title: 'Sales Approval',
-        description: 'Sales Analyst receives PO approval notification on mobile. Reviews and acknowledges from their phone.',
+        description: 'Sales Analyst receives Quote approval notification on mobile. Reviews and acknowledges from their phone.',
         app: 'dashboard',
         role: 'End User',
         highlightId: 'mobile-dealer-approval'
