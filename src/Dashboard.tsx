@@ -552,8 +552,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-[10px] text-blue-500 font-medium">Just now</p>
-                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Purchase Order Approved</p>
-                                    <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">PO-1029 for Apex Furniture has been fully approved and transmitted.</p>
+                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Quote Approved</p>
+                                    <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">QT-1025 for Apex Furniture has been fully approved and transmitted.</p>
                                 </div>
                             </div>
                         </div>
@@ -562,8 +562,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         <div className="mx-3 mt-3 p-4 rounded-xl bg-card border border-border space-y-3">
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Purchase Order</p>
-                                    <p className="text-base font-bold text-foreground">PO-1029</p>
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Quote</p>
+                                    <p className="text-base font-bold text-foreground">QT-1025</p>
                                 </div>
                                 <span className="px-2 py-0.5 bg-green-500/15 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full">Approved</span>
                             </div>
