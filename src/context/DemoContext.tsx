@@ -223,6 +223,16 @@ const DEMO_STEPS: DemoStep[] = [
         id: '3.2',
         groupId: 3,
         groupTitle: 'Flow 3: Punch List / Warranty Claims',
+        title: 'Labor Quote Requested',
+        description: 'Presenter describes the labor quote request process. No UI changes — narration only.',
+        app: 'mac',
+        role: 'Expert',
+        highlightId: 'punch-labor-requested'
+    },
+    {
+        id: '3.3',
+        groupId: 3,
+        groupTitle: 'Flow 3: Punch List / Warranty Claims',
         title: 'Labor Reimbursement Review',
         description: 'AI validates labor quote against business rules: repair total, trip charge, certified installer, warranty coverage. Expert approves, edits, or rejects.',
         app: 'mac',
@@ -230,7 +240,7 @@ const DEMO_STEPS: DemoStep[] = [
         highlightId: 'punch-labor-review'
     },
     {
-        id: '3.3',
+        id: '3.4',
         groupId: 3,
         groupTitle: 'Flow 3: Punch List / Warranty Claims',
         title: 'Claim Submission & Tracking',
@@ -240,7 +250,7 @@ const DEMO_STEPS: DemoStep[] = [
         highlightId: 'punch-claim-submission'
     },
     {
-        id: '3.4',
+        id: '3.5',
         groupId: 3,
         groupTitle: 'Flow 3: Punch List / Warranty Claims',
         title: 'End User Process Report',

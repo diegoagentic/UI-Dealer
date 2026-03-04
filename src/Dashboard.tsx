@@ -295,7 +295,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [punchCommentSent, setPunchCommentSent] = useState(false)
     const [showAckModal, setShowAckModal] = useState(false)
     useEffect(() => {
-        if (currentStep.id !== '3.4') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); }
+        if (currentStep.id !== '3.5') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); }
     }, [currentStep.id])
 
     const handleGenUIAction = (prompt: string) => {
@@ -513,7 +513,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
     return (
         <div className="min-h-screen bg-background font-sans text-foreground pb-10">
-            {!['1.8', '3.4'].includes(currentStep.id) && <GenUIContainer />}
+            {!['1.8', '3.5'].includes(currentStep.id) && <GenUIContainer />}
 
             {/* ===== Step 1.8: Sales Approval — Fullscreen mobile overlay ===== */}
             {currentStep.id === '1.8' && (
@@ -631,8 +631,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* ===== Step 3.4: End User Punch List Report — Fullscreen mobile overlay ===== */}
-            {currentStep.id === '3.4' && (
+            {/* ===== Step 3.5: End User Punch List Report — Fullscreen mobile overlay ===== */}
+            {currentStep.id === '3.5' && (
                 <div data-demo-target="mobile-enduser-report" className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950 animate-in fade-in duration-500">
                     <MobileDeviceFrame>
                         {/* Mobile Navbar */}
@@ -897,8 +897,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* Main Content — hidden during step 1.8 / 3.4 (fullscreen mobile overlay) */}
-            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${['1.8', '3.4'].includes(currentStep.id) ? 'hidden' : ''}`}>
+            {/* Main Content — hidden during step 1.8 / 3.5 (fullscreen mobile overlay) */}
+            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${['1.8', '3.5'].includes(currentStep.id) ? 'hidden' : ''}`}>
                 {/* Page Title & Search */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>

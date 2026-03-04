@@ -32,9 +32,10 @@ export const STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '2.7':  { mode: 'interactive', userAction: 'Review notification digests' },
     // Flow 3: Punch List / Warranty Claims
     '3.1':  { mode: 'interactive', userAction: 'Review AI validation checklist, resolve flagged items, click "Validate & Continue"' },
-    '3.2':  { mode: 'interactive', userAction: 'Review labor quote and business rules, click "Reviewed and Continue"' },
-    '3.3':  { mode: 'auto', duration: 24, aiSummary: 'Assembling claim, forwarding evidence, tracking shipment' },
-    '3.4':  { mode: 'interactive', userAction: 'Review punch list report on mobile, leave comments, then acknowledge' },
+    '3.2':  { mode: 'interactive', userAction: 'Presenter describes the labor quote request process — click Next to continue' },
+    '3.3':  { mode: 'interactive', userAction: 'Review labor quote and business rules, click "Reviewed and Continue"' },
+    '3.4':  { mode: 'auto', duration: 24, aiSummary: 'Assembling claim, forwarding evidence, tracking shipment' },
+    '3.5':  { mode: 'interactive', userAction: 'Review punch list report on mobile, leave comments, then acknowledge' },
 };
 
 // ─── Component ────────────────────────────────────────────────────────────────

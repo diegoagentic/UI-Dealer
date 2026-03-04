@@ -146,7 +146,7 @@ export default function MACPunchList() {
 
     // Auto-select first item when entering Flow 3
     useEffect(() => {
-        if (['3.1', '3.2', '3.3'].includes(currentStep?.id)) {
+        if (['3.1', '3.2', '3.3', '3.4'].includes(currentStep?.id)) {
             setSelectedItem('item-1');
         }
     }, [currentStep?.id]);
@@ -181,17 +181,17 @@ export default function MACPunchList() {
         return () => timeouts.forEach(clearTimeout);
     }, [currentStep?.id]);
 
-    // Step 3.2: Reset on enter
+    // Step 3.3: Reset on enter
     useEffect(() => {
-        if (currentStep?.id !== '3.2') return;
+        if (currentStep?.id !== '3.3') return;
         setApprovedLabor(false);
         setEditingRule(null);
         setValidatedRules(new Set());
     }, [currentStep?.id]);
 
-    // Step 3.3: Auto-animated claim submission
+    // Step 3.4: Auto-animated claim submission
     useEffect(() => {
-        if (currentStep?.id !== '3.3') {
+        if (currentStep?.id !== '3.4') {
             setClaimLogs([]);
             setClaimProgress(0);
             setClaimPhase('processing');
@@ -685,8 +685,8 @@ export default function MACPunchList() {
                     </div>
                 )}
 
-                {/* ═══ STEP 3.2: Labor Reimbursement Review ═══ */}
-                {currentStep?.id === '3.2' && (
+                {/* ═══ STEP 3.3: Labor Reimbursement Review ═══ */}
+                {currentStep?.id === '3.3' && (
                     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col">
                         {/* AI Context Header */}
                         <div className="px-4 py-3 bg-indigo-50 dark:bg-indigo-500/10 border-b border-indigo-200 dark:border-indigo-500/20 flex items-center gap-2">
@@ -845,8 +845,8 @@ export default function MACPunchList() {
                     </div>
                 )}
 
-                {/* ═══ STEP 3.3: Claim Submission & Tracking ═══ */}
-                {currentStep?.id === '3.3' && (
+                {/* ═══ STEP 3.4: Claim Submission & Tracking ═══ */}
+                {currentStep?.id === '3.4' && (
                     <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden flex flex-col">
                         {/* AI Context Header */}
                         <div className="px-4 py-3 bg-indigo-50 dark:bg-indigo-500/10 border-b border-indigo-200 dark:border-indigo-500/20 flex items-center gap-2">
@@ -1210,7 +1210,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* Default: No step active — show empty state */}
-                {!['3.1', '3.2', '3.3'].includes(currentStep?.id) && (
+                {!['3.1', '3.2', '3.3', '3.4'].includes(currentStep?.id) && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 border-dashed rounded-xl min-h-[400px]">
                         <ExclamationTriangleIcon className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" />
                         <h4 className="text-lg font-medium text-zinc-900 dark:text-white">Select a Punch List Item</h4>
