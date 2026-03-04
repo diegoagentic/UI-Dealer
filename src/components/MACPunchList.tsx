@@ -747,6 +747,25 @@ export default function MACPunchList() {
                                     <p className="text-[10px] text-green-600 dark:text-green-500">5/5 items validated · Label resolved via QR scan · Box photo uploaded</p>
                                 </div>
                             </div>
+
+                            {/* Contact Requester Card */}
+                            <div className="p-4 bg-card border border-border rounded-xl flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <DemoAvatar name="Carlos Rivera" size="md" />
+                                    <div>
+                                        <p className="text-sm font-bold text-foreground">Carlos Rivera</p>
+                                        <p className="text-xs text-muted-foreground">Site Supervisor — Facilities</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button className="p-2 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors text-muted-foreground">
+                                        <PhoneIcon className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-2 rounded-lg border border-border bg-muted/30 hover:bg-muted/60 transition-colors text-muted-foreground">
+                                        <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
