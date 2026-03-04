@@ -2189,7 +2189,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                             </div>
                                         ))}
                                     </div>
-                                    {/* Accept and Send to Client button — inside qty shortfall card */}
+                                    {/* Accept and Send to System of Record button — inside qty shortfall card */}
                                     {deltaPhase23 === 'complete' && (
                                         <div className="mt-3 ml-11 flex items-center gap-3 animate-in fade-in duration-300">
                                             <button
@@ -2203,7 +2203,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                 {backorderTriggered23 ? (
                                                     <><CheckCircleIcon className="w-4 h-4" /> Accepted & Sent</>
                                                 ) : (
-                                                    <><CheckCircleIcon className="w-4 h-4" /> Accept and Send to Client</>
+                                                    <><CheckCircleIcon className="w-4 h-4" /> Accept and Send to System of Record</>
                                                 )}
                                             </button>
                                             {backorderTriggered23 && (
@@ -2401,7 +2401,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold transition-colors shadow-sm"
                                 >
                                     <CheckCircleIcon className="w-4 h-4" />
-                                    Approved & Send to System of Records
+                                    Accept and Send to System of Record
                                 </button>
                             </div>
                         ) : (
