@@ -45,6 +45,8 @@ interface AuthState {
 
 interface AuthActions {
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  validateCredentials: (email: string, password: string) => { valid: boolean; error?: string };
+  completeMfaLogin: (email: string) => void;
   signUp: (email: string, password: string, fullName: string) => Promise<{ success: boolean; error?: string; needsVerification?: boolean }>;
   signInWithMicrosoft: () => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
@@ -82,6 +84,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
     setInitialLoading(false);
   }, []);
+
+  const validateCredentials = (email: string, password: string) => {
+    const domainError = getDomainError(email);
+    if (domainError) return { valid: false, error: domainError };
+    const account = DEMO_ACCOUNTS[email.toLowerCase()];
+    if (!account || account.password !== password) {
+      return { valid: false, error: 'Invalid email or password. Please try again.' };
+    }
+    return { valid: true };
+  };
+
+  const completeMfaLogin = (email: string) => {
+    const mockUser = createMockUser(email);
+    setUser(mockUser);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(mockUser));
+  };
 
   const signIn = async (email: string, password: string) => {
     setError(null);
@@ -170,7 +188,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       error,
       showSessionWarning: false,
       authEvent: null,
-      signIn, signUp, signInWithMicrosoft, signOut, refreshSession,
+      signIn, validateCredentials, completeMfaLogin, signUp, signInWithMicrosoft, signOut, refreshSession,
       dismissSessionWarning, clearError, resetPassword,
     }}>
       {children}

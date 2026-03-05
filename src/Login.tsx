@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react'
-import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
 import logoLightBrand from './assets/logo-light-brand.png'
 import logoDarkBrand from './assets/logo-dark-brand.png'
 import { useAuth } from './context/AuthContext'
@@ -10,7 +10,7 @@ import { useToast, ToastContainer } from './components/AuthToast'
 type ViewMode = 'login' | 'register' | 'forgot-password';
 
 export default function Login() {
-    const { signIn, signUp, signInWithMicrosoft, resetPassword, clearError } = useAuth()
+    const { signIn, validateCredentials, completeMfaLogin, signUp, resetPassword, clearError } = useAuth()
     const { toasts, addToast, dismissToast } = useToast()
 
     const [viewMode, setViewMode] = useState<ViewMode>('login')
@@ -24,6 +24,48 @@ export default function Login() {
     const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>(
         validatePassword('')
     )
+
+    // MFA state
+    type MfaPhase = 'phone' | 'sending' | 'code' | 'verifying' | 'success';
+    const [showMfa, setShowMfa] = useState(false)
+    const [mfaPhase, setMfaPhase] = useState<MfaPhase>('phone')
+    const [mfaEmail, setMfaEmail] = useState('')
+
+    const MFA_PHONE = '+1 (832) ***-4582'
+    const MFA_CODE = ['8', '3', '1', '9', '0', '7']
+
+    const startMfaFlow = useCallback(() => {
+        setMfaPhase('phone')
+        setShowMfa(true)
+    }, [])
+
+    const handleMfaSendCode = useCallback(() => {
+        setMfaPhase('sending')
+        setTimeout(() => setMfaPhase('code'), 2000)
+    }, [])
+
+    const handleMfaVerify = useCallback(() => {
+        setMfaPhase('verifying')
+        setTimeout(() => setMfaPhase('success'), 1500)
+    }, [])
+
+    const handleMfaComplete = useCallback(() => {
+        setShowMfa(false)
+        completeMfaLogin(mfaEmail)
+        addToast('success', 'Multi-factor authentication verified successfully!')
+    }, [completeMfaLogin, mfaEmail, addToast])
+
+    // Auto-verify code after appearing
+    useEffect(() => {
+        if (mfaPhase === 'code') {
+            const timer = setTimeout(() => handleMfaVerify(), 2000)
+            return () => clearTimeout(timer)
+        }
+        if (mfaPhase === 'success') {
+            const timer = setTimeout(() => handleMfaComplete(), 1500)
+            return () => clearTimeout(timer)
+        }
+    }, [mfaPhase, handleMfaVerify, handleMfaComplete])
 
     const emailInputRef = useRef<HTMLInputElement>(null)
 
@@ -64,12 +106,18 @@ export default function Login() {
         e.preventDefault()
         setIsSubmitting(true)
 
-        const result = await signIn(email, password)
+        // Validate credentials first without logging in
+        const check = validateCredentials(email, password)
         setIsSubmitting(false)
 
-        if (!result.success) {
-            addToast('error', result.error ?? 'Login failed')
+        if (!check.valid) {
+            addToast('error', check.error ?? 'Login failed')
+            return
         }
+
+        // Credentials valid — start MFA flow
+        setMfaEmail(email)
+        startMfaFlow()
     }
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -105,11 +153,10 @@ export default function Login() {
 
     const handleMicrosoftLogin = async () => {
         setIsSubmitting(true)
-        const result = await signInWithMicrosoft()
+        // Microsoft auto-uses goavanto account — trigger MFA
+        setMfaEmail('test@goavanto.com')
         setIsSubmitting(false)
-        if (!result.success) {
-            addToast('error', result.error ?? 'Microsoft login failed')
-        }
+        startMfaFlow()
     }
 
     const handleForgotPassword = async (e: React.FormEvent) => {
@@ -173,6 +220,121 @@ export default function Login() {
         <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 font-sans bg-background transition-colors duration-300">
             {/* Toast Notifications */}
             <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
+            {/* MFA Modal */}
+            {showMfa && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div className="w-full max-w-md mx-4 rounded-2xl bg-zinc-900 border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-8 pt-8 pb-4 text-center">
+                            <div className="mx-auto w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mb-4">
+                                {mfaPhase === 'success' ? (
+                                    <ShieldCheckIcon className="w-7 h-7 text-green-400" />
+                                ) : (
+                                    <DevicePhoneMobileIcon className="w-7 h-7 text-primary" />
+                                )}
+                            </div>
+                            <h3 className="text-xl font-bold text-white">
+                                {mfaPhase === 'success' ? 'Verification Complete' : 'Multi-Factor Authentication'}
+                            </h3>
+                            <p className="text-sm text-zinc-400 mt-1">
+                                {mfaPhase === 'phone' && 'Verify your identity with a one-time code sent to your phone.'}
+                                {mfaPhase === 'sending' && 'Sending verification code...'}
+                                {mfaPhase === 'code' && 'Enter the 6-digit code sent to your phone.'}
+                                {mfaPhase === 'verifying' && 'Verifying your code...'}
+                                {mfaPhase === 'success' && 'Your identity has been verified successfully.'}
+                            </p>
+                        </div>
+
+                        {/* Body */}
+                        <div className="px-8 pb-8">
+                            {/* Phone phase */}
+                            {mfaPhase === 'phone' && (
+                                <div className="space-y-5 mt-2">
+                                    <div>
+                                        <label className="text-zinc-300 text-sm font-medium mb-1.5 block">Mobile Phone Number</label>
+                                        <input
+                                            type="text"
+                                            value={MFA_PHONE}
+                                            readOnly
+                                            className="w-full bg-white/10 border border-white/20 text-white rounded-lg h-12 px-4 outline-none cursor-default"
+                                        />
+                                        <p className="text-xs text-zinc-500 mt-1.5">A verification code will be sent via SMS to this number.</p>
+                                    </div>
+                                    <button
+                                        onClick={handleMfaSendCode}
+                                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Send Verification Code
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Sending phase */}
+                            {mfaPhase === 'sending' && (
+                                <div className="flex flex-col items-center py-6 gap-4">
+                                    <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                    <p className="text-zinc-300 text-sm">Sending SMS to {MFA_PHONE}...</p>
+                                </div>
+                            )}
+
+                            {/* Code phase */}
+                            {mfaPhase === 'code' && (
+                                <div className="space-y-5 mt-2">
+                                    <div className="flex items-center gap-2 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                                        <CheckCircleIcon className="w-5 h-5 text-green-400 shrink-0" />
+                                        <p className="text-sm text-green-300">Code sent to {MFA_PHONE}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-zinc-300 text-sm font-medium mb-2 block">Verification Code</label>
+                                        <div className="flex gap-2 justify-center">
+                                            {MFA_CODE.map((digit, i) => (
+                                                <input
+                                                    key={i}
+                                                    type="text"
+                                                    value={digit}
+                                                    readOnly
+                                                    className="w-12 h-14 text-center text-xl font-bold bg-white/10 border border-white/20 text-white rounded-lg outline-none cursor-default"
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={handleMfaVerify}
+                                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Verify Code
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Verifying phase */}
+                            {mfaPhase === 'verifying' && (
+                                <div className="flex flex-col items-center py-6 gap-4">
+                                    <svg className="animate-spin h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                    </svg>
+                                    <p className="text-zinc-300 text-sm">Verifying code...</p>
+                                </div>
+                            )}
+
+                            {/* Success phase */}
+                            {mfaPhase === 'success' && (
+                                <div className="flex flex-col items-center py-4 gap-3">
+                                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+                                        <CheckCircleIcon className="w-8 h-8 text-green-400" />
+                                    </div>
+                                    <p className="text-green-300 text-sm font-medium">Authentication successful. Redirecting...</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Left Side - Branding */}
             <div className="relative overflow-hidden flex flex-col justify-center p-12 lg:p-20 bg-sidebar text-sidebar-foreground transition-colors duration-300">
