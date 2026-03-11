@@ -1011,7 +1011,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             </TableCell>
                                                             <TableCell className="px-3 py-3 whitespace-nowrap text-right text-sm font-medium text-foreground">
                                                                 ${(item.amount ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                                                                </div>
                                                             </TableCell>
                                                             <TableCell className="px-6 py-4 whitespace-nowrap">
                                                                 <Badge
