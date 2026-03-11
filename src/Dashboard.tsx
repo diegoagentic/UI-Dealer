@@ -161,7 +161,23 @@ const recentActivity = [
         actions: [
             { label: 'View PO', icon: EyeIcon, primary: true },
             { label: 'Download PDF', icon: ArrowDownTrayIcon, primary: false }
-        ]
+        ],
+        details: {
+            fields: [
+                { label: 'CLIENT', value: 'Office Images Inc.' },
+                { label: 'QUOTE VALUE', value: '$4,500.00' },
+                { label: 'PO NUMBER', value: '#PO-8841' },
+                { label: 'LINE ITEMS', value: '12 items' },
+                { label: 'DISCOUNT', value: '8% volume' },
+                { label: 'CONVERTED BY', value: 'Sara Chen' },
+            ],
+            timeline: [
+                { step: 'Quote Created', date: 'Mar 5', done: true },
+                { step: 'Client Approved', date: 'Mar 7', done: true },
+                { step: 'PO Generated', date: 'Mar 10', done: true },
+                { step: 'In Production', date: 'Pending', done: false },
+            ]
+        }
     },
     {
         id: 2,
@@ -174,7 +190,22 @@ const recentActivity = [
         actions: [
             { label: 'View Invoice', icon: EyeIcon, primary: true },
             { label: 'Email Receipt', icon: EnvelopeIcon, primary: false }
-        ]
+        ],
+        details: {
+            fields: [
+                { label: 'CLIENT', value: 'TechDealer Solutions' },
+                { label: 'INVOICE TOTAL', value: '$245.00' },
+                { label: 'PAYMENT METHOD', value: 'ACH Transfer' },
+                { label: 'REFERENCE', value: 'TRX-99281' },
+                { label: 'TERMS', value: 'Net 30' },
+                { label: 'DAYS TO PAY', value: '18 days (early)' },
+            ],
+            breakdown: [
+                { item: 'Ergonomic Task Chair x2', amount: '$190.00' },
+                { item: 'Shipping & Handling', amount: '$35.00' },
+                { item: 'Tax (8.25%)', amount: '$20.00' },
+            ]
+        }
     },
     {
         id: 3,
@@ -187,7 +218,19 @@ const recentActivity = [
         actions: [
             { label: 'Review Issue', icon: WrenchScrewdriverIcon, primary: true },
             { label: 'Contact Support', icon: ChatBubbleLeftRightIcon, primary: false }
-        ]
+        ],
+        details: {
+            fields: [
+                { label: 'ORDER', value: '#OR-9823' },
+                { label: 'VENDOR', value: 'AIS — Affordable Interior Systems' },
+                { label: 'TYPE', value: 'Weight mismatch' },
+                { label: 'SEVERITY', value: 'Medium' },
+            ],
+            discrepancies: [
+                { field: 'Shipped Weight', expected: '485 lbs', actual: '512 lbs', diff: '+27 lbs' },
+                { field: 'Box Count', expected: '12 boxes', actual: '14 boxes', diff: '+2 boxes' },
+            ]
+        }
     },
     {
         id: 4,
@@ -200,7 +243,23 @@ const recentActivity = [
         actions: [
             { label: 'Track Shipment', icon: MapPinIcon, primary: true },
             { label: 'Notify Client', icon: ChatBubbleLeftRightIcon, primary: false }
-        ]
+        ],
+        details: {
+            fields: [
+                { label: 'CARRIER', value: 'ABF Freight — Pro #884712' },
+                { label: 'CLIENT', value: 'Urban Living Inc.' },
+                { label: 'ORIGIN', value: 'AIS Plant, Lodi CA' },
+                { label: 'DESTINATION', value: 'Chicago, IL' },
+                { label: 'ORIGINAL ETA', value: 'Mar 8' },
+                { label: 'NEW ETA', value: 'Mar 12 (+4 days)' },
+            ],
+            trackingSteps: [
+                { location: 'Lodi, CA — Picked up', date: 'Mar 6', status: 'done' },
+                { location: 'Reno, NV — In transit', date: 'Mar 7', status: 'done' },
+                { location: 'Salt Lake City, UT — Weather hold', date: 'Mar 8', status: 'current' },
+                { location: 'Chicago, IL — Delivery', date: 'Mar 12 (est)', status: 'pending' },
+            ]
+        }
     }
 ]
 
@@ -283,7 +342,17 @@ const aiSuggestions = [
         description: 'Combine 3 pending orders for "TechDealer" to save 12% on shipping.',
         impact: 'Save $450',
         icon: TruckIcon,
-        type: 'savings'
+        type: 'savings',
+        details: {
+            fields: [
+                { label: 'CLIENT', value: 'TechDealer Solutions' },
+                { label: 'ORDERS', value: '#OR-9820, #OR-9821, #OR-9823' },
+                { label: 'CURRENT SHIPPING', value: '$3,750 (3 separate)' },
+                { label: 'CONSOLIDATED', value: '$3,300 (1 combined)' },
+            ],
+            reasoning: 'All 3 orders ship to the same destination (Chicago, IL) from the same vendor (AIS, Lodi CA). Consolidating into a single LTL shipment reduces per-order freight by 12%.',
+            confidence: 94
+        }
     },
     {
         id: 2,
@@ -291,7 +360,17 @@ const aiSuggestions = [
         description: 'Order 5 more "ErgoChairs" to unlock tier-2 pricing (-5%).',
         impact: 'Margin +2%',
         icon: TagIcon,
-        type: 'opportunity'
+        type: 'opportunity',
+        details: {
+            fields: [
+                { label: 'PRODUCT', value: 'ErgoChair Pro — Mesh / Black' },
+                { label: 'CURRENT QTY', value: '20 units (Tier 1)' },
+                { label: 'TIER 2 THRESHOLD', value: '25 units' },
+                { label: 'PRICE DROP', value: '$285 → $270.75 per unit' },
+            ],
+            reasoning: 'Your Q1 demand forecast shows 32 ErgoChairs needed. Ordering 5 additional now at tier-2 pricing saves $713.75 across the full order and improves margin from 18% to 20%.',
+            confidence: 87
+        }
     },
     {
         id: 3,
@@ -299,7 +378,17 @@ const aiSuggestions = [
         description: 'Tenant "Global Logistics" contract expires in 15 days.',
         impact: 'Retention',
         icon: DocumentTextIcon,
-        type: 'action'
+        type: 'action',
+        details: {
+            fields: [
+                { label: 'TENANT', value: 'Global Logistics Corp.' },
+                { label: 'CONTRACT VALUE', value: '$45,000/yr' },
+                { label: 'EXPIRES', value: 'Mar 25, 2026' },
+                { label: 'TENURE', value: '3 years (since 2023)' },
+            ],
+            reasoning: 'Global Logistics has been a consistent client with 98% on-time payments. Their order volume grew 15% YoY. Early renewal with a 2-year lock could secure a 5% rate increase.',
+            confidence: 91
+        }
     }
 ]
 
@@ -476,6 +565,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     // Step 1.10 — Smart Notifications (Action Center shows the notification)
 
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
+    const [expandedSuggestionId, setExpandedSuggestionId] = useState<number | null>(null)
     const [performanceTimePeriod, setPerformanceTimePeriod] = useState<'Day' | 'Month' | 'Sem' | 'Year'>('Month')
     const [showCustomizeModal, setShowCustomizeModal] = useState(false);
     const [isERPSyncModalOpen, setIsERPSyncModalOpen] = useState(false);
@@ -2068,32 +2158,114 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 </div>
 
                                                 {/* Expandable Details & Actions */}
-                                                <div className={`transition-all duration-300 ease-in-out ${expandedActivityId === item.id ? 'max-h-80 opacity-100 border-t border-border/50' : 'max-h-0 opacity-0'
+                                                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${expandedActivityId === item.id ? 'max-h-[500px] opacity-100 border-t border-border/50' : 'max-h-0 opacity-0'
                                                     }`}>
-                                                    <div className="p-4 bg-muted/20 space-y-4">
+                                                    <div className="p-4 bg-muted/20 space-y-3">
                                                         {item.meta && (
                                                             <div className="text-xs text-muted-foreground flex items-center gap-2 pl-2 border-l-2 border-border">
                                                                 {item.meta}
                                                             </div>
                                                         )}
 
-                                                        {/* Quick Actions Integration */}
-                                                        {item.actions && (
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {item.actions.map((action, idx) => (
-                                                                    <button
-                                                                        key={idx}
-                                                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${action.primary
-                                                                            ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 border-transparent hover:bg-zinc-700 dark:hover:bg-zinc-200'
-                                                                            : 'bg-white dark:bg-transparent text-foreground border-border hover:bg-muted'
-                                                                            }`}
-                                                                    >
-                                                                        <action.icon className="w-3.5 h-3.5" />
-                                                                        {action.label}
-                                                                    </button>
+                                                        {/* Detail Fields Grid */}
+                                                        {item.details?.fields && (
+                                                            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                                                                {item.details.fields.map((f: { label: string; value: string }, idx: number) => (
+                                                                    <div key={idx}>
+                                                                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{f.label}</p>
+                                                                        <p className="text-xs font-medium text-foreground">{f.value}</p>
+                                                                    </div>
                                                                 ))}
                                                             </div>
                                                         )}
+
+                                                        {/* Timeline (Quote converted to PO) */}
+                                                        {item.details?.timeline && (
+                                                            <div className="flex items-center gap-0 mt-1">
+                                                                {item.details.timeline.map((step: { step: string; date: string; done: boolean }, idx: number) => (
+                                                                    <div key={idx} className="flex items-center">
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold ${step.done ? 'bg-green-500 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-muted-foreground'}`}>
+                                                                                {step.done ? '\u2713' : idx + 1}
+                                                                            </div>
+                                                                            <p className="text-[9px] font-medium text-foreground mt-0.5 whitespace-nowrap">{step.step}</p>
+                                                                            <p className="text-[9px] text-muted-foreground">{step.date}</p>
+                                                                        </div>
+                                                                        {idx < item.details.timeline.length - 1 && (
+                                                                            <div className={`w-8 h-0.5 mx-0.5 mt-[-18px] ${step.done ? 'bg-green-400' : 'bg-zinc-200 dark:bg-zinc-700'}`} />
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Payment Breakdown */}
+                                                        {item.details?.breakdown && (
+                                                            <div className="rounded-lg border border-border bg-card/50 p-2.5 space-y-1.5">
+                                                                <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Breakdown</p>
+                                                                {item.details.breakdown.map((b: { item: string; amount: string }, idx: number) => (
+                                                                    <div key={idx} className="flex justify-between text-xs">
+                                                                        <span className="text-muted-foreground">{b.item}</span>
+                                                                        <span className="font-medium text-foreground">{b.amount}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Discrepancy Table */}
+                                                        {item.details?.discrepancies && (
+                                                            <div className="rounded-lg border border-amber-200 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-900/10 p-2.5">
+                                                                <p className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 mb-1.5">Discrepancies Found</p>
+                                                                <div className="space-y-1.5">
+                                                                    {item.details.discrepancies.map((d: { field: string; expected: string; actual: string; diff: string }, idx: number) => (
+                                                                        <div key={idx} className="flex items-center justify-between text-xs">
+                                                                            <span className="font-medium text-foreground">{d.field}</span>
+                                                                            <div className="flex items-center gap-3">
+                                                                                <span className="text-muted-foreground">Expected: {d.expected}</span>
+                                                                                <span className="text-amber-600 dark:text-amber-400 font-semibold">Actual: {d.actual}</span>
+                                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400">{d.diff}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Tracking Steps (Shipment delayed) */}
+                                                        {item.details?.trackingSteps && (
+                                                            <div className="space-y-0">
+                                                                {item.details.trackingSteps.map((ts: { location: string; date: string; status: string }, idx: number) => (
+                                                                    <div key={idx} className="flex items-start gap-2.5">
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className={`w-2.5 h-2.5 rounded-full mt-0.5 ${ts.status === 'done' ? 'bg-green-500' : ts.status === 'current' ? 'bg-amber-500 ring-2 ring-amber-200 dark:ring-amber-500/30' : 'bg-zinc-300 dark:bg-zinc-600'}`} />
+                                                                            {idx < item.details.trackingSteps.length - 1 && (
+                                                                                <div className={`w-0.5 h-5 ${ts.status === 'done' ? 'bg-green-300 dark:bg-green-700' : 'bg-zinc-200 dark:bg-zinc-700'}`} />
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="pb-2">
+                                                                            <p className={`text-xs font-medium ${ts.status === 'current' ? 'text-amber-600 dark:text-amber-400' : ts.status === 'pending' ? 'text-muted-foreground' : 'text-foreground'}`}>{ts.location}</p>
+                                                                            <p className="text-[10px] text-muted-foreground">{ts.date}</p>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Quick Actions Integration */}
+                                                        <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                                                            {item.actions && item.actions.map((action, idx) => (
+                                                                <button
+                                                                    key={idx}
+                                                                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors border ${action.primary
+                                                                        ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 border-transparent hover:bg-zinc-700 dark:hover:bg-zinc-200'
+                                                                        : 'bg-white dark:bg-transparent text-foreground border-border hover:bg-muted'
+                                                                        }`}
+                                                                >
+                                                                    <action.icon className="w-3.5 h-3.5" />
+                                                                    {action.label}
+                                                                </button>
+                                                            ))}
+                                                        </div>
 
                                                         {item.aiSuggestion && (
                                                             <div className="rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 p-3">
@@ -2109,14 +2281,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         <button
                                                                             onClick={(e) => {
                                                                                 e.stopPropagation();
-                                                                                // Original: handleGenUIAction(`Resolve ${item.title} for ${item.related}`);
                                                                                 setDemoPhase('ORDERED');
                                                                                 setShowConfetti(true);
-                                                                                // Simulate Order Creation Backend & Navigate
                                                                                 localStorage.setItem('demo_flow_complete', 'true');
                                                                                 localStorage.setItem('demo_view_order_id', 'ORD-7829');
-
-                                                                                // Check if onNavigate exists before calling
                                                                                 if (onNavigate) {
                                                                                     setTimeout(() => {
                                                                                         onNavigate('transactions');
@@ -2158,27 +2326,82 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     </div>
                                     <div className="space-y-4 flex-1">
                                         {aiSuggestions.map((suggestion) => (
-                                            <div key={suggestion.id} className="p-4 rounded-xl border border-border bg-muted dark:bg-secondary/50 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-colors group cursor-pointer">
-                                                <div className="flex items-start gap-4">
-                                                    <div className="w-10 h-10 rounded-full bg-card dark:bg-secondary border border-zinc-100 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
-                                                        <suggestion.icon className="w-5 h-5 text-zinc-500" />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="flex justify-between items-start">
-                                                            <h4 className="text-sm font-semibold text-foreground">{suggestion.title}</h4>
-                                                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
-                                                                {suggestion.impact}
-                                                            </span>
+                                            <div key={suggestion.id} className={`rounded-xl border overflow-hidden transition-all duration-300 ${expandedSuggestionId === suggestion.id
+                                                ? 'bg-muted/30 border-indigo-300 dark:border-indigo-500/30 shadow-sm'
+                                                : 'bg-muted dark:bg-secondary/50 border-border hover:border-indigo-200 dark:hover:border-indigo-900/50'
+                                                }`}>
+                                                <div
+                                                    className="p-4 cursor-pointer group"
+                                                    onClick={() => setExpandedSuggestionId(expandedSuggestionId === suggestion.id ? null : suggestion.id)}
+                                                >
+                                                    <div className="flex items-start gap-4">
+                                                        <div className="w-10 h-10 rounded-full bg-card dark:bg-secondary border border-zinc-100 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                                            <suggestion.icon className="w-5 h-5 text-zinc-500" />
                                                         </div>
-                                                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                                                            {suggestion.description}
-                                                        </p>
-                                                        <button
-                                                            onClick={() => handleGenUIAction(`Apply Suggestion: ${suggestion.title}`)}
-                                                            className="mt-3 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 group/btn"
-                                                        >
-                                                            Apply Suggestion <ArrowRightIcon className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
-                                                        </button>
+                                                        <div className="flex-1">
+                                                            <div className="flex justify-between items-start">
+                                                                <h4 className="text-sm font-semibold text-foreground">{suggestion.title}</h4>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                                                                        {suggestion.impact}
+                                                                    </span>
+                                                                    <ChevronDownIcon className={`w-4 h-4 text-muted-foreground transition-transform duration-300 ${expandedSuggestionId === suggestion.id ? 'rotate-180' : ''}`} />
+                                                                </div>
+                                                            </div>
+                                                            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                                                                {suggestion.description}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Expandable Details */}
+                                                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${expandedSuggestionId === suggestion.id ? 'max-h-[400px] opacity-100 border-t border-border/50' : 'max-h-0 opacity-0'}`}>
+                                                    <div className="p-4 bg-muted/20 space-y-3">
+                                                        {/* Detail Fields */}
+                                                        {suggestion.details?.fields && (
+                                                            <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                                                                {suggestion.details.fields.map((f: { label: string; value: string }, idx: number) => (
+                                                                    <div key={idx}>
+                                                                        <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{f.label}</p>
+                                                                        <p className="text-xs font-medium text-foreground">{f.value}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+
+                                                        {/* AI Reasoning */}
+                                                        {suggestion.details?.reasoning && (
+                                                            <div className="rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 p-3">
+                                                                <div className="flex items-start gap-2.5">
+                                                                    <AIAgentAvatar className="mt-0.5" />
+                                                                    <div className="flex-1">
+                                                                        <div className="flex items-center justify-between mb-1">
+                                                                            <p className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-300">AI Reasoning</p>
+                                                                            {suggestion.details.confidence && (
+                                                                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300">
+                                                                                    {suggestion.details.confidence}% confidence
+                                                                                </span>
+                                                                            )}
+                                                                        </div>
+                                                                        <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 leading-relaxed">
+                                                                            {suggestion.details.reasoning}
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+
+                                                        {/* Action Button */}
+                                                        <div className="pt-2 border-t border-border/50">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); handleGenUIAction(`Apply Suggestion: ${suggestion.title}`); }}
+                                                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 dark:bg-indigo-500 text-white hover:bg-indigo-700 dark:hover:bg-indigo-400 transition-colors"
+                                                            >
+                                                                <SparklesIcon className="w-3.5 h-3.5" />
+                                                                Apply Suggestion
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
