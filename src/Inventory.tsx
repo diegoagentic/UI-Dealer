@@ -154,13 +154,39 @@ const MOCK_INVENTORY: InventoryItem[] = Array.from({ length: 50 }, (_, i) => {
     } as InventoryItem;
 });
 
-// Summary Data adapted for Inventory
-const inventorySummary = {
-    total_assets: { label: 'Total Assets', value: '1,248', sub: '+12 this week', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
-    total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green' },
-    low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange' },
-    utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple' },
-    pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
+// Summary Data adapted for Inventory by Time Period
+type InvTimePeriod = 'Day' | 'Week' | 'Month' | 'Quarter';
+type InvSummaryItem = { label: string; value: string; sub: string; icon: JSX.Element; color: string; trend: string; trendUp: boolean };
+
+const inventorySummaryByPeriod: Record<InvTimePeriod, Record<string, InvSummaryItem>> = {
+    Day: {
+        total_assets: { label: 'Total Assets', value: '1,248', sub: '+3 today', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+3', trendUp: true },
+        total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green', trend: '+0.2%', trendUp: true },
+        low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange', trend: '0', trendUp: true },
+        utilization: { label: 'Utilization', value: '89%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple', trend: '+2%', trendUp: true },
+        pending_moves: { label: 'Pending Moves', value: '5', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+2', trendUp: true },
+    },
+    Week: {
+        total_assets: { label: 'Total Assets', value: '1,248', sub: '+12 this week', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+12', trendUp: true },
+        total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green', trend: '+1.5%', trendUp: true },
+        low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange', trend: '-2', trendUp: false },
+        utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple', trend: '+1%', trendUp: true },
+        pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+8', trendUp: true },
+    },
+    Month: {
+        total_assets: { label: 'Total Assets', value: '1,248', sub: '+48 this month', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+48', trendUp: true },
+        total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green', trend: '+5.3%', trendUp: true },
+        low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange', trend: '+3', trendUp: true },
+        utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple', trend: '+4%', trendUp: true },
+        pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+5', trendUp: true },
+    },
+    Quarter: {
+        total_assets: { label: 'Total Assets', value: '1,248', sub: '+142 this quarter', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+142', trendUp: true },
+        total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green', trend: '+12.8%', trendUp: true },
+        low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange', trend: '+6', trendUp: true },
+        utilization: { label: 'Utilization', value: '82%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple', trend: '-3%', trendUp: false },
+        pending_moves: { label: 'Pending Moves', value: '67', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+22', trendUp: true },
+    },
 };
 
 // Color Mapping for Status Icons (from Transactions)
@@ -187,6 +213,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
     // State
     const [inventoryData, setInventoryData] = useState<InventoryItem[]>(MOCK_INVENTORY);
+    const [invTimePeriod, setInvTimePeriod] = useState<InvTimePeriod>('Month');
     const [activeTab, setActiveTab] = useState<'inventory' | 'locations'>('inventory');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
     const [searchQuery, setSearchQuery] = useState('');
@@ -435,18 +462,31 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                 {/* Collapsible Summary Section */}
                 {showMetrics ? (
                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                        <div className="flex justify-end mb-2">
+                        <div className="flex items-center justify-between mb-4">
+                            {/* Period Selector inside expanded metrics */}
+                            <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700/50">
+                                {(['Day', 'Week', 'Month', 'Quarter'] as InvTimePeriod[]).map((period) => (
+                                    <button key={period} onClick={() => setInvTimePeriod(period)} className={`px-3 py-1 text-[10px] font-medium rounded-md transition-all ${period === invTimePeriod ? 'bg-white dark:bg-brand-400 text-foreground dark:text-zinc-900 shadow-sm border border-border dark:border-transparent' : 'text-muted-foreground hover:text-foreground hover:bg-zinc-200/50 dark:hover:bg-zinc-700'}`}>
+                                        {period}
+                                    </button>
+                                ))}
+                            </div>
                             <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
                                 Hide Details <ChevronUpIcon className="w-4 h-4" />
                             </button>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
-                            {Object.entries(inventorySummary).map(([key, data]) => (
+                            {Object.entries(inventorySummaryByPeriod[invTimePeriod]).map(([key, data]) => (
                                 <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
-                                            <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
+                                            <div className="mt-1 flex items-center gap-2">
+                                                <p className="text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
+                                                <span className={`text-xs font-semibold ${data.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                    {data.trendUp ? '\u2191' : '\u2193'}{data.trend}
+                                                </span>
+                                            </div>
                                         </div>
                                         <div
                                             className={cn("p-3 rounded-xl relative group", colorStyles[data.color] || 'bg-zinc-50 text-zinc-600')}
@@ -484,6 +524,14 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 ) : (
                     <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                        {/* Period Selector inside collapsed ticker */}
+                        <div className="flex items-center gap-0.5 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-0.5 shrink-0">
+                            {(['Day', 'Week', 'Month', 'Quarter'] as InvTimePeriod[]).map((period) => (
+                                <button key={period} onClick={() => setInvTimePeriod(period)} className={`px-2 py-0.5 text-[9px] font-medium rounded transition-all ${period === invTimePeriod ? 'bg-white dark:bg-brand-400 text-foreground dark:text-zinc-900 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
+                                    {period}
+                                </button>
+                            ))}
+                        </div>
                         {/* Collapsed Ticker View - Carousel */}
                         <div className="flex items-center gap-2 flex-1 min-w-0">
                             <button
@@ -498,7 +546,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
                                 style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                             >
-                                {Object.entries(inventorySummary).map(([key, data]) => (
+                                {Object.entries(inventorySummaryByPeriod[invTimePeriod]).map(([key, data]) => (
                                     <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                         <div
                                             className={cn("relative flex items-center justify-center w-10 h-10 rounded-full transition-colors", colorStyles[data.color])}
@@ -507,7 +555,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                             {data.icon}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                <span className={`text-[10px] font-semibold ${data.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                    {data.trendUp ? '\u2191' : '\u2193'}{data.trend}
+                                                </span>
+                                            </div>
                                             <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
                                         </div>
                                         {/* Divider (except last) */}

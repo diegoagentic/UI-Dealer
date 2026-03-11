@@ -34,14 +34,36 @@ const inventoryData = [
     { name: 'Storage', value: 45, amt: 340 },
 ]
 
-const salesData = [
-    { name: 'Jan', sales: 4000, costs: 2400 },
-    { name: 'Feb', sales: 3000, costs: 1398 },
-    { name: 'Mar', sales: 2000, costs: 9800 },
-    { name: 'Apr', sales: 2780, costs: 3908 },
-    { name: 'May', sales: 1890, costs: 4800 },
-    { name: 'Jun', sales: 2390, costs: 3800 },
-]
+const salesDataByPeriod: Record<string, { name: string; sales: number }[]> = {
+    Day: [
+        { name: '8AM', sales: 800 }, { name: '10AM', sales: 1200 }, { name: '12PM', sales: 950 },
+        { name: '2PM', sales: 1800 }, { name: '4PM', sales: 1400 }, { name: '6PM', sales: 600 },
+    ],
+    Week: [
+        { name: 'Mon', sales: 3200 }, { name: 'Tue', sales: 2800 }, { name: 'Wed', sales: 4100 },
+        { name: 'Thu', sales: 3600 }, { name: 'Fri', sales: 2900 },
+    ],
+    Month: [
+        { name: 'Jan', sales: 4000 }, { name: 'Feb', sales: 3000 }, { name: 'Mar', sales: 2000 },
+        { name: 'Apr', sales: 2780 }, { name: 'May', sales: 1890 }, { name: 'Jun', sales: 2390 },
+    ],
+    Quarter: [
+        { name: 'Q1 2025', sales: 9000 }, { name: 'Q2 2025', sales: 7070 },
+        { name: 'Q3 2025', sales: 8200 }, { name: 'Q4 2025', sales: 11400 },
+    ],
+};
+const salesData = salesDataByPeriod.Month;
+
+const metricsByPeriod: Record<string, { revenueTrend: string; revenueTrendUp: boolean; activeTrend: string; activeTrendUp: boolean; efficiencyTrend: string; efficiencyTrendUp: boolean; projectTrend: string; projectTrendUp: boolean }> = {
+    Day:     { revenueTrend: '+$42K', revenueTrendUp: true, activeTrend: '+2', activeTrendUp: true, efficiencyTrend: '+5%', efficiencyTrendUp: true, projectTrend: '0', projectTrendUp: true },
+    Week:    { revenueTrend: '+$180K', revenueTrendUp: true, activeTrend: '+5', activeTrendUp: true, efficiencyTrend: '+3%', efficiencyTrendUp: true, projectTrend: '+1', projectTrendUp: true },
+    Month:   { revenueTrend: '+$320K', revenueTrendUp: true, activeTrend: '-2', activeTrendUp: false, efficiencyTrend: '+8%', efficiencyTrendUp: true, projectTrend: '+2', projectTrendUp: true },
+    Quarter: { revenueTrend: '-$85K', revenueTrendUp: false, activeTrend: '+12', activeTrendUp: true, efficiencyTrend: '-4%', efficiencyTrendUp: false, projectTrend: '+3', projectTrendUp: true },
+};
+
+const trendLabels: Record<string, string> = {
+    Day: 'Daily Trends', Week: 'Weekly Trends', Month: 'Monthly Trends', Quarter: 'Quarterly Trends',
+};
 
 const trackingSteps = [
     { status: 'Order Placed', date: 'Dec 20, 9:00 AM', location: 'System', completed: true },
@@ -100,30 +122,102 @@ const solidColorStyles: Record<string, string> = {
     indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
 }
 
-// Summary Data matching Wireframe
-const ordersSummary = {
-    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
-    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
-    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple' },
-    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
-    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green' },
-}
+// Summary Data by Time Period
+type TimePeriod = 'Day' | 'Week' | 'Month' | 'Quarter';
+type SummaryItem = { label: string; value: string; sub: string; icon: JSX.Element; color: string; trend: string; trendUp: boolean };
 
-const quotesSummary = {
-    open_quotes: { label: 'Open Quotes', value: '14', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue' },
-    negotiating: { label: 'Negotiating', value: '5', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange' },
-    approved_ytd: { label: 'Approved', value: '42', sub: 'This year', icon: <CheckIcon className="w-5 h-5" />, color: 'green' },
-    win_rate: { label: 'Win Rate', value: '68%', sub: 'vs Last Quarter', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple' },
-    pipeline_val: { label: 'Pipeline Val', value: '$2.1M', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo' },
-}
+const ordersSummaryByPeriod: Record<TimePeriod, Record<string, SummaryItem>> = {
+    Day: {
+        active_orders: { label: 'Active Orders', value: '12', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+2', trendUp: true },
+        pending_approval: { label: 'Pending Approval', value: '3', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '+1', trendUp: true },
+        in_production: { label: 'In Production', value: '5', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple', trend: '0', trendUp: true },
+        ready_to_ship: { label: 'Ready to Ship', value: '4', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+1', trendUp: true },
+        total_value: { label: 'Total Value', value: '$420K', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green', trend: '+8%', trendUp: true },
+    },
+    Week: {
+        active_orders: { label: 'Active Orders', value: '47', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+5', trendUp: true },
+        pending_approval: { label: 'Pending Approval', value: '8', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '-2', trendUp: false },
+        in_production: { label: 'In Production', value: '19', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple', trend: '+3', trendUp: true },
+        ready_to_ship: { label: 'Ready to Ship', value: '12', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+4', trendUp: true },
+        total_value: { label: 'Total Value', value: '$1.9M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green', trend: '+12%', trendUp: true },
+    },
+    Month: {
+        active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+14', trendUp: true },
+        pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '-3', trendUp: false },
+        in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple', trend: '+8', trendUp: true },
+        ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+6', trendUp: true },
+        total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green', trend: '+15%', trendUp: true },
+    },
+    Quarter: {
+        active_orders: { label: 'Active Orders', value: '234', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', trend: '+28', trendUp: true },
+        pending_approval: { label: 'Pending Approval', value: '31', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '+5', trendUp: true },
+        in_production: { label: 'In Production', value: '87', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple', trend: '-4', trendUp: false },
+        ready_to_ship: { label: 'Ready to Ship', value: '58', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo', trend: '+12', trendUp: true },
+        total_value: { label: 'Total Value', value: '$11.2M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green', trend: '+22%', trendUp: true },
+    },
+};
 
-const acksSummary = {
-    pending_acks: { label: 'Pending Acknowledgements', value: '8', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
-    discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red' },
-    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green' },
-    avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue' },
-    on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple' },
-}
+const quotesSummaryByPeriod: Record<TimePeriod, Record<string, SummaryItem>> = {
+    Day: {
+        open_quotes: { label: 'Open Quotes', value: '3', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue', trend: '+1', trendUp: true },
+        negotiating: { label: 'Negotiating', value: '1', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange', trend: '0', trendUp: true },
+        approved_ytd: { label: 'Approved', value: '2', sub: 'Today', icon: <CheckIcon className="w-5 h-5" />, color: 'green', trend: '+2', trendUp: true },
+        win_rate: { label: 'Win Rate', value: '75%', sub: 'vs yesterday', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+7%', trendUp: true },
+        pipeline_val: { label: 'Pipeline Val', value: '$180K', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo', trend: '+5%', trendUp: true },
+    },
+    Week: {
+        open_quotes: { label: 'Open Quotes', value: '8', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue', trend: '+3', trendUp: true },
+        negotiating: { label: 'Negotiating', value: '3', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange', trend: '+1', trendUp: true },
+        approved_ytd: { label: 'Approved', value: '11', sub: 'This week', icon: <CheckIcon className="w-5 h-5" />, color: 'green', trend: '+4', trendUp: true },
+        win_rate: { label: 'Win Rate', value: '71%', sub: 'vs last week', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+3%', trendUp: true },
+        pipeline_val: { label: 'Pipeline Val', value: '$890K', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo', trend: '+11%', trendUp: true },
+    },
+    Month: {
+        open_quotes: { label: 'Open Quotes', value: '14', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue', trend: '+6', trendUp: true },
+        negotiating: { label: 'Negotiating', value: '5', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange', trend: '-1', trendUp: false },
+        approved_ytd: { label: 'Approved', value: '42', sub: 'This month', icon: <CheckIcon className="w-5 h-5" />, color: 'green', trend: '+9', trendUp: true },
+        win_rate: { label: 'Win Rate', value: '68%', sub: 'vs last month', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+3%', trendUp: true },
+        pipeline_val: { label: 'Pipeline Val', value: '$2.1M', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo', trend: '+18%', trendUp: true },
+    },
+    Quarter: {
+        open_quotes: { label: 'Open Quotes', value: '38', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue', trend: '-2', trendUp: false },
+        negotiating: { label: 'Negotiating', value: '12', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange', trend: '+4', trendUp: true },
+        approved_ytd: { label: 'Approved', value: '124', sub: 'This quarter', icon: <CheckIcon className="w-5 h-5" />, color: 'green', trend: '+31', trendUp: true },
+        win_rate: { label: 'Win Rate', value: '62%', sub: 'vs last quarter', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '-4%', trendUp: false },
+        pipeline_val: { label: 'Pipeline Val', value: '$6.4M', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo', trend: '+25%', trendUp: true },
+    },
+};
+
+const acksSummaryByPeriod: Record<TimePeriod, Record<string, SummaryItem>> = {
+    Day: {
+        pending_acks: { label: 'Pending Acks', value: '2', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '+1', trendUp: true },
+        discrepancies: { label: 'Discrepancies', value: '1', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red', trend: '0', trendUp: true },
+        confirmed: { label: 'Confirmed', value: '8', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green', trend: '+3', trendUp: true },
+        avg_lead: { label: 'Avg Lead Time', value: '3.8w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue', trend: '-0.4w', trendUp: true },
+        on_time: { label: 'On Time Rate', value: '96%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+2%', trendUp: true },
+    },
+    Week: {
+        pending_acks: { label: 'Pending Acks', value: '5', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '-1', trendUp: false },
+        discrepancies: { label: 'Discrepancies', value: '2', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red', trend: '+1', trendUp: true },
+        confirmed: { label: 'Confirmed', value: '34', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green', trend: '+8', trendUp: true },
+        avg_lead: { label: 'Avg Lead Time', value: '4.0w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue', trend: '-0.2w', trendUp: true },
+        on_time: { label: 'On Time Rate', value: '95%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+1%', trendUp: true },
+    },
+    Month: {
+        pending_acks: { label: 'Pending Acks', value: '8', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '-2', trendUp: false },
+        discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red', trend: '+1', trendUp: true },
+        confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green', trend: '+42', trendUp: true },
+        avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue', trend: '+0.1w', trendUp: false },
+        on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '+2%', trendUp: true },
+    },
+    Quarter: {
+        pending_acks: { label: 'Pending Acks', value: '18', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange', trend: '+6', trendUp: true },
+        discrepancies: { label: 'Discrepancies', value: '9', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red', trend: '+4', trendUp: true },
+        confirmed: { label: 'Confirmed', value: '478', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green', trend: '+112', trendUp: true },
+        avg_lead: { label: 'Avg Lead Time', value: '4.5w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue', trend: '+0.3w', trendUp: false },
+        on_time: { label: 'On Time Rate', value: '91%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple', trend: '-3%', trendUp: false },
+    },
+};
 
 import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 import CreateQuoteModal from './components/CreateQuoteModal'
@@ -139,6 +233,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const { currentStep, nextStep, isDemoActive } = useDemo();
     const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
+    const [txTimePeriod, setTxTimePeriod] = useState<TimePeriod>('Month');
     const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
     const [isAckModalOpen, setIsAckModalOpen] = useState(false);
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
@@ -422,7 +517,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                                 <div className="relative">
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
-                                        {Object.entries(quotesSummary).map(([key, data]) => (
+                                        {Object.entries(quotesSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                             <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
@@ -467,7 +562,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
-                                            {Object.entries(quotesSummary).map(([key, data]) => (
+                                            {Object.entries(quotesSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                                     <div
                                                         className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
@@ -476,7 +571,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         {data.icon}
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                            <span className={`text-[10px] font-semibold ${data.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                                {data.trendUp ? '\u2191' : '\u2193'}{data.trend}
+                                                            </span>
+                                                        </div>
                                                         <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
                                                     </div>
                                                 </div>
@@ -525,7 +625,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                                 <div className="relative">
                                     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
-                                        {Object.entries(acksSummary).map(([key, data]) => (
+                                        {Object.entries(acksSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                             <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
@@ -570,7 +670,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                         <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
-                                            {Object.entries(acksSummary).map(([key, data]) => (
+                                            {Object.entries(acksSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                                     <div
                                                         className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
@@ -579,7 +679,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         {data.icon}
                                                     </div>
                                                     <div className="flex flex-col">
-                                                        <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                            <span className={`text-[10px] font-semibold ${data.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                                {data.trendUp ? '\u2191' : '\u2193'}{data.trend}
+                                                            </span>
+                                                        </div>
                                                         <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
                                                     </div>
                                                 </div>
@@ -635,7 +740,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4"
                                         ref={expandedScrollRef}
                                     >
-                                        {Object.entries(ordersSummary).map(([key, data]) => (
+                                        {Object.entries(ordersSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                             <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
                                                 <div className="flex items-center justify-between">
                                                     <div>
@@ -691,26 +796,23 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
                                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                                     >
-                                        {Object.entries(ordersSummary).map(([key, data]) => (
+                                        {Object.entries(ordersSummaryByPeriod[txTimePeriod]).map(([key, data]) => (
                                             <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                {/* Icon with Floating Tooltip */}
-                                                {/* Icon with Floating Tooltip */}
                                                 <div
                                                     className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
                                                     title={data.label}
                                                 >
                                                     {data.icon}
                                                 </div>
-
-                                                {/* Stacked Value & Change */}
                                                 <div className="flex flex-col">
-                                                    <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
-                                                    <span className="text-[10px] text-muted-foreground mt-1 font-medium">
-                                                        {data.label}
-                                                    </span>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
+                                                        <span className={`text-[10px] font-semibold ${data.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                            {data.trendUp ? '\u2191' : '\u2193'}{data.trend}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
                                                 </div>
-
-                                                {/* Divider (except last) */}
                                                 <div className="h-8 w-px bg-border/50 ml-4 hidden md:block lg:hidden xl:block opacity-50"></div>
                                             </div>
                                         ))}
@@ -960,6 +1062,27 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 {/* Metrics View special handling */}
                                 {activeTab === 'metrics' ? (
                                     <div className="space-y-8">
+                                        {/* Period Selector */}
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="text-lg font-brand font-semibold text-foreground">{trendLabels[txTimePeriod]}</h3>
+                                            <div className="flex items-center gap-1 bg-muted/60 dark:bg-zinc-800/60 rounded-lg p-0.5">
+                                                {(['Day', 'Week', 'Month', 'Quarter'] as TimePeriod[]).map((p) => (
+                                                    <button
+                                                        key={p}
+                                                        onClick={() => setTxTimePeriod(p)}
+                                                        className={cn(
+                                                            'px-3 py-1 text-xs font-medium rounded-md transition-all',
+                                                            txTimePeriod === p
+                                                                ? 'bg-card dark:bg-zinc-700 text-foreground shadow-sm'
+                                                                : 'text-muted-foreground hover:text-foreground'
+                                                        )}
+                                                    >
+                                                        {p}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
                                             {/* Revenue Card */}
                                             <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-2xl p-6 border border-green-200 dark:border-green-800/20 shadow-sm">
@@ -971,7 +1094,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-green-700 dark:text-green-300">{metricsData.revenue}</p>
-                                                    <p className="text-xs text-green-600/80 dark:text-green-400/80 mt-1">Based on visible {lifecycleTab === 'quotes' ? 'quotes' : 'orders'}</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className={cn('text-xs font-semibold', metricsByPeriod[txTimePeriod].revenueTrendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400')}>
+                                                            {metricsByPeriod[txTimePeriod].revenueTrendUp ? '↑' : '↓'} {metricsByPeriod[txTimePeriod].revenueTrend}
+                                                        </span>
+                                                        <span className="text-[10px] text-green-600/60 dark:text-green-400/60">vs prev.</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -985,9 +1113,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{metricsData.activeOrders}</p>
-                                                    <p className="text-xs text-blue-600/80 dark:text-blue-400/80 mt-1">
-                                                        {lifecycleTab === 'quotes' ? 'Sent or Negotiating' : lifecycleTab === 'acknowledgments' ? 'Awaiting Confirmation' : 'In production or pending'}
-                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className={cn('text-xs font-semibold', metricsByPeriod[txTimePeriod].activeTrendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400')}>
+                                                            {metricsByPeriod[txTimePeriod].activeTrendUp ? '↑' : '↓'} {metricsByPeriod[txTimePeriod].activeTrend}
+                                                        </span>
+                                                        <span className="text-[10px] text-blue-600/60 dark:text-blue-400/60">vs prev.</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -1001,9 +1132,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
-                                                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 mt-1">
-                                                        {lifecycleTab === 'quotes' ? 'Quotes approved' : lifecycleTab === 'acknowledgments' ? 'Acknowledgements confirmed' : 'Orders delivered successfully'}
-                                                    </p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className={cn('text-xs font-semibold', metricsByPeriod[txTimePeriod].efficiencyTrendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400')}>
+                                                            {metricsByPeriod[txTimePeriod].efficiencyTrendUp ? '↑' : '↓'} {metricsByPeriod[txTimePeriod].efficiencyTrend}
+                                                        </span>
+                                                        <span className="text-[10px] text-indigo-600/60 dark:text-indigo-400/60">vs prev.</span>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -1017,22 +1151,27 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
                                                         {availableProjects.length > 0 && availableProjects[0] === 'All Projects' ? availableProjects.length - 1 : availableProjects.length}
                                                     </p>
-                                                    <p className="text-xs text-amber-600/80 dark:text-amber-400/80 mt-1">Active projects</p>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className={cn('text-xs font-semibold', metricsByPeriod[txTimePeriod].projectTrendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400')}>
+                                                            {metricsByPeriod[txTimePeriod].projectTrendUp ? '↑' : '↓'} {metricsByPeriod[txTimePeriod].projectTrend}
+                                                        </span>
+                                                        <span className="text-[10px] text-amber-600/60 dark:text-amber-400/60">vs prev.</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="h-[300px] w-full bg-card rounded-2xl p-6 border border-border shadow-sm">
-                                            <h4 className="text-md font-medium text-foreground mb-4">Monthly Trends</h4>
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart data={salesData}>
+                                            <h4 className="text-md font-medium text-foreground mb-4">{lifecycleTab === 'orders' ? 'Sales' : lifecycleTab === 'quotes' ? 'Pipeline' : 'Acknowledgements'} — {trendLabels[txTimePeriod]}</h4>
+                                            <ResponsiveContainer width="100%" height="85%">
+                                                <BarChart data={salesDataByPeriod[txTimePeriod]}>
                                                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.1} vertical={false} />
                                                     <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} />
                                                     <YAxis stroke="#9CA3AF" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
                                                     <Tooltip
                                                         contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                                     />
-                                                    <Bar dataKey="sales" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="sales" fill="#3B82F6" radius={[4, 4, 0, 0]} animationDuration={600} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
@@ -1310,10 +1449,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Charts Area */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
-                        <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Revenue Trend</h3>
+                        <h3 className="text-lg font-brand font-semibold text-foreground mb-4">Revenue Trend — {trendLabels[txTimePeriod]}</h3>
                         <div className="h-80 w-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={salesData}>
+                                <LineChart data={salesDataByPeriod[txTimePeriod]}>
                                     <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.5} vertical={false} />
                                     <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                                     <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />

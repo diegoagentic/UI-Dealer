@@ -194,14 +194,37 @@ const recentOrders = [
 
 
 
-// Mock Data for Performance Metrics
-const performanceMetrics = [
-    { label: 'Quote win rate', value: 68, target: 65, color: 'bg-brand-400' },
-    { label: 'On-time delivery', value: 92, target: 90, color: 'bg-brand-400' },
-    { label: 'Discrepancy resolution', value: 45, target: 80, color: 'bg-amber-500' },
-    { label: 'Payment speed', value: 78, target: 75, color: 'bg-brand-400' },
-    { label: 'Inventory accuracy', value: 99, target: 98, color: 'bg-brand-400' },
-]
+// Mock Data for Performance Metrics by Period
+const performanceMetricsByPeriod: Record<string, { label: string; value: number; target: number; color: string; trend: string; trendUp: boolean }[]> = {
+    Day:   [
+        { label: 'Quote win rate', value: 72, target: 65, color: 'bg-brand-400', trend: '+4%', trendUp: true },
+        { label: 'On-time delivery', value: 95, target: 90, color: 'bg-brand-400', trend: '+3%', trendUp: true },
+        { label: 'Discrepancy resolution', value: 50, target: 80, color: 'bg-amber-500', trend: '+5%', trendUp: true },
+        { label: 'Payment speed', value: 80, target: 75, color: 'bg-brand-400', trend: '+2%', trendUp: true },
+        { label: 'Inventory accuracy', value: 99, target: 98, color: 'bg-brand-400', trend: '0%', trendUp: true },
+    ],
+    Month: [
+        { label: 'Quote win rate', value: 68, target: 65, color: 'bg-brand-400', trend: '+3%', trendUp: true },
+        { label: 'On-time delivery', value: 92, target: 90, color: 'bg-brand-400', trend: '+2%', trendUp: true },
+        { label: 'Discrepancy resolution', value: 45, target: 80, color: 'bg-amber-500', trend: '-8%', trendUp: false },
+        { label: 'Payment speed', value: 78, target: 75, color: 'bg-brand-400', trend: '+5%', trendUp: true },
+        { label: 'Inventory accuracy', value: 99, target: 98, color: 'bg-brand-400', trend: '+1%', trendUp: true },
+    ],
+    Sem: [
+        { label: 'Quote win rate', value: 64, target: 65, color: 'bg-amber-500', trend: '-2%', trendUp: false },
+        { label: 'On-time delivery', value: 89, target: 90, color: 'bg-amber-500', trend: '-1%', trendUp: false },
+        { label: 'Discrepancy resolution', value: 52, target: 80, color: 'bg-amber-500', trend: '+12%', trendUp: true },
+        { label: 'Payment speed', value: 74, target: 75, color: 'bg-amber-500', trend: '-3%', trendUp: false },
+        { label: 'Inventory accuracy', value: 97, target: 98, color: 'bg-amber-500', trend: '-1%', trendUp: false },
+    ],
+    Year: [
+        { label: 'Quote win rate', value: 61, target: 65, color: 'bg-amber-500', trend: '-4%', trendUp: false },
+        { label: 'On-time delivery', value: 88, target: 90, color: 'bg-amber-500', trend: '-3%', trendUp: false },
+        { label: 'Discrepancy resolution', value: 38, target: 80, color: 'bg-amber-500', trend: '-15%', trendUp: false },
+        { label: 'Payment speed', value: 71, target: 75, color: 'bg-amber-500', trend: '-6%', trendUp: false },
+        { label: 'Inventory accuracy', value: 96, target: 98, color: 'bg-amber-500', trend: '-2%', trendUp: false },
+    ],
+}
 
 // Mock Data for AI Suggestions
 const aiSuggestions = [
@@ -2040,7 +2063,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         </div>
                                         <div className="flex bg-zinc-100 dark:bg-zinc-800/50 rounded-lg p-0.5 border border-zinc-200 dark:border-zinc-700/50">
                                             {['Day', 'Month', 'Sem', 'Year'].map((period) => (
-                                                <button key={period} className={`px-3 py-1 text-[10px] font-medium rounded-md transition-all ${period === 'Month' ? 'bg-white dark:bg-brand-400 text-foreground dark:text-zinc-900 shadow-sm border border-border dark:border-transparent' : 'text-muted-foreground hover:text-foreground hover:bg-zinc-200/50 dark:hover:bg-zinc-700'}`}>
+                                                <button key={period} onClick={() => setPerformanceTimePeriod(period as typeof performanceTimePeriod)} className={`px-3 py-1 text-[10px] font-medium rounded-md transition-all ${period === performanceTimePeriod ? 'bg-white dark:bg-brand-400 text-foreground dark:text-zinc-900 shadow-sm border border-border dark:border-transparent' : 'text-muted-foreground hover:text-foreground hover:bg-zinc-200/50 dark:hover:bg-zinc-700'}`}>
                                                     {period}
                                                 </button>
                                             ))}
@@ -2048,24 +2071,29 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     </div>
 
                                     <div className="space-y-6 flex-1 relative z-10">
-                                        {performanceMetrics.map((metric, idx) => (
+                                        {(performanceMetricsByPeriod[performanceTimePeriod] ?? performanceMetricsByPeriod.Month).map((metric, idx) => (
                                             <div key={idx}>
                                                 <div className="flex justify-between items-end mb-2">
                                                     <span className="text-sm font-medium text-foreground">{metric.label}</span>
-                                                    <span className="text-lg font-bold text-foreground">{metric.value}%</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className={`text-[10px] font-medium ${metric.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'}`}>
+                                                            {metric.trendUp ? '\u2191' : '\u2193'} {metric.trend}
+                                                        </span>
+                                                        <span className="text-lg font-bold text-foreground">{metric.value}%</span>
+                                                    </div>
                                                 </div>
                                                 <div className="relative h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                                                     <div
-                                                        className={`absolute top-0 left-0 h-full ${metric.color} rounded-full`}
+                                                        className={`absolute top-0 left-0 h-full ${metric.color} rounded-full transition-all duration-500`}
                                                         style={{ width: `${metric.value}%` }}
                                                     ></div>
-                                                    {/* Target Marker - Adaptive Contrast */}
                                                     <div
                                                         className="absolute top-0 w-0.5 h-full bg-zinc-400 dark:bg-white/50 z-10"
                                                         style={{ left: `${metric.target}%` }}
                                                     ></div>
                                                 </div>
-                                                <div className="flex justify-end mt-1">
+                                                <div className="flex justify-between mt-1">
+                                                    <span className="text-[10px] text-muted-foreground">vs prev. period</span>
                                                     <span className="text-[10px] text-muted-foreground font-mono tracking-tight">{metric.target}% TARGET</span>
                                                 </div>
                                             </div>
