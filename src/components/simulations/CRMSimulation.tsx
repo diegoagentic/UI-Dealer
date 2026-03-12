@@ -190,6 +190,7 @@ const DETAIL_TABS: { key: DetailTab; label: string; icon: React.ReactNode }[] = 
 ]
 
 function ProjectDetailCard({ isNewProject }: { isNewProject: boolean }) {
+    const { nextStep } = useDemo()
     const [activeTab, setActiveTab] = useState<DetailTab>('overview')
     const [expandedSuggestion, setExpandedSuggestion] = useState<number | null>(null)
 
@@ -314,10 +315,22 @@ function ProjectDetailCard({ isNewProject }: { isNewProject: boolean }) {
                             </div>
                         </div>
 
-                        {/* Data source footer */}
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground pt-2 border-t border-border">
-                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
-                            <span>Data sourced from: Email Ingestion → AI Extraction → Expert Review → Dealer Approval — <strong className="text-foreground">zero manual entry</strong></span>
+                        {/* CTA to next step + Data source footer */}
+                        <div className="flex items-center gap-3 pt-2 border-t border-border">
+                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground flex-1">
+                                <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                <span>Data sourced from: Email Ingestion → AI Extraction → Expert Review → Dealer Approval — <strong className="text-foreground">zero manual entry</strong></span>
+                            </div>
+                            {isNewProject && (
+                                <button
+                                    onClick={nextStep}
+                                    className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-500 text-zinc-900 text-[11px] font-bold hover:bg-brand-400 shadow-lg shadow-brand-500/25 transition-all hover:scale-[1.02]"
+                                >
+                                    <UserGroupIcon className="h-3.5 w-3.5" />
+                                    Review Customer Profile
+                                    <ArrowRightIcon className="h-3 w-3" />
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
