@@ -2637,6 +2637,18 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                         </div>
                                                         <div className="text-[10px] font-black text-brand-600 dark:text-brand-400">$134,256</div>
                                                     </div>
+                                                    {/* Send Notifications CTA inside the card */}
+                                                    {cardAnimationStage19 === 'arrived' && (
+                                                        <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-700 space-y-2">
+                                                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
+                                                                <SparklesIcon className="w-3 h-3" />
+                                                                NotificationAgent will deliver persona-aware digests
+                                                            </span>
+                                                            <button onClick={nextStep} className="w-full px-4 py-2 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:opacity-90 shadow-sm flex items-center justify-center gap-2">
+                                                                Send Notifications <ArrowRightIcon className="w-3.5 h-3.5" />
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                             {/* Existing orders */}
@@ -2670,18 +2682,6 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             })}
                         </div>
 
-                        {/* CTA */}
-                        {cardAnimationStage19 === 'arrived' && (
-                            <div className="flex items-center gap-3">
-                                <button onClick={nextStep} className="px-5 py-2.5 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:opacity-90 shadow-sm flex items-center gap-2">
-                                    Send Notifications <ArrowRightIcon className="w-3.5 h-3.5" />
-                                </button>
-                                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-medium flex items-center gap-1">
-                                    <SparklesIcon className="w-3 h-3" />
-                                    NotificationAgent will deliver persona-aware digests
-                                </span>
-                            </div>
-                        )}
                     </div>
                 )}
 
