@@ -43,6 +43,11 @@ const DEMO_PROFILES: Record<string, { name: string; role: string; photo: string 
         role: 'Facilities Coordinator',
         photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=80&h=80&fit=crop&crop=face',
     },
+    'Sales Rep': {
+        name: 'Michelle Torres',
+        role: 'Sales Rep',
+        photo: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=80&h=80&fit=crop&crop=face',
+    },
 };
 
 // Apps that belong to Expert Hub — everything else is Dealer Experience
@@ -51,8 +56,10 @@ const EXPERT_HUB_APPS = ['expert-hub', 'ack-detail', 'transactions', 'mac', 'quo
 function resolveProfileKey(role: string | undefined, app: string | undefined): string {
     if (role === 'Expert') return 'Expert';
     if (role === 'End User') return 'End User';
+    if (role === 'Sales Rep') return 'Sales Rep';
     if (role === 'System') {
         // System steps inherit the human profile of their parent app
+        if (app === 'crm') return 'Sales Rep';
         return EXPERT_HUB_APPS.includes(app || '') ? 'Expert' : 'Dealer';
     }
     return 'Dealer';
