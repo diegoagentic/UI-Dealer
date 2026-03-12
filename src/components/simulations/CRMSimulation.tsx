@@ -3,7 +3,8 @@ import {
     CheckCircleIcon, ExclamationTriangleIcon, ArrowTrendingUpIcon,
     ClockIcon, SparklesIcon, ArrowPathIcon,
     BuildingOfficeIcon, DocumentTextIcon, ChartBarSquareIcon,
-    BellAlertIcon, ArrowRightIcon
+    BellAlertIcon, ArrowRightIcon, UserGroupIcon, CalendarDaysIcon,
+    MapPinIcon, CubeIcon, LightBulbIcon, BoltIcon
 } from '@heroicons/react/24/outline'
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -129,6 +130,333 @@ const systemSyncData = [
     { name: 'Email/RFQ', value: 20, color: '#65a30d' },
     { name: 'Service Ctr.', value: 15, color: '#3f6212' },
 ]
+
+// ═══════════════════════════════════════════════════
+// PROJECT DETAIL CARD — Expanded with AI suggestions
+// ═══════════════════════════════════════════════════
+
+const PROJECT_DETAIL_SECTIONS = {
+    overview: [
+        { label: 'Customer', value: 'Apex Furniture', icon: <BuildingOfficeIcon className="h-3 w-3" /> },
+        { label: 'Contact', value: 'Jennifer Martinez, VP Operations', icon: <UserGroupIcon className="h-3 w-3" /> },
+        { label: 'PO Number', value: 'ORD-2055', icon: <DocumentTextIcon className="h-3 w-3" /> },
+        { label: 'Quote Ref', value: 'QT-1025', icon: <FileText className="h-3 w-3" /> },
+        { label: 'Total Value', value: '$43,750', icon: <ArrowTrendingUpIcon className="h-3 w-3" /> },
+        { label: 'Line Items', value: '200 items across 4 zones', icon: <CubeIcon className="h-3 w-3" /> },
+    ],
+    deliveryZones: [
+        { zone: 'Zone A — Main Office (Floor 2)', items: 82, value: '$18,200', eta: 'Mar 28' },
+        { zone: 'Zone B — Executive Suite (Floor 5)', items: 35, value: '$12,400', eta: 'Apr 4' },
+        { zone: 'Zone C — Lounge & Common Areas', items: 48, value: '$8,150', eta: 'Apr 11' },
+        { zone: 'Zone D — Austin TX Satellite', items: 35, value: '$5,000', eta: 'Apr 18' },
+    ],
+    aiSuggestions: [
+        {
+            type: 'optimization' as const,
+            title: 'Consolidate Zone A & B Shipments',
+            detail: 'Both zones ship from same warehouse. Combining saves ~$1,200 in freight costs and reduces delivery windows by 3 days.',
+            confidence: 94,
+            impact: 'Save $1,200',
+        },
+        {
+            type: 'risk' as const,
+            title: 'Zone D — LTL Freight Rate Review',
+            detail: 'Austin TX freight at $2,450 was manually adjusted in Expert Review (Step 1.5). Market rates dropped 8% since quote — recommend re-negotiation.',
+            confidence: 87,
+            impact: 'Save ~$196',
+        },
+        {
+            type: 'upsell' as const,
+            title: 'Cross-sell: Installation Services',
+            detail: 'Apex Furniture ordered installation for 3 of 4 previous projects. Estimated add-on: $6,500–$8,200 based on 200 items.',
+            confidence: 91,
+            impact: '+$6.5K–$8.2K',
+        },
+    ],
+    quickActions: [
+        { label: 'Schedule Delivery', icon: <CalendarDaysIcon className="h-3.5 w-3.5" /> },
+        { label: 'Email Customer', icon: <Mail className="h-3.5 w-3.5" /> },
+        { label: 'View Full Quote', icon: <DocumentTextIcon className="h-3.5 w-3.5" /> },
+        { label: 'Assign Team', icon: <UserGroupIcon className="h-3.5 w-3.5" /> },
+    ],
+}
+
+type DetailTab = 'overview' | 'zones' | 'insights'
+
+const DETAIL_TABS: { key: DetailTab; label: string; icon: React.ReactNode }[] = [
+    { key: 'overview', label: 'Overview', icon: <DocumentTextIcon className="h-3.5 w-3.5" /> },
+    { key: 'zones', label: 'Delivery Zones', icon: <MapPinIcon className="h-3.5 w-3.5" /> },
+    { key: 'insights', label: 'AI Insights', icon: <SparklesIcon className="h-3.5 w-3.5" /> },
+]
+
+function ProjectDetailCard({ isNewProject }: { isNewProject: boolean }) {
+    const [activeTab, setActiveTab] = useState<DetailTab>('overview')
+    const [expandedSuggestion, setExpandedSuggestion] = useState<number | null>(null)
+
+    const suggestionStyles = {
+        optimization: { bg: 'bg-blue-50 dark:bg-blue-500/10', border: 'border-blue-200 dark:border-blue-500/20', text: 'text-blue-600 dark:text-blue-400', icon: <BoltIcon className="h-3.5 w-3.5" /> },
+        risk: { bg: 'bg-amber-50 dark:bg-amber-500/10', border: 'border-amber-200 dark:border-amber-500/20', text: 'text-amber-600 dark:text-amber-400', icon: <ExclamationTriangleIcon className="h-3.5 w-3.5" /> },
+        upsell: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', border: 'border-emerald-200 dark:border-emerald-500/20', text: 'text-emerald-600 dark:text-emerald-400', icon: <LightBulbIcon className="h-3.5 w-3.5" /> },
+    }
+
+    return (
+        <div className={cn(
+            "bg-card border border-border rounded-xl overflow-hidden",
+            isNewProject && "animate-in fade-in slide-in-from-bottom-4 duration-500 border-brand-400/30"
+        )}>
+            {/* Header with project info + quick actions */}
+            <div className="px-4 py-3 border-b border-border">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
+                            <BuildingOfficeIcon className="h-4 w-4 text-primary-foreground" />
+                        </div>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <h4 className="text-xs font-semibold text-foreground">Apex HQ Office Renovation</h4>
+                                {isNewProject && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">New Project</span>}
+                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-medium">Procurement</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground">PRJ-001 · Quote #QT-1025 · PO #ORD-2055 · $43,750</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        {PROJECT_DETAIL_SECTIONS.quickActions.map(action => (
+                            <button key={action.label} className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent hover:border-border transition-all" title={action.label}>
+                                {action.icon}
+                                <span className="hidden xl:inline">{action.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Detail Tabs */}
+                <div className="flex items-center gap-0.5 mt-3 -mb-[1px]">
+                    {DETAIL_TABS.map(tab => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setActiveTab(tab.key)}
+                            className={cn(
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-t-lg text-[10px] font-medium transition-all border border-transparent",
+                                activeTab === tab.key
+                                    ? "bg-card border-border border-b-card text-foreground"
+                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                            )}
+                        >
+                            {tab.icon}
+                            {tab.label}
+                            {tab.key === 'insights' && (
+                                <span className="px-1 py-0.5 rounded-full bg-brand-500 text-zinc-900 text-[8px] font-bold leading-none">{PROJECT_DETAIL_SECTIONS.aiSuggestions.length}</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-4">
+                {activeTab === 'overview' && (
+                    <div className="space-y-4 animate-in fade-in duration-200">
+                        {/* Key metrics grid */}
+                        <div className="grid grid-cols-6 gap-2.5">
+                            {PROJECT_DETAIL_SECTIONS.overview.map(f => (
+                                <div key={f.label} className="p-2 rounded-lg bg-muted/30 border border-border">
+                                    <div className="flex items-center gap-1 text-muted-foreground mb-0.5">{f.icon}<span className="text-[9px]">{f.label}</span></div>
+                                    <p className="text-[11px] font-medium text-foreground leading-tight">{f.value}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Project scope summary */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <h5 className="text-[11px] font-semibold text-foreground">Project Scope</h5>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { label: 'Workstations & Desks', qty: 82, pct: 41 },
+                                        { label: 'Executive Seating', qty: 35, pct: 17.5 },
+                                        { label: 'Lounge & Soft Seating', qty: 48, pct: 24 },
+                                        { label: 'Conference Tables & AV', qty: 20, pct: 10 },
+                                        { label: 'Filing & Storage', qty: 15, pct: 7.5 },
+                                    ].map(cat => (
+                                        <div key={cat.label} className="flex items-center gap-2">
+                                            <span className="text-[10px] text-foreground w-[140px] truncate">{cat.label}</span>
+                                            <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+                                                <div className="h-full rounded-full bg-primary/60" style={{ width: `${cat.pct}%` }} />
+                                            </div>
+                                            <span className="text-[9px] text-muted-foreground tabular-nums w-7 text-right">{cat.qty}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <h5 className="text-[11px] font-semibold text-foreground">Key Milestones</h5>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { milestone: 'RFQ Received & Processed', status: 'done' as const, date: 'Today' },
+                                        { milestone: 'Quote Approved ($43,750)', status: 'done' as const, date: 'Today' },
+                                        { milestone: 'PO Generated & Transmitted', status: 'done' as const, date: 'Today' },
+                                        { milestone: 'Supplier Acknowledgements', status: 'pending' as const, date: 'Est. 3–5 days' },
+                                        { milestone: 'Delivery Starts (Zone A)', status: 'pending' as const, date: 'Est. Mar 28' },
+                                        { milestone: 'Installation Complete', status: 'pending' as const, date: 'Est. Apr 25' },
+                                    ].map(m => (
+                                        <div key={m.milestone} className="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-border">
+                                            {m.status === 'done' ? (
+                                                <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                            ) : (
+                                                <ClockIcon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                            )}
+                                            <span className={cn("text-[10px] flex-1", m.status === 'done' ? 'text-foreground' : 'text-muted-foreground')}>{m.milestone}</span>
+                                            <span className="text-[9px] text-muted-foreground tabular-nums shrink-0">{m.date}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Data source footer */}
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground pt-2 border-t border-border">
+                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                            <span>Data sourced from: Email Ingestion → AI Extraction → Expert Review → Dealer Approval — <strong className="text-foreground">zero manual entry</strong></span>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'zones' && (
+                    <div className="space-y-3 animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-muted-foreground">4 delivery zones · 200 total items · Estimated completion: Apr 25</p>
+                            <button className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium text-primary-foreground bg-primary hover:bg-brand-400 transition-colors">
+                                <CalendarDaysIcon className="h-3 w-3" />
+                                Schedule All
+                            </button>
+                        </div>
+                        <div className="space-y-2">
+                            {PROJECT_DETAIL_SECTIONS.deliveryZones.map((z, i) => (
+                                <div key={i} className="px-3 py-2.5 rounded-lg border border-border bg-muted/20 hover:bg-muted/40 transition-colors">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-7 w-7 rounded-lg bg-primary/10 flex items-center justify-center text-[10px] font-bold text-foreground shrink-0">{String.fromCharCode(65 + i)}</div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[11px] font-medium text-foreground">{z.zone}</p>
+                                            <p className="text-[9px] text-muted-foreground">{z.items} items · {z.value}</p>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <p className="text-[10px] font-medium text-foreground tabular-nums">ETA {z.eta}</p>
+                                            <p className="text-[9px] text-muted-foreground">
+                                                {i === 0 ? 'LTL — Standard' : i === 3 ? 'LTL — $2,450 (reviewed)' : 'LTL — Standard'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1 ml-2">
+                                            <span className={cn(
+                                                "text-[8px] px-1.5 py-0.5 rounded-full font-medium",
+                                                i === 3 ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400' : 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400'
+                                            )}>
+                                                {i === 3 ? 'Rate Flagged' : 'On Track'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    {/* Zone line items preview */}
+                                    <div className="mt-2 pt-2 border-t border-border/50 flex items-center gap-3 text-[9px] text-muted-foreground">
+                                        <span>Top items: {['Workstations', 'Exec Chairs', 'Lounge Sofas', 'Conf. Tables'][i]}</span>
+                                        <span>·</span>
+                                        <span>Supplier: {['Herman Miller', 'Steelcase', 'Haworth', 'Knoll'][i]}</span>
+                                        <span className="ml-auto text-[9px] text-primary font-medium cursor-pointer hover:underline">View items →</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        {/* Zone summary bar */}
+                        <div className="flex items-center gap-1 h-2 rounded-full overflow-hidden bg-muted">
+                            {PROJECT_DETAIL_SECTIONS.deliveryZones.map((z, i) => (
+                                <div key={i} className={cn("h-full rounded-full", ['bg-brand-500', 'bg-brand-400', 'bg-brand-300', 'bg-brand-200'][i])} style={{ width: `${(z.items / 200) * 100}%` }} title={`Zone ${String.fromCharCode(65 + i)}: ${z.items} items`} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'insights' && (
+                    <div className="space-y-3 animate-in fade-in duration-200">
+                        {/* AI agent header */}
+                        <div className="flex items-center gap-3 p-2.5 rounded-lg bg-brand-50 dark:bg-brand-500/5 border border-brand-200/50 dark:border-brand-500/20">
+                            <AIAgentAvatar size="sm" />
+                            <div className="flex-1">
+                                <p className="text-[10px] font-medium text-foreground">ProjectIntelligenceAgent analyzed this project</p>
+                                <p className="text-[9px] text-muted-foreground">3 suggestions based on quote data, customer history, and market rates</p>
+                            </div>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Potential: +$7.9K savings</span>
+                        </div>
+
+                        {/* Suggestion cards */}
+                        <div className="space-y-2">
+                            {PROJECT_DETAIL_SECTIONS.aiSuggestions.map((s, i) => {
+                                const style = suggestionStyles[s.type]
+                                const isExpanded = expandedSuggestion === i
+                                return (
+                                    <button
+                                        key={i}
+                                        onClick={() => setExpandedSuggestion(isExpanded ? null : i)}
+                                        className={cn(
+                                            "w-full text-left px-3 py-2.5 rounded-lg border transition-all",
+                                            style.bg, style.border,
+                                            isExpanded && "ring-1 ring-offset-1 ring-offset-card",
+                                            isExpanded ? `ring-current ${style.text}` : ""
+                                        )}
+                                    >
+                                        <div className="flex items-start gap-2.5">
+                                            <span className={cn("mt-0.5 shrink-0", style.text)}>{style.icon}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[11px] font-semibold text-foreground">{s.title}</span>
+                                                    <span className={cn("text-[9px] font-bold ml-auto shrink-0", style.text)}>{s.impact}</span>
+                                                </div>
+                                                <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">{s.detail}</p>
+                                                {isExpanded && (
+                                                    <div className="mt-2 pt-2 border-t border-current/10 animate-in fade-in slide-in-from-top-1 duration-200">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="text-[9px] text-muted-foreground">Confidence:</span>
+                                                                <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                                                                    <div className={cn("h-full rounded-full", s.confidence >= 90 ? 'bg-green-500' : 'bg-amber-500')} style={{ width: `${s.confidence}%` }} />
+                                                                </div>
+                                                                <span className="text-[9px] font-medium text-foreground tabular-nums">{s.confidence}%</span>
+                                                            </div>
+                                                            <div className="flex gap-1.5 ml-auto">
+                                                                <span className="text-[10px] px-3 py-1 rounded-lg bg-primary text-primary-foreground font-bold cursor-pointer hover:bg-brand-400 transition-colors">Apply</span>
+                                                                <span className="text-[10px] px-3 py-1 rounded-lg bg-muted text-muted-foreground font-medium cursor-pointer hover:bg-muted/80 transition-colors">Dismiss</span>
+                                                                <span className="text-[10px] px-3 py-1 rounded-lg border border-border text-foreground font-medium cursor-pointer hover:bg-muted/50 transition-colors">Review Details</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </button>
+                                )
+                            })}
+                        </div>
+
+                        {/* Quick actions row */}
+                        <div className="flex items-center gap-2 pt-2 border-t border-border">
+                            <span className="text-[9px] text-muted-foreground">Quick Actions:</span>
+                            {[
+                                { label: 'Apply All Optimizations', primary: true },
+                                { label: 'Generate Report', primary: false },
+                                { label: 'Share with Team', primary: false },
+                            ].map(a => (
+                                <button key={a.label} className={cn(
+                                    "text-[10px] px-2.5 py-1 rounded-lg font-medium transition-colors",
+                                    a.primary ? 'bg-primary text-primary-foreground hover:bg-brand-400' : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                                )}>
+                                    {a.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+    )
+}
 
 // ═══════════════════════════════════════════════════
 // PROJECTS VIEW (Step 1.12)
@@ -283,42 +611,9 @@ function ProjectsView({ stepId }: { stepId: string }) {
                 </table>
             </div>
 
-            {/* Apex Project Detail Card — appears in final phase */}
+            {/* Apex Project Detail Card — expanded with AI suggestions */}
             {showDetailCard && (
-                <div className={cn(
-                    "bg-card border border-border rounded-xl p-4 space-y-3",
-                    isNewProject && "animate-in fade-in slide-in-from-bottom-4 duration-500 border-brand-400/30"
-                )}>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-                                <BuildingOfficeIcon className="h-4 w-4 text-primary-foreground" />
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-medium text-foreground">Apex HQ Office Renovation</h4>
-                                <p className="text-[10px] text-muted-foreground">Auto-created from Quote #QT-1025</p>
-                            </div>
-                        </div>
-                        {isNewProject && <span className="text-[10px] px-2 py-1 rounded-full bg-brand-500 text-zinc-900 font-bold">New Project</span>}
-                    </div>
-                    <div className="grid grid-cols-4 gap-3">
-                        {[
-                            { label: 'Customer', value: 'Apex Furniture' },
-                            { label: 'PO Number', value: 'ORD-2055' },
-                            { label: 'Total Value', value: '$43,750' },
-                            { label: 'Line Items', value: '200 across 4 zones' },
-                        ].map(f => (
-                            <div key={f.label} className="p-2 rounded-lg bg-muted/30 border border-border">
-                                <p className="text-[10px] text-muted-foreground">{f.label}</p>
-                                <p className="text-[11px] font-medium text-foreground mt-0.5">{f.value}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground pt-1 border-t border-border">
-                        <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
-                        <span>Data sourced from: Email Ingestion → AI Extraction → Expert Review → Dealer Approval — <strong className="text-foreground">zero manual entry</strong></span>
-                    </div>
-                </div>
+                <ProjectDetailCard isNewProject={isNewProject} />
             )}
         </div>
     )
