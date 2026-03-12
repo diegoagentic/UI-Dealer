@@ -1,9 +1,11 @@
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
-import { Fragment, useRef, useState } from 'react';
+import { Fragment, useRef, useState, useCallback } from 'react';
 import {
     XMarkIcon, ArrowDownTrayIcon, PrinterIcon, DocumentTextIcon,
     CalendarIcon, TruckIcon, CheckCircleIcon, ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 // --- Types ---
 
@@ -284,20 +286,253 @@ export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModal
     const [isExporting, setIsExporting] = useState(false);
     const printRef = useRef<HTMLDivElement>(null);
 
-    if (!data) return null;
+    const label = data ? typeLabels[data.type] : '';
 
-    const label = typeLabels[data.type];
+    const buildPdfHtml = useCallback(() => {
+        if (!data) return '';
+        const grouped = data.lineItems.reduce<Record<string, LineItem[]>>((acc, item) => {
+            if (!acc[item.tag]) acc[item.tag] = [];
+            acc[item.tag].push(item);
+            return acc;
+        }, {});
 
-    const handleExport = () => {
+        const lineRows = Object.entries(grouped).map(([, items]) =>
+            items.map((item, idx) => `
+                <tr style="${idx === 0 ? 'border-top:2px solid #d4d4d8;' : ''}">
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:11px;font-weight:600;color:#3f3f46;vertical-align:top;">${item.lineRef}</td>
+                    <td style="padding:5px 4px;border:1px solid #e4e4e7;font-size:11px;color:#3f3f46;text-align:center;vertical-align:top;">${item.qtyReq}</td>
+                    <td style="padding:5px 4px;border:1px solid #e4e4e7;font-size:11px;color:#71717a;text-align:center;vertical-align:top;">${item.qtyShip}</td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:10px;font-family:monospace;color:#52525b;vertical-align:top;">${item.itemNumber}</td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;vertical-align:top;">
+                        <div style="font-size:11px;color:#18181b;font-weight:500;">${item.description}</div>
+                        <div style="font-size:9px;color:#0ea5e9;font-weight:600;margin-top:3px;">Tag: ${item.tag}</div>
+                        ${item.configs ? item.configs.map(c => `<div style="font-size:9px;color:#a1a1aa;margin-top:1px;"><span style="color:#71717a;">${c.label}:</span> ${c.value}</div>`).join('') : ''}
+                    </td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:11px;color:#52525b;text-align:right;vertical-align:top;">${item.discPct}</td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:11px;color:#71717a;text-align:right;vertical-align:top;">${item.listPrice}</td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:11px;color:#52525b;text-align:right;vertical-align:top;">${item.netPrice}</td>
+                    <td style="padding:5px 6px;border:1px solid #e4e4e7;font-size:11px;font-weight:600;color:#18181b;text-align:right;vertical-align:top;">${item.amount}</td>
+                </tr>
+            `).join('')
+        ).join('');
+
+        return `
+        <div style="font-family:'Inter',system-ui,-apple-system,sans-serif;color:#18181b;max-width:860px;margin:0 auto;padding:24px 32px;background:#fff;font-size:12px;">
+            <!-- HEADER -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:12px;border-bottom:2px solid #18181b;margin-bottom:16px;">
+                <div>
+                    <div style="font-size:18px;font-weight:700;color:#18181b;">${data.vendorName.split('—')[0].trim()}</div>
+                    <div style="font-size:10px;color:#71717a;white-space:pre-line;margin-top:4px;">${data.vendorAddress}</div>
+                    <div style="font-size:10px;color:#71717a;">Tel: ${data.vendorPhone}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#71717a;">${label}</div>
+                    <div style="font-size:18px;font-weight:800;color:#18181b;margin-top:2px;">Sales Order ${data.salesOrderNumber}</div>
+                    <div style="font-size:11px;color:#52525b;margin-top:4px;">Order Date: <strong>${data.orderDate}</strong></div>
+                    <span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:600;background:#e0e7ff;color:#4338ca;">${data.status}</span>
+                </div>
+            </div>
+
+            ${data.specialShippingInstructions ? `
+            <div style="background:#fef9c3;border:1px solid #fde047;border-radius:6px;padding:6px 12px;font-size:11px;font-weight:600;color:#854d0e;margin-bottom:14px;text-align:center;">
+                ⚠ ${data.specialShippingInstructions}
+            </div>` : ''}
+
+            <!-- BILL TO / SHIP TO -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;border:1px solid #e4e4e7;border-radius:6px;padding:12px;margin-bottom:14px;">
+                <div>
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#a1a1aa;margin-bottom:4px;">Bill To:</div>
+                    <div style="font-size:12px;font-weight:600;color:#18181b;">${data.billToName}</div>
+                    <div style="font-size:10px;color:#52525b;white-space:pre-line;margin-top:2px;">${data.billToAddress}</div>
+                    <div style="font-size:10px;color:#71717a;margin-top:2px;">Tel: ${data.billToPhone}</div>
+                </div>
+                <div>
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#a1a1aa;margin-bottom:4px;">Ship To:</div>
+                    <div style="font-size:12px;font-weight:600;color:#18181b;">${data.shipToName}</div>
+                    <div style="font-size:10px;color:#52525b;white-space:pre-line;margin-top:2px;">${data.shipToAddress}</div>
+                    <div style="font-size:10px;color:#71717a;margin-top:2px;">Delivery Contact: ${data.shipToDeliveryContact}</div>
+                </div>
+            </div>
+
+            <!-- METADATA GRID -->
+            <div style="border:1px solid #e4e4e7;border-radius:6px;overflow:hidden;margin-bottom:14px;">
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#e4e4e7;">
+                    ${[
+                        ['P.O. No.', data.poNumber], ['Ship Via', data.shipVia], ['Cust Svc Rep', data.custSvcRep], ['Design Chk', data.designChk || '—'],
+                        ['Terms', data.terms], ['F.O.B.', data.fob], ['Sales Rep', data.salesRep], ['ETA', data.eta],
+                    ].map(([l, v]) => `<div style="background:#fff;padding:6px 8px;"><div style="font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#a1a1aa;">${l}</div><div style="font-size:11px;font-weight:500;color:#18181b;margin-top:2px;">${v}</div></div>`).join('')}
+                </div>
+                <div style="background:#fff;padding:6px 8px;border-top:1px solid #e4e4e7;">
+                    <span style="font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">Discount Structure: </span>
+                    <span style="font-size:11px;font-weight:500;color:#18181b;">${data.discountStructure}</span>
+                    <span style="margin-left:16px;font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">Project: </span>
+                    <span style="font-size:11px;font-weight:600;color:#18181b;">${data.project}</span>
+                </div>
+                <div style="background:#fff;padding:6px 8px;border-top:1px solid #e4e4e7;">
+                    <span style="font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">Salesperson: </span>
+                    <span style="font-size:10px;color:#52525b;">${data.salesRepEmail} : Chestnut, Crystal</span>
+                </div>
+                ${data.type === 'quote' && data.validUntil ? `
+                <div style="background:#eff6ff;padding:6px 8px;border-top:1px solid #bfdbfe;">
+                    <span style="font-size:8px;font-weight:700;text-transform:uppercase;color:#2563eb;">Valid Until: </span>
+                    <span style="font-size:11px;font-weight:600;color:#1e40af;">${data.validUntil}</span>
+                </div>` : ''}
+            </div>
+
+            <!-- LINE ITEMS TABLE -->
+            <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+                <thead>
+                    <tr style="background:#f4f4f5;">
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#71717a;text-align:left;">Line</th>
+                        <th style="padding:5px 4px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:center;" colspan="2">Qty</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:left;">Item Number</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:left;">Description</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:right;">Disc %</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:right;">List</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:right;">Net Price</th>
+                        <th style="padding:5px 6px;border:1px solid #d4d4d8;font-size:9px;font-weight:700;text-transform:uppercase;color:#71717a;text-align:right;">Amount</th>
+                    </tr>
+                    <tr style="background:#fafafa;">
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;font-size:8px;color:#a1a1aa;">Ref.</th>
+                        <th style="padding:2px 4px;border:1px solid #e4e4e7;font-size:8px;color:#a1a1aa;">Req.</th>
+                        <th style="padding:2px 4px;border:1px solid #e4e4e7;font-size:8px;color:#a1a1aa;">Ship</th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                        <th style="padding:2px 6px;border:1px solid #e4e4e7;"></th>
+                    </tr>
+                </thead>
+                <tbody>${lineRows}</tbody>
+            </table>
+
+            <!-- MATERIAL SPECS + TOTALS -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px;">
+                <div style="border:1px solid #e4e4e7;border-radius:6px;padding:10px;">
+                    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:#a1a1aa;margin-bottom:6px;">Material Specifications</div>
+                    ${data.materialSpecs.map(s => `<div style="font-size:10px;color:#71717a;margin-bottom:2px;"><span style="font-weight:600;color:#52525b;">${s.label}:</span> ${s.value}</div>`).join('')}
+                </div>
+                <div>
+                    ${[
+                        ['Total List Products', data.totalListProducts],
+                        ['Total Net Products', data.totalNetProducts],
+                        ['Total Freight', data.totalFreight],
+                    ].map(([l, v]) => `<div style="display:flex;justify-content:space-between;font-size:11px;color:#52525b;padding:3px 0;"><span>${l}</span><span style="font-weight:500;">${v}</span></div>`).join('')}
+                    <div style="display:flex;justify-content:space-between;font-size:11px;color:#71717a;padding:3px 0;border-top:1px solid #e4e4e7;margin-top:4px;">
+                        <span>Total Product Weight</span><span>${data.totalProductWeight} lbs</span>
+                    </div>
+                    <div style="border-top:1px solid #e4e4e7;margin-top:6px;padding-top:6px;">
+                        ${[
+                            ['Nontaxable Subtotal', data.nontaxableSubtotal],
+                            ['Taxable Subtotal', data.taxableSubtotal],
+                            ['Tax', data.tax],
+                        ].map(([l, v]) => `<div style="display:flex;justify-content:space-between;font-size:11px;color:#52525b;padding:2px 0;"><span>${l}</span><span>${v}</span></div>`).join('')}
+                    </div>
+                    <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:800;color:#18181b;padding:8px 10px;margin-top:8px;border-top:2px solid #18181b;background:#fefce8;border-radius:4px;">
+                        <span>Total Order</span><span>${data.totalOrder}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHIPPING INFO -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:10px 14px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;margin-bottom:14px;">
+                <div><div style="font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">Ship Via</div><div style="font-size:11px;font-weight:500;color:#3f3f46;">${data.shipVia}</div></div>
+                <div><div style="font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">ETA</div><div style="font-size:11px;font-weight:500;color:#3f3f46;">${data.eta}</div></div>
+                <div><div style="font-size:8px;font-weight:700;text-transform:uppercase;color:#a1a1aa;">F.O.B.</div><div style="font-size:11px;font-weight:500;color:#3f3f46;">${data.fob}</div></div>
+            </div>
+
+            ${data.type === 'acknowledgment' && data.discrepancyNotes ? `
+            <div style="padding:10px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;margin-bottom:14px;">
+                <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#166534;margin-bottom:3px;">✓ Discrepancy Check</div>
+                <div style="font-size:11px;color:#166534;">${data.discrepancyNotes}</div>
+            </div>` : ''}
+
+            ${data.notes ? `
+            <div style="padding:10px 14px;background:#fafafa;border:1px solid #e4e4e7;border-radius:6px;margin-bottom:14px;">
+                <div style="font-size:9px;font-weight:700;text-transform:uppercase;color:#a1a1aa;margin-bottom:3px;">Notes & Special Instructions</div>
+                <div style="font-size:11px;color:#52525b;line-height:1.5;">${data.notes}</div>
+            </div>` : ''}
+
+            <!-- FOOTER -->
+            <div style="text-align:center;padding-top:12px;border-top:1px solid #e4e4e7;">
+                <div style="font-size:9px;color:#a1a1aa;">Customer Original — Page 1 • Generated by <strong>Strata Experience Platform</strong></div>
+                <div style="font-size:9px;color:#a1a1aa;margin-top:2px;">${label} ${data.salesOrderNumber} • ${data.vendorName} • ${new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+            </div>
+        </div>`;
+    }, [data, label]);
+
+    const handleExport = useCallback(async () => {
+        if (isExporting || !data) return;
         setIsExporting(true);
-        setTimeout(() => {
+
+        try {
+            // Build clean HTML with inline styles only (no Tailwind) for html2canvas compatibility
+            const htmlContent = buildPdfHtml();
+
+            const offscreen = document.createElement('div');
+            offscreen.style.cssText = 'position:fixed;left:-9999px;top:0;width:900px;background:#fff;';
+            offscreen.innerHTML = htmlContent;
+            document.body.appendChild(offscreen);
+
+            const target = offscreen.firstElementChild as HTMLElement;
+            const canvas = await html2canvas(target, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                width: 900,
+                windowWidth: 900,
+            });
+
+            document.body.removeChild(offscreen);
+
+            // Generate PDF — letter size (8.5 x 11 in)
+            const pageWidth = 215.9;
+            const pageHeight = 279.4;
+            const imgWidth = pageWidth - 20;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const imgData = canvas.toDataURL('image/png');
+
+            const pdf = new jsPDF('p', 'mm', 'letter');
+            const yOffset = 10;
+
+            if (imgHeight <= pageHeight - 20) {
+                pdf.addImage(imgData, 'PNG', 10, yOffset, imgWidth, imgHeight);
+            } else {
+                const pageContentHeight = pageHeight - 20;
+                const sourceSliceHeight = (pageContentHeight / imgWidth) * canvas.width;
+                let sourceY = 0;
+                let remaining = imgHeight;
+
+                while (remaining > 0) {
+                    const sliceH = Math.min(sourceSliceHeight, canvas.height - sourceY);
+                    const sliceCanvas = document.createElement('canvas');
+                    sliceCanvas.width = canvas.width;
+                    sliceCanvas.height = sliceH;
+                    const ctx = sliceCanvas.getContext('2d');
+                    if (ctx) {
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                        ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+                    }
+                    if (sourceY > 0) pdf.addPage();
+                    pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', 10, yOffset, imgWidth, (sliceH * imgWidth) / canvas.width);
+                    sourceY += sliceH;
+                    remaining -= pageContentHeight;
+                }
+            }
+
+            const filename = `${label.replace(/\s+/g, '_')}_${data.salesOrderNumber}_${new Date().toISOString().slice(0, 10)}.pdf`;
+            pdf.save(filename);
+        } catch (err) {
+            console.error('PDF export failed:', err);
+        } finally {
             setIsExporting(false);
-            onClose();
-        }, 1500);
-    };
+        }
+    }, [data, label, isExporting, buildPdfHtml]);
 
     const handlePrint = () => {
-        if (printRef.current) {
+        if (printRef.current && data) {
             const printWindow = window.open('', '_blank');
             if (printWindow) {
                 printWindow.document.write(`
@@ -341,6 +576,8 @@ export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModal
             }
         }
     };
+
+    if (!data) return null;
 
     // Group line items by tag for visual separation
     const groupedItems = data.lineItems.reduce<Record<string, LineItem[]>>((acc, item) => {
