@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
     CheckCircleIcon, ExclamationTriangleIcon, ArrowTrendingUpIcon,
     ClockIcon, SparklesIcon, ArrowPathIcon,
-    BuildingOfficeIcon, DocumentTextIcon, ChartBarSquareIcon
+    BuildingOfficeIcon, DocumentTextIcon, ChartBarSquareIcon,
+    BellAlertIcon, ArrowRightIcon
 } from '@heroicons/react/24/outline'
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -131,24 +132,83 @@ const systemSyncData = [
 
 // ═══════════════════════════════════════════════════
 // PROJECTS VIEW (Step 1.12)
+// Phased animation: notification → project reveal → detail card
 // ═══════════════════════════════════════════════════
+
+type ProjectPhase = 'idle' | 'notification' | 'revealed' | 'detail'
 
 function ProjectsView({ stepId }: { stepId: string }) {
     const isNewProject = stepId === '1.12'
+    const [phase, setPhase] = useState<ProjectPhase>(isNewProject ? 'idle' : 'revealed')
+
+    // Phased animation for step 1.12
+    useEffect(() => {
+        if (!isNewProject) { setPhase('revealed'); return }
+        setPhase('idle')
+        const timers: ReturnType<typeof setTimeout>[] = []
+
+        // Phase 1: notification toast appears after 2s
+        timers.push(setTimeout(() => setPhase('notification'), 2000))
+        // Phase 2: project row appears after 5s
+        timers.push(setTimeout(() => setPhase('revealed'), 5000))
+        // Phase 3: detail card appears after 7s
+        timers.push(setTimeout(() => setPhase('detail'), 7000))
+
+        return () => timers.forEach(clearTimeout)
+    }, [isNewProject])
+
+    // Allow clicking notification to skip to reveal
+    const handleNotificationClick = useCallback(() => {
+        if (phase === 'notification') setPhase('detail')
+    }, [phase])
+
+    const showApexRow = !isNewProject || phase === 'revealed' || phase === 'detail'
+    const showDetailCard = !isNewProject || phase === 'detail'
+    const projectCount = showApexRow ? MOCK_PROJECTS.length : MOCK_PROJECTS.length - 1
 
     return (
         <div className="space-y-4">
-            {/* AI Agent Banner */}
-            {isNewProject && (
-                <div className="bg-card border border-primary/20 rounded-xl p-4 flex items-center gap-4">
+            {/* Notification Toast — slides in, clickable */}
+            {isNewProject && (phase === 'notification') && (
+                <button
+                    onClick={handleNotificationClick}
+                    className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500"
+                >
+                    <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 transition-shadow cursor-pointer">
+                        <div className="flex items-start gap-3">
+                            <div className="h-9 w-9 rounded-lg bg-brand-500 flex items-center justify-center shrink-0">
+                                <BellAlertIcon className="h-5 w-5 text-zinc-900" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-foreground">New Project Auto-Created</span>
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
+                                </div>
+                                <p className="text-[11px] text-muted-foreground mt-1">
+                                    <strong className="text-foreground">ProjectCreationAgent</strong> created project from Quote #QT-1025 — <strong className="text-foreground">Apex Furniture</strong>, $43,750, 200 line items.
+                                </p>
+                                <div className="flex items-center gap-1 mt-2 text-[10px] text-brand-700 dark:text-brand-400 font-medium">
+                                    <span>Click to view project</span>
+                                    <ArrowRightIcon className="h-3 w-3" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </button>
+            )}
+
+            {/* AI Agent Confirmation — after reveal */}
+            {isNewProject && (phase === 'revealed' || phase === 'detail') && (
+                <div className="bg-card border border-green-200 dark:border-green-800/30 rounded-xl p-3 flex items-center gap-3 animate-in fade-in duration-300">
                     <AIAgentAvatar size="sm" />
                     <div className="flex-1">
                         <div className="flex items-center gap-2 text-xs">
                             <span className="font-medium text-foreground">ProjectCreationAgent</span>
-                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">Just created</span>
+                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
+                            <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Project created successfully</span>
                         </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                            Auto-created project from approved quote — Customer: <strong className="text-foreground">Apex Furniture</strong>, Quote #QT-1025, PO #ORD-2055, $43,750. Zero manual CRM entry.
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Apex Furniture · Quote #QT-1025 · PO #ORD-2055 · $43,750 — zero manual CRM entry
                         </p>
                     </div>
                 </div>
@@ -158,7 +218,7 @@ function ProjectsView({ stepId }: { stepId: string }) {
             <div className="bg-card border border-border rounded-xl overflow-hidden">
                 <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                     <h3 className="text-xs font-medium text-foreground">Active & Recent Projects</h3>
-                    <span className="text-[10px] text-muted-foreground">{MOCK_PROJECTS.length} projects</span>
+                    <span className="text-[10px] text-muted-foreground">{projectCount} projects</span>
                 </div>
                 <table className="w-full text-xs">
                     <thead>
@@ -173,49 +233,62 @@ function ProjectsView({ stepId }: { stepId: string }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {MOCK_PROJECTS.map(project => (
-                            <tr key={project.id} className={cn(
-                                'border-b border-border last:border-0 hover:bg-muted/20 transition-colors',
-                                project.id === 'PRJ-001' && isNewProject && 'bg-primary/5 ring-1 ring-inset ring-primary/20'
-                            )}>
-                                <td className="px-4 py-2.5">
-                                    <div>
-                                        <p className="font-medium text-foreground text-[11px]">{project.name}</p>
-                                        <p className="text-[10px] text-muted-foreground">{project.id} · {project.items} items · {project.zones} zones</p>
-                                    </div>
-                                </td>
-                                <td className="px-3 py-2.5 text-[11px] text-foreground">{project.customer}</td>
-                                <td className="px-3 py-2.5">
-                                    <p className="text-[11px] text-foreground">{project.quote}</p>
-                                    <p className="text-[10px] text-muted-foreground">{project.po}</p>
-                                </td>
-                                <td className="px-3 py-2.5 text-right">
-                                    <span className="text-[11px] font-medium text-foreground tabular-nums">${project.value.toLocaleString()}</span>
-                                </td>
-                                <td className="px-3 py-2.5 text-center">
-                                    <StageBadge stage={project.stage} />
-                                </td>
-                                <td className="px-3 py-2.5 text-center">
-                                    <ProjectStatusBadge status={project.status} />
-                                </td>
-                                <td className="px-4 py-2.5 text-right">
-                                    {project.stage === 'Complete' ? (
-                                        <span className="text-[10px] text-green-600 font-medium">100%</span>
-                                    ) : project.deliveryRate > 0 ? (
-                                        <span className="text-[10px] text-foreground tabular-nums">{project.deliveryRate}%</span>
-                                    ) : (
-                                        <span className="text-[10px] text-muted-foreground">—</span>
-                                    )}
-                                </td>
-                            </tr>
-                        ))}
+                        {MOCK_PROJECTS.map(project => {
+                            const isApex = project.id === 'PRJ-001'
+                            // Hide Apex row until revealed in animation
+                            if (isApex && isNewProject && !showApexRow) return null
+                            return (
+                                <tr key={project.id} className={cn(
+                                    'border-b border-border last:border-0 hover:bg-muted/20 transition-all',
+                                    isApex && isNewProject && 'bg-brand-50/50 dark:bg-brand-500/5 ring-2 ring-inset ring-brand-400/30 animate-in fade-in slide-in-from-top-2 duration-500'
+                                )}>
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            {isApex && isNewProject && (
+                                                <span className="px-1.5 py-0.5 rounded bg-brand-500 text-zinc-900 text-[8px] font-bold uppercase shrink-0">New</span>
+                                            )}
+                                            <div>
+                                                <p className="font-medium text-foreground text-[11px]">{project.name}</p>
+                                                <p className="text-[10px] text-muted-foreground">{project.id} · {project.items} items · {project.zones} zones</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-[11px] text-foreground">{project.customer}</td>
+                                    <td className="px-3 py-2.5">
+                                        <p className="text-[11px] text-foreground">{project.quote}</p>
+                                        <p className="text-[10px] text-muted-foreground">{project.po}</p>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right">
+                                        <span className="text-[11px] font-medium text-foreground tabular-nums">${project.value.toLocaleString()}</span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                        <StageBadge stage={project.stage} />
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                        <ProjectStatusBadge status={project.status} />
+                                    </td>
+                                    <td className="px-4 py-2.5 text-right">
+                                        {project.stage === 'Complete' ? (
+                                            <span className="text-[10px] text-green-600 font-medium">100%</span>
+                                        ) : project.deliveryRate > 0 ? (
+                                            <span className="text-[10px] text-foreground tabular-nums">{project.deliveryRate}%</span>
+                                        ) : (
+                                            <span className="text-[10px] text-muted-foreground">—</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 </table>
             </div>
 
-            {/* Apex Project Detail Card (when newly created) */}
-            {isNewProject && (
-                <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+            {/* Apex Project Detail Card — appears in final phase */}
+            {showDetailCard && (
+                <div className={cn(
+                    "bg-card border border-border rounded-xl p-4 space-y-3",
+                    isNewProject && "animate-in fade-in slide-in-from-bottom-4 duration-500 border-brand-400/30"
+                )}>
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
@@ -226,7 +299,7 @@ function ProjectsView({ stepId }: { stepId: string }) {
                                 <p className="text-[10px] text-muted-foreground">Auto-created from Quote #QT-1025</p>
                             </div>
                         </div>
-                        <span className="text-[10px] px-2 py-1 rounded-full bg-primary/10 text-foreground font-medium">New</span>
+                        {isNewProject && <span className="text-[10px] px-2 py-1 rounded-full bg-brand-500 text-zinc-900 font-bold">New Project</span>}
                     </div>
                     <div className="grid grid-cols-4 gap-3">
                         {[
