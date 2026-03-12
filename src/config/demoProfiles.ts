@@ -12,7 +12,8 @@ export type SimulationApp =
     | 'dashboard' | 'expert-hub' | 'email-marketplace'
     | 'quote-po' | 'dealer-kanban' | 'service-now'
     | 'catalog' | 'survey' | 'ack-detail' | 'order-detail'
-    | 'quote-detail' | 'transactions' | 'mac' | 'inventory';
+    | 'quote-detail' | 'transactions' | 'mac' | 'inventory'
+    | 'crm';
 
 export interface DemoStep {
     id: string;
@@ -21,7 +22,7 @@ export interface DemoStep {
     title: string;
     description: string;
     app: SimulationApp;
-    role: 'Expert' | 'System' | 'Dealer' | 'End User';
+    role: 'Expert' | 'System' | 'Dealer' | 'End User' | 'Sales Rep';
     highlightId?: string;
 }
 

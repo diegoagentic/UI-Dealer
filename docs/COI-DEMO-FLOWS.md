@@ -3,7 +3,7 @@
 > **Profile**: COI Interiors
 > **Profile ID**: `coi`
 > **Company Name**: COI Interiors
-> **Total Steps**: 23 (across 3 flows)
+> **Total Steps**: 31 (across 4 flows)
 > **Source**: `src/config/profiles/coi-demo.ts`
 
 ---
@@ -61,14 +61,32 @@
 
 ---
 
+## Flow 4: CRM — Sales Intelligence & Customer Engagement (8 steps)
+
+**3 automated + 5 HITL** — AI-powered CRM as independent simulated app
+**Addresses**: Customer relationship management, sales pipeline automation, cross-platform data sync
+
+| Step | Title | Mode | Role | AI Automation | Expert-in-the-Loop |
+|------|-------|------|------|---------------|-------------------|
+| 4.1 | Lead Capture | auto (16s) | Sales Rep | LeadScoringAgent classifies: Hot 92%, Warm 78%, Cold 45% | None — push notification sent |
+| 4.2 | AI Contact Enrichment | auto (22s) | System | 3 agents: CompanyIntelligence, SocialProfile, PurchaseHistory. 92% completeness | None — fully automated |
+| 4.3 | Lead Qualification (HITL) | interactive | Sales Rep | BANT scoring: Budget ✓, Authority ✓, Need ✓, Timeline ⚠️ (Q3 may shift) | Sales Rep reviews enriched profile, clicks "Convert to Opportunity" (85% probability) |
+| 4.4 | Pipeline Management | interactive | Sales Rep | OpportunityInsightAgent: next best actions per deal. 12 deals across 5 stages | Sales Rep drags deal to advance stage, reviews AI suggestions |
+| 4.5 | Product Recommendations | auto (14s) | System | ProductMatchAgent: Standing desks 94%, Acoustic panels 87%, Ergo chairs 82% | None — catalog integration shows availability |
+| 4.6 | Customer Engagement Hub (HITL) | interactive | Sales Rep | EngagementScoringAgent flags declining response (4hr → 2 days) | Sales Rep schedules follow-up, escalates if needed |
+| 4.7 | Forecast & Analytics | interactive | Sales Rep | ForecastAgent: $1.8M Q2 projected, 73% win rate, +12% MoM | Sales Rep reviews KPIs and pipeline health charts |
+| 4.8 | Smart CRM Notifications | auto (10s) | Sales Rep | Digest: 3 advancing, 1 at-risk, 2 qualified. Cross-platform sync verified | None — informational |
+
+---
+
 ## Summary
 
-| Metric | Flow 1 | Flow 2 | Flow 3 | Total |
-|--------|--------|--------|--------|-------|
-| Steps | 11 | 7 | 5 | **23** |
-| Auto (AI only) | 4 | 2 | 1 | **7** |
-| Interactive (HITL) | 7 | 5 | 4 | **16** |
-| Named AI Agents | 5 | 8+ | 1 | **14+** |
+| Metric | Flow 1 | Flow 2 | Flow 3 | Flow 4 | Total |
+|--------|--------|--------|--------|--------|-------|
+| Steps | 11 | 7 | 5 | 8 | **31** |
+| Auto (AI only) | 4 | 2 | 1 | 3 | **10** |
+| Interactive (HITL) | 7 | 5 | 4 | 5 | **21** |
+| Named AI Agents | 5 | 8+ | 1 | 6 | **20+** |
 
 ## Stakeholder Initiative Coverage
 
@@ -76,11 +94,12 @@
 |---|-----------|------------|
 | 1 | AI Acknowledgement Processing | Flow 2 (2.1–2.6) — 8 AI agents, ~95% automation |
 | 2 | Shipment/Order Visibility | Flow 2 (2.6–2.7), Flow 3 (3.4) |
-| 3 | Customer Communication | Flow 1 (1.8, 1.10), Flow 2 (2.7), Flow 3 (3.5) |
+| 3 | Customer Communication | Flow 1 (1.8, 1.10), Flow 2 (2.7), Flow 3 (3.5), Flow 4 (4.6, 4.8) |
 | 4 | PDF/Email Quote Ingestion | Flow 1 (1.1–1.4) — 5+4 AI agents |
-| 5 | Reduce Double Entry | Flow 1 (1.2, 1.9 — zero re-entry narrative) |
-| 6 | Reporting Automation | Flow 3 (3.1, 3.3) — AI validates before expert acts |
-| 7 | Consistent Reporting Logic | Flow 3 (3.3 — 6 business rules validation) |
+| 5 | Reduce Double Entry | Flow 1 (1.2, 1.9), Flow 4 (4.8 — cross-platform sync, zero duplicate) |
+| 6 | Reporting Automation | Flow 3 (3.1, 3.3), Flow 4 (4.7 — AI forecast) |
+| 7 | Consistent Reporting Logic | Flow 3 (3.3 — 6 business rules), Flow 4 (4.7 — KPI dashboard) |
+| 8 | CRM & Sales Intelligence | Flow 4 (4.1–4.8) — independent CRM platform with 6 AI agents |
 | 9 | Better Customer Quote Experience | Flow 1 (1.4, 1.7, 1.8) |
 | 10 | Familiar Interfaces | All flows reuse existing simulation apps |
 
@@ -93,3 +112,4 @@
 | `expert-hub` | 1.5, 1.11, 2.1–2.6 |
 | `dashboard` | 1.6–1.10, 2.7, 3.5 |
 | `mac` | 3.1–3.4 |
+| `crm` | 4.1–4.8 |

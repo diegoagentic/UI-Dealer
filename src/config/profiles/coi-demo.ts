@@ -8,6 +8,7 @@
 // Flow 1: 6 automated + 5 HITL — email→extraction→normalization→quote→PO
 // Flow 2: AI eliminates ~95% manual PO vs Acknowledgement comparison
 // Flow 3: AI validates docs + business rules, expert resolves exceptions
+// Flow 4: CRM — Sales Intelligence & Customer Engagement (3 auto + 5 HITL)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import type { DemoStep } from '../demoProfiles';
@@ -267,6 +268,88 @@ export const COI_DEMO_STEPS: DemoStep[] = [
         role: 'End User',
         highlightId: 'mobile-enduser-report'
     },
+
+    // Flow 4: CRM — Sales Intelligence & Customer Engagement
+    {
+        id: '4.1',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Lead Capture',
+        description: 'New lead from web form auto-enters CRM. AI classifies lead quality: Hot (92%), Warm (78%), Cold (45%). LeadScoringAgent evaluates based on company size, industry, and project requirements. Sales Rep receives push notification.',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-lead-capture'
+    },
+    {
+        id: '4.2',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'AI Contact Enrichment',
+        description: '3 AI agents activate: CompanyIntelligenceAgent pulls firmographic data (revenue, employees, locations). SocialProfileAgent links LinkedIn + industry associations. PurchaseHistoryAgent cross-references past orders from dealer system. 92% data completeness achieved — fully automated.',
+        app: 'crm',
+        role: 'System',
+        highlightId: 'crm-ai-enrichment'
+    },
+    {
+        id: '4.3',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Lead Qualification (HITL)',
+        description: 'Sales Rep reviews AI-enriched profile. BANT scoring: Budget ✓ ($50K-100K range), Authority ✓ (VP Facilities), Need ✓ (office renovation), Timeline ⚠️ (Q3 — may shift). AI recommends: "Convert to Opportunity — 85% probability". Rep qualifies and converts lead.',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-lead-qualification'
+    },
+    {
+        id: '4.4',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Pipeline Management',
+        description: 'Sales pipeline kanban with AI-powered insights. 12 active deals across 5 stages. OpportunityInsightAgent suggests next best action per deal: "Schedule product demo" for Apex ($89K), "Send revised pricing" for Zenith ($43K). Rep drags deal to "Proposal Sent" — auto-links to quote system.',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-pipeline-management'
+    },
+    {
+        id: '4.5',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Product Recommendations',
+        description: 'ProductMatchAgent analyzes customer profile + project requirements + purchase history. 3 cross-sell recommendations with confidence scores: Standing desks (94% — trending in healthcare), Acoustic panels (87% — open office layout), Ergonomic chairs (82% — wellness program). Catalog integration shows real-time availability and pricing.',
+        app: 'crm',
+        role: 'System',
+        highlightId: 'crm-product-recommendations'
+    },
+    {
+        id: '4.6',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Customer Engagement Hub (HITL)',
+        description: 'Unified activity timeline: 12 emails, 4 calls, 2 meetings, 3 quote updates in last 30 days. EngagementScoringAgent flags: Jennifer Martinez — declining response rate (was 4hr → now 2 days). AI suggests: "Escalate to in-person visit, bring product samples". Sales Rep schedules next touchpoint.',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-engagement-hub'
+    },
+    {
+        id: '4.7',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Forecast & Analytics',
+        description: 'ForecastAgent generates AI-powered sales forecast. Pipeline health: $2.3M weighted value, 73% win rate, 23 avg days to close. Charts: revenue trend (+12% MoM), stage conversion funnel, rep performance matrix. Predictive model: Q2 revenue projected $1.8M (±15% confidence).',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-analytics'
+    },
+    {
+        id: '4.8',
+        groupId: 4,
+        groupTitle: 'Flow 4: CRM — Sales Intelligence',
+        title: 'Smart CRM Notifications',
+        description: 'AI digest for Sales Rep: "3 opportunities advancing to negotiation, 1 at-risk deal needs attention (Zenith — no response 5 days), 2 new leads qualified today". Cross-platform sync: CRM → Dealer Experience → Expert Hub. Zero duplicate data entry.',
+        app: 'crm',
+        role: 'Sales Rep',
+        highlightId: 'crm-smart-notifications'
+    },
 ];
 
 // ─── STEP BEHAVIOR ───────────────────────────────────────────────────────────
@@ -300,6 +383,16 @@ export const COI_DEMO_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '3.3': { mode: 'interactive', userAction: 'Review 6 rules: Repair $510 vs $500 max ⚠️, Hours 6 vs 4 typical ⚠️. Choose AI suggestions: [Adjust $495] [Exception] [Split]. Click "Reviewed and Continue"' },
     '3.4': { mode: 'auto', duration: 24, aiSummary: 'ClaimSubmissionAgent assembling claim with SHA256 hashes, submitting to manufacturer, tracking replacement shipment' },
     '3.5': { mode: 'interactive', userAction: 'AI-generated punch list report on mobile. Review photos, timeline, status. Leave comments, then acknowledge' },
+
+    // Flow 4: CRM — Sales Intelligence (3 auto + 5 HITL)
+    '4.1': { mode: 'auto', duration: 16, aiSummary: 'New lead detected — LeadScoringAgent evaluating quality and classifying' },
+    '4.2': { mode: 'auto', duration: 22, aiSummary: '3 AI agents enriching contact: CompanyIntelligence, SocialProfile, PurchaseHistory — 92% completeness' },
+    '4.3': { mode: 'interactive', userAction: 'Review AI-enriched lead profile. BANT scoring: 3/4 passed. Click "Convert to Opportunity" to qualify lead' },
+    '4.4': { mode: 'interactive', userAction: 'Review pipeline kanban with AI next-best-actions. Drag deal to advance stage. Review OpportunityInsightAgent suggestions' },
+    '4.5': { mode: 'auto', duration: 14, aiSummary: 'ProductMatchAgent analyzing purchase history — generating cross-sell recommendations with confidence scores' },
+    '4.6': { mode: 'interactive', userAction: 'Review activity timeline and engagement scores. AI flagged declining engagement. Schedule follow-up or escalate' },
+    '4.7': { mode: 'interactive', userAction: 'Review AI-powered forecast: $1.8M Q2 projected. Pipeline health, win rates, and KPI dashboard' },
+    '4.8': { mode: 'auto', duration: 10, aiSummary: 'Generating CRM smart digest — cross-platform sync verified, zero duplicate entries' },
 };
 
 // ─── STEP MESSAGES ───────────────────────────────────────────────────────────
@@ -432,6 +525,49 @@ export const COI_DEMO_STEP_MESSAGES: Record<string, string[]> = {
         'Mobile view: issue photos, resolution timeline, claim status',
         'Waiting for End User comments and acknowledgement',
     ],
+
+    // Flow 4: CRM
+    '4.1': [
+        'New lead detected from web form...',
+        'LeadScoringAgent evaluating: company size, industry, project requirements',
+        'Lead classified as Hot — 92% score. Push notification sent to Sales Rep',
+    ],
+    '4.2': [
+        'CompanyIntelligenceAgent: pulling firmographic data — $45M revenue, 230 employees...',
+        'SocialProfileAgent: linking LinkedIn profile + 2 industry associations...',
+        'PurchaseHistoryAgent: cross-referencing dealer records — 3 past orders found',
+        '92% data completeness achieved — enrichment complete',
+    ],
+    '4.3': [
+        'AI pre-analysis complete — BANT scoring ready',
+        'Budget ✓ | Authority ✓ | Need ✓ | Timeline ⚠️',
+        'Recommendation: Convert to Opportunity — 85% probability',
+    ],
+    '4.4': [
+        'OpportunityInsightAgent: analyzing 12 active deals across 5 stages...',
+        'Next best actions generated for 3 priority deals',
+        'Pipeline value: $2.3M weighted — 73% win rate',
+    ],
+    '4.5': [
+        'ProductMatchAgent: analyzing purchase patterns and project requirements...',
+        'Cross-referencing with catalog availability — 3 products identified',
+        'Standing desks 94% | Acoustic panels 87% | Ergo chairs 82%',
+    ],
+    '4.6': [
+        'EngagementScoringAgent: processing 30-day activity data...',
+        'Flagging declining engagement: Jennifer Martinez — response time 4hr → 2 days',
+        'Suggestion: Escalate to in-person visit with product samples',
+    ],
+    '4.7': [
+        'ForecastAgent: building predictive model from pipeline data...',
+        'Q2 revenue projection: $1.8M (±15% confidence interval)',
+        'Pipeline health: 73% win rate, 23 avg days to close, +12% MoM growth',
+    ],
+    '4.8': [
+        'Generating CRM smart digest for Sales Rep...',
+        '3 opportunities advancing, 1 at-risk deal, 2 new leads qualified',
+        'Cross-platform sync: CRM → Dealer Experience → Expert Hub — verified',
+    ],
 };
 
 // ─── SELF-INDICATED STEPS ────────────────────────────────────────────────────
@@ -441,4 +577,5 @@ export const COI_DEMO_SELF_INDICATED: string[] = [
     '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11',
     '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7',
     '3.1', '3.2', '3.3', '3.4', '3.5',
+    '4.1', '4.2', '4.3', '4.4', '4.5', '4.6', '4.7', '4.8',
 ];

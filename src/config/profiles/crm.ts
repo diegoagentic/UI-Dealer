@@ -13,8 +13,8 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: Contact Management',
         title: 'Contact Intake',
         description: 'New contact enters the CRM pipeline via web form or email integration.',
-        app: 'dashboard',
-        role: 'Dealer',
+        app: 'crm',
+        role: 'Sales Rep',
     },
     {
         id: 'crm-1.2',
@@ -22,7 +22,7 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: Contact Management',
         title: 'AI Enrichment',
         description: 'AI enriches contact data with company info, social profiles, and engagement history.',
-        app: 'dashboard',
+        app: 'crm',
         role: 'System',
     },
     {
@@ -31,8 +31,8 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: Contact Management',
         title: 'Assignment & Follow-up',
         description: 'Contact auto-assigned to sales rep based on territory and capacity. Follow-up scheduled.',
-        app: 'dashboard',
-        role: 'Dealer',
+        app: 'crm',
+        role: 'Sales Rep',
     },
 
     // Flow 2: Pipeline Tracking
@@ -42,8 +42,8 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 2: Pipeline Tracking',
         title: 'Deal Creation',
         description: 'New deal created from qualified contact. AI suggests pricing and products based on company profile.',
-        app: 'dashboard',
-        role: 'Dealer',
+        app: 'crm',
+        role: 'Sales Rep',
     },
     {
         id: 'crm-2.2',
@@ -51,7 +51,7 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 2: Pipeline Tracking',
         title: 'Pipeline Progression',
         description: 'Deal moves through stages: Qualified → Proposal → Negotiation. AI tracks engagement signals.',
-        app: 'dashboard',
+        app: 'crm',
         role: 'System',
     },
     {
@@ -60,8 +60,8 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 2: Pipeline Tracking',
         title: 'Deal Close & Handoff',
         description: 'Deal closed-won. Auto-handoff to implementation team with full context and requirements.',
-        app: 'dashboard',
-        role: 'Dealer',
+        app: 'crm',
+        role: 'Sales Rep',
     },
 
     // Flow 3: Reporting & Analytics
@@ -71,8 +71,8 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 3: Reporting & Analytics',
         title: 'Performance Dashboard',
         description: 'AI-generated insights on sales performance, pipeline health, and forecasting.',
-        app: 'dashboard',
-        role: 'Dealer',
+        app: 'crm',
+        role: 'Sales Rep',
     },
     {
         id: 'crm-3.2',
@@ -80,7 +80,7 @@ export const CRM_STEPS: DemoStep[] = [
         groupTitle: 'Flow 3: Reporting & Analytics',
         title: 'Smart Alerts',
         description: 'Proactive alerts for at-risk deals, stale contacts, and missed follow-ups.',
-        app: 'dashboard',
+        app: 'crm',
         role: 'System',
     },
 ];

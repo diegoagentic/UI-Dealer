@@ -32,11 +32,13 @@ import DealerMonitorKanban from "./components/simulations/DealerMonitorKanban"
 import ServiceNowSimulation from "./components/simulations/ServiceNowSimulation"
 import SpecializedCatalog from "./components/simulations/SpecializedCatalog"
 import ConversationalSurvey from "./components/simulations/ConversationalSurvey"
+import CRMSimulation from "./components/simulations/CRMSimulation"
 
 import {
   HomeIcon,
   BanknotesIcon,
   WrenchScrewdriverIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 
 import logoLightBrand from './assets/logo-light-brand.png'
@@ -92,6 +94,7 @@ function App() {
     const resolvedAppName = currentStep.app === 'email-marketplace' ? 'Wells Fargo Mail'
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
+      : currentStep.app === 'crm' ? 'Strata CRM'
       : isExpert ? 'Expert Hub'
       : 'Dealer Experience';
     const resolvedCompany = isExpert ? 'Strata Services' : demoProfile.companyName;
@@ -205,6 +208,15 @@ function App() {
             { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
           ]
         };
+      case 'crm':
+        return {
+          appName: resolvedAppName, companyName: resolvedCompany,
+          customNavigation: [
+            { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+            { name: 'CRM', page: 'crm', icon: UserGroupIcon },
+            { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
+          ]
+        };
       default:
         return { appName: undefined, companyName: undefined, customNavigation: undefined };
     }
@@ -229,6 +241,7 @@ function App() {
       'ack-detail': 'transactions',
       'mac': 'mac',
       'inventory': 'inventory',
+      'crm': 'crm',
     };
     return appToTab[currentStep.app] || currentPage;
   };
@@ -274,6 +287,8 @@ function App() {
         return <QuoteDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />;
       case 'inventory':
         return <Inventory onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />;
+      case 'crm':
+        return <CRMSimulation onNavigate={handleNavigate} />;
       default:
         return (
           <ExpertHubTransactions
