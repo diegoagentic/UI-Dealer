@@ -1,8 +1,9 @@
-import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
-import { Fragment, useRef, useState, useCallback } from 'react';
+import { Dialog, DialogPanel, Transition, TransitionChild, Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react';
+import { Fragment, useRef, useState, useCallback, useEffect } from 'react';
 import {
     XMarkIcon, ArrowDownTrayIcon, PrinterIcon, DocumentTextIcon,
     CalendarIcon, TruckIcon, CheckCircleIcon, ExclamationTriangleIcon,
+    ChevronUpDownIcon, CheckIcon,
 } from '@heroicons/react/24/outline';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -221,40 +222,89 @@ export function getMockPEDData(type: PEDDocumentType, id?: string): PEDData {
         notes: 'Installation to be scheduled in phases. Weekend installation preferred. Loading dock access confirmed with building management.',
     };
 
+    const orderVariants: Record<string, { so: string; status: string; date: string }> = {
+        '#ORD-2055': { so: '1151064-B', status: 'Order Received', date: '12/20/25' },
+        '#ORD-2054': { so: '1148032-A', status: 'In Production', date: '11/15/25' },
+        '#ORD-2053': { so: '1145091-C', status: 'Ready to Ship', date: '10/30/25' },
+        '#ORD-2052': { so: '1142007-A', status: 'Delivered', date: '10/15/25' },
+        '#ORD-2051': { so: '1155019-B', status: 'Order Received', date: '01/05/26' },
+    };
+
+    const quoteVariants: Record<string, { so: string; status: string; date: string; valid: string }> = {
+        'QT-1025': { so: 'QT-2026-1025', status: 'Sent', date: '01/12/26', valid: '02/12/26' },
+        'QT-1024': { so: 'QT-2026-1024', status: 'Draft', date: '01/10/26', valid: 'Draft' },
+        'QT-1023': { so: 'QT-2026-1023', status: 'Sent', date: '01/08/26', valid: '02/08/26' },
+        'QT-1022': { so: 'QT-2025-1022', status: 'Approved', date: '12/28/25', valid: '01/28/26' },
+    };
+
+    const ackVariants: Record<string, { so: string; status: string; date: string; notes: string }> = {
+        'ACK-8839': { so: '1151064-B', status: 'Confirmed', date: '01/14/26', notes: 'None — All line items confirmed as ordered.' },
+        'ACK-8840': { so: '1148032-A', status: 'Discrepancy', date: '01/13/26', notes: 'Price Mismatch on Line 3 — List $3,603 vs Ack $3,450. Quantity shortfall Line 7: Req 4, Ack 2.' },
+        'ACK-8841': { so: '1145091-C', status: 'Partial', date: '01/12/26', notes: 'Lines 2, 5, 9 backordered — ETA updated to 03/15/26.' },
+    };
+
     if (type === 'order') {
+        const v = orderVariants[id || '#ORD-2055'] || orderVariants['#ORD-2055'];
         return {
             ...base,
             type: 'order',
             id: id || '#ORD-2055',
-            salesOrderNumber: '1151064-B',
-            status: 'In Production',
-            orderDate: '10/30/25',
+            salesOrderNumber: v.so,
+            status: v.status,
+            orderDate: v.date,
         };
     }
 
     if (type === 'quote') {
+        const v = quoteVariants[id || 'QT-1025'] || quoteVariants['QT-1025'];
         return {
             ...base,
             type: 'quote',
             id: id || 'QT-1025',
-            salesOrderNumber: 'QT-2026-1025',
-            status: 'Sent',
-            orderDate: '01/12/26',
-            validUntil: '02/12/26',
+            salesOrderNumber: v.so,
+            status: v.status,
+            orderDate: v.date,
+            validUntil: v.valid,
         };
     }
 
     // acknowledgment
+    const v = ackVariants[id || 'ACK-8839'] || ackVariants['ACK-8839'];
     return {
         ...base,
         type: 'acknowledgment',
         id: id || 'ACK-8839',
-        salesOrderNumber: '1151064-B',
-        status: 'Confirmed',
-        orderDate: '10/30/25',
-        discrepancyNotes: 'None — All line items confirmed as ordered.',
+        salesOrderNumber: v.so,
+        status: v.status,
+        orderDate: v.date,
+        discrepancyNotes: v.notes,
     };
 }
+
+// --- Document selector options per type ---
+
+interface DocOption { id: string; label: string; sub: string }
+
+const DOCUMENT_OPTIONS: Record<PEDDocumentType, DocOption[]> = {
+    order: [
+        { id: '#ORD-2055', label: '#ORD-2055', sub: 'AutoManfacture Co. — $385,000' },
+        { id: '#ORD-2054', label: '#ORD-2054', sub: 'TechDealer Solutions — $62,500' },
+        { id: '#ORD-2053', label: '#ORD-2053', sub: 'Urban Living Inc. — $112,000' },
+        { id: '#ORD-2052', label: '#ORD-2052', sub: 'Global Logistics — $45,000' },
+        { id: '#ORD-2051', label: '#ORD-2051', sub: 'City Builders — $120,000' },
+    ],
+    quote: [
+        { id: 'QT-1025', label: 'QT-1025', sub: 'Apex Tech — $1,200,000' },
+        { id: 'QT-1024', label: 'QT-1024', sub: 'BioLife Inc — $540,000' },
+        { id: 'QT-1023', label: 'QT-1023', sub: 'FinServe Corp — $890,000' },
+        { id: 'QT-1022', label: 'QT-1022', sub: 'Redwood School — $150,000' },
+    ],
+    acknowledgment: [
+        { id: 'ACK-8839', label: 'ACK-8839', sub: 'Herman Miller — Confirmed' },
+        { id: 'ACK-8840', label: 'ACK-8840', sub: 'Steelcase — Discrepancy' },
+        { id: 'ACK-8841', label: 'ACK-8841', sub: 'Knoll — Partial' },
+    ],
+};
 
 // --- Component ---
 
@@ -282,11 +332,29 @@ const statusColors: Record<string, string> = {
     'Partial': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
 };
 
-export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModalProps) {
+export default function PEDExportModal({ isOpen, onClose, data: initialData }: PEDExportModalProps) {
     const [isExporting, setIsExporting] = useState(false);
+    const [activeData, setActiveData] = useState<PEDData | null>(initialData);
+    const [selectedDocId, setSelectedDocId] = useState<string>('');
     const printRef = useRef<HTMLDivElement>(null);
 
+    // Sync internal state when parent passes new data (opening modal)
+    useEffect(() => {
+        if (initialData) {
+            setActiveData(initialData);
+            setSelectedDocId(initialData.id);
+        }
+    }, [initialData]);
+
+    const data = activeData;
     const label = data ? typeLabels[data.type] : '';
+    const docOptions = data ? DOCUMENT_OPTIONS[data.type] : [];
+
+    const handleDocChange = (docId: string) => {
+        if (!data) return;
+        setSelectedDocId(docId);
+        setActiveData(getMockPEDData(data.type, docId));
+    };
 
     const buildPdfHtml = useCallback(() => {
         if (!data) return '';
@@ -327,7 +395,7 @@ export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModal
                 </div>
                 <div style="text-align:right;">
                     <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#71717a;">${label}</div>
-                    <div style="font-size:18px;font-weight:800;color:#18181b;margin-top:2px;">Sales Order ${data.salesOrderNumber}</div>
+                    <div style="font-size:18px;font-weight:800;color:#18181b;margin-top:2px;">${data.salesOrderNumber}</div>
                     <div style="font-size:11px;color:#52525b;margin-top:4px;">Order Date: <strong>${data.orderDate}</strong></div>
                     <span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:12px;font-size:10px;font-weight:600;background:#e0e7ff;color:#4338ca;">${data.status}</span>
                 </div>
@@ -613,8 +681,40 @@ export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModal
                                         </div>
                                         <div>
                                             <h2 className="text-lg font-semibold text-foreground">PDF Preview — {label}</h2>
-                                            <p className="text-xs text-muted-foreground">Sales Order {data.salesOrderNumber} • {data.vendorName.split('—')[0].trim()}</p>
+                                            <p className="text-xs text-muted-foreground">{data.salesOrderNumber} • {data.vendorName.split('—')[0].trim()}</p>
                                         </div>
+                                        {/* Document Selector */}
+                                        {docOptions.length > 1 && (
+                                            <Listbox value={selectedDocId} onChange={handleDocChange}>
+                                                <div className="relative ml-2">
+                                                    <ListboxButton className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-border bg-background hover:bg-muted transition-colors cursor-pointer min-w-[180px]">
+                                                        <span className="truncate text-foreground">{selectedDocId}</span>
+                                                        <ChevronUpDownIcon className="w-4 h-4 text-muted-foreground ml-auto shrink-0" />
+                                                    </ListboxButton>
+                                                    <ListboxOptions className="absolute z-50 mt-1 w-72 rounded-lg bg-background border border-border shadow-xl py-1 max-h-60 overflow-auto scrollbar-micro focus:outline-none">
+                                                        {docOptions.map((doc) => (
+                                                            <ListboxOption
+                                                                key={doc.id}
+                                                                value={doc.id}
+                                                                className={({ active, selected }) =>
+                                                                    `relative cursor-pointer select-none px-3 py-2 ${active ? 'bg-muted' : ''} ${selected ? 'bg-primary/5' : ''}`
+                                                                }
+                                                            >
+                                                                {({ selected }) => (
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className={`text-xs font-medium truncate ${selected ? 'text-primary' : 'text-foreground'}`}>{doc.label}</p>
+                                                                            <p className="text-[10px] text-muted-foreground truncate">{doc.sub}</p>
+                                                                        </div>
+                                                                        {selected && <CheckIcon className="w-4 h-4 text-primary shrink-0" />}
+                                                                    </div>
+                                                                )}
+                                                            </ListboxOption>
+                                                        ))}
+                                                    </ListboxOptions>
+                                                </div>
+                                            </Listbox>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors border border-border">
@@ -650,7 +750,7 @@ export default function PEDExportModal({ isOpen, onClose, data }: PEDExportModal
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-xs font-semibold uppercase tracking-wider text-zinc-500">{label}</p>
-                                                <p className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mt-0.5">Sales Order {data.salesOrderNumber}</p>
+                                                <p className="text-xl font-extrabold text-zinc-900 dark:text-zinc-100 mt-0.5">{data.salesOrderNumber}</p>
                                                 <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Order Date: <span className="font-semibold">{data.orderDate}</span></p>
                                                 <span className={`inline-block mt-2 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${statusColors[data.status] || 'bg-zinc-100 text-zinc-700'}`}>
                                                     {data.status}

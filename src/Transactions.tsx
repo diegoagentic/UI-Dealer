@@ -9,7 +9,7 @@ import {
     ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
     CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon, CheckCircleIcon,
     ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
-    FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon
+    FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon, ArrowDownTrayIcon
 } from '@heroicons/react/24/outline'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
@@ -494,7 +494,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             )}
                         >
                             <ShoppingCartIcon className="w-4 h-4" />
-                            Orders
+                            Purchase Orders
                         </button>
                         <button
                             onClick={() => setLifecycleTab('acknowledgments')}
@@ -1293,6 +1293,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                 <td className="p-4 text-right">
                                                                     <div className="flex items-center justify-end gap-1">
                                                                         <button
+                                                                            onClick={(e) => { e.stopPropagation(); openPEDPreview(lifecycleTab === 'quotes' ? 'quote' : lifecycleTab === 'acknowledgments' ? 'acknowledgment' : 'order', order.id); }}
+                                                                            className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                                                                            title="Export PDF"
+                                                                        >
+                                                                            <ArrowDownTrayIcon className="h-4 w-4" />
+                                                                        </button>
+                                                                        <button
                                                                             onClick={(e) => { e.stopPropagation(); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
                                                                             className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                                                                         >
@@ -1420,6 +1427,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             </span>
 
                                                                             <div className="flex items-center gap-1">
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); openPEDPreview(lifecycleTab === 'quotes' ? 'quote' : lifecycleTab === 'acknowledgments' ? 'acknowledgment' : 'order', order.id); }}
+                                                                                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                                                                                    title="Export PDF"
+                                                                                >
+                                                                                    <ArrowDownTrayIcon className="h-4 w-4" />
+                                                                                </button>
                                                                                 <button
                                                                                     onClick={(e) => { e.stopPropagation(); toggleExpand(order.id); }}
                                                                                     className="text-xs font-bold text-zinc-800 bg-primary hover:bg-primary/90 px-3 py-1.5 rounded-md transition-shadow shadow-sm"
