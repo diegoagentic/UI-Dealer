@@ -199,6 +199,8 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false)
     const [showExpertReview, setShowExpertReview] = useState(false)
+    const [showDesignValidation, setShowDesignValidation] = useState(false)
+    const [showEDIViewer, setShowEDIViewer] = useState(false)
     const [reviewCorrections, setReviewCorrections] = useState<Record<string, 'accepted' | 'rejected' | null>>({ freight: null, quantity: null, armrest: null, discount: null });
 
     // Expert review detail panels — expanded state, editable values, notes
@@ -1191,7 +1193,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                             <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">SKU</th>
                                             <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Product</th>
                                             <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-center">Qty</th>
-                                            <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-right">Unit Price</th>
+                                            <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-right">Unit Cost</th>
+                                            <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-right">Sell Price</th>
+                                            <th className="px-5 py-2.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wider text-right">Margin</th>
                                             <th className="px-5 py-2.5 text-[10px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider text-center">Confidence</th>
                                         </tr>
                                     </thead>
@@ -1208,7 +1212,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                     <span className="text-[9px] text-amber-500">*</span>
                                                 </span>
                                             </td>
+                                            <td className="px-5 py-3 text-xs text-muted-foreground text-right">$226.30</td>
                                             <td className="px-5 py-3 text-xs font-medium text-foreground text-right">$350.00</td>
+                                            <td className="px-5 py-3 text-xs font-medium text-green-600 dark:text-green-400 text-right">35.3%</td>
                                             <td className="px-5 py-3 text-center"><ConfidenceScoreBadge score={95} size="sm" /></td>
                                         </tr>
                                         <tr className="bg-amber-500/5">
@@ -1219,14 +1225,15 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                                 </div>
                                             </td>
                                             <td className="px-5 py-3 text-xs text-muted-foreground text-center">—</td>
-                                            <td className="px-5 py-3 text-xs text-muted-foreground text-right italic">Not calculated</td>
+                                            <td className="px-5 py-3 text-xs text-muted-foreground text-right italic" colSpan={2}>Not calculated</td>
                                             <td className="px-5 py-3 text-center"><ConfidenceScoreBadge score={42} size="sm" /></td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
                                         <tr className="border-t border-border">
-                                            <td colSpan={3} className="px-5 py-3 text-xs font-medium text-foreground">Subtotal (before freight)</td>
+                                            <td colSpan={4} className="px-5 py-3 text-xs font-medium text-foreground">Subtotal (before freight)</td>
                                             <td className="px-5 py-3 text-xs font-semibold text-foreground text-right">$43,750.00</td>
+                                            <td className="px-5 py-3 text-xs font-medium text-green-600 dark:text-green-400 text-right">35.4%</td>
                                             <td></td>
                                         </tr>
                                     </tfoot>
@@ -1822,6 +1829,54 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                             </div>
                         )}
 
+                        {/* Spec Validation Panel — AI design review summary */}
+                        <div className="bg-card border border-border rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-3 duration-700">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-500/10">
+                                        <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-xs font-semibold text-foreground">AI Spec Review</h3>
+                                        <p className="text-[10px] text-muted-foreground">200 items validated against building requirements</p>
+                                    </div>
+                                </div>
+                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 font-medium">197/200 validated</span>
+                            </div>
+
+                            <div className="space-y-2">
+                                {[
+                                    { icon: '⚠️', text: '3 items exceed max weight for floor 14', detail: 'Structural limit 50 lbs/sqft', delay: 'delay-100' },
+                                    { icon: '⚠️', text: 'Fabric X-297 discontinued', detail: '2 alternatives suggested (same price tier)', delay: 'delay-300' },
+                                    { icon: '⚠️', text: 'Panel height 54" doesn\'t match ceiling clearance floor 15', detail: '48" max — requires design adjustment', delay: 'delay-500' },
+                                ].map((flag, i) => (
+                                    <div key={i} className={`flex items-start gap-2.5 px-3 py-2 rounded-lg bg-amber-50/70 dark:bg-amber-500/5 border border-amber-200/50 dark:border-amber-500/15 animate-in fade-in slide-in-from-left-2 duration-500 ${flag.delay}`}>
+                                        <span className="text-sm shrink-0 mt-0.5">{flag.icon}</span>
+                                        <div className="min-w-0">
+                                            <p className="text-[10px] font-medium text-amber-800 dark:text-amber-300">{flag.text}</p>
+                                            <p className="text-[9px] text-amber-600/70 dark:text-amber-400/60">{flag.detail}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-3 flex items-center justify-between pt-3 border-t border-border">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                        <span className="text-[10px] font-medium text-green-700 dark:text-green-400">197 specs validated</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <svg className="w-3.5 h-3.5 text-amber-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+                                        <span className="text-[10px] font-medium text-amber-700 dark:text-amber-400">3 require design review</span>
+                                    </div>
+                                </div>
+                                <button disabled className="px-3 py-1.5 text-[10px] font-medium text-muted-foreground bg-muted rounded-lg opacity-50 cursor-not-allowed">
+                                    View Alternatives
+                                </button>
+                            </div>
+                        </div>
+
                         {/* Approve Footer */}
                         <div className="bg-card border border-border rounded-2xl p-4 shadow-sm">
                             <div className="flex items-center justify-between">
@@ -1849,7 +1904,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                         Back to Queue
                                     </button>
                                     <button
-                                        onClick={() => nextStep()}
+                                        onClick={() => setShowDesignValidation(true)}
                                         className="px-4 py-2 text-xs font-medium bg-primary text-primary-foreground rounded-lg transition-colors shadow-sm flex items-center gap-1.5 disabled:opacity-50"
                                         disabled={Object.values(reviewCorrections).some(v => v === null)}
                                     >
@@ -1859,6 +1914,70 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                 </div>
                             </div>
                         </div>
+
+                        {/* Design Validation Complete — post-approval panel */}
+                        {showDesignValidation && (
+                            <div className="bg-card border border-green-200 dark:border-green-800 rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-xl bg-green-100 dark:bg-green-900/30">
+                                            <CheckBadgeIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-semibold text-foreground">Spec Validation Agent — Final Report</h3>
+                                            <p className="text-[10px] text-muted-foreground">Design review completed · All flagged items resolved</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-bold">Validated</span>
+                                </div>
+
+                                <div className="grid grid-cols-4 gap-3 mb-4">
+                                    {[
+                                        { label: 'Items Validated', value: '200', color: 'text-foreground' },
+                                        { label: 'Spec Issues Caught', value: '7', color: 'text-amber-600 dark:text-amber-400' },
+                                        { label: 'Hours Saved', value: '3.2', color: 'text-green-600 dark:text-green-400' },
+                                        { label: 'Pass Rate', value: '96.5%', color: 'text-green-600 dark:text-green-400' },
+                                    ].map(stat => (
+                                        <div key={stat.label} className="text-center p-2.5 rounded-lg bg-muted/30 border border-border">
+                                            <p className={`text-lg font-black ${stat.color}`}>{stat.value}</p>
+                                            <p className="text-[9px] text-muted-foreground mt-0.5">{stat.label}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-1.5 mb-4">
+                                    <p className="text-[10px] font-medium text-foreground">Issues by Category</p>
+                                    {[
+                                        { cat: 'Configuration', count: 3, icon: '⚙️' },
+                                        { cat: 'Sizing', count: 2, icon: '📏' },
+                                        { cat: 'Discontinued', count: 1, icon: '🚫' },
+                                        { cat: 'Structural', count: 1, icon: '🏗️' },
+                                    ].map(c => (
+                                        <div key={c.cat} className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-muted/20 border border-border">
+                                            <span className="text-[10px] text-muted-foreground flex items-center gap-1.5"><span>{c.icon}</span>{c.cat}</span>
+                                            <span className="text-[10px] font-bold text-foreground">{c.count}</span>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800 mb-4">
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-green-700 dark:text-green-400 leading-relaxed">
+                                            <strong>All flagged items resolved by expert.</strong> Zero spec errors will reach vendor. Approval chain initiated.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={() => { setShowDesignValidation(false); nextStep(); }}
+                                    className="w-full px-4 py-2.5 text-xs font-medium bg-primary text-primary-foreground rounded-lg transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                                >
+                                    <CheckBadgeIcon className="w-3.5 h-3.5" />
+                                    Continue to Approval Chain
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -1880,7 +1999,13 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                         {/* ACK Pipeline Kanban */}
                         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
                             <div className="p-4 border-b border-border">
-                                <h3 className="text-sm font-bold text-foreground">Acknowledgement Pipeline — Incoming</h3>
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-sm font-bold text-foreground">Acknowledgement Pipeline — Incoming</h3>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium">47 today — showing 2</span>
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium flex items-center gap-1">⚡ eManage ONE</span>
+                                    </div>
+                                </div>
                                 <p className="text-xs text-muted-foreground mt-0.5">2 new acknowledgments received from ERPConnector</p>
                             </div>
                             <div className="p-4 grid grid-cols-4 gap-3">
@@ -1944,6 +2069,11 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                 ))}
                             </div>
                         </div>
+
+                        {/* Copilot footer */}
+                        <p className="text-[10px] text-muted-foreground/60 text-center italic">
+                            In production → Copilot plugin: auto-processes EDI acknowledgments from eManage ONE
+                        </p>
                     </div>
                 )}
 
@@ -2045,8 +2175,15 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                         <h4 className="text-sm font-bold text-foreground">{ACK_AIS.id} — AIS</h4>
                                         <p className="text-[10px] text-muted-foreground">{ACK_AIS.lineItems} lines · {ACK_AIS.total}</p>
                                     </div>
+                                    <button
+                                        onClick={() => setShowEDIViewer(true)}
+                                        className="ml-auto px-2 py-1 rounded-lg bg-muted/50 border border-border text-[9px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all flex items-center gap-1"
+                                    >
+                                        <DocumentTextIcon className="w-3 h-3" />
+                                        View Original EDI
+                                    </button>
                                     {normPhase22 === 'ais-flagged' && (
-                                        <span className="ml-auto px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-[10px] font-bold text-red-700 dark:text-red-400 flex items-center gap-1">
+                                        <span className="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/20 text-[10px] font-bold text-red-700 dark:text-red-400 flex items-center gap-1">
                                             <ExclamationTriangleIcon className="w-3 h-3" /> Discrepancy
                                         </span>
                                     )}
@@ -2083,6 +2220,58 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                 )}
                             </div>
                         </div>
+
+                        {/* EDI Original Document Viewer Modal */}
+                        {showEDIViewer && (
+                            <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowEDIViewer(false)}>
+                                <div className="bg-card border border-border rounded-2xl shadow-2xl w-[640px] max-h-[80vh] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-4 duration-300" onClick={e => e.stopPropagation()}>
+                                    <div className="flex items-center justify-between px-5 py-3 border-b border-border">
+                                        <div className="flex items-center gap-2">
+                                            <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                                                <DocumentTextIcon className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xs font-bold text-foreground">Original EDI/855 Document</h3>
+                                                <p className="text-[10px] text-muted-foreground">Source: eManage ONE · {ACK_AIS.id}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => setShowEDIViewer(false)} className="p-1.5 rounded-lg hover:bg-muted transition-colors text-muted-foreground">
+                                            <XMarkIcon className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <div className="p-5 overflow-y-auto max-h-[60vh] scrollbar-micro">
+                                        <pre className="text-[11px] font-mono text-muted-foreground bg-zinc-950 dark:bg-zinc-900 rounded-xl p-4 border border-zinc-800 overflow-x-auto whitespace-pre leading-relaxed">
+{`ISA*00*          *00*          *ZZ*EMANAGEONE    *ZZ*STRATAAI      *250310*0920*U*00401*000002055*0*P*>~
+GS*PR*EMANAGEONE*STRATAAI*20250310*0920*2055*X*004010~
+ST*855*0001~
+BAK*06*AC*ORD-2055*20250308~
+REF*VR*AIS-OFFICE~
+REF*CO*APEX-FURNITURE~
+DTM*002*20250410~
+N1*ST*Apex Furniture*92*APEX-HQ~
+N3*1200 Congress Ave~
+N4*Austin*TX*78701*US~
+`}<span className="text-emerald-400">{`PO1*001*125*EA*226.30**VP*CC-AZ-2024*PI*TASK-CHAIR-AZURE~
+PID*F****Executive Task Chair - Azure Ergonomic~
+ACK*IA*125*EA*002*20250410~`}</span>{`
+`}<span className="text-emerald-400">{`PO1*002*125*EA*89.50**VP*MA-ADJ-2024*PI*MONITOR-ARM-ADJ~
+PID*F****Adjustable Monitor Arm - Dual Mount~
+ACK*IA*125*EA*002*20250417~`}</span>{`
+`}<span className="text-amber-400">{`PO1*041*1*EA*226.30**VP*CC-AZ-2024*PI*TASK-CHAIR-AZURE~
+PID*F****Executive Task Chair - Grommet Option C~
+ACK*IA*1*EA*002*20250410*CO*GROMMET-C-LRC2~`}</span>{`
+SE*28*0001~
+GE*1*2055~
+IEA*1*000002055~`}
+                                        </pre>
+                                        <div className="mt-3 flex items-center justify-between text-[10px]">
+                                            <span className="text-muted-foreground">AI extracted and normalized <strong className="text-foreground">{ACK_AIS.lineItems} line items</strong> from this EDI/855</span>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-medium">Line 41 flagged</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -2403,6 +2592,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     <CheckCircleIcon className="w-4 h-4" />
                                     Accept and Send to System of Record
                                 </button>
+                                <span className="text-[9px] px-2 py-1 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium whitespace-nowrap">⚡ System of Record</span>
                             </div>
                         ) : (
                             <div className="flex items-center gap-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-800 animate-in fade-in zoom-in duration-300">

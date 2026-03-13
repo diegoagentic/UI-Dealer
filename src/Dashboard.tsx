@@ -455,8 +455,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [punchComment, setPunchComment] = useState('')
     const [punchCommentSent, setPunchCommentSent] = useState(false)
     const [showAckModal, setShowAckModal] = useState(false)
+    const [portalTab, setPortalTab] = useState<'orders' | 'claims' | 'messages'>('orders')
+    const [deliveryConfirmed, setDeliveryConfirmed] = useState(false)
     useEffect(() => {
-        if (currentStep.id !== '3.5') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); }
+        if (currentStep.id !== '3.5') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); setPortalTab('orders'); setDeliveryConfirmed(false); }
     }, [currentStep.id])
 
     const handleGenUIAction = (prompt: string) => {
@@ -720,64 +722,64 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                         </div>
 
-                        {/* PO Summary Card */}
-                        <div className="mx-3 mt-3 p-4 rounded-xl bg-card border border-border space-y-3">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Quote</p>
-                                    <p className="text-base font-bold text-foreground">QT-1025</p>
+                        {/* Customer Quote — Visual Presentation */}
+                        <div className="mx-3 mt-3 rounded-xl bg-card border border-border overflow-hidden shadow-sm">
+                            {/* Visual Header — gradient with client branding */}
+                            <div className="relative bg-gradient-to-br from-indigo-600 to-purple-700 px-4 py-5 text-white overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-full opacity-20">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-full blur-3xl"></div>
                                 </div>
-                                <span className="px-2 py-0.5 bg-green-500/15 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full">Approved</span>
+                                <div className="relative z-10 text-center">
+                                    <SparklesIcon className="w-5 h-5 mx-auto mb-1.5 text-indigo-200" />
+                                    <p className="font-bold text-sm tracking-tight">Apex Furniture</p>
+                                    <p className="text-indigo-200 text-[9px] uppercase tracking-widest mt-0.5">Customer Proposal</p>
+                                </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { label: 'Supplier', value: 'Apex Furniture' },
-                                    { label: 'Total Value', value: '$134,250' },
-                                    { label: 'Line Items', value: '50 SKUs' },
-                                    { label: 'Delivery Est.', value: 'Mar 15, 2026' },
-                                ].map(item => (
-                                    <div key={item.label} className="p-2 rounded-lg bg-muted/50">
-                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{item.label}</p>
-                                        <p className="text-xs font-bold text-foreground">{item.value}</p>
+                            <div className="p-3 space-y-3">
+                                {/* Style + Total */}
+                                <div className="flex justify-between items-end border-b border-border pb-2.5">
+                                    <div>
+                                        <p className="text-[9px] text-muted-foreground uppercase font-semibold">Style</p>
+                                        <p className="text-xs font-medium text-foreground">Modern Workspace — Open Plan</p>
                                     </div>
-                                ))}
-                            </div>
+                                    <div className="text-right">
+                                        <p className="text-[9px] text-muted-foreground uppercase font-semibold">Total</p>
+                                        <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400">$43,750</p>
+                                    </div>
+                                </div>
 
-                            {/* Mini Approval Chain */}
-                            <div className="pt-2 border-t border-border">
-                                <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Approval Chain — Complete</p>
-                                <div className="flex items-center gap-3">
+                                {/* Moodboard — product imagery placeholders */}
+                                <div className="grid grid-cols-3 gap-1.5">
+                                    {['Workstations', 'Task Chairs', 'Lounge'].map(label => (
+                                        <div key={label} className="aspect-[4/3] bg-zinc-100 dark:bg-zinc-800 rounded-lg flex items-center justify-center">
+                                            <p className="text-[7px] text-muted-foreground font-medium">{label}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="text-[8px] text-center text-muted-foreground">Products, delivery timeline & sustainability specs included.</p>
+
+                                {/* Key Details */}
+                                <div className="grid grid-cols-3 gap-1.5">
                                     {[
-                                        { name: 'Operations Manager', status: 'Approved' },
-                                        { name: 'Finance System', status: 'Approved' },
-                                        { name: 'Compliance Engine', status: 'Approved' },
-                                    ].map((approver, i) => (
-                                        <div key={i} className="flex items-center gap-1.5">
-                                            <div className="relative">
-                                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center ring-1 ring-emerald-500/30 animate-ai-glow">
-                                                    <SparklesIcon className="w-3 h-3 text-emerald-500" />
-                                                </div>
-                                                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-500 text-white flex items-center justify-center ring-1 ring-white dark:ring-zinc-900">
-                                                    <CheckIcon className="w-1.5 h-1.5" />
-                                                </div>
-                                            </div>
-                                            <p className="text-[9px] text-muted-foreground font-medium">{approver.name.split(' ')[0]}</p>
+                                        { label: 'Items', value: '200' },
+                                        { label: 'Delivery', value: '6-8 wks' },
+                                        { label: 'Zones', value: '4' },
+                                    ].map(item => (
+                                        <div key={item.label} className="p-1.5 rounded-lg bg-muted/50 text-center">
+                                            <p className="text-[8px] text-muted-foreground">{item.label}</p>
+                                            <p className="text-[11px] font-bold text-foreground">{item.value}</p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quote Reference */}
-                        <div className="mx-3 mt-3 p-3 rounded-xl bg-muted/30 border border-border/50">
-                            <div className="flex items-center gap-2">
-                                <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />
-                                <div className="flex-1">
-                                    <p className="text-[10px] font-medium text-foreground">From Quote QT-1025</p>
-                                    <p className="text-[9px] text-muted-foreground">Auto-generated by POBuilderAgent</p>
-                                </div>
-                            </div>
+                        {/* Narrative footer — what the customer sees vs doesn't */}
+                        <div className="mx-3 mt-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <p className="text-[9px] text-indigo-700 dark:text-indigo-300 text-center leading-relaxed">
+                                <span className="font-semibold">Customer sees</span>: products, style & timeline — <span className="font-semibold">not</span> part numbers, unit costs or line items.
+                            </p>
                         </div>
 
                         {/* Action Button */}
@@ -821,6 +823,30 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                         </div>
 
+                        {/* Portal Tab Bar */}
+                        <div className="flex items-center gap-0.5 mx-3 mt-3 p-0.5 rounded-lg bg-muted/60 border border-border">
+                            {([
+                                { id: 'orders' as const, label: 'My Orders', count: 4 },
+                                { id: 'claims' as const, label: 'My Claims', count: 1 },
+                                { id: 'messages' as const, label: 'Messages', count: 4 },
+                            ]).map(tab => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setPortalTab(tab.id)}
+                                    className={`flex-1 px-2 py-1.5 text-[10px] font-medium rounded-md transition-all flex items-center justify-center gap-1 ${
+                                        portalTab === tab.id
+                                            ? 'bg-card text-foreground shadow-sm border border-border'
+                                            : 'text-muted-foreground'
+                                    }`}
+                                >
+                                    {tab.label}
+                                    <span className={`text-[8px] px-1 py-0.5 rounded-full ${portalTab === tab.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>{tab.count}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* ═══ ORDERS TAB ═══ */}
+                        {portalTab === 'orders' && <>
                         {/* Push Notification — Shipment */}
                         <div className="mx-3 mt-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-in slide-in-from-top-2 duration-300">
                             <div className="flex items-start gap-2.5">
@@ -835,81 +861,6 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                         </div>
 
-                        {/* Push Notification — Punch List */}
-                        <div className="mx-3 mt-2 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in slide-in-from-top-2 duration-500">
-                            <div className="flex items-start gap-2.5">
-                                <div className="p-1.5 bg-green-500/20 rounded-lg shrink-0">
-                                    <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-[10px] text-green-500 font-medium">Just now</p>
-                                    <p className="text-xs font-bold text-green-700 dark:text-green-300">Punch List Report Ready</p>
-                                    <p className="text-[11px] text-green-600/80 dark:text-green-400/80 mt-0.5">REQ-PL-2026-047 has been resolved. Review details below.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Report Card */}
-                        <div className="mx-3 mt-3 p-4 rounded-xl bg-card border border-border space-y-3">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Service Request</p>
-                                    <p className="text-base font-bold text-foreground">REQ-PL-2026-047</p>
-                                </div>
-                                <span className="px-2 py-0.5 bg-green-500/15 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full">Resolved</span>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { label: 'Product', value: '2x Conf. Chairs (Azure)' },
-                                    { label: 'Claim ID', value: 'CLM-2026-114' },
-                                    { label: 'Resolution', value: 'Replacement Unit' },
-                                    { label: 'Delivery ETA', value: '8 business days' },
-                                ].map(item => (
-                                    <div key={item.label} className="p-2 rounded-lg bg-muted/50">
-                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{item.label}</p>
-                                        <p className="text-xs font-bold text-foreground">{item.value}</p>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Mini Timeline */}
-                            <div className="pt-2 border-t border-border">
-                                <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Process Timeline</p>
-                                <div className="space-y-1.5">
-                                    {[
-                                        { label: 'Request Received', status: 'done' },
-                                        { label: 'AI Validation Complete', status: 'done' },
-                                        { label: 'Expert Review & Labor Approved', status: 'done' },
-                                        { label: 'Claim Submitted to Manufacturer', status: 'done' },
-                                        { label: 'Replacement In Production', status: 'active' },
-                                    ].map((step, i) => (
-                                        <div key={i} className="flex items-center gap-2">
-                                            {step.status === 'done' ? (
-                                                <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />
-                                            ) : (
-                                                <div className="w-4 h-4 rounded-full border-2 border-blue-500 flex items-center justify-center shrink-0">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                                                </div>
-                                            )}
-                                            <span className={`text-[11px] font-medium ${step.status === 'done' ? 'text-muted-foreground' : 'text-blue-600 dark:text-blue-400'}`}>{step.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Evidence Summary */}
-                        <div className="mx-3 mt-3 p-3 rounded-xl bg-muted/30 border border-border/50">
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Evidence Summary</p>
-                            <div className="flex items-center gap-3 text-[11px] text-foreground">
-                                <span className="flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5 text-green-500" /> 5 photos verified</span>
-                                <span className="flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5 text-green-500" /> QR confirmed</span>
-                            </div>
-                            <div className="mt-1.5 text-[11px] text-muted-foreground">
-                                Liability: <span className="font-bold text-foreground">Carrier 65%</span> / <span className="font-bold text-foreground">Manufacturer 35%</span>
-                            </div>
-                        </div>
 
                         {/* ═══ Amazon-Style Shipment Tracking ═══ */}
                         <div className="mx-3 mt-3 p-3 rounded-xl bg-card border border-border space-y-3">
@@ -991,6 +942,106 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                         </div>
 
+                        {/* Delivery Confirmation — Zone A */}
+                        <div className="mx-3 mt-3 mb-3">
+                            {!deliveryConfirmed ? (
+                                <button
+                                    onClick={() => setDeliveryConfirmed(true)}
+                                    className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                                >
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                    Confirm Zone A Delivery
+                                </button>
+                            ) : (
+                                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                                        <div>
+                                            <p className="text-xs font-bold text-green-700 dark:text-green-300">Delivery Confirmed</p>
+                                            <p className="text-[10px] text-green-600/80 dark:text-green-400/70">Zone A · 82 items received in good condition</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-green-600/60 dark:text-green-400/50 mt-1.5">Confirmation sent to dealer. Invoice updated.</p>
+                                </div>
+                            )}
+                        </div>
+                        </>}
+
+                        {/* ═══ CLAIMS TAB ═══ */}
+                        {portalTab === 'claims' && <>
+                        {/* Punch List Notification */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-start gap-2.5">
+                                <div className="p-1.5 bg-green-500/20 rounded-lg shrink-0">
+                                    <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-green-500 font-medium">Just now</p>
+                                    <p className="text-xs font-bold text-green-700 dark:text-green-300">Punch List Report Ready</p>
+                                    <p className="text-[11px] text-green-600/80 dark:text-green-400/80 mt-0.5">REQ-PL-2026-047 has been resolved. Review details below.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Claim Detail Card */}
+                        <div className="mx-3 mt-3 p-4 rounded-xl bg-card border border-border space-y-3">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Service Request</p>
+                                    <p className="text-base font-bold text-foreground">REQ-PL-2026-047</p>
+                                </div>
+                                <span className="px-2 py-0.5 bg-green-500/15 text-green-600 dark:text-green-400 text-[10px] font-bold rounded-full">Resolved</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { label: 'Product', value: '2x Conf. Chairs (Azure)' },
+                                    { label: 'Claim ID', value: 'CLM-2026-114' },
+                                    { label: 'Resolution', value: 'Replacement Unit' },
+                                    { label: 'Delivery ETA', value: '8 business days' },
+                                ].map(item => (
+                                    <div key={item.label} className="p-2 rounded-lg bg-muted/50">
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{item.label}</p>
+                                        <p className="text-xs font-bold text-foreground">{item.value}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="pt-2 border-t border-border">
+                                <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Process Timeline</p>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { label: 'Request Received', status: 'done' },
+                                        { label: 'AI Validation Complete', status: 'done' },
+                                        { label: 'Expert Review & Labor Approved', status: 'done' },
+                                        { label: 'Claim Submitted to Manufacturer', status: 'done' },
+                                        { label: 'Replacement In Production', status: 'active' },
+                                    ].map((step, i) => (
+                                        <div key={i} className="flex items-center gap-2">
+                                            {step.status === 'done' ? (
+                                                <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />
+                                            ) : (
+                                                <div className="w-4 h-4 rounded-full border-2 border-blue-500 flex items-center justify-center shrink-0">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                                </div>
+                                            )}
+                                            <span className={`text-[11px] font-medium ${step.status === 'done' ? 'text-muted-foreground' : 'text-blue-600 dark:text-blue-400'}`}>{step.label}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Evidence Summary */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Evidence Summary</p>
+                            <div className="flex items-center gap-3 text-[11px] text-foreground">
+                                <span className="flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5 text-green-500" /> 5 photos verified</span>
+                                <span className="flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5 text-green-500" /> QR confirmed</span>
+                            </div>
+                            <div className="mt-1.5 text-[11px] text-muted-foreground">
+                                Liability: <span className="font-bold text-foreground">Carrier 65%</span> / <span className="font-bold text-foreground">Manufacturer 35%</span>
+                            </div>
+                        </div>
+
                         {/* Comment Section */}
                         <div className="mx-3 mt-3 p-3 rounded-xl bg-card border border-border">
                             <p className="text-[9px] text-muted-foreground uppercase tracking-wider mb-2">Leave a Comment</p>
@@ -1035,6 +1086,41 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 Acknowledge Report
                             </button>
                         </div>
+                        </>}
+
+                        {/* ═══ MESSAGES TAB ═══ */}
+                        {portalTab === 'messages' && <>
+                        <div className="mx-3 mt-3 space-y-2">
+                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider px-1">Recent Communications</p>
+                            {[
+                                { label: 'Order Confirmation', preview: 'Your order #ORD-2055 has been confirmed. 200 items across 4 delivery zones.', date: 'Mar 15', read: true },
+                                { label: 'Shipment Update — Zone A', preview: '82 items shipped via FastFreight. Tracking: FF-2055-A. ETA: Mar 28.', date: 'Mar 18', read: true },
+                                { label: 'Acknowledgment Summary', preview: '47/50 items matched from supplier AIS. 3 items require design review.', date: 'Mar 19', read: true },
+                                { label: 'Delivery Schedule', preview: 'Your complete delivery schedule for all 4 zones is ready to review.', date: 'Mar 27', read: false },
+                            ].map((msg, i) => (
+                                <div key={i} className={`p-3 rounded-xl border ${msg.read ? 'bg-card border-border' : 'bg-blue-50 dark:bg-blue-500/5 border-blue-200 dark:border-blue-500/20'} animate-in fade-in duration-300`} style={{ animationDelay: `${i * 100}ms` }}>
+                                    <div className="flex items-start gap-2.5">
+                                        <div className={`p-1.5 rounded-lg shrink-0 ${msg.read ? 'bg-muted/50' : 'bg-blue-100 dark:bg-blue-500/20'}`}>
+                                            <svg className={`w-3.5 h-3.5 ${msg.read ? 'text-muted-foreground' : 'text-blue-600 dark:text-blue-400'}`} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between">
+                                                <p className={`text-[11px] font-medium ${msg.read ? 'text-foreground' : 'text-blue-700 dark:text-blue-300 font-bold'}`}>{msg.label}</p>
+                                                <span className="text-[9px] text-muted-foreground">{msg.date}</span>
+                                            </div>
+                                            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{msg.preview}</p>
+                                        </div>
+                                        {!msg.read && <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0 mt-1" />}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Chat placeholder */}
+                        <div className="mx-3 mt-3 mb-4 p-3 rounded-xl bg-muted/30 border border-dashed border-border text-center">
+                            <p className="text-[10px] text-muted-foreground">Need help? <span className="font-medium text-foreground">Chat with your dealer</span></p>
+                        </div>
+                        </>}
 
                         {/* Acknowledgement Confirmation Modal */}
                         {showAckModal && (
@@ -1061,7 +1147,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 {[
                                                     { label: 'Product', value: '2x Conference Chairs (Azure)' },
                                                     { label: 'Claim ID', value: 'CLM-2026-114' },
-                                                    { label: 'Requester', value: 'Carlos Rivera — ACME Corp' },
+                                                    { label: 'Requester', value: 'Carlos Rivera — Apex Furniture' },
                                                     { label: 'Resolution', value: 'Replacement Unit' },
                                                 ].map(item => (
                                                     <div key={item.label} className="flex items-center justify-between">
@@ -1325,7 +1411,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <h3 className="text-sm font-bold text-foreground">PO Generation</h3>
                                         <p className="text-[10px] text-muted-foreground">POBuilderAgent generating purchase order from QT-1025</p>
                                     </div>
-                                    {poGenPhase18 === 'complete' && <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5" /> PO-1029</span>}
+                                    <div className="flex items-center gap-2">
+                                        {poGenPhase18 === 'complete' && <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><CheckCircleIcon className="w-3.5 h-3.5" /> PO-1029</span>}
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium">⚡ Supplier Portal</span>
+                                    </div>
                                 </div>
                                 <div className="grid grid-cols-4 gap-2">
                                     {[

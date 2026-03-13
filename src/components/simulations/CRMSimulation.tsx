@@ -479,25 +479,28 @@ function ProjectDetailCard({ isNewProject }: { isNewProject: boolean }) {
 
 type ProjectPhase = 'idle' | 'notification' | 'revealed' | 'detail'
 
-function ProjectsView({ stepId }: { stepId: string }) {
+function ProjectsView({ stepId, skipNotification }: { stepId: string; skipNotification?: boolean }) {
     const isNewProject = stepId === '1.12'
-    const [phase, setPhase] = useState<ProjectPhase>(isNewProject ? 'idle' : 'revealed')
+    // If notification was already shown on Dashboard, skip straight to revealed
+    const initialPhase: ProjectPhase = !isNewProject ? 'revealed' : skipNotification ? 'revealed' : 'idle'
+    const [phase, setPhase] = useState<ProjectPhase>(initialPhase)
 
     // Phased animation for step 1.12
     useEffect(() => {
         if (!isNewProject) { setPhase('revealed'); return }
+        if (skipNotification) {
+            // Coming from Dashboard — skip notification, go to revealed then detail
+            setPhase('revealed')
+            const timer = setTimeout(() => setPhase('detail'), 1500)
+            return () => clearTimeout(timer)
+        }
         setPhase('idle')
         const timers: ReturnType<typeof setTimeout>[] = []
-
-        // Phase 1: notification toast appears after 2s
         timers.push(setTimeout(() => setPhase('notification'), 2000))
-        // Phase 2: project row appears after 5s
         timers.push(setTimeout(() => setPhase('revealed'), 5000))
-        // Phase 3: detail card appears after 7s
         timers.push(setTimeout(() => setPhase('detail'), 7000))
-
         return () => timers.forEach(clearTimeout)
-    }, [isNewProject])
+    }, [isNewProject, skipNotification])
 
     // Allow clicking notification to skip to reveal
     const handleNotificationClick = useCallback(() => {
@@ -509,133 +512,125 @@ function ProjectsView({ stepId }: { stepId: string }) {
     const projectCount = showApexRow ? MOCK_PROJECTS.length : MOCK_PROJECTS.length - 1
 
     return (
-        <div className="flex gap-4">
-            {/* Main content */}
-            <div className="flex-1 min-w-0 space-y-4">
-                {/* Notification Toast — slides in, clickable */}
-                {isNewProject && (phase === 'notification') && (
-                    <button
-                        onClick={handleNotificationClick}
-                        className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500"
-                    >
-                        <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 transition-shadow cursor-pointer">
-                            <div className="flex items-start gap-3">
-                                <div className="h-9 w-9 rounded-lg bg-brand-500 flex items-center justify-center shrink-0">
-                                    <BellAlertIcon className="h-5 w-5 text-zinc-900" />
+        <div className="space-y-4">
+            {/* Notification Toast — slides in, clickable */}
+            {isNewProject && (phase === 'notification') && (
+                <button
+                    onClick={handleNotificationClick}
+                    className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500"
+                >
+                    <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 transition-shadow cursor-pointer">
+                        <div className="flex items-start gap-3">
+                            <div className="h-9 w-9 rounded-lg bg-brand-500 flex items-center justify-center shrink-0">
+                                <BellAlertIcon className="h-5 w-5 text-zinc-900" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-foreground">New Project Auto-Created</span>
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs font-bold text-foreground">New Project Auto-Created</span>
-                                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
-                                    </div>
-                                    <p className="text-[11px] text-muted-foreground mt-1">
-                                        <strong className="text-foreground">ProjectCreationAgent</strong> created project from Quote #QT-1025 — <strong className="text-foreground">Apex Furniture</strong>, $43,750, 200 line items.
-                                    </p>
-                                    <div className="flex items-center gap-1 mt-2 text-[10px] text-brand-700 dark:text-brand-400 font-medium">
-                                        <span>Click to view project</span>
-                                        <ArrowRightIcon className="h-3 w-3" />
-                                    </div>
+                                <p className="text-[11px] text-muted-foreground mt-1">
+                                    <strong className="text-foreground">ProjectCreationAgent</strong> created project from Quote #QT-1025 — <strong className="text-foreground">Apex Furniture</strong>, $43,750, 200 line items.
+                                </p>
+                                <div className="flex items-center gap-1 mt-2 text-[10px] text-brand-700 dark:text-brand-400 font-medium">
+                                    <span>Click to view project</span>
+                                    <ArrowRightIcon className="h-3 w-3" />
                                 </div>
                             </div>
                         </div>
-                    </button>
-                )}
+                    </div>
+                </button>
+            )}
 
-                {/* AI Agent Confirmation — after reveal */}
-                {isNewProject && (phase === 'revealed' || phase === 'detail') && (
-                    <div className="bg-card border border-green-200 dark:border-green-800/30 rounded-xl p-3 flex items-center gap-3 animate-in fade-in duration-300">
-                        <AIAgentAvatar size="sm" />
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 text-xs">
-                                <span className="font-medium text-foreground">ProjectCreationAgent</span>
-                                <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
-                                <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Project created successfully</span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground mt-0.5">
-                                Apex Furniture · Quote #QT-1025 · PO #ORD-2055 · $43,750 — zero manual CRM entry
-                            </p>
+            {/* AI Agent Confirmation — after reveal */}
+            {isNewProject && (phase === 'revealed' || phase === 'detail') && (
+                <div className="bg-card border border-green-200 dark:border-green-800/30 rounded-xl p-3 flex items-center gap-3 animate-in fade-in duration-300">
+                    <AIAgentAvatar size="sm" />
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2 text-xs">
+                            <span className="font-medium text-foreground">ProjectCreationAgent</span>
+                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
+                            <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">Project created successfully</span>
                         </div>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">
+                            Apex Furniture · Quote #QT-1025 · PO #ORD-2055 · $43,750 — zero manual CRM entry
+                        </p>
                     </div>
-                )}
-
-                {/* Projects Table */}
-                <div className="bg-card border border-border rounded-xl overflow-hidden">
-                    <div className="px-4 py-3 border-b border-border flex items-center justify-between">
-                        <h3 className="text-xs font-medium text-foreground">Active & Recent Projects</h3>
-                        <span className="text-[10px] text-muted-foreground">{projectCount} projects</span>
-                    </div>
-                    <table className="w-full text-xs">
-                        <thead>
-                            <tr className="border-b border-border bg-muted/30">
-                                <th className="text-left px-4 py-2 text-[10px] font-medium text-muted-foreground">Project</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-medium text-muted-foreground">Customer</th>
-                                <th className="text-left px-3 py-2 text-[10px] font-medium text-muted-foreground">Quote / PO</th>
-                                <th className="text-right px-3 py-2 text-[10px] font-medium text-muted-foreground">Value</th>
-                                <th className="text-center px-3 py-2 text-[10px] font-medium text-muted-foreground">Stage</th>
-                                <th className="text-center px-3 py-2 text-[10px] font-medium text-muted-foreground">Status</th>
-                                <th className="text-right px-4 py-2 text-[10px] font-medium text-muted-foreground">Delivery</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {MOCK_PROJECTS.map(project => {
-                                const isApex = project.id === 'PRJ-001'
-                                if (isApex && isNewProject && !showApexRow) return null
-                                return (
-                                    <tr key={project.id} className={cn(
-                                        'border-b border-border last:border-0 hover:bg-muted/20 transition-all',
-                                        isApex && isNewProject && 'bg-brand-50/50 dark:bg-brand-500/5 ring-2 ring-inset ring-brand-400/30 animate-in fade-in slide-in-from-top-2 duration-500'
-                                    )}>
-                                        <td className="px-4 py-2.5">
-                                            <div className="flex items-center gap-2">
-                                                {isApex && isNewProject && (
-                                                    <span className="px-1.5 py-0.5 rounded bg-brand-500 text-zinc-900 text-[8px] font-bold uppercase shrink-0">New</span>
-                                                )}
-                                                <div>
-                                                    <p className="font-medium text-foreground text-[11px]">{project.name}</p>
-                                                    <p className="text-[10px] text-muted-foreground">{project.id} · {project.items} items · {project.zones} zones</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-3 py-2.5 text-[11px] text-foreground">{project.customer}</td>
-                                        <td className="px-3 py-2.5">
-                                            <p className="text-[11px] text-foreground">{project.quote}</p>
-                                            <p className="text-[10px] text-muted-foreground">{project.po}</p>
-                                        </td>
-                                        <td className="px-3 py-2.5 text-right">
-                                            <span className="text-[11px] font-medium text-foreground tabular-nums">${project.value.toLocaleString()}</span>
-                                        </td>
-                                        <td className="px-3 py-2.5 text-center">
-                                            <StageBadge stage={project.stage} />
-                                        </td>
-                                        <td className="px-3 py-2.5 text-center">
-                                            <ProjectStatusBadge status={project.status} />
-                                        </td>
-                                        <td className="px-4 py-2.5 text-right">
-                                            {project.stage === 'Complete' ? (
-                                                <span className="text-[10px] text-green-600 font-medium">100%</span>
-                                            ) : project.deliveryRate > 0 ? (
-                                                <span className="text-[10px] text-foreground tabular-nums">{project.deliveryRate}%</span>
-                                            ) : (
-                                                <span className="text-[10px] text-muted-foreground">—</span>
-                                            )}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
                 </div>
+            )}
 
-                {/* Apex Project Detail Card — expanded with AI suggestions */}
-                {showDetailCard && (
-                    <ProjectDetailCard isNewProject={isNewProject} />
-                )}
+            {/* Projects Table */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                    <h3 className="text-xs font-medium text-foreground">Active & Recent Projects</h3>
+                    <span className="text-[10px] text-muted-foreground">{projectCount} projects</span>
+                </div>
+                <table className="w-full text-xs">
+                    <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                            <th className="text-left px-4 py-2 text-[10px] font-medium text-muted-foreground">Project</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-medium text-muted-foreground">Customer</th>
+                            <th className="text-left px-3 py-2 text-[10px] font-medium text-muted-foreground">Quote / PO</th>
+                            <th className="text-right px-3 py-2 text-[10px] font-medium text-muted-foreground">Value</th>
+                            <th className="text-center px-3 py-2 text-[10px] font-medium text-muted-foreground">Stage</th>
+                            <th className="text-center px-3 py-2 text-[10px] font-medium text-muted-foreground">Status</th>
+                            <th className="text-right px-4 py-2 text-[10px] font-medium text-muted-foreground">Delivery</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {MOCK_PROJECTS.map(project => {
+                            const isApex = project.id === 'PRJ-001'
+                            if (isApex && isNewProject && !showApexRow) return null
+                            return (
+                                <tr key={project.id} className={cn(
+                                    'border-b border-border last:border-0 hover:bg-muted/20 transition-all',
+                                    isApex && isNewProject && 'bg-brand-50/50 dark:bg-brand-500/5 ring-2 ring-inset ring-brand-400/30 animate-in fade-in slide-in-from-top-2 duration-500'
+                                )}>
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-2">
+                                            {isApex && isNewProject && (
+                                                <span className="px-1.5 py-0.5 rounded bg-brand-500 text-zinc-900 text-[8px] font-bold uppercase shrink-0">New</span>
+                                            )}
+                                            <div>
+                                                <p className="font-medium text-foreground text-[11px]">{project.name}</p>
+                                                <p className="text-[10px] text-muted-foreground">{project.id} · {project.items} items · {project.zones} zones</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-[11px] text-foreground">{project.customer}</td>
+                                    <td className="px-3 py-2.5">
+                                        <p className="text-[11px] text-foreground">{project.quote}</p>
+                                        <p className="text-[10px] text-muted-foreground">{project.po}</p>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-right">
+                                        <span className="text-[11px] font-medium text-foreground tabular-nums">${project.value.toLocaleString()}</span>
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                        <StageBadge stage={project.stage} />
+                                    </td>
+                                    <td className="px-3 py-2.5 text-center">
+                                        <ProjectStatusBadge status={project.status} />
+                                    </td>
+                                    <td className="px-4 py-2.5 text-right">
+                                        {project.stage === 'Complete' ? (
+                                            <span className="text-[10px] text-green-600 font-medium">100%</span>
+                                        ) : project.deliveryRate > 0 ? (
+                                            <span className="text-[10px] text-foreground tabular-nums">{project.deliveryRate}%</span>
+                                        ) : (
+                                            <span className="text-[10px] text-muted-foreground">—</span>
+                                        )}
+                                    </td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
+                </table>
             </div>
 
-            {/* Daily Log — right sidebar within Projects dashboard */}
-            <div className="w-[260px] shrink-0">
-                <DailyLogSidebar stepId={stepId} phase={phase} />
-            </div>
+            {/* Apex Project Detail Card — expanded with AI suggestions */}
+            {showDetailCard && (
+                <ProjectDetailCard isNewProject={isNewProject} />
+            )}
         </div>
     )
 }
@@ -903,6 +898,7 @@ function OrderTimelineView({ stepId }: { stepId: string }) {
 // ═══════════════════════════════════════════════════
 
 function ReportsView({ stepId }: { stepId: string }) {
+    const [reportTab, setReportTab] = useState<'health' | 'backlog' | 'bookings'>('health');
     return (
         <div className="space-y-4">
             {/* AI Agent Banner */}
@@ -921,6 +917,148 @@ function ReportsView({ stepId }: { stepId: string }) {
                 </div>
             )}
 
+            {/* Report Sub-tabs */}
+            <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50 border border-border w-fit">
+                {([
+                    { id: 'health' as const, label: 'Project Health' },
+                    { id: 'backlog' as const, label: 'Backlog' },
+                    { id: 'bookings' as const, label: 'Bookings' },
+                ]).map(tab => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setReportTab(tab.id)}
+                        className={cn(
+                            'px-3 py-1.5 text-[11px] font-medium rounded-md transition-all',
+                            reportTab === tab.id
+                                ? 'bg-card text-foreground shadow-sm border border-border'
+                                : 'text-muted-foreground hover:text-foreground'
+                        )}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* === Backlog Tab === */}
+            {reportTab === 'backlog' && (
+                <div className="space-y-4 animate-in fade-in duration-300">
+                    <div className="bg-card border border-border rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xs font-medium text-foreground">Pending Orders by Supplier</h3>
+                                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium flex items-center gap-1">
+                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                                    Rule-Based · Deterministic
+                                </span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground">Week of Mar 10, 2025</span>
+                        </div>
+                        <table className="w-full text-[11px]">
+                            <thead>
+                                <tr className="border-b border-border">
+                                    <th className="text-left py-2 font-medium text-muted-foreground">Supplier</th>
+                                    <th className="text-center py-2 font-medium text-muted-foreground">0–30d</th>
+                                    <th className="text-center py-2 font-medium text-muted-foreground">30–60d</th>
+                                    <th className="text-center py-2 font-medium text-amber-600 dark:text-amber-400">60+d</th>
+                                    <th className="text-right py-2 font-medium text-muted-foreground">Total $</th>
+                                    <th className="text-center py-2 font-medium text-muted-foreground">Risk</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { supplier: 'AIS Office', d30: 12, d60: 3, d90: 0, total: '$18,400', risk: 'low' },
+                                    { supplier: 'Herman Miller', d30: 8, d60: 5, d90: 2, total: '$31,200', risk: 'medium' },
+                                    { supplier: 'Haworth', d30: 6, d60: 1, d90: 0, total: '$12,750', risk: 'low' },
+                                    { supplier: 'Knoll', d30: 4, d60: 2, d90: 3, total: '$22,100', risk: 'high' },
+                                    { supplier: 'Steelcase', d30: 15, d60: 0, d90: 0, total: '$28,600', risk: 'low' },
+                                ].map(row => (
+                                    <tr key={row.supplier} className="border-b border-border/50">
+                                        <td className="py-2 font-medium text-foreground">{row.supplier}</td>
+                                        <td className="py-2 text-center text-muted-foreground">{row.d30}</td>
+                                        <td className="py-2 text-center text-muted-foreground">{row.d60}</td>
+                                        <td className={cn("py-2 text-center font-medium", row.d90 > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground')}>{row.d90}</td>
+                                        <td className="py-2 text-right font-medium text-foreground">{row.total}</td>
+                                        <td className="py-2 text-center">
+                                            <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-medium",
+                                                row.risk === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400' :
+                                                row.risk === 'medium' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400' :
+                                                'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                            )}>{row.risk}</span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-[10px] text-muted-foreground">
+                            <span>Total backlog: <strong className="text-foreground">$113,050</strong> across 5 suppliers</span>
+                            <span>5 orders aging 60+ days — action recommended</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* === Bookings Tab === */}
+            {reportTab === 'bookings' && (
+                <div className="space-y-4 animate-in fade-in duration-300">
+                    <div className="bg-card border border-border rounded-xl p-4">
+                        <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-xs font-medium text-foreground">Weekly Bookings vs. Target</h3>
+                                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium flex items-center gap-1">
+                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                                    Rule-Based · Deterministic
+                                </span>
+                            </div>
+                            <span className="text-[10px] text-muted-foreground">Q1 2025</span>
+                        </div>
+                        <table className="w-full text-[11px]">
+                            <thead>
+                                <tr className="border-b border-border">
+                                    <th className="text-left py-2 font-medium text-muted-foreground">Week</th>
+                                    <th className="text-right py-2 font-medium text-muted-foreground">Booked</th>
+                                    <th className="text-right py-2 font-medium text-muted-foreground">Target</th>
+                                    <th className="text-right py-2 font-medium text-muted-foreground">Variance</th>
+                                    <th className="text-center py-2 font-medium text-muted-foreground">Trend</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[
+                                    { week: 'Jan 6–10', booked: '$42,300', target: '$40,000', variance: '+$2,300', trend: '↑', positive: true },
+                                    { week: 'Jan 13–17', booked: '$38,100', target: '$40,000', variance: '-$1,900', trend: '↓', positive: false },
+                                    { week: 'Jan 20–24', booked: '$45,600', target: '$40,000', variance: '+$5,600', trend: '↑', positive: true },
+                                    { week: 'Feb 3–7', booked: '$41,200', target: '$42,000', variance: '-$800', trend: '→', positive: false },
+                                    { week: 'Feb 10–14', booked: '$48,900', target: '$42,000', variance: '+$6,900', trend: '↑', positive: true },
+                                    { week: 'Mar 3–7', booked: '$43,750', target: '$42,000', variance: '+$1,750', trend: '↑', positive: true },
+                                ].map(row => (
+                                    <tr key={row.week} className="border-b border-border/50">
+                                        <td className="py-2 font-medium text-foreground">{row.week}</td>
+                                        <td className="py-2 text-right text-foreground">{row.booked}</td>
+                                        <td className="py-2 text-right text-muted-foreground">{row.target}</td>
+                                        <td className={cn("py-2 text-right font-medium", row.positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>{row.variance}</td>
+                                        <td className="py-2 text-center">{row.trend}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                        <div className="mt-3 pt-3 border-t border-border grid grid-cols-3 gap-3">
+                            {[
+                                { label: 'YTD Bookings', value: '$259,850', sub: 'vs. $246,000 target' },
+                                { label: 'Win Rate', value: '68%', sub: '+4% from last quarter' },
+                                { label: 'Avg. Deal Size', value: '$38,200', sub: '↑ 12% QoQ' },
+                            ].map(s => (
+                                <div key={s.label} className="text-center p-2 rounded-lg bg-muted/30 border border-border">
+                                    <p className="text-[10px] text-muted-foreground">{s.label}</p>
+                                    <p className="text-sm font-bold text-foreground mt-0.5">{s.value}</p>
+                                    <p className="text-[9px] text-muted-foreground">{s.sub}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* === Project Health Tab (default) === */}
+            {reportTab === 'health' && <>
             {/* Project Health Card */}
             <div className="bg-card border border-border rounded-xl p-4">
                 <div className="flex items-center justify-between mb-4">
@@ -933,7 +1071,25 @@ function ReportsView({ stepId }: { stepId: string }) {
                             <p className="text-[10px] text-muted-foreground">Apex HQ Office Renovation · PRJ-001</p>
                         </div>
                     </div>
-                    <span className="text-[10px] px-2 py-1 rounded bg-primary/10 text-foreground font-medium">AI Generated</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] px-2 py-1 rounded bg-primary/10 text-foreground font-medium">AI Generated</span>
+                        <span className="text-[10px] px-2 py-1 rounded bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                            Rule-Based · Deterministic
+                        </span>
+                    </div>
+                </div>
+
+                {/* Scheduling + Excel Replacement */}
+                <div className="mb-4 space-y-1.5">
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <span>Auto-generated every <strong className="text-foreground">Monday 7:00 AM</strong> · Recipients: Annie, Martin, Leadership (4)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                        <span>Previously: <span className="line-through opacity-60">4hrs/week manual Excel</span> → Now: Auto-generated from 5 synced systems</span>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-4 gap-3 mb-4">
@@ -979,6 +1135,56 @@ function ReportsView({ stepId }: { stepId: string }) {
                         ))}
                     </div>
                     <p className="text-[10px] text-muted-foreground mt-2">Every data point traced from source to CRM — complete audit trail across 5 systems.</p>
+                </div>
+            </div>
+
+            {/* AI Impact KPIs — Spec Errors + Manual Entries */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="bg-card border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="h-7 w-7 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                            <svg className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>
+                        </div>
+                        <h4 className="text-xs font-medium text-foreground">Spec Errors Caught by AI</h4>
+                    </div>
+                    <p className="text-2xl font-bold text-amber-600 dark:text-amber-400">7</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">Review time saved: <strong className="text-foreground">3.2 hours</strong></p>
+                    <div className="mt-2 space-y-1">
+                        {[
+                            { label: 'Configuration errors', count: 3 },
+                            { label: 'Sizing conflicts', count: 2 },
+                            { label: 'Discontinued product', count: 1 },
+                            { label: 'Structural limit', count: 1 },
+                        ].map(e => (
+                            <div key={e.label} className="flex items-center justify-between text-[10px]">
+                                <span className="text-muted-foreground">{e.label}</span>
+                                <span className="font-medium text-foreground">{e.count}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="bg-card border border-green-200 dark:border-green-800 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="h-7 w-7 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                            <svg className="h-3.5 w-3.5 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 className="text-xs font-medium text-foreground">Manual Entries Eliminated</h4>
+                    </div>
+                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">847</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">Time saved: <strong className="text-foreground">12.4 hours</strong></p>
+                    <div className="mt-2 space-y-1">
+                        {[
+                            { label: 'Quote → 5 systems', from: '1,000', to: '200' },
+                            { label: 'Ack → CRM sync', from: '150', to: '0' },
+                            { label: 'Invoice → QuickBooks', from: '47', to: '0' },
+                        ].map(e => (
+                            <div key={e.label} className="flex items-center justify-between text-[10px]">
+                                <span className="text-muted-foreground">{e.label}</span>
+                                <span className="font-medium text-foreground"><span className="line-through opacity-50">{e.from}</span> → {e.to}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
@@ -1030,6 +1236,50 @@ function ReportsView({ stepId }: { stepId: string }) {
                     </p>
                 </div>
             </div>
+
+            {/* Report Consistency Guarantee */}
+            <details className="bg-card border border-border rounded-xl overflow-hidden group">
+                <summary className="px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors list-none">
+                    <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+                        <span className="text-xs font-medium text-foreground">Report Consistency Guarantee</span>
+                    </div>
+                    <svg className="w-3.5 h-3.5 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                </summary>
+                <div className="px-4 pb-4 pt-1 border-t border-border space-y-3">
+                    <div className="grid grid-cols-2 gap-3">
+                        {[
+                            { label: 'Report Version', value: 'v2.4' },
+                            { label: 'Business Rules Applied', value: '6' },
+                        ].map(item => (
+                            <div key={item.label} className="p-2 rounded-lg bg-muted/30 border border-border">
+                                <p className="text-[9px] text-muted-foreground">{item.label}</p>
+                                <p className="text-xs font-bold text-foreground">{item.value}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-medium text-foreground mb-1.5">Thresholds Enforced</p>
+                        <div className="space-y-1">
+                            {[
+                                'Margin > 30%',
+                                'Lead time < 8 weeks',
+                                'Confidence > 85%',
+                            ].map(t => (
+                                <div key={t} className="flex items-center gap-2 text-[10px]">
+                                    <svg className="w-3 h-3 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                    <span className="text-muted-foreground">{t}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
+                        <svg className="w-3.5 h-3.5 text-green-500 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <p className="text-[10px] text-green-700 dark:text-green-400 font-medium">Last 52 weekly runs: <strong>100% identical format</strong> — no LLM variation</p>
+                    </div>
+                </div>
+            </details>
+            </>}
         </div>
     )
 }
@@ -1096,6 +1346,7 @@ const DAILY_LOG_ENTRIES = [
         source: 'Supplier Portal',
         timestamp: 'Yesterday, 4:45 PM',
         highlight: false,
+        invoiceLink: 'Auto-linked to Invoice line #3',
     },
     {
         id: 'DL-003',
@@ -1126,106 +1377,293 @@ const DAILY_LOG_ENTRIES = [
     },
 ]
 
-function DailyLogSidebar({ stepId, phase }: { stepId: string; phase: ProjectPhase }) {
+// ═══════════════════════════════════════════════════
+// CRM DASHBOARD VIEW — Daily Log + Summary
+// ═══════════════════════════════════════════════════
+
+function CRMDashboardView({ stepId, onGoToCRM }: { stepId: string; onGoToCRM: () => void }) {
     const [expandedEntry, setExpandedEntry] = useState<string | null>(null)
+    const [showNotification, setShowNotification] = useState(false)
     const isNewProject = stepId === '1.12'
-    const showNewEntry = isNewProject && phase !== 'idle'
+
+    // Step 1.12: auto-show notification, auto-expand new entry, then auto-navigate to CRM
+    useEffect(() => {
+        if (!isNewProject) return
+        const timers: ReturnType<typeof setTimeout>[] = []
+        timers.push(setTimeout(() => setShowNotification(true), 1200))
+        timers.push(setTimeout(() => setExpandedEntry('DL-NEW'), 2500))
+        timers.push(setTimeout(() => onGoToCRM(), 7000))
+        return () => timers.forEach(clearTimeout)
+    }, [isNewProject, onGoToCRM])
 
     const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-        change_order: { icon: <ReceiptPercentIcon className="h-3 w-3" />, color: 'text-purple-500 bg-purple-50 dark:bg-purple-500/10' },
-        claim: { icon: <ExclamationTriangleIcon className="h-3 w-3" />, color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
-        delivery: { icon: <Truck className="h-3 w-3" />, color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' },
-        ack: { icon: <CheckCircleIcon className="h-3 w-3" />, color: 'text-green-500 bg-green-50 dark:bg-green-500/10' },
-        po: { icon: <DocumentTextIcon className="h-3 w-3" />, color: 'text-foreground bg-muted/50' },
-        quote: { icon: <FileText className="h-3 w-3" />, color: 'text-foreground bg-muted/50' },
-        project_created: { icon: <BuildingOfficeIcon className="h-3 w-3" />, color: 'text-primary bg-primary/10' },
+        change_order: { icon: <ReceiptPercentIcon className="h-3.5 w-3.5" />, color: 'text-purple-500 bg-purple-50 dark:bg-purple-500/10' },
+        claim: { icon: <ExclamationTriangleIcon className="h-3.5 w-3.5" />, color: 'text-amber-500 bg-amber-50 dark:bg-amber-500/10' },
+        delivery: { icon: <Truck className="h-3.5 w-3.5" />, color: 'text-blue-500 bg-blue-50 dark:bg-blue-500/10' },
+        ack: { icon: <CheckCircleIcon className="h-3.5 w-3.5" />, color: 'text-green-500 bg-green-50 dark:bg-green-500/10' },
+        po: { icon: <DocumentTextIcon className="h-3.5 w-3.5" />, color: 'text-foreground bg-muted/50' },
+        quote: { icon: <FileText className="h-3.5 w-3.5" />, color: 'text-foreground bg-muted/50' },
+        project_created: { icon: <BuildingOfficeIcon className="h-3.5 w-3.5" />, color: 'text-primary bg-primary/10' },
     }
 
     const newEntry = {
         id: 'DL-NEW',
         type: 'project_created' as const,
-        title: 'New Project Created',
-        detail: 'Apex HQ Office Renovation — $43,750 · 200 items · 4 zones',
-        source: 'Auto-created from PO',
+        title: 'New Project Created — Apex HQ Office Renovation',
+        detail: 'Auto-created from Quote #QT-1025 · PO #ORD-2055 · $43,750 · 200 items · 4 delivery zones',
+        source: 'ProjectCreationAgent',
         timestamp: 'Just now',
         highlight: false,
     }
 
-    const entries = showNewEntry ? [newEntry, ...DAILY_LOG_ENTRIES] : DAILY_LOG_ENTRIES
+    const entries = showNotification ? [newEntry, ...DAILY_LOG_ENTRIES] : DAILY_LOG_ENTRIES
 
     return (
-        <div className="rounded-xl border border-border bg-card flex flex-col h-fit max-h-[calc(100vh-220px)]">
-            {/* Header */}
-            <div className="px-3 py-2.5 border-b border-border flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                    <ClipboardDocumentListIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    <span className="text-[11px] font-semibold text-foreground">Daily Log</span>
-                </div>
-                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-                    {entries.length}
-                </span>
-            </div>
-
-            {/* Log entries */}
-            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-1">
-                {entries.map((entry) => {
-                    const config = typeIcons[entry.type]
-                    const isExpanded = expandedEntry === entry.id
-                    const isNew = entry.id === 'DL-NEW'
-
-                    return (
-                        <div
-                            key={entry.id}
-                            className={cn(
-                                'rounded-md border p-2 transition-all hover:shadow-sm',
-                                isNew
-                                    ? 'border-primary/30 bg-primary/5 animate-in fade-in slide-in-from-top-1 duration-700'
-                                    : entry.highlight
-                                        ? 'border-purple-200 dark:border-purple-500/30 bg-purple-50/30 dark:bg-purple-500/5 cursor-pointer'
-                                        : 'border-border/50 bg-transparent hover:bg-muted/30'
-                            )}
-                            onClick={() => (entry.highlight || isNew) ? setExpandedEntry(isExpanded ? null : entry.id) : undefined}
-                        >
-                            <div className="flex items-start gap-2">
-                                <div className={cn('p-1 rounded shrink-0 mt-0.5', config.color)}>
-                                    {config.icon}
+        <div className="space-y-4">
+            {/* Notification Toast — step 1.12 */}
+            {isNewProject && showNotification && (
+                <button
+                    onClick={onGoToCRM}
+                    className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500"
+                >
+                    <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 transition-shadow cursor-pointer">
+                        <div className="flex items-start gap-3">
+                            <div className="h-9 w-9 rounded-lg bg-brand-500 flex items-center justify-center shrink-0">
+                                <BellAlertIcon className="h-5 w-5 text-zinc-900" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-foreground">New Project Auto-Created</span>
+                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className={cn('text-[10px] font-medium text-foreground leading-snug', isNew && 'font-bold')}>{entry.title}</p>
-                                    <p className="text-[9px] text-muted-foreground mt-0.5 leading-snug line-clamp-2">{entry.detail}</p>
-                                    <p className="text-[8px] text-muted-foreground/60 mt-1">{entry.timestamp}</p>
+                                <p className="text-[11px] text-muted-foreground mt-1">
+                                    <strong className="text-foreground">ProjectCreationAgent</strong> created project from Quote #QT-1025 — <strong className="text-foreground">Apex Furniture</strong>, $43,750, 200 line items across 4 delivery zones.
+                                </p>
+                                <div className="flex items-center gap-1 mt-2 text-[10px] text-brand-700 dark:text-brand-400 font-medium">
+                                    <span>Click to view project details</span>
+                                    <ArrowRightIcon className="h-3 w-3" />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </button>
+            )}
 
-                            {/* Expanded change order detail */}
-                            {entry.highlight && isExpanded && entry.expandedDetail && (
-                                <div className="mt-2 pt-2 border-t border-purple-200/50 dark:border-purple-500/20">
-                                    <div className="grid grid-cols-2 gap-1.5">
-                                        <div className="rounded bg-white dark:bg-zinc-900 border border-border p-1.5">
-                                            <p className="text-[8px] text-muted-foreground font-medium">ORIGINAL</p>
-                                            <p className="text-[10px] font-semibold text-foreground">{entry.expandedDetail.original.total}</p>
+            {/* Quick Summary Cards */}
+            <div className="grid grid-cols-4 gap-3">
+                {[
+                    { label: 'Active Projects', value: '5', sub: '+1 today', icon: <BuildingOfficeIcon className="h-4 w-4" /> },
+                    { label: 'Open Change Orders', value: '1', sub: 'CO-001 pending', icon: <ReceiptPercentIcon className="h-4 w-4" /> },
+                    { label: 'Pending Invoices', value: '1', sub: '$44,210 ready', icon: <CurrencyDollarIcon className="h-4 w-4" /> },
+                    { label: 'Active Shipments', value: '2', sub: 'Zone A in transit', icon: <Truck className="h-4 w-4" /> },
+                ].map(card => (
+                    <div key={card.label} className="rounded-xl border border-border bg-card p-3">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-2">{card.icon}<span className="text-[10px]">{card.label}</span></div>
+                        <p className="text-lg font-bold text-foreground">{card.value}</p>
+                        <p className="text-[10px] text-muted-foreground">{card.sub}</p>
+                    </div>
+                ))}
+            </div>
+
+            {/* Daily Log */}
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+                <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <ClipboardDocumentListIcon className="h-4 w-4 text-muted-foreground" />
+                        <h3 className="text-xs font-medium text-foreground">Project Daily Log</h3>
+                        <span className="text-[9px] text-muted-foreground">— Apex HQ Office Renovation</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <AIAgentAvatar agentName="LogAgent" size="xs" />
+                        <span className="text-[9px] text-muted-foreground">Auto-recorded · {entries.length} entries</span>
+                    </div>
+                </div>
+
+                <div className="divide-y divide-border">
+                    {entries.map((entry) => {
+                        const config = typeIcons[entry.type]
+                        const isExpanded = expandedEntry === entry.id
+                        const isNew = entry.id === 'DL-NEW'
+                        const isExpandable = entry.highlight || isNew
+
+                        return (
+                            <div
+                                key={entry.id}
+                                className={cn(
+                                    'px-4 py-2.5 transition-all',
+                                    isNew && 'bg-primary/5 animate-in fade-in slide-in-from-top-1 duration-700',
+                                    entry.highlight && 'bg-purple-50/30 dark:bg-purple-500/5',
+                                    isExpandable && 'cursor-pointer hover:bg-muted/30'
+                                )}
+                                onClick={() => isExpandable ? setExpandedEntry(isExpanded ? null : entry.id) : undefined}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className={cn('p-1.5 rounded-lg shrink-0', config.color)}>
+                                        {config.icon}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <p className={cn('text-[11px] font-medium text-foreground', isNew && 'font-bold')}>{entry.title}</p>
+                                            {entry.highlight && (
+                                                <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-medium">
+                                                    Feeds into Invoice
+                                                </span>
+                                            )}
+                                            {isNew && (
+                                                <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-bold">
+                                                    New
+                                                </span>
+                                            )}
+                                            {('invoiceLink' in entry) && (entry as any).invoiceLink && (
+                                                <span className="text-[8px] px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium">
+                                                    → {(entry as any).invoiceLink}
+                                                </span>
+                                            )}
                                         </div>
-                                        <div className="rounded bg-white dark:bg-zinc-900 border border-purple-200 dark:border-purple-500/20 p-1.5">
-                                            <p className="text-[8px] text-purple-600 dark:text-purple-400 font-medium">ADJUSTED</p>
-                                            <p className="text-[10px] font-semibold text-purple-600 dark:text-purple-400">{entry.expandedDetail.adjusted.total}</p>
-                                        </div>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">{entry.detail}</p>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                        <p className="text-[10px] text-muted-foreground">{entry.timestamp}</p>
+                                        <p className="text-[9px] text-muted-foreground/60">{entry.source}</p>
                                     </div>
                                 </div>
-                            )}
-                        </div>
-                    )
-                })}
-            </div>
 
-            {/* Footer */}
-            <div className="px-3 py-2 border-t border-border">
-                <div className="flex items-center gap-1.5">
-                    <AIAgentAvatar agentName="LogAgent" size="xs" />
-                    <p className="text-[8px] text-muted-foreground leading-snug">
-                        Auto-recorded from all systems — feeds into invoicing
-                    </p>
+                                {entry.highlight && isExpanded && entry.expandedDetail && (
+                                    <div className="mt-2 pt-2 ml-10 border-t border-purple-200/50 dark:border-purple-500/20">
+                                        <div className="grid grid-cols-4 gap-3">
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">ORIGINAL</p>
+                                                <p className="text-[10px] text-foreground">{entry.expandedDetail.original.rate} × {entry.expandedDetail.original.hours}hrs</p>
+                                                <p className="text-xs font-semibold text-foreground">{entry.expandedDetail.original.total}</p>
+                                            </div>
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-purple-200 dark:border-purple-500/20 p-2">
+                                                <p className="text-[9px] text-purple-600 dark:text-purple-400 font-medium mb-0.5">ADJUSTED</p>
+                                                <p className="text-[10px] text-foreground">{entry.expandedDetail.adjusted.rate} × {entry.expandedDetail.adjusted.hours}hrs</p>
+                                                <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">{entry.expandedDetail.adjusted.total}</p>
+                                            </div>
+                                            <div className="col-span-2 rounded-md bg-muted/30 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">DETAILS</p>
+                                                <p className="text-[10px] text-foreground">{entry.expandedDetail.reason}</p>
+                                                <p className="text-[10px] text-muted-foreground mt-0.5">Approved by: {entry.expandedDetail.approvedBy}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* New project expanded detail */}
+                                {isNew && isExpanded && (
+                                    <div className="mt-3 pt-3 ml-10 border-t border-primary/20 animate-in fade-in slide-in-from-top-2 duration-500">
+                                        <div className="flex items-center gap-2 mb-2.5">
+                                            <BuildingOfficeIcon className="h-4 w-4 text-primary" />
+                                            <p className="text-xs font-bold text-foreground">Apex HQ Office Renovation</p>
+                                            <span className="text-[8px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-bold">PRJ-001</span>
+                                        </div>
+                                        <div className="grid grid-cols-4 gap-3">
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">CUSTOMER</p>
+                                                <p className="text-[10px] font-semibold text-foreground">Apex Furniture</p>
+                                                <p className="text-[9px] text-muted-foreground">Jennifer Martinez, VP Ops</p>
+                                            </div>
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">VALUE</p>
+                                                <p className="text-sm font-bold text-foreground">$43,750</p>
+                                                <p className="text-[9px] text-muted-foreground">35.4% margin</p>
+                                            </div>
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">SCOPE</p>
+                                                <p className="text-[10px] font-semibold text-foreground">200 line items</p>
+                                                <p className="text-[9px] text-muted-foreground">4 delivery zones · 5 suppliers</p>
+                                            </div>
+                                            <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                <p className="text-[9px] text-muted-foreground font-medium mb-0.5">REFERENCES</p>
+                                                <p className="text-[10px] text-foreground">QT-1025 · ORD-2055</p>
+                                                <p className="text-[9px] text-muted-foreground">Stage: Procurement</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-2.5 flex items-center gap-3">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onGoToCRM() }}
+                                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-[10px] font-bold hover:bg-primary/90 transition-colors"
+                                            >
+                                                View Full Project <ArrowRightIcon className="h-3 w-3" />
+                                            </button>
+                                            <span className="text-[9px] text-muted-foreground">Zero manual CRM entry — all data synced from source systems</span>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
+
+            {/* Customer Communications — Auto-sent (step 1.12) */}
+            {isNewProject && showNotification && (
+                <div className="bg-card border border-border rounded-xl overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-700 delay-300">
+                    <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                            <h3 className="text-xs font-medium text-foreground">Customer Communications</h3>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium">Auto-sent</span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">4 sent · 0 manual drafts</span>
+                    </div>
+                    <div className="divide-y divide-border">
+                        {[
+                            { label: 'Order Confirmation', recipient: 'Apex Furniture', date: 'Mar 15', status: 'sent' },
+                            { label: 'Shipment Update Zone A', recipient: 'Apex Furniture', date: 'Mar 18', status: 'sent' },
+                            { label: 'Acknowledgment Summary', recipient: 'Apex Furniture', date: 'Mar 19', status: 'sent' },
+                            { label: 'Delivery Schedule', recipient: 'Apex Furniture', date: 'Mar 27', status: 'scheduled' },
+                        ].map((comm, i) => (
+                            <div key={i} className={`px-4 py-2 flex items-center gap-3 animate-in fade-in duration-300`} style={{ animationDelay: `${(i + 1) * 150}ms` }}>
+                                <svg className={cn("w-3.5 h-3.5 shrink-0", comm.status === 'sent' ? 'text-green-500' : 'text-blue-500')} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                    {comm.status === 'sent'
+                                        ? <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        : <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    }
+                                </svg>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[11px] font-medium text-foreground">{comm.label}</p>
+                                    <p className="text-[9px] text-muted-foreground">{comm.recipient}</p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                    <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-medium",
+                                        comm.status === 'sent' ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                    )}>{comm.status === 'sent' ? 'Sent' : 'Scheduled'}</span>
+                                    <p className="text-[9px] text-muted-foreground mt-0.5">{comm.date}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Before/After Split Card — Zero Re-Entry (step 1.12) */}
+            {isNewProject && showNotification && (
+                <div className="bg-card border border-border rounded-xl p-4 animate-in fade-in slide-in-from-bottom-3 duration-700 delay-500">
+                    <h4 className="text-[11px] font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+                        Data Entry: Before vs. After Strata
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="p-3 rounded-lg bg-zinc-100 dark:bg-zinc-900 border border-border opacity-60">
+                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Before</p>
+                            <p className="text-sm font-bold text-foreground line-through">200 items × 5 systems</p>
+                            <p className="text-2xl font-black text-red-500 mt-1 line-through">1,000</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5 line-through">manual entries required</p>
+                        </div>
+                        <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
+                            <p className="text-[9px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wider mb-2">After — Strata</p>
+                            <p className="text-sm font-bold text-foreground">200 items × 1 entry</p>
+                            <p className="text-2xl font-black text-green-600 dark:text-green-400 mt-1">0</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">re-entries needed</p>
+                        </div>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground mt-3 pt-3 border-t border-border text-center">
+                        Data entered once at email intake → flows to <strong className="text-foreground">Quote, PO, CRM, Invoice, ERP</strong>
+                    </p>
+                </div>
+            )}
         </div>
     )
 }
@@ -1245,9 +1683,42 @@ function InvoicingView() {
                     <h3 className="text-sm font-semibold text-foreground">Invoice #INV-2055 — Auto-Generated</h3>
                     <p className="text-[10px] text-muted-foreground mt-0.5">Built from PO, change orders, and service labor — zero manual line items</p>
                 </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium">
-                    Ready for Review
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium">Rule-Based</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium">
+                        Ready for Review
+                    </span>
+                </div>
+            </div>
+
+            {/* 3-Way Match Visual */}
+            <div className="bg-card border border-border rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+                    <h4 className="text-[11px] font-medium text-foreground">3-Way Match — PO / Acknowledgment / Invoice</h4>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                    {[
+                        { id: 'PO #ORD-2055', amount: '$43,750', items: '200 items', color: 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10' },
+                        { id: 'ACK #ACK-2055', amount: '$43,750', items: '200 items', color: 'border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10' },
+                        { id: 'INV #INV-2055', amount: '$44,210', items: '202 items (+CO)', color: 'border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10' },
+                    ].map((doc, i) => (
+                        <div key={doc.id} className="flex items-center gap-2 flex-1">
+                            <div className={cn("flex-1 p-2.5 rounded-lg border text-center", doc.color)}>
+                                <p className="text-[10px] font-bold text-foreground">{doc.id}</p>
+                                <p className="text-xs font-black text-foreground mt-0.5">{doc.amount}</p>
+                                <p className="text-[9px] text-muted-foreground">{doc.items}</p>
+                            </div>
+                            {i < 2 && (
+                                <div className="flex flex-col items-center gap-0.5 shrink-0">
+                                    <span className="text-[8px] text-muted-foreground">↔</span>
+                                    <svg className="w-3.5 h-3.5 text-green-500" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span className="text-[8px] text-green-600 dark:text-green-400 font-medium">{i === 0 ? 'Match' : 'Reconciled'}</span>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="grid grid-cols-5 gap-4">
@@ -1299,6 +1770,17 @@ function InvoicingView() {
                             <p className="text-xs font-semibold text-foreground">$475.00</p>
                         </div>
                     </div>
+
+                        <div className="flex items-center justify-between py-1.5 px-2 rounded bg-blue-50/50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10">
+                            <div className="flex items-center gap-2">
+                                <Truck className="h-3.5 w-3.5 text-blue-500" />
+                                <div>
+                                    <p className="text-[11px] font-medium text-foreground">Freight — Zone A delivery confirmed</p>
+                                    <p className="text-[9px] text-muted-foreground">Source: <span className="text-blue-600 dark:text-blue-400 font-medium">Daily Log DL-004</span> · FastFreight Logistics</p>
+                                </div>
+                            </div>
+                            <p className="text-xs font-semibold text-foreground">$1,200.00</p>
+                        </div>
 
                     {/* Total */}
                     <div className="flex items-center justify-between pt-3 border-t border-border">
@@ -1425,23 +1907,69 @@ const TAB_LABELS: { id: CRMTab; label: string }[] = [
 
 interface CRMSimulationProps {
     onNavigate?: (page: string) => void
+    activePage?: string
 }
 
-export default function CRMSimulation({ onNavigate }: CRMSimulationProps) {
+type CRMPage = 'dashboard' | 'crm'
+
+export default function CRMSimulation({ onNavigate, activePage }: CRMSimulationProps) {
     const { currentStep } = useDemo()
     const stepId = currentStep?.id || '1.12'
+
+    // Step 1.12 starts on dashboard page, others go straight to CRM
+    const [crmPage, setCrmPage] = useState<CRMPage>(stepId === '1.12' ? 'dashboard' : 'crm')
+    const [notificationShown, setNotificationShown] = useState(false)
 
     // Determine active tab from step
     const defaultTab = STEP_TO_TAB[stepId] || 'projects'
     const [activeTab, setActiveTab] = useState<CRMTab>(defaultTab)
 
-    // Sync tab when step changes
+    // Sync tab and page when step changes
     useMemo(() => {
         const mapped = STEP_TO_TAB[stepId]
         if (mapped) setActiveTab(mapped)
+        setCrmPage(stepId === '1.12' ? 'dashboard' : 'crm')
+        setNotificationShown(false)
     }, [stepId])
 
-    // Metrics row
+    // React to navbar clicks (Dashboard / CRM toggle)
+    useEffect(() => {
+        if (activePage === 'dashboard') setCrmPage('dashboard')
+        else if (activePage === 'crm') setCrmPage('crm')
+    }, [activePage])
+
+    // Navigate to CRM page (used by Daily Log notification in step 1.12)
+    const goToCRM = useCallback(() => {
+        setNotificationShown(true)
+        setCrmPage('crm')
+        setActiveTab('projects')
+        onNavigate?.('crm')
+    }, [onNavigate])
+
+    // Dashboard page — shows Daily Log + summary
+    if (crmPage === 'dashboard') {
+        return (
+            <div className="h-full flex flex-col bg-background">
+                <div className="border-b border-border bg-card px-6 py-3">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm font-semibold text-foreground">CRM — Dashboard</h2>
+                            <p className="text-[10px] text-muted-foreground">Project activity overview — all events auto-recorded from source systems</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <SparklesIcon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">AI-powered · Cross-platform sync active</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6">
+                    <CRMDashboardView stepId={stepId} onGoToCRM={goToCRM} />
+                </div>
+            </div>
+        )
+    }
+
+    // CRM page — tabs (Projects, Customer 360, etc.)
     const metrics = [
         { label: 'Active Projects', value: '5', change: '+1 today' },
         { label: 'Lifetime Value', value: '$1.2M', change: 'Apex Furniture' },
@@ -1498,7 +2026,7 @@ export default function CRMSimulation({ onNavigate }: CRMSimulationProps) {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
-                {activeTab === 'projects' && <ProjectsView stepId={stepId} />}
+                {activeTab === 'projects' && <ProjectsView stepId={stepId} skipNotification={notificationShown} />}
                 {activeTab === 'customer360' && <Customer360View stepId={stepId} />}
                 {activeTab === 'timeline' && <OrderTimelineView stepId={stepId} />}
                 {activeTab === 'invoicing' && <InvoicingView />}

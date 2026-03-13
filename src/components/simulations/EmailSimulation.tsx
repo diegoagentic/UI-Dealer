@@ -90,7 +90,7 @@ export default function EmailSimulation() {
     const currentEmail = emails.find(e => e.id === selectedEmail);
 
     return (
-        <div className="flex h-full bg-gray-50 dark:bg-zinc-950 overflow-hidden text-zinc-900 dark:text-zinc-100">
+        <div className="relative flex h-full bg-gray-50 dark:bg-zinc-950 overflow-hidden text-zinc-900 dark:text-zinc-100">
             {/* Apps Sidebar (Left-most vertical bar) */}
             <aside className="w-16 flex flex-col items-center py-2 shrink-0 bg-gray-50 dark:bg-zinc-950 border-r dark:border-zinc-800/30 gap-1">
                 {[
@@ -480,6 +480,13 @@ export default function EmailSimulation() {
 
             {/* AI Processing Modal — auto-triggered during demo step 1.1 */}
             <AIProcessingModal open={showProcessingModal} onComplete={handleProcessingComplete} />
+
+            {/* Copilot production footer */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20">
+                <p className="text-[10px] text-muted-foreground/50 italic whitespace-nowrap">
+                    In production → Copilot plugin for Outlook: auto-detects RFQs in your inbox
+                </p>
+            </div>
         </div>
     );
 }

@@ -294,7 +294,7 @@ const DOCUMENT_OPTIONS: Record<PEDDocumentType, DocOption[]> = {
         { id: '#ORD-2051', label: '#ORD-2051', sub: 'City Builders — $120,000' },
     ],
     quote: [
-        { id: 'QT-1025', label: 'QT-1025', sub: 'Apex Tech — $1,200,000' },
+        { id: 'QT-1025', label: 'QT-1025', sub: 'Apex Furniture — $43,750' },
         { id: 'QT-1024', label: 'QT-1024', sub: 'BioLife Inc — $540,000' },
         { id: 'QT-1023', label: 'QT-1023', sub: 'FinServe Corp — $890,000' },
         { id: 'QT-1022', label: 'QT-1022', sub: 'Redwood School — $150,000' },

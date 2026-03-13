@@ -72,9 +72,9 @@ const CARDS = [
     { id: 1, title: 'Apex Furniture RFQ #1029', dealer: 'Apex Furniture', status: 'Requires Expert Review', column: 'awaiting', priority: 'high', aiInsight: 'Extracted 200 Task Chairs from attachments. Freight calculation for multiple delivery zones requires manual routing approval.' },
     { id: 2, title: 'Herman Miller Q1 Proj', dealer: 'HM Partners', status: 'Paused', column: 'active', priority: 'medium', aiInsight: 'Inventory check suggests substitution for SKU-X99 to avoid 2-week delay' },
     { id: 3, title: 'Retailer Group Sync', dealer: 'Multiple', status: 'Normal', column: 'awaiting', priority: 'low' },
-    { id: 4, title: 'Office Depot Reconcile', dealer: 'OD Solutions', status: 'Auto-Processing', column: 'active', priority: 'high', aiInsight: 'Agent #29 is resolving 14 duplicate line items' },
+    { id: 4, title: 'Workspace Group Reconcile', dealer: 'Workspace Group', status: 'Auto-Processing', column: 'active', priority: 'high', aiInsight: 'Agent #29 is resolving 14 duplicate line items' },
     { id: 5, title: 'PO #ORD-2055 vs Acknowledgement', dealer: 'Global Workspace', status: 'Delta Match Exception', column: 'awaiting', priority: 'critical', aiInsight: 'Delta Engine flagged 2 exceptions: Freight cost mismatch and Line 2 item substitution.' },
-    { id: 6, title: 'Invoice #INV-9001', dealer: 'AutoManufacture Co.', status: 'Document Processing', column: 'active', priority: 'high', aiInsight: 'AI classified as INVOICE. Routed to 3-Way Match Engine for PO/Acknowledgement/Invoice reconciliation.' }
+    { id: 6, title: 'Invoice #INV-9001', dealer: 'ModernOffice Inc.', status: 'Document Processing', column: 'active', priority: 'high', aiInsight: 'AI classified as INVOICE. Routed to 3-Way Match Engine for PO/Acknowledgement/Invoice reconciliation.' }
 ];
 
 // Steps where each card gets a minimal "processing" indicator (detail is in DemoProcessPanel)
@@ -227,6 +227,59 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                         </div>
                                                     );
                                                 })()}
+
+                                                {/* AI Takeoff Summary — only on step 1.2 for card 1 */}
+                                                {card.id === 1 && currentStep.id === '1.2' && (
+                                                    <div className="mt-2 pt-3 border-t border-purple-300/30 dark:border-purple-500/20 space-y-2.5 animate-in fade-in slide-in-from-bottom-3 duration-700 delay-300">
+                                                        <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-purple-400/20 bg-purple-500/5">
+                                                            <Sparkles size={12} className="text-purple-400" />
+                                                            <span className="text-[11px] font-semibold text-purple-700 dark:text-purple-300 leading-tight">AI Takeoff Summary</span>
+                                                        </div>
+
+                                                        <div className="px-2 space-y-2">
+                                                            <p className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300">
+                                                                Floor plan analyzed: <span className="text-purple-600 dark:text-purple-400 font-semibold">4 floors, 125 workstations</span>
+                                                            </p>
+
+                                                            {/* Zone breakdown */}
+                                                            <div className="grid grid-cols-4 gap-1">
+                                                                {[
+                                                                    { zone: 'A', count: 32 },
+                                                                    { zone: 'B', count: 31 },
+                                                                    { zone: 'C', count: 31 },
+                                                                    { zone: 'D', count: 31 },
+                                                                ].map(z => (
+                                                                    <div key={z.zone} className="text-center py-1 rounded bg-purple-100/60 dark:bg-purple-900/20 border border-purple-200/40 dark:border-purple-700/30">
+                                                                        <p className="text-[9px] font-semibold text-purple-600 dark:text-purple-400">Zone {z.zone}</p>
+                                                                        <p className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200">{z.count}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+
+                                                            {/* Product grouping */}
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {[
+                                                                    { label: 'Task Chairs', qty: 125 },
+                                                                    { label: 'Monitor Arms', qty: 125 },
+                                                                    { label: 'Storage', qty: 50 },
+                                                                    { label: 'Lounge', qty: 25 },
+                                                                ].map(p => (
+                                                                    <span key={p.label} className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 font-medium">
+                                                                        {p.qty} {p.label}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+
+                                                            {/* Structural validation */}
+                                                            <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-200/50 dark:border-emerald-700/30">
+                                                                <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
+                                                                <p className="text-[9px] text-emerald-700 dark:text-emerald-400 font-medium leading-snug">
+                                                                    Cross-referenced against building specs: all items within structural limits
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
 
                                                 {/* AI Insight — normal cards (not in panel mode) */}
                                                 {!hasPanel && card.aiInsight && (

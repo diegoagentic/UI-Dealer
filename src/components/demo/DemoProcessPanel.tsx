@@ -298,7 +298,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         icon: React.ReactNode;
         title: string;
         titleDone: string;
-        accentColor: 'green' | 'amber' | 'blue' | 'purple';
+        accentColor: 'green' | 'amber' | 'blue' | 'purple' | 'red';
         progressColor: string;
     }> = {
         '1.2': {
@@ -310,30 +310,30 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         },
         '1.3': {
             icon: <Sparkles className="text-green-400" size={18} />,
-            title: 'Normalization Pipeline...',
+            title: 'Normalization Pipeline',
             titleDone: 'Normalization Complete',
             accentColor: 'green',
             progressColor: 'bg-green-500',
         },
         '1.4': {
             icon: <Sparkles className="text-amber-400 animate-pulse" size={18} />,
-            title: 'QuoteBuilder Agent...',
+            title: 'QuoteBuilder Agent',
             titleDone: 'Quote Draft Ready',
             accentColor: 'amber',
             progressColor: 'bg-amber-500',
         },
         '2.2': {
             icon: <Cpu className="text-blue-400" size={18} />,
-            title: 'ERP Normalization Pipeline...',
+            title: 'ERP Normalization',
             titleDone: 'Normalization Complete',
             accentColor: 'blue',
             progressColor: 'bg-blue-500',
         },
         '2.3': {
             icon: <Cpu className="text-red-400" size={18} />,
-            title: 'Delta Engine Processing...',
+            title: 'Delta Engine Processing',
             titleDone: 'Comparison Complete — 2 Exceptions',
-            accentColor: 'amber',
+            accentColor: 'red',
             progressColor: 'bg-red-500',
         },
     };
@@ -446,6 +446,57 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 {/* Step 1.2: Extraction Summary */}
                 {currentStep.id === '1.2' && (
                     <div className="px-6 pb-5 space-y-4">
+                        {/* PDF ↔ SIF Side-by-Side */}
+                        <div className="grid grid-cols-2 gap-3">
+                            {/* Left: PDF Mockup */}
+                            <div className="rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 overflow-hidden">
+                                <div className="px-3 py-1.5 bg-gray-100 dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 flex items-center gap-2">
+                                    <FileText size={12} className="text-red-500" />
+                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400">Apex_RFQ_2025.pdf</span>
+                                </div>
+                                <div className="p-3 space-y-2 text-[10px] font-mono text-zinc-500 dark:text-zinc-400">
+                                    <div className="bg-amber-100/50 dark:bg-amber-500/10 border-l-2 border-amber-400 px-2 py-1 rounded-r">
+                                        <span className="text-zinc-800 dark:text-zinc-200">Qty: 200 | Executive Task Chairs</span>
+                                    </div>
+                                    <div className="px-2 py-1 opacity-40">APEX CONSTRUCTION INC.</div>
+                                    <div className="bg-amber-100/50 dark:bg-amber-500/10 border-l-2 border-amber-400 px-2 py-1 rounded-r">
+                                        <span className="text-zinc-800 dark:text-zinc-200">Model: CC-AZ-2024 (Azure)</span>
+                                    </div>
+                                    <div className="px-2 py-1 opacity-40">Ship-To: Austin, TX 78701</div>
+                                    <div className="bg-amber-100/50 dark:bg-amber-500/10 border-l-2 border-amber-400 px-2 py-1 rounded-r">
+                                        <span className="text-zinc-800 dark:text-zinc-200">Delivery: 4 zones (A-D)</span>
+                                    </div>
+                                    <div className="px-2 py-1 opacity-40">Terms: Net 30</div>
+                                    <div className="bg-amber-100/50 dark:bg-amber-500/10 border-l-2 border-amber-400 px-2 py-1 rounded-r">
+                                        <span className="text-zinc-800 dark:text-zinc-200">Ergonomic: Lumbar, Adj. Arms</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: SIF Normalized */}
+                            <div className="rounded-xl border border-emerald-300/30 dark:border-emerald-700/30 bg-emerald-50/30 dark:bg-emerald-900/5 overflow-hidden">
+                                <div className="px-3 py-1.5 bg-emerald-100/50 dark:bg-emerald-900/20 border-b border-emerald-200/50 dark:border-emerald-700/30 flex items-center gap-2">
+                                    <Sparkles size={12} className="text-emerald-500" />
+                                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">SIF — Normalized</span>
+                                </div>
+                                <div className="p-3 space-y-1.5">
+                                    {[
+                                        { field: 'product.qty', value: '200' },
+                                        { field: 'product.name', value: 'Executive Task Chair' },
+                                        { field: 'product.sku', value: 'CC-AZ-2024' },
+                                        { field: 'delivery.zones', value: '4 (A, B, C, D)' },
+                                        { field: 'delivery.address', value: 'Austin, TX 78701' },
+                                        { field: 'specs.ergonomic', value: 'Lumbar + Adj. Arms' },
+                                    ].map(f => (
+                                        <div key={f.field} className="flex items-center gap-2 text-[10px] font-mono">
+                                            <span className="text-emerald-600/60 dark:text-emerald-500/50 w-[105px] shrink-0 truncate">{f.field}</span>
+                                            <span className="text-zinc-800 dark:text-zinc-200 font-medium">{f.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Extracted Data Table */}
                         <div className="p-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
                             <div className="flex items-center gap-2 mb-3">

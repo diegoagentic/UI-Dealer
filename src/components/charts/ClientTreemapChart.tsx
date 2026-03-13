@@ -4,22 +4,22 @@ import type { DashMetricsPeriod } from '../DashboardMetricsGrid';
 const dataByPeriod: Record<DashMetricsPeriod, { name: string; size: number; fill: string }[]> = {
     Day: [
         { name: "TechDealer", size: 520, fill: "#6366f1" }, { name: "Global Logistics", size: 380, fill: "#8b5cf6" },
-        { name: "Urban Living", size: 210, fill: "#d946ef" }, { name: "AutoManufacture", size: 340, fill: "#0ea5e9" },
+        { name: "Urban Living", size: 210, fill: "#d946ef" }, { name: "ModernOffice", size: 340, fill: "#0ea5e9" },
         { name: "Retail Corp", size: 150, fill: "#10b981" }, { name: "Startup Inc", size: 280, fill: "#f59e0b" },
     ],
     Week: [
         { name: "TechDealer", size: 2200, fill: "#6366f1" }, { name: "Global Logistics", size: 1800, fill: "#8b5cf6" },
-        { name: "Urban Living", size: 1100, fill: "#d946ef" }, { name: "AutoManufacture", size: 1600, fill: "#0ea5e9" },
+        { name: "Urban Living", size: 1100, fill: "#d946ef" }, { name: "ModernOffice", size: 1600, fill: "#0ea5e9" },
         { name: "Retail Corp", size: 900, fill: "#10b981" }, { name: "Startup Inc", size: 1400, fill: "#f59e0b" },
     ],
     Month: [
         { name: "TechDealer", size: 4000, fill: "#6366f1" }, { name: "Global Logistics", size: 3000, fill: "#8b5cf6" },
-        { name: "Urban Living", size: 2000, fill: "#d946ef" }, { name: "AutoManufacture", size: 2780, fill: "#0ea5e9" },
+        { name: "Urban Living", size: 2000, fill: "#d946ef" }, { name: "ModernOffice", size: 2780, fill: "#0ea5e9" },
         { name: "Retail Corp", size: 1890, fill: "#10b981" }, { name: "Startup Inc", size: 2390, fill: "#f59e0b" },
     ],
     Quarter: [
         { name: "TechDealer", size: 12000, fill: "#6366f1" }, { name: "Global Logistics", size: 9500, fill: "#8b5cf6" },
-        { name: "Urban Living", size: 6200, fill: "#d946ef" }, { name: "AutoManufacture", size: 8400, fill: "#0ea5e9" },
+        { name: "Urban Living", size: 6200, fill: "#d946ef" }, { name: "ModernOffice", size: 8400, fill: "#0ea5e9" },
         { name: "Retail Corp", size: 5800, fill: "#10b981" }, { name: "Startup Inc", size: 7100, fill: "#f59e0b" },
     ],
 };

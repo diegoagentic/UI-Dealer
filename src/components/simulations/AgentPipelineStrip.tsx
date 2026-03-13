@@ -10,7 +10,7 @@ export interface AgentStep {
 
 interface AgentPipelineStripProps {
     agents: AgentStep[];
-    accentColor?: 'purple' | 'blue' | 'green' | 'amber';
+    accentColor?: 'purple' | 'blue' | 'green' | 'amber' | 'red';
 }
 
 const colorMap = {
@@ -29,6 +29,10 @@ const colorMap = {
     amber: {
         running: 'text-amber-400 border-amber-500/30 bg-amber-500/5',
         glow: 'shadow-amber-500/20',
+    },
+    red: {
+        running: 'text-red-400 border-red-500/30 bg-red-500/5',
+        glow: 'shadow-red-500/20',
     },
 };
 

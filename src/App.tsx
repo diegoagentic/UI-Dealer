@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GenUIProvider } from './context/GenUIContext'
 import { useAuth } from './context/AuthContext'
 import { useDemo } from './context/DemoContext'
@@ -24,6 +24,7 @@ import DemoSpotlight from "./components/demo/DemoSpotlight"
 import DemoProcessPanel from "./components/demo/DemoProcessPanel"
 import DemoStepBanner from "./components/demo/DemoStepBanner"
 import DemoAIIndicator from "./components/demo/DemoAIIndicator"
+import StrataArchitectureSlide from "./components/demo/StrataArchitectureSlide"
 
 // Simulations
 import ExpertHubTransactions from "./components/simulations/ExpertHubTransactions"
@@ -50,6 +51,14 @@ function App() {
   const { activeProfile: demoProfile } = useDemoProfile()
   const [currentPage, setCurrentPage] = useState<'dashboard' | 'detail' | 'quote-detail' | 'order-detail' | 'ack-detail' | 'ack-detail-ai' | 'workspace' | 'inventory' | 'catalogs' | 'mac' | 'transactions' | 'crm' | 'pricing'>('transactions')
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false)
+  const [showArchSlide, setShowArchSlide] = useState(false)
+
+  // Set initial page for CRM steps
+  useEffect(() => {
+    if (isDemoActive && currentStep?.app === 'crm') {
+      setCurrentPage(currentStep.id === '1.12' ? 'dashboard' : 'crm')
+    }
+  }, [isDemoActive, currentStep?.app, currentStep?.id])
 
   const handleNavigate = (page: string) => {
     if (page === 'overview') {
@@ -241,7 +250,7 @@ function App() {
       'ack-detail': 'transactions',
       'mac': 'mac',
       'inventory': 'inventory',
-      'crm': 'crm',
+      'crm': currentPage === 'dashboard' ? 'dashboard' : 'crm',
     };
     return appToTab[currentStep.app] || currentPage;
   };
@@ -288,7 +297,7 @@ function App() {
       case 'inventory':
         return <Inventory onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />;
       case 'crm':
-        return <CRMSimulation onNavigate={handleNavigate} />;
+        return <CRMSimulation onNavigate={handleNavigate} activePage={currentPage} />;
       default:
         return (
           <ExpertHubTransactions
@@ -372,6 +381,21 @@ function App() {
         onClose={() => setIsDemoGuideOpen(false)}
         onNavigate={handleNavigate}
       />
+
+      {/* Architecture Slide — triggered by floating button */}
+      {isDemoActive && (
+        <>
+          <button
+            onClick={() => setShowArchSlide(true)}
+            className="fixed bottom-4 right-4 z-[90] px-3 py-2 rounded-lg bg-card border border-border shadow-lg text-[10px] font-medium text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all flex items-center gap-1.5"
+            title="View Strata Architecture"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+            Architecture
+          </button>
+          <StrataArchitectureSlide open={showArchSlide} onClose={() => setShowArchSlide(false)} />
+        </>
+      )}
     </GenUIProvider>
   );
 }

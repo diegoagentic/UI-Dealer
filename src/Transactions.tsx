@@ -86,7 +86,7 @@ const recentOrders = [
 ]
 
 const recentQuotes = [
-    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-indigo-50 text-indigo-700", location: "Austin" },
+    { id: "QT-1025", customer: "Apex Furniture", project: "New HQ", amount: "$43,750", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AF", statusColor: "bg-indigo-50 text-indigo-700", location: "Austin" },
     { id: "QT-1024", customer: "BioLife Inc", project: "Lab Expansion", amount: "$540,000", status: "Draft", date: "Jan 10, 2026", validUntil: "Draft", probability: "N/A", initials: "BL", statusColor: "bg-zinc-100 text-zinc-700", location: "Boston" },
     { id: "QT-1023", customer: "FinServe Corp", project: "Branch Rollout", amount: "$890,000", status: "Sent", date: "Jan 08, 2026", validUntil: "Feb 08, 2026", probability: "Medium", initials: "FS", statusColor: "bg-blue-50 text-blue-700", location: "New York" },
     { id: "QT-1022", customer: "Redwood School", project: "Classroom Refresh", amount: "$150,000", status: "Approved", date: "Dec 28, 2025", validUntil: "Jan 28, 2026", probability: "Closed", initials: "RS", statusColor: "bg-green-50 text-green-700", location: "Portland" },
@@ -1632,7 +1632,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <span className="font-semibold text-sm">AI Pricing Insight</span>
                                                 </div>
                                                 <p className="text-sm text-brand-900/80 dark:text-zinc-300 leading-relaxed mb-4">
-                                                    Based on recent wins with <strong className="text-brand-950 dark:text-white">Apex Tech</strong>, you could increase margin to <strong className="text-brand-950 dark:text-white">32%</strong> without impacting win probability.
+                                                    Based on recent wins with <strong className="text-brand-950 dark:text-white">Apex Furniture</strong>, you could increase margin to <strong className="text-brand-950 dark:text-white">32%</strong> without impacting win probability.
                                                 </p>
                                                 <button className="mt-auto w-full py-2 bg-brand-600 hover:bg-brand-700 text-white dark:text-brand-950 dark:bg-brand-400 dark:hover:bg-brand-300 rounded-lg text-sm font-medium transition-colors">
                                                     Apply Suggested Pricing

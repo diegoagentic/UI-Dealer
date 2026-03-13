@@ -39,7 +39,7 @@ const MOCK_QUOTES = [
     },
     {
         id: 'Q-2024-092',
-        customer: 'Apex Architecture',
+        customer: 'Apex Furniture',
         customerId: 'CUST-004',
         project: 'Office Expansion',
         value: 8400.00,
