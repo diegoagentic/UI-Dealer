@@ -821,8 +821,22 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                         </div>
 
-                        {/* Push Notification */}
-                        <div className="mx-3 mt-3 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in slide-in-from-top-2 duration-500">
+                        {/* Push Notification — Shipment */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-in slide-in-from-top-2 duration-300">
+                            <div className="flex items-start gap-2.5">
+                                <div className="p-1.5 bg-blue-500/20 rounded-lg shrink-0">
+                                    <TruckIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-blue-500 font-medium">2 min ago</p>
+                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Zone A Shipment Out for Delivery</p>
+                                    <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">82 items · FastFreight #FF-2055-A · ETA today</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Push Notification — Punch List */}
+                        <div className="mx-3 mt-2 p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in slide-in-from-top-2 duration-500">
                             <div className="flex items-start gap-2.5">
                                 <div className="p-1.5 bg-green-500/20 rounded-lg shrink-0">
                                     <CheckCircleIcon className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -894,6 +908,86 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </div>
                             <div className="mt-1.5 text-[11px] text-muted-foreground">
                                 Liability: <span className="font-bold text-foreground">Carrier 65%</span> / <span className="font-bold text-foreground">Manufacturer 35%</span>
+                            </div>
+                        </div>
+
+                        {/* ═══ Amazon-Style Shipment Tracking ═══ */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-card border border-border space-y-3">
+                            <div className="flex items-center justify-between">
+                                <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Order Shipment Tracking</p>
+                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-medium">Live</span>
+                            </div>
+
+                            {/* Progress Bar — Amazon style */}
+                            <div>
+                                <div className="flex items-center justify-between mb-1.5">
+                                    {['Ordered', 'Confirmed', 'In Production', 'Shipped', 'In Transit', 'Delivered'].map((label, i) => {
+                                        const completed = i <= 3
+                                        const active = i === 4
+                                        return (
+                                            <div key={label} className="flex flex-col items-center" style={{ width: '16.66%' }}>
+                                                <div className={`w-3.5 h-3.5 rounded-full flex items-center justify-center ${
+                                                    completed ? 'bg-green-500' : active ? 'bg-blue-500' : 'bg-zinc-200 dark:bg-zinc-700'
+                                                }`}>
+                                                    {completed && <CheckCircleIcon className="w-3.5 h-3.5 text-white" />}
+                                                    {active && <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
+                                                </div>
+                                                <span className={`text-[7px] mt-0.5 text-center leading-tight ${
+                                                    completed ? 'text-green-600 dark:text-green-400 font-medium' : active ? 'text-blue-600 dark:text-blue-400 font-bold' : 'text-muted-foreground'
+                                                }`}>{label}</span>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                {/* Progress bar line */}
+                                <div className="relative h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full mx-4 -mt-[26px] mb-5">
+                                    <div className="absolute inset-y-0 left-0 bg-green-500 rounded-full" style={{ width: '75%' }} />
+                                </div>
+                            </div>
+
+                            {/* Shipment Cards by Zone */}
+                            <div className="space-y-2">
+                                {[
+                                    { zone: 'Zone A', desc: 'Main Office (Floor 2)', items: 82, status: 'In Transit', eta: 'Mar 28', carrier: 'FastFreight', tracking: 'FF-2055-A', color: 'blue', active: true },
+                                    { zone: 'Zone B', desc: 'Executive Suite', items: 35, status: 'Shipped', eta: 'Apr 4', carrier: 'NationWide', tracking: 'NW-2055-B', color: 'green', active: false },
+                                    { zone: 'Zone C', desc: 'Lounge & Common', items: 48, status: 'In Production', eta: 'Apr 11', carrier: 'Pending', tracking: '—', color: 'amber', active: false },
+                                    { zone: 'Zone D', desc: 'Austin TX Satellite', items: 35, status: 'Confirmed', eta: 'Apr 18', carrier: 'Pending', tracking: '—', color: 'zinc', active: false },
+                                ].map((shipment) => (
+                                    <div key={shipment.zone} className={`p-2.5 rounded-lg border ${
+                                        shipment.active
+                                            ? 'border-blue-200 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
+                                            : 'border-border bg-muted/30'
+                                    }`}>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
+                                                    shipment.active ? 'bg-blue-100 dark:bg-blue-500/20' : 'bg-muted/50'
+                                                }`}>
+                                                    <TruckIcon className={`w-3.5 h-3.5 ${shipment.active ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground'}`} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[11px] font-bold text-foreground">{shipment.zone} — {shipment.desc}</p>
+                                                    <p className="text-[9px] text-muted-foreground">{shipment.items} items · {shipment.carrier} · {shipment.tracking}</p>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${
+                                                    shipment.status === 'In Transit' ? 'bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400' :
+                                                    shipment.status === 'Shipped' ? 'bg-green-100 dark:bg-green-500/20 text-green-600 dark:text-green-400' :
+                                                    shipment.status === 'In Production' ? 'bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400' :
+                                                    'bg-zinc-100 dark:bg-zinc-500/20 text-zinc-600 dark:text-zinc-400'
+                                                }`}>{shipment.status}</span>
+                                                <p className="text-[9px] text-muted-foreground mt-0.5">ETA {shipment.eta}</p>
+                                            </div>
+                                        </div>
+                                        {shipment.active && (
+                                            <div className="mt-2 flex items-center justify-between pt-2 border-t border-blue-200 dark:border-blue-500/20">
+                                                <span className="text-[9px] text-blue-600 dark:text-blue-400">Last update: Today, 8:42 AM — Departed Austin hub</span>
+                                                <button className="text-[9px] font-bold text-blue-600 dark:text-blue-400 hover:underline">Track →</button>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 

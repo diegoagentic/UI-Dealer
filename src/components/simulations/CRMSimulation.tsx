@@ -4,7 +4,8 @@ import {
     ClockIcon, SparklesIcon, ArrowPathIcon,
     BuildingOfficeIcon, DocumentTextIcon, ChartBarSquareIcon,
     BellAlertIcon, ArrowRightIcon, UserGroupIcon, CalendarDaysIcon,
-    MapPinIcon, CubeIcon, LightBulbIcon, BoltIcon
+    MapPinIcon, CubeIcon, LightBulbIcon, BoltIcon,
+    ClipboardDocumentListIcon, CurrencyDollarIcon, ReceiptPercentIcon
 } from '@heroicons/react/24/outline'
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
@@ -1052,10 +1053,402 @@ function ProjectStatusBadge({ status }: { status: Project['status'] }) {
 }
 
 // ═══════════════════════════════════════════════════
+// DAILY LOG VIEW
+// ═══════════════════════════════════════════════════
+
+const DAILY_LOG_ENTRIES = [
+    {
+        id: 'DL-006',
+        type: 'change_order' as const,
+        title: 'Change Order CO-001: Labor Adjustment',
+        detail: 'Labor rate adjusted $510→$495 (6hrs→5hrs). Approved by Expert Hub — auto-applied to invoice.',
+        source: 'Step 3.3 — Expert Hub',
+        timestamp: 'Today, 2:15 PM',
+        highlight: true,
+        expandedDetail: {
+            original: { rate: '$85/hr', hours: 6, total: '$510' },
+            adjusted: { rate: '$99/hr', hours: 5, total: '$495' },
+            reason: 'Technician completed installation ahead of schedule',
+            approvedBy: 'David Park (Expert)',
+        },
+    },
+    {
+        id: 'DL-005',
+        type: 'claim' as const,
+        title: 'Warranty Claim #WC-001 Submitted',
+        detail: 'SKU mismatch CC-AZ-2024 vs 2025 — carrier review initiated. Expected resolution: 5 business days.',
+        source: 'Step 3.4 — Service Center',
+        timestamp: 'Today, 11:30 AM',
+        highlight: false,
+    },
+    {
+        id: 'DL-004',
+        type: 'delivery' as const,
+        title: 'Zone A Shipment Confirmed',
+        detail: 'Carrier: FastFreight Logistics — 82 items, ETA Mar 28. Tracking #FF-2055-A available.',
+        source: 'Supplier Portal',
+        timestamp: 'Yesterday, 4:45 PM',
+        highlight: false,
+    },
+    {
+        id: 'DL-003',
+        type: 'ack' as const,
+        title: 'AIS Acknowledgment Processed — 50 Lines',
+        detail: '3 exceptions resolved: lead time +14 days on 12 items, price variance on 2 SKUs, substitution on 1 SKU.',
+        source: 'Step 2.4 — Expert Hub',
+        timestamp: 'Mar 10, 9:20 AM',
+        highlight: false,
+    },
+    {
+        id: 'DL-002',
+        type: 'po' as const,
+        title: 'PO #ORD-2055 Generated & Transmitted',
+        detail: '200 line items, 5 suppliers, 4 delivery zones. Auto-transmitted via EDI.',
+        source: 'Step 1.9 — Dealer Experience',
+        timestamp: 'Mar 8, 3:10 PM',
+        highlight: false,
+    },
+    {
+        id: 'DL-001',
+        type: 'quote' as const,
+        title: 'Quote #QT-1025 Approved — $43,750',
+        detail: '35.4% margin, volume discounts applied. 3-level approval chain completed.',
+        source: 'Step 1.7 — Dealer Experience',
+        timestamp: 'Mar 7, 10:00 AM',
+        highlight: false,
+    },
+]
+
+function DailyLogView() {
+    const [expandedEntry, setExpandedEntry] = useState<string | null>(null)
+
+    const typeConfig: Record<string, { icon: React.ReactNode; color: string; badge: string }> = {
+        change_order: {
+            icon: <ReceiptPercentIcon className="h-4 w-4" />,
+            color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10 border-purple-200 dark:border-purple-500/20',
+            badge: 'Change Order',
+        },
+        claim: {
+            icon: <ExclamationTriangleIcon className="h-4 w-4" />,
+            color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20',
+            badge: 'Claim Filed',
+        },
+        delivery: {
+            icon: <Truck className="h-4 w-4" />,
+            color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20',
+            badge: 'Delivery Update',
+        },
+        ack: {
+            icon: <CheckCircleIcon className="h-4 w-4" />,
+            color: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 border-green-200 dark:border-green-500/20',
+            badge: 'Ack Processed',
+        },
+        po: {
+            icon: <DocumentTextIcon className="h-4 w-4" />,
+            color: 'text-foreground bg-muted/50 border-border',
+            badge: 'PO Generated',
+        },
+        quote: {
+            icon: <FileText className="h-4 w-4" />,
+            color: 'text-foreground bg-muted/50 border-border',
+            badge: 'Quote Approved',
+        },
+    }
+
+    return (
+        <div className="space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h3 className="text-sm font-semibold text-foreground">Project Daily Log — Apex HQ Office Renovation</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Coordinated log of all project activities — change orders, deliveries, claims & milestones</p>
+                </div>
+                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/30 border border-border">
+                    <ClipboardDocumentListIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[10px] text-muted-foreground">{DAILY_LOG_ENTRIES.length} entries</span>
+                </div>
+            </div>
+
+            {/* Timeline */}
+            <div className="relative">
+                {/* Vertical line */}
+                <div className="absolute left-[17px] top-2 bottom-2 w-px bg-border" />
+
+                <div className="space-y-3">
+                    {DAILY_LOG_ENTRIES.map((entry) => {
+                        const config = typeConfig[entry.type]
+                        const isExpanded = expandedEntry === entry.id
+
+                        return (
+                            <div
+                                key={entry.id}
+                                className={cn(
+                                    'relative pl-10 group',
+                                    entry.highlight && 'ml-0'
+                                )}
+                            >
+                                {/* Timeline dot */}
+                                <div className={cn(
+                                    'absolute left-2 top-3 h-[14px] w-[14px] rounded-full border-2 flex items-center justify-center',
+                                    entry.highlight
+                                        ? 'bg-purple-500 border-purple-300 dark:border-purple-600'
+                                        : 'bg-card border-border'
+                                )}>
+                                    {entry.highlight && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                                </div>
+
+                                <div
+                                    className={cn(
+                                        'rounded-lg border p-3 transition-all cursor-pointer hover:shadow-sm',
+                                        entry.highlight
+                                            ? 'border-purple-200 dark:border-purple-500/30 bg-purple-50/50 dark:bg-purple-500/5'
+                                            : 'border-border bg-card'
+                                    )}
+                                    onClick={() => entry.highlight && setExpandedEntry(isExpanded ? null : entry.id)}
+                                >
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className={cn('inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border', config.color)}>
+                                                    {config.icon}
+                                                    {config.badge}
+                                                </span>
+                                                {entry.highlight && (
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-medium">
+                                                        Feeds into Invoice
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs font-medium text-foreground">{entry.title}</p>
+                                            <p className="text-[10px] text-muted-foreground mt-0.5">{entry.detail}</p>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <p className="text-[10px] text-muted-foreground">{entry.timestamp}</p>
+                                            <p className="text-[9px] text-muted-foreground/70 mt-0.5">{entry.source}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Expanded change order detail */}
+                                    {entry.highlight && isExpanded && entry.expandedDetail && (
+                                        <div className="mt-3 pt-3 border-t border-purple-200 dark:border-purple-500/20">
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="rounded-md bg-white dark:bg-zinc-900 border border-border p-2">
+                                                    <p className="text-[9px] text-muted-foreground font-medium mb-1">ORIGINAL</p>
+                                                    <p className="text-[10px] text-foreground">{entry.expandedDetail.original.rate} × {entry.expandedDetail.original.hours}hrs</p>
+                                                    <p className="text-xs font-semibold text-foreground">{entry.expandedDetail.original.total}</p>
+                                                </div>
+                                                <div className="rounded-md bg-white dark:bg-zinc-900 border border-purple-200 dark:border-purple-500/20 p-2">
+                                                    <p className="text-[9px] text-purple-600 dark:text-purple-400 font-medium mb-1">ADJUSTED</p>
+                                                    <p className="text-[10px] text-foreground">{entry.expandedDetail.adjusted.rate} × {entry.expandedDetail.adjusted.hours}hrs</p>
+                                                    <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">{entry.expandedDetail.adjusted.total}</p>
+                                                </div>
+                                            </div>
+                                            <div className="mt-2 flex items-center gap-3 text-[10px] text-muted-foreground">
+                                                <span>Reason: {entry.expandedDetail.reason}</span>
+                                                <span>•</span>
+                                                <span>Approved by: {entry.expandedDetail.approvedBy}</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {entry.highlight && !isExpanded && (
+                                        <p className="text-[9px] text-purple-500 dark:text-purple-400 mt-1.5">Click to expand change order details</p>
+                                    )}
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border">
+                <AIAgentAvatar agentName="DailyLogAgent" size="xs" />
+                <p className="text-[10px] text-muted-foreground">
+                    All entries auto-recorded from source systems — change orders feed directly into invoicing
+                </p>
+            </div>
+        </div>
+    )
+}
+
+// ═══════════════════════════════════════════════════
+// INVOICING VIEW
+// ═══════════════════════════════════════════════════
+
+function InvoicingView() {
+    const [synced, setSynced] = useState(false)
+
+    return (
+        <div className="space-y-4">
+            {/* Header */}
+            <div className="flex items-center justify-between">
+                <div>
+                    <h3 className="text-sm font-semibold text-foreground">Invoice #INV-2055 — Auto-Generated</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">Built from PO, change orders, and service labor — zero manual line items</p>
+                </div>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 font-medium">
+                    Ready for Review
+                </span>
+            </div>
+
+            <div className="grid grid-cols-5 gap-4">
+                {/* Invoice Detail — 3 cols */}
+                <div className="col-span-3 rounded-lg border border-border bg-card p-4 space-y-3">
+                    <div className="flex items-center justify-between pb-3 border-b border-border">
+                        <div>
+                            <p className="text-xs font-semibold text-foreground">Apex Furniture</p>
+                            <p className="text-[10px] text-muted-foreground">Jennifer Martinez, VP Operations</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-[10px] text-muted-foreground">Invoice Date</p>
+                            <p className="text-xs font-medium text-foreground">Mar 13, 2026</p>
+                        </div>
+                    </div>
+
+                    {/* Line items */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between py-1.5 px-2 rounded bg-muted/30">
+                            <div className="flex items-center gap-2">
+                                <Package className="h-3.5 w-3.5 text-muted-foreground" />
+                                <div>
+                                    <p className="text-[11px] font-medium text-foreground">Original PO #ORD-2055</p>
+                                    <p className="text-[9px] text-muted-foreground">200 line items · 4 delivery zones · 5 suppliers</p>
+                                </div>
+                            </div>
+                            <p className="text-xs font-semibold text-foreground">$43,750.00</p>
+                        </div>
+
+                        <div className="flex items-center justify-between py-1.5 px-2 rounded bg-purple-50/50 dark:bg-purple-500/5 border border-purple-100 dark:border-purple-500/10">
+                            <div className="flex items-center gap-2">
+                                <ReceiptPercentIcon className="h-3.5 w-3.5 text-purple-500" />
+                                <div>
+                                    <p className="text-[11px] font-medium text-foreground">Change Order CO-001</p>
+                                    <p className="text-[9px] text-muted-foreground">Labor adjustment: 6hrs→5hrs ($510→$495)</p>
+                                </div>
+                            </div>
+                            <p className="text-xs font-semibold text-purple-600 dark:text-purple-400">-$15.00</p>
+                        </div>
+
+                        <div className="flex items-center justify-between py-1.5 px-2 rounded bg-muted/30">
+                            <div className="flex items-center gap-2">
+                                <Wrench className="h-3.5 w-3.5 text-muted-foreground" />
+                                <div>
+                                    <p className="text-[11px] font-medium text-foreground">Service Labor</p>
+                                    <p className="text-[9px] text-muted-foreground">5 hours × $95/hr · Installation & adjustment</p>
+                                </div>
+                            </div>
+                            <p className="text-xs font-semibold text-foreground">$475.00</p>
+                        </div>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex items-center justify-between pt-3 border-t border-border">
+                        <div>
+                            <p className="text-xs font-semibold text-foreground">Invoice Total</p>
+                            <p className="text-[9px] text-muted-foreground">Terms: Net 30</p>
+                        </div>
+                        <p className="text-lg font-bold text-foreground">$44,210.00</p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 pt-2">
+                        <button
+                            onClick={() => setSynced(true)}
+                            disabled={synced}
+                            className={cn(
+                                'flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors',
+                                synced
+                                    ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/20'
+                                    : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            )}
+                        >
+                            {synced ? (
+                                <><CheckCircleIcon className="h-3.5 w-3.5" /> Synced to QuickBooks</>
+                            ) : (
+                                <><CurrencyDollarIcon className="h-3.5 w-3.5" /> Approve & Sync to QuickBooks</>
+                            )}
+                        </button>
+                        <button className="px-3 py-2 rounded-md text-xs font-medium border border-border text-foreground hover:bg-muted/50 transition-colors">
+                            Download PDF
+                        </button>
+                    </div>
+                </div>
+
+                {/* QuickBooks Sync Panel — 2 cols */}
+                <div className="col-span-2 space-y-3">
+                    {/* QB Connection Card */}
+                    <div className="rounded-lg border border-border bg-card p-3 space-y-3">
+                        <div className="flex items-center gap-2">
+                            <div className="h-7 w-7 rounded-md bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                                <CurrencyDollarIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div>
+                                <p className="text-xs font-semibold text-foreground">QuickBooks Online</p>
+                                <p className="text-[10px] text-green-600 dark:text-green-400 font-medium">Connected ✓</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            {[
+                                { label: 'Invoice', status: synced ? 'Synced' : 'Ready', synced },
+                                { label: 'Customer', status: 'Matched', synced: true },
+                                { label: 'GL Codes', status: 'Auto-mapped (5)', synced: true },
+                                { label: 'Tax Rates', status: 'Applied', synced: true },
+                            ].map(item => (
+                                <div key={item.label} className="flex items-center justify-between px-2 py-1 rounded bg-muted/30">
+                                    <span className="text-[10px] text-muted-foreground">{item.label}</span>
+                                    <span className={cn(
+                                        'text-[10px] font-medium',
+                                        item.synced ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'
+                                    )}>
+                                        {item.status}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* AI Agent Note */}
+                    <div className="rounded-lg border border-border bg-card p-3">
+                        <div className="flex items-center gap-2 mb-2">
+                            <AIAgentAvatar agentName="InvoicingAgent" size="xs" />
+                            <p className="text-[10px] font-medium text-foreground">InvoicingAgent</p>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground leading-relaxed">
+                            Auto-mapped 5 GL codes by product category. Invoice generated from: PO (Step 1.9) + Change Orders (Step 3.3) + Service Labor (Step 3.3). All line items reconciled — zero manual entries required.
+                        </p>
+                    </div>
+
+                    {/* Source traceability */}
+                    <div className="rounded-lg border border-dashed border-border p-3">
+                        <p className="text-[9px] font-medium text-muted-foreground mb-2">DATA SOURCES</p>
+                        <div className="space-y-1">
+                            {[
+                                { step: '1.7', label: 'Quote Approved', value: '$43,750' },
+                                { step: '1.9', label: 'PO Generated', value: '200 items' },
+                                { step: '3.3', label: 'Change Order CO-001', value: '-$15' },
+                                { step: '3.3', label: 'Service Labor', value: '$475' },
+                            ].map((src, i) => (
+                                <div key={i} className="flex items-center gap-2 text-[10px]">
+                                    <span className="text-muted-foreground/50 font-mono">Step {src.step}</span>
+                                    <span className="text-muted-foreground">{src.label}</span>
+                                    <span className="ml-auto font-medium text-foreground">{src.value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ═══════════════════════════════════════════════════
 // MAIN COMPONENT
 // ═══════════════════════════════════════════════════
 
-type CRMTab = 'projects' | 'customer360' | 'timeline' | 'reports'
+type CRMTab = 'projects' | 'customer360' | 'timeline' | 'dailylog' | 'invoicing' | 'reports'
 
 const STEP_TO_TAB: Record<string, CRMTab> = {
     '1.12': 'projects',
@@ -1068,6 +1461,8 @@ const TAB_LABELS: { id: CRMTab; label: string }[] = [
     { id: 'projects', label: 'Projects' },
     { id: 'customer360', label: 'Customer 360' },
     { id: 'timeline', label: 'Order Timeline' },
+    { id: 'dailylog', label: 'Daily Log' },
+    { id: 'invoicing', label: 'Invoicing' },
     { id: 'reports', label: 'Reports' },
 ]
 
@@ -1149,6 +1544,8 @@ export default function CRMSimulation({ onNavigate }: CRMSimulationProps) {
                 {activeTab === 'projects' && <ProjectsView stepId={stepId} />}
                 {activeTab === 'customer360' && <Customer360View stepId={stepId} />}
                 {activeTab === 'timeline' && <OrderTimelineView stepId={stepId} />}
+                {activeTab === 'dailylog' && <DailyLogView />}
+                {activeTab === 'invoicing' && <InvoicingView />}
                 {activeTab === 'reports' && <ReportsView stepId={stepId} />}
             </div>
         </div>

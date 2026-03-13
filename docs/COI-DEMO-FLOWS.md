@@ -83,6 +83,8 @@ The CRM is **not** a separate workflow. Instead, CRM steps appear at the **end o
 - **Flow 2 → CRM**: Acknowledgment data syncs to project timeline with delivery milestones (2.8)
 - **Flow 3 → CRM**: Service claim linked to project with full end-to-end traceability (3.6)
 
+**CRM has 6 navigable tabs**: Projects | Customer 360 | Order Timeline | **Daily Log** | **Invoicing** | Reports. The Daily Log and Invoicing tabs are accessible from any CRM step — they demonstrate change-order tracking feeding into auto-generated invoices with QuickBooks sync.
+
 This addresses the client requirement: _"A CRM where information seamlessly flows into new projects"_ — data enters **once** (email) and flows through every system without re-entry.
 
 ## Stakeholder Initiative Coverage
@@ -90,13 +92,16 @@ This addresses the client requirement: _"A CRM where information seamlessly flow
 | # | Initiative | Covered By |
 |---|-----------|------------|
 | 1 | AI Acknowledgement Processing | Flow 2 (2.1–2.7) — 8 AI agents, ~95% automation |
-| 2 | Shipment/Order Visibility | Flow 2 (2.6–2.8), Flow 3 (3.4) |
+| 2 | Shipment/Order Visibility | Flow 2 (2.6–2.8), Flow 3 (3.4), **Step 3.5 (Amazon-style tracking)** |
 | 3 | Customer Communication | Flow 1 (1.8, 1.10), Flow 2 (2.7), Flow 3 (3.5), CRM (1.13, 3.6) |
 | 4 | PDF/Email Quote Ingestion | Flow 1 (1.1–1.4) — 5+4 AI agents |
 | 5 | Reduce Double Entry | Flow 1 (1.2, 1.9, 1.12), CRM (2.8, 3.6 — zero re-entry across 5 systems) |
 | 6 | Reporting Automation | Flow 3 (3.1, 3.3), CRM (3.6 — AI project health report) |
 | 7 | Consistent Reporting Logic | Flow 3 (3.3 — 6 business rules), CRM (3.6 — cross-platform traceability) |
 | 8 | CRM & Project Intelligence | CRM steps (1.12, 1.13, 2.8, 3.6) — project-centric, data flows from all workflows |
+| 9.1 | Daily Log + Change-Order Tracking | **CRM tab "Daily Log"** — accessible from any CRM step (1.12, 1.13, 2.8, 3.6). Chronological log of all project activity: change orders, claims, deliveries, POs, acks. Change orders feed directly into invoicing. |
+| 9.2 | Invoicing / QuickBooks Integration | **CRM tab "Invoicing"** — auto-generated invoice from PO + change orders + service labor. QuickBooks Online sync with GL code auto-mapping. Zero manual line items. |
+| 9.3 | Shipment Notices (Amazon-style) | **Step 3.5 End User Mobile** — horizontal progress tracker (Ordered→Delivered), zone-based shipment cards with carrier/tracking/ETA, push notification for in-transit shipments. |
 | 9 | Better Customer Quote Experience | Flow 1 (1.4, 1.7, 1.8) |
 | 10 | Familiar Interfaces | All flows reuse existing simulation apps |
 
