@@ -302,35 +302,35 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         progressColor: string;
     }> = {
         '1.2': {
-            icon: <Sparkles className="text-emerald-400 animate-pulse" size={18} />,
+            icon: <Sparkles className="text-emerald-600 dark:text-emerald-400 animate-pulse" size={18} />,
             title: 'Extraction Complete',
             titleDone: 'Extraction Complete',
             accentColor: 'green',
             progressColor: 'bg-emerald-500',
         },
         '1.3': {
-            icon: <Sparkles className="text-green-400" size={18} />,
+            icon: <Sparkles className="text-green-600 dark:text-green-400" size={18} />,
             title: 'Normalization Pipeline',
             titleDone: 'Normalization Complete',
             accentColor: 'green',
             progressColor: 'bg-green-500',
         },
         '1.4': {
-            icon: <Sparkles className="text-amber-400 animate-pulse" size={18} />,
+            icon: <Sparkles className="text-amber-600 dark:text-amber-400 animate-pulse" size={18} />,
             title: 'QuoteBuilder Agent',
             titleDone: 'Quote Draft Ready',
             accentColor: 'amber',
             progressColor: 'bg-amber-500',
         },
         '2.2': {
-            icon: <Cpu className="text-blue-400" size={18} />,
+            icon: <Cpu className="text-blue-600 dark:text-blue-400" size={18} />,
             title: 'ERP Normalization',
             titleDone: 'Normalization Complete',
             accentColor: 'blue',
             progressColor: 'bg-blue-500',
         },
         '2.3': {
-            icon: <Cpu className="text-red-400" size={18} />,
+            icon: <Cpu className="text-red-600 dark:text-red-400" size={18} />,
             title: 'Delta Engine Processing',
             titleDone: 'Comparison Complete — 2 Exceptions',
             accentColor: 'red',
@@ -383,7 +383,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 {/* Source Badge for 2.2 */}
                 {currentStep.id === '2.2' && (
                     <div className="px-6 pb-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-400">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-600 dark:text-blue-400">
                             <Cpu size={10} />
                             eManage ONE (EDI/855)
                         </span>
@@ -477,7 +477,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             <div className="rounded-xl border border-emerald-300/30 dark:border-emerald-700/30 bg-emerald-50/30 dark:bg-emerald-900/5 overflow-hidden">
                                 <div className="px-3 py-1.5 bg-emerald-100/50 dark:bg-emerald-900/20 border-b border-emerald-200/50 dark:border-emerald-700/30 flex items-center gap-2">
                                     <Sparkles size={12} className="text-emerald-500" />
-                                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">SIF — Normalized</span>
+                                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-600 dark:text-emerald-400">SIF — Normalized</span>
                                 </div>
                                 <div className="p-3 space-y-1.5">
                                     {[
@@ -517,7 +517,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         </div>
                                         <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 ${
                                             item.badge === 'Needs Review'
-                                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                                                 : 'bg-gray-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400'
                                         }`}>{item.badge}</span>
                                     </div>
@@ -538,7 +538,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* Automation Flow Diagram */}
                         <div className="p-4 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900">
                             <div className="flex items-center gap-2 mb-3">
-                                <Sparkles className="text-indigo-400 animate-pulse" size={14} />
+                                <Sparkles className="text-indigo-600 dark:text-indigo-400 animate-pulse" size={14} />
                                 <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Automation Flow</span>
                             </div>
                             <div className="flex items-center gap-1 overflow-x-auto pb-1 scrollbar-micro">
@@ -568,14 +568,14 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
                         {/* AI Attribution */}
                         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
-                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
+                            <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
                             <p className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 leading-relaxed">
                                 5 AI agents processed this RFQ in 8.2s. Freight routing flagged for Expert review due to multi-zone complexity.
                             </p>
                         </div>
 
                         {/* Auto-advance indicator */}
-                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-400 animate-pulse">
+                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
                             <span>Auto-advancing to normalization...</span>
                             <ArrowUpRight size={14} />
                         </div>
@@ -599,10 +599,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200/50 dark:border-zinc-700/50">
                             <div className="flex items-center -space-x-1.5">
                                 <div className="w-6 h-6 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center">
-                                    <Bot size={12} className="text-indigo-400" />
+                                    <Bot size={12} className="text-indigo-600 dark:text-indigo-400" />
                                 </div>
                                 <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
-                                    <Users size={12} className="text-amber-400" />
+                                    <Users size={12} className="text-amber-600 dark:text-amber-400" />
                                 </div>
                             </div>
                             <span className="text-[11px] text-zinc-500 dark:text-zinc-400">AI Agent + Expert will draft the quote</span>
@@ -625,7 +625,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4">
                             <div className="flex items-center gap-2 mb-1.5">
                                 <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                                <span className="text-[11px] font-medium text-amber-400 uppercase tracking-wider">Needs Attention</span>
+                                <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider">Needs Attention</span>
                             </div>
                             <p className="text-[12px] text-zinc-500 dark:text-zinc-400">Multi-zone freight routing requires manual approval</p>
                         </div>
@@ -634,10 +634,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200/50 dark:border-zinc-700/50">
                             <div className="flex items-center -space-x-1.5">
                                 <div className="w-6 h-6 rounded-full bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center">
-                                    <Bot size={12} className="text-indigo-400" />
+                                    <Bot size={12} className="text-indigo-600 dark:text-indigo-400" />
                                 </div>
                                 <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center">
-                                    <Users size={12} className="text-amber-400" />
+                                    <Users size={12} className="text-amber-600 dark:text-amber-400" />
                                 </div>
                             </div>
                             <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Expert + AI Agent will resolve discrepancies</span>
@@ -659,7 +659,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* Entity Link */}
                         <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                             <span className="text-zinc-400 dark:text-zinc-500">Entity Link:</span>
-                            <span className="text-blue-400 font-medium">PO #ORD-2055 ↔ Acknowledgement #ACK-2055</span>
+                            <span className="text-blue-600 dark:text-blue-400 font-medium">PO #ORD-2055 ↔ Acknowledgement #ACK-2055</span>
                         </div>
 
                         {/* Schema Mapping Table */}
@@ -678,7 +678,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         <tr key={i}>
                                             <td className="px-4 py-2 font-mono text-zinc-400 dark:text-zinc-500">{row.raw}</td>
                                             <td className="px-2 text-zinc-600">→</td>
-                                            <td className="px-4 py-2 font-mono text-blue-400">{row.normalized}</td>
+                                            <td className="px-4 py-2 font-mono text-blue-600 dark:text-blue-400">{row.normalized}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -688,8 +688,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                         {/* Confidence + AI */}
                         <div className="flex items-center justify-between px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                             <div className="flex items-center gap-1.5">
-                                <Sparkles size={12} className="text-indigo-400 animate-pulse" />
-                                <span className="text-[11px] text-indigo-400 font-medium">DataNormalizationAgent unified 4 raw fields to standard schema</span>
+                                <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400 animate-pulse" />
+                                <span className="text-[11px] text-indigo-600 dark:text-indigo-400 font-medium">DataNormalizationAgent unified 4 raw fields to standard schema</span>
                             </div>
                             <ConfidenceScoreBadge score={94} label="Norm" />
                         </div>
@@ -728,28 +728,28 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                                         <td className="px-4 py-2 text-zinc-600 dark:text-zinc-300">Task Chair</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">ERG-5100</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">ERG-5100</td>
-                                        <td className="px-4 py-2"><span className="flex items-center gap-1 text-green-400"><CheckCircle2 size={12} /> Match</span></td>
+                                        <td className="px-4 py-2"><span className="flex items-center gap-1 text-green-600 dark:text-green-400"><CheckCircle2 size={12} /> Match</span></td>
                                     </tr>
                                     <tr className="bg-amber-500/5">
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">2</td>
                                         <td className="px-4 py-2 text-amber-700 dark:text-amber-300 font-medium">Desk</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">DSK-B</td>
-                                        <td className="px-4 py-2 font-mono text-amber-400">DSK-C</td>
-                                        <td className="px-4 py-2"><span className="text-amber-400 font-medium">Substitution</span></td>
+                                        <td className="px-4 py-2 font-mono text-amber-600 dark:text-amber-400">DSK-C</td>
+                                        <td className="px-4 py-2"><span className="text-amber-600 dark:text-amber-400 font-medium">Substitution</span></td>
                                     </tr>
                                     <tr>
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">3</td>
                                         <td className="px-4 py-2 text-zinc-600 dark:text-zinc-300">Armrest</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">ARM-4D10</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">ARM-4D10</td>
-                                        <td className="px-4 py-2"><span className="flex items-center gap-1 text-green-400"><CheckCircle2 size={12} /> Match</span></td>
+                                        <td className="px-4 py-2"><span className="flex items-center gap-1 text-green-600 dark:text-green-400"><CheckCircle2 size={12} /> Match</span></td>
                                     </tr>
                                     <tr className="bg-red-500/5">
                                         <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">4</td>
                                         <td className="px-4 py-2 text-red-700 dark:text-red-300 font-medium">Freight</td>
                                         <td className="px-4 py-2 font-mono text-zinc-500 dark:text-zinc-400">$45</td>
-                                        <td className="px-4 py-2 font-mono text-red-400">$150</td>
-                                        <td className="px-4 py-2"><span className="text-red-400 font-medium">+233%</span></td>
+                                        <td className="px-4 py-2 font-mono text-red-600 dark:text-red-400">$150</td>
+                                        <td className="px-4 py-2"><span className="text-red-600 dark:text-red-400 font-medium">+233%</span></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -757,14 +757,14 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
                         {/* Delta Summary */}
                         <div className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
-                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">4 lines compared: <span className="text-green-400 font-medium">2 matches</span>, <span className="text-red-400 font-medium">2 exceptions</span></span>
+                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">4 lines compared: <span className="text-green-600 dark:text-green-400 font-medium">2 matches</span>, <span className="text-red-600 dark:text-red-400 font-medium">2 exceptions</span></span>
                             <ConfidenceScoreBadge score={50} label="Match Rate" />
                         </div>
 
                         {/* AI Recommendation */}
                         <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-                            <Sparkles size={12} className="text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
-                            <span className="text-[11px] text-indigo-400">Substitution within catalog equivalents. Freight exceeds $50 guardrail — escalating to Expert Hub.</span>
+                            <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
+                            <span className="text-[11px] text-indigo-600 dark:text-indigo-400">Substitution within catalog equivalents. Freight exceeds $50 guardrail — escalating to Expert Hub.</span>
                         </div>
 
                         <button

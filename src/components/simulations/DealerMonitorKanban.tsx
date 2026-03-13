@@ -26,35 +26,35 @@ const STEP_CARD_PREVIEW: Record<string, {
     accentClass: string;
 }> = {
     '1.2': {
-        icon: <CheckCircle2 size={12} className="text-emerald-400" />,
+        icon: <CheckCircle2 size={12} className="text-emerald-600 dark:text-emerald-400" />,
         title: 'Extraction Complete',
         subtitle: '5 agents — 200 items extracted',
         detail: 'OCR + Parser processed 2 PDF attachments. 4 delivery zones mapped.',
         accentClass: 'border-emerald-500/20 bg-emerald-500/5',
     },
     '1.3': {
-        icon: <BrainCircuit size={12} className="text-green-400" />,
+        icon: <BrainCircuit size={12} className="text-green-600 dark:text-green-400" />,
         title: 'Normalization Pipeline',
         subtitle: '4 agents — Parser + Normalizer',
         detail: 'Mapping 200 line items to catalog schema. Generating confidence scores.',
         accentClass: 'border-green-500/20 bg-green-500/5',
     },
     '1.4': {
-        icon: <FileText size={12} className="text-amber-400" />,
+        icon: <FileText size={12} className="text-amber-600 dark:text-amber-400" />,
         title: 'QuoteBuilder Agent',
         subtitle: '4 agents — Building quote draft',
         detail: 'Applying pricing rules and discounts. Multi-zone freight routing required.',
         accentClass: 'border-amber-500/20 bg-amber-500/5',
     },
     '2.2': {
-        icon: <Cpu size={12} className="text-blue-400" />,
+        icon: <Cpu size={12} className="text-blue-600 dark:text-blue-400" />,
         title: 'ERP Normalization',
         subtitle: '8 agents — EDI/855 from eManage ONE',
         detail: 'Mapping raw EDI fields to standard schema. Linking PO ↔ Acknowledgement entities.',
         accentClass: 'border-blue-500/20 bg-blue-500/5',
     },
     '2.3': {
-        icon: <Cpu size={12} className="text-red-400" />,
+        icon: <Cpu size={12} className="text-red-600 dark:text-red-400" />,
         title: 'Delta Engine',
         subtitle: '8 agents — PO vs Acknowledgement comparison',
         detail: 'Line-by-line comparison in progress. Checking for substitutions and price deltas.',
@@ -100,10 +100,10 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                 <div className="bg-zinc-900 backdrop-blur-md rounded-2xl p-4 border border-zinc-800 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4">
                     <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
                         {[
-                            { icon: <Clock size={18} />, value: '12', label: 'Awaiting Review', color: 'text-amber-400 bg-amber-500/10' },
-                            { icon: <Bot size={18} />, value: '4', label: 'Active Agents', color: 'text-blue-400 bg-blue-500/10' },
-                            { icon: <CheckCircle2 size={18} />, value: '28', label: 'Completed Today', color: 'text-green-400 bg-green-500/10' },
-                            { icon: <Zap size={18} />, value: '$892K', label: 'Queue Value', color: 'text-indigo-400 bg-indigo-500/10' },
+                            { icon: <Clock size={18} />, value: '12', label: 'Awaiting Review', color: 'text-amber-600 dark:text-amber-400 bg-amber-500/10' },
+                            { icon: <Bot size={18} />, value: '4', label: 'Active Agents', color: 'text-blue-600 dark:text-blue-400 bg-blue-500/10' },
+                            { icon: <CheckCircle2 size={18} />, value: '28', label: 'Completed Today', color: 'text-green-600 dark:text-green-400 bg-green-500/10' },
+                            { icon: <Zap size={18} />, value: '$892K', label: 'Queue Value', color: 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10' },
                         ].map((kpi, i) => (
                             <div key={i} className="flex items-center gap-3 min-w-fit">
                                 <div className={`flex items-center justify-center w-9 h-9 rounded-full ${kpi.color}`}>
@@ -173,8 +173,8 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                         >
                                             <div className="flex flex-col gap-3">
                                                 <div className="flex items-start justify-between">
-                                                    <span className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded-full ring-1 ring-inset ${card.priority === 'critical' ? 'bg-red-500/10 text-red-400 ring-red-500/30' :
-                                                        card.priority === 'high' ? 'bg-amber-500/10 text-amber-400 ring-amber-500/30' :
+                                                    <span className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded-full ring-1 ring-inset ${card.priority === 'critical' ? 'bg-red-500/10 text-red-600 dark:text-red-400 ring-red-500/30' :
+                                                        card.priority === 'high' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 ring-amber-500/30' :
                                                             'bg-gray-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 ring-gray-300 dark:ring-zinc-600'
                                                         }`}>
                                                         {card.priority}
@@ -200,7 +200,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                     </div>
                                                     <div className="flex-1" />
                                                     <div className="flex items-center gap-1.5 text-[10px] text-zinc-500 font-medium">
-                                                        <CheckCircle2 size={12} className="text-green-400" />
+                                                        <CheckCircle2 size={12} className="text-green-600 dark:text-green-400" />
                                                         <span>4 items ready</span>
                                                     </div>
                                                 </div>
@@ -232,13 +232,13 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 {card.id === 1 && currentStep.id === '1.2' && (
                                                     <div className="mt-2 pt-3 border-t border-purple-300/30 dark:border-purple-500/20 space-y-2.5 animate-in fade-in slide-in-from-bottom-3 duration-700 delay-300">
                                                         <div className="flex items-center gap-2 px-2.5 py-2 rounded-lg border border-purple-400/20 bg-purple-500/5">
-                                                            <Sparkles size={12} className="text-purple-400" />
+                                                            <Sparkles size={12} className="text-purple-600 dark:text-purple-400" />
                                                             <span className="text-[11px] font-semibold text-purple-700 dark:text-purple-300 leading-tight">AI Takeoff Summary</span>
                                                         </div>
 
                                                         <div className="px-2 space-y-2">
                                                             <p className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300">
-                                                                Floor plan analyzed: <span className="text-purple-600 dark:text-purple-400 font-semibold">4 floors, 125 workstations</span>
+                                                                Floor plan analyzed: <span className="text-purple-600 dark:text-purple-600 dark:text-purple-400 font-semibold">4 floors, 125 workstations</span>
                                                             </p>
 
                                                             {/* Zone breakdown */}
@@ -250,7 +250,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                                     { zone: 'D', count: 31 },
                                                                 ].map(z => (
                                                                     <div key={z.zone} className="text-center py-1 rounded bg-purple-100/60 dark:bg-purple-900/20 border border-purple-200/40 dark:border-purple-700/30">
-                                                                        <p className="text-[9px] font-semibold text-purple-600 dark:text-purple-400">Zone {z.zone}</p>
+                                                                        <p className="text-[9px] font-semibold text-purple-600 dark:text-purple-600 dark:text-purple-400">Zone {z.zone}</p>
                                                                         <p className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200">{z.count}</p>
                                                                     </div>
                                                                 ))}
@@ -273,7 +273,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                             {/* Structural validation */}
                                                             <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-200/50 dark:border-emerald-700/30">
                                                                 <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
-                                                                <p className="text-[9px] text-emerald-700 dark:text-emerald-400 font-medium leading-snug">
+                                                                <p className="text-[9px] text-emerald-700 dark:text-emerald-600 dark:text-emerald-400 font-medium leading-snug">
                                                                     Cross-referenced against building specs: all items within structural limits
                                                                 </p>
                                                             </div>
@@ -284,7 +284,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 {/* AI Insight — normal cards (not in panel mode) */}
                                                 {!hasPanel && card.aiInsight && (
                                                     <div className="mt-2 pt-3 border-t border-gray-200/50 dark:border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                                        <div className="flex items-center gap-2 text-indigo-400">
+                                                        <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
                                                             <Sparkles size={12} />
                                                             <span className="text-[10px] font-medium uppercase tracking-wider">AI Insight</span>
                                                         </div>
