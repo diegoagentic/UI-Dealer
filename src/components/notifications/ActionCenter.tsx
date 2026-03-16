@@ -32,6 +32,13 @@ const FLOW2_NOTIFICATIONS: Notification[] = [
         meta: 'NotificationAgent', timestamp: '2 min ago', unread: true,
         actions: [{ label: 'View Queue', primary: true }], persona: 'expert',
     },
+    {
+        id: 'f2-crm-sync', type: 'system', priority: 'medium',
+        title: 'CRM Order Lifecycle — Ready to Sync',
+        message: 'ACK-7841 and ACK-7842 fully processed. Delivery dates, backorder status, and resolution data ready to sync to Premier Underground Design project timeline.',
+        meta: 'OrderSyncAgent', timestamp: 'Just now', unread: true,
+        actions: [{ label: 'Sync to CRM', primary: true }], persona: 'dealer',
+    },
 ];
 
 // Flow 1 notification for Step 1.10 — single focused notification
@@ -404,26 +411,41 @@ export default function ActionCenter() {
 
                     {/* Flow 2 Notifications */}
                     <div className="flex-1 overflow-y-auto min-h-0 px-5 pb-4 space-y-3 scrollbar-minimal">
-                        {FLOW2_NOTIFICATIONS.map((notification, i) => (
-                            <div
-                                key={notification.id}
-                                className={clsx(
-                                    "transition-all duration-700",
-                                    notifDelivered27.includes(i)
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 translate-y-4 h-0 overflow-hidden'
-                                )}
-                            >
-                                <div className="relative">
-                                    <NotificationItem notification={notification} />
-                                    {notifDelivered27.includes(i) && (
-                                        <span className="absolute top-3 right-3 text-[9px] font-bold text-green-600 dark:text-green-400 flex items-center gap-1 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded-full">
-                                            <CheckCircleIcon className="w-3 h-3" /> Delivered
-                                        </span>
+                        {FLOW2_NOTIFICATIONS.map((notification, i) => {
+                            const isCRMSync = notification.id === 'f2-crm-sync';
+                            const isDelivered = notifDelivered27.includes(i);
+                            return (
+                                <div
+                                    key={notification.id}
+                                    className={clsx(
+                                        "transition-all duration-700",
+                                        isDelivered
+                                            ? 'opacity-100 translate-y-0'
+                                            : 'opacity-0 translate-y-4 h-0 overflow-hidden'
                                     )}
+                                >
+                                    <div className={clsx(
+                                        "relative rounded-2xl transition-all duration-500",
+                                        isCRMSync && isDelivered && "ring-2 ring-brand-500 ring-offset-2 dark:ring-offset-zinc-900 shadow-lg shadow-brand-500/20"
+                                    )}>
+                                        <NotificationItem
+                                            notification={notification}
+                                            onActionClick={isCRMSync ? () => nextStep() : undefined}
+                                        />
+                                        {isDelivered && !isCRMSync && (
+                                            <span className="absolute top-3 right-3 text-[9px] font-bold text-green-600 dark:text-green-400 flex items-center gap-1 bg-green-50 dark:bg-green-500/10 px-2 py-0.5 rounded-full">
+                                                <CheckCircleIcon className="w-3 h-3" /> Delivered
+                                            </span>
+                                        )}
+                                        {isCRMSync && isDelivered && (
+                                            <span className="absolute top-3 right-3 text-[9px] font-bold text-brand-700 dark:text-brand-400 flex items-center gap-1 bg-brand-50 dark:bg-brand-500/15 px-2 py-0.5 rounded-full animate-pulse">
+                                                Next Step →
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
 
                     {/* Footer */}
@@ -431,10 +453,17 @@ export default function ActionCenter() {
                         <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
                             {notifDelivered27.length} actions
                         </p>
-                        <p className="text-xs font-bold text-red-500 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-                            {FLOW2_NOTIFICATIONS.filter(n => n.priority === 'high').length} urgent
-                        </p>
+                        {notifDelivered27.includes(3) ? (
+                            <p className="text-xs font-bold text-brand-600 dark:text-brand-400 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" />
+                                CRM sync ready
+                            </p>
+                        ) : (
+                            <p className="text-xs font-bold text-red-500 flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                {FLOW2_NOTIFICATIONS.filter(n => n.priority === 'high').length} urgent
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
