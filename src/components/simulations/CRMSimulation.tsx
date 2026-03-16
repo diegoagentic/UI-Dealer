@@ -1324,9 +1324,15 @@ function ReportsView({ stepId }: { stepId: string }) {
                     <div className="h-[180px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={projectValueByStage}>
-                                <XAxis dataKey="stage" tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
-                                <YAxis tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v / 1000}K`} />
-                                <Tooltip formatter={(v: number) => [`$${(v / 1000).toFixed(0)}K`, 'Value']} contentStyle={{ fontSize: 11, borderRadius: 8 }} />
+                                <XAxis dataKey="stage" tick={{ fontSize: 10, fill: '#71717a' }} axisLine={false} tickLine={false} />
+                                <YAxis tick={{ fontSize: 10, fill: '#71717a' }} axisLine={false} tickLine={false} tickFormatter={v => `$${v / 1000}K`} />
+                                <Tooltip
+                                    formatter={(v: number) => [`$${(v / 1000).toFixed(0)}K`, 'Value']}
+                                    contentStyle={{ fontSize: 11, borderRadius: 8, backgroundColor: '#18181b', border: '1px solid #3f3f46', color: '#f4f4f5' }}
+                                    labelStyle={{ color: '#a1a1aa', marginBottom: 2 }}
+                                    itemStyle={{ color: '#E6F993' }}
+                                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                />
                                 <Bar dataKey="value" fill="#E6F993" radius={[4, 4, 0, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
