@@ -208,7 +208,7 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300" />
 
             {/* Modal */}
-            <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700/50 rounded-2xl shadow-2xl shadow-indigo-500/10 animate-in zoom-in-95 fade-in duration-500 overflow-hidden">
+            <div className="relative w-full max-w-2xl mx-4 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700/50 rounded-2xl shadow-2xl shadow-indigo-500/10 animate-in zoom-in-95 fade-in duration-500 overflow-hidden">
                 {/* Top glow bar */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500" />
 
