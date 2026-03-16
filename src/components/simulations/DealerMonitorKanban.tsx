@@ -186,7 +186,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 </div>
 
                                                 <div className="space-y-1">
-                                                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-primary transition-colors">{card.title}</h4>
+                                                    <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-700 dark:group-hover:text-zinc-200 transition-colors">{card.title}</h4>
                                                     <p className="text-xs text-zinc-500 font-medium">{card.dealer}</p>
                                                 </div>
 
@@ -238,7 +238,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
 
                                                         <div className="px-2 space-y-2">
                                                             <p className="text-[10px] font-medium text-zinc-700 dark:text-zinc-300">
-                                                                Floor plan analyzed: <span className="text-purple-600 dark:text-purple-600 dark:text-purple-400 font-semibold">4 floors, 125 workstations</span>
+                                                                Floor plan analyzed: <span className="text-purple-700 dark:text-purple-400 font-semibold">4 floors, 125 workstations</span>
                                                             </p>
 
                                                             {/* Zone breakdown */}
@@ -250,7 +250,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                                     { zone: 'D', count: 31 },
                                                                 ].map(z => (
                                                                     <div key={z.zone} className="text-center py-1 rounded bg-purple-100/60 dark:bg-purple-900/20 border border-purple-200/40 dark:border-purple-700/30">
-                                                                        <p className="text-[9px] font-semibold text-purple-600 dark:text-purple-600 dark:text-purple-400">Zone {z.zone}</p>
+                                                                        <p className="text-[9px] font-semibold text-purple-700 dark:text-purple-400">Zone {z.zone}</p>
                                                                         <p className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200">{z.count}</p>
                                                                     </div>
                                                                 ))}
@@ -273,7 +273,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                             {/* Structural validation */}
                                                             <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-md bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-200/50 dark:border-emerald-700/30">
                                                                 <CheckCircle2 size={10} className="text-emerald-500 shrink-0" />
-                                                                <p className="text-[9px] text-emerald-700 dark:text-emerald-600 dark:text-emerald-400 font-medium leading-snug">
+                                                                <p className="text-[9px] text-emerald-700 dark:text-emerald-400 font-medium leading-snug">
                                                                     Cross-referenced against building specs: all items within structural limits
                                                                 </p>
                                                             </div>
@@ -291,7 +291,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                         <p className="text-[11px] leading-relaxed text-zinc-500 dark:text-zinc-400 italic bg-gray-50 dark:bg-zinc-800 p-3 rounded-xl border border-gray-200/50 dark:border-zinc-700/50">
                                                             "{card.aiInsight}"
                                                         </p>
-                                                        <button className="w-full flex items-center justify-center gap-2 text-xs font-medium text-primary hover:underline group/btn">
+                                                        <button className="w-full flex items-center justify-center gap-2 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:underline group/btn">
                                                             {card.id === 1 ? 'Route to Expert Hub' : 'Apply Recommendation'}
                                                             <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                                                         </button>
