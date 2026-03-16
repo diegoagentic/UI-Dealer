@@ -2477,10 +2477,11 @@ IEA*1*000002055~`}
                                                     <tr className={cn(
                                                         'transition-colors',
                                                         isEditing && 'ring-2 ring-inset ring-blue-500/30',
-                                                        wasEdited && 'bg-blue-50/50 dark:bg-blue-500/5',
-                                                        !wasEdited && item.status === 'grommet-error' && 'bg-green-50/50 dark:bg-green-500/5',
-                                                        !wasEdited && item.status === 'qty-short' && 'bg-amber-50/50 dark:bg-amber-500/5',
-                                                        !wasEdited && item.status === 'date-shift' && 'bg-blue-50/50 dark:bg-blue-500/5',
+                                                        wasEdited ? 'bg-blue-50/50 dark:bg-blue-500/10' :
+                                                        item.status === 'grommet-error' ? 'bg-green-50/50 dark:bg-green-500/10' :
+                                                        item.status === 'qty-short' ? 'bg-amber-50/50 dark:bg-amber-500/10' :
+                                                        item.status === 'date-shift' ? 'bg-blue-50/50 dark:bg-blue-500/10' :
+                                                        'bg-white dark:bg-zinc-800',
                                                     )}>
                                                         <td className="px-3 py-2 font-mono text-muted-foreground">{item.line}</td>
                                                         <td className="px-3 py-2 font-bold text-foreground">{item.sku}</td>
