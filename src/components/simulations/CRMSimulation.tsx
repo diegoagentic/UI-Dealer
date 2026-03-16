@@ -584,7 +584,7 @@ function ProjectsView({ stepId, skipNotification }: { stepId: string; skipNotifi
                             return (
                                 <tr key={project.id} className={cn(
                                     'border-b border-border last:border-0 hover:bg-muted/20 transition-all',
-                                    isApex && isNewProject && 'bg-brand-50/50 dark:bg-brand-500/5 ring-2 ring-inset ring-brand-400/30 animate-in fade-in slide-in-from-top-2 duration-500'
+                                    isApex && isNewProject ? 'bg-brand-50/50 dark:bg-brand-500/5 ring-2 ring-inset ring-brand-400/30 animate-in fade-in slide-in-from-top-2 duration-500' : 'bg-white dark:bg-zinc-800'
                                 )}>
                                     <td className="px-4 py-2.5">
                                         <div className="flex items-center gap-2">
@@ -699,7 +699,7 @@ function Customer360View({ stepId }: { stepId: string }) {
                             {c.recentOrders.map(order => (
                                 <div key={order.po} className={cn(
                                     'flex items-center justify-between px-3 py-2 rounded-lg border border-border',
-                                    order.po === 'ORD-2055' && 'bg-primary/5 border-primary/20'
+                                    order.po === 'ORD-2055' ? 'bg-primary/5 dark:bg-primary/10 border-primary/20' : 'bg-white dark:bg-zinc-800'
                                 )}>
                                     <div className="flex items-center gap-2">
                                         <span className="text-[11px] font-medium text-foreground">{order.po}</span>
@@ -972,7 +972,7 @@ function ReportsView({ stepId }: { stepId: string }) {
                                     { supplier: 'Knoll', d30: 4, d60: 2, d90: 3, total: '$22,100', risk: 'high' },
                                     { supplier: 'Steelcase', d30: 15, d60: 0, d90: 0, total: '$28,600', risk: 'low' },
                                 ].map(row => (
-                                    <tr key={row.supplier} className="border-b border-border/50">
+                                    <tr key={row.supplier} className="border-b border-border/50 bg-white dark:bg-zinc-800">
                                         <td className="py-2 font-medium text-foreground">{row.supplier}</td>
                                         <td className="py-2 text-center text-muted-foreground">{row.d30}</td>
                                         <td className="py-2 text-center text-muted-foreground">{row.d60}</td>
@@ -1030,7 +1030,7 @@ function ReportsView({ stepId }: { stepId: string }) {
                                     { week: 'Feb 10–14', booked: '$48,900', target: '$42,000', variance: '+$6,900', trend: '↑', positive: true },
                                     { week: 'Mar 3–7', booked: '$43,750', target: '$42,000', variance: '+$1,750', trend: '↑', positive: true },
                                 ].map(row => (
-                                    <tr key={row.week} className="border-b border-border/50">
+                                    <tr key={row.week} className="border-b border-border/50 bg-white dark:bg-zinc-800">
                                         <td className="py-2 font-medium text-foreground">{row.week}</td>
                                         <td className="py-2 text-right text-foreground">{row.booked}</td>
                                         <td className="py-2 text-right text-muted-foreground">{row.target}</td>
@@ -1490,6 +1490,7 @@ function CRMDashboardView({ stepId, onGoToCRM }: { stepId: string; onGoToCRM: ()
                                 key={entry.id}
                                 className={cn(
                                     'px-4 py-2.5 transition-all',
+                                    !isNew && !entry.highlight && 'bg-white dark:bg-zinc-800',
                                     isNew && 'bg-primary/5 animate-in fade-in slide-in-from-top-1 duration-700',
                                     entry.highlight && 'bg-purple-50/30 dark:bg-purple-500/5',
                                     isExpandable && 'cursor-pointer hover:bg-muted/30'
