@@ -2386,7 +2386,7 @@ IEA*1*000002055~`}
                                                 disabled={backorderTriggered23}
                                                 className={cn(
                                                     'px-4 py-2 text-xs font-bold rounded-lg shadow-sm flex items-center gap-2 transition-all',
-                                                    backorderTriggered23 ? 'bg-green-600 text-white' : 'bg-primary text-primary-foreground hover:scale-[1.02]'
+                                                    backorderTriggered23 ? 'bg-brand-300 dark:bg-brand-400 text-zinc-900' : 'bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 hover:scale-[1.02]'
                                                 )}
                                             >
                                                 {backorderTriggered23 ? (
@@ -2588,7 +2588,7 @@ IEA*1*000002055~`}
                                         setExpertApproved24(true);
                                         setTimeout(() => nextStep(), 1500);
                                     }}
-                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white text-xs font-bold transition-colors shadow-sm"
+                                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-xs font-bold transition-colors shadow-sm"
                                 >
                                     <CheckCircleIcon className="w-4 h-4" />
                                     Accept and Send to System of Record
