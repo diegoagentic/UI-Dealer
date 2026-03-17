@@ -105,7 +105,8 @@ const CARDS = [
     { id: 3, title: 'Retailer Group Sync', dealer: 'Multiple', status: 'Normal', column: 'awaiting', priority: 'low' },
     { id: 4, title: 'Workspace Group Reconcile', dealer: 'Workspace Group', status: 'Auto-Processing', column: 'active', priority: 'high', aiInsight: 'Agent #29 is resolving 14 duplicate line items' },
     { id: 5, title: 'PO #ORD-2055 vs Acknowledgement', dealer: 'Global Workspace', status: 'Delta Match Exception', column: 'awaiting', priority: 'critical', aiInsight: 'Delta Engine flagged 2 exceptions: Freight cost mismatch and Line 2 item substitution.' },
-    { id: 6, title: 'Invoice #INV-9001', dealer: 'ModernOffice Inc.', status: 'Document Processing', column: 'active', priority: 'high', aiInsight: 'AI classified as INVOICE. Routed to 3-Way Match Engine for PO/Acknowledgement/Invoice reconciliation.' }
+    { id: 6, title: 'Invoice #INV-9001', dealer: 'ModernOffice Inc.', status: 'Document Processing', column: 'active', priority: 'high', aiInsight: 'AI classified as INVOICE. Routed to 3-Way Match Engine for PO/Acknowledgement/Invoice reconciliation.' },
+    { id: 7, title: 'Change Order CO-007', dealer: 'Apex Furniture', status: 'CO Delta Analysis', column: 'active', priority: 'critical', aiInsight: 'CO Delta Engine analyzing 22 ergonomic upgrade lines. Recalculating cost/sell impact on INV-2055 and QB-4421.' }
 ];
 
 // Steps where each card gets a minimal "processing" indicator (detail is in DemoProcessPanel)
@@ -121,6 +122,7 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
     const displayCards = CARDS.filter(c => {
         if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id) && !(isOps && currentStep.id === '1.3')) return false;
         if (c.id === 6 && !(isOps && currentStep.id === '1.3')) return false;
+        if (c.id === 7 && !(isOps && currentStep.id === '2.2')) return false;
         return true;
     });
 
@@ -189,13 +191,15 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                         card.id === 1 && CARD1_PANEL_STEPS.includes(currentStep.id) ? 'kanban-ai-extraction' :
                                         card.id === 5 && (CARD5_PANEL_STEPS.includes(currentStep.id) || (isOps && currentStep.id === '1.3')) ? 'kanban-ack-normalize' :
                                         card.id === 6 && isOps && currentStep.id === '1.3' ? 'three-way-match-engine' :
+                                        card.id === 7 && isOps && currentStep.id === '2.2' ? 'co-delta-analysis' :
                                         undefined;
 
                                     // Is this card currently showing a panel?
                                     const hasPanel =
                                         (card.id === 1 && CARD1_PANEL_STEPS.includes(currentStep.id)) ||
                                         (card.id === 5 && (CARD5_PANEL_STEPS.includes(currentStep.id) || (isOps && currentStep.id === '1.3'))) ||
-                                        (card.id === 6 && isOps && currentStep.id === '1.3');
+                                        (card.id === 6 && isOps && currentStep.id === '1.3') ||
+                                        (card.id === 7 && isOps && currentStep.id === '2.2');
 
                                     return (
                                         <div

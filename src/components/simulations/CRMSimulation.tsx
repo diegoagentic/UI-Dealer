@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import {
     CheckCircleIcon, ExclamationTriangleIcon, ArrowTrendingUpIcon,
     ClockIcon, SparklesIcon, ArrowPathIcon,
@@ -12,6 +12,7 @@ import {
     PieChart, Pie, Cell
 } from 'recharts'
 import { useDemo } from '../../context/DemoContext'
+import { useDemoProfile } from '../../context/DemoProfileContext'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { Bot, Package, FileText, Truck, Wrench, Mail } from 'lucide-react'
@@ -2048,8 +2049,22 @@ interface CRMSimulationProps {
 type CRMPage = 'dashboard' | 'crm'
 
 export default function CRMSimulation({ onNavigate, activePage }: CRMSimulationProps) {
-    const { currentStep } = useDemo()
+    const { currentStep, nextStep, isPaused } = useDemo()
+    const { activeProfile } = useDemoProfile();
+    const isOps = activeProfile.id === 'ops';
     const stepId = currentStep?.id || '1.12'
+
+    // Pause-aware timer helper
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 200);
+        };
+    }, []);
 
     // Step 1.12 starts on dashboard page, others go straight to CRM
     const [crmPage, setCrmPage] = useState<CRMPage>(stepId === '1.12' ? 'dashboard' : 'crm')
@@ -2080,6 +2095,220 @@ export default function CRMSimulation({ onNavigate, activePage }: CRMSimulationP
         setActiveTab('projects')
         onNavigate?.('crm')
     }, [onNavigate])
+
+    // OPS Step 1.8 — CRM: Receiving Milestone (auto 10s)
+    const [milestoneVisible18, setMilestoneVisible18] = useState(false);
+    useEffect(() => {
+        if (!isOps || stepId !== '1.8') { setMilestoneVisible18(false); return; }
+        const t1 = setTimeout(pauseAware(() => setMilestoneVisible18(true)), 2000);
+        const t2 = setTimeout(pauseAware(() => nextStep()), 10000);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [isOps, stepId, nextStep, pauseAware]);
+
+    if (isOps && stepId === '1.8') {
+        return (
+            <div className="h-full flex flex-col bg-background">
+                <div className="border-b border-border bg-card px-6 py-3">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm font-semibold text-foreground">CRM — Receiving Milestone</h2>
+                            <p className="text-[10px] text-muted-foreground">Apex Furniture project — delivery confirmation auto-recorded</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <SparklesIcon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">AI-powered · Auto-updating</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-4" data-demo-target="crm-receiving-milestone">
+                    {/* Agent Context */}
+                    <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                        <AIAgentAvatar className="mt-0.5" />
+                        <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                            <span className="font-bold">ReceivingMilestoneAgent:</span> Updating CRM project timeline — delivery confirmed for Apex Furniture. All data synced from receiving system automatically.
+                        </div>
+                    </div>
+
+                    {/* Timeline Entry */}
+                    {milestoneVisible18 && (
+                        <div className="bg-card glass border border-emerald-300 dark:border-emerald-700 rounded-2xl overflow-hidden shadow-xl shadow-emerald-500/10 animate-in fade-in slide-in-from-top-4 duration-700">
+                            <div className="p-4 border-b border-border/50 flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                    <CheckCircleIcon className="w-5 h-5 text-emerald-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-bold text-foreground">Delivery Confirmed — March 2026</h3>
+                                    <p className="text-[10px] text-muted-foreground">Milestone auto-recorded from receiving system</p>
+                                </div>
+                            </div>
+
+                            <div className="p-4">
+                                <div className="grid grid-cols-4 gap-3">
+                                    {[
+                                        { label: 'SKUs Received', value: '47/50' },
+                                        { label: 'Product Value', value: '$41,150' },
+                                        { label: 'Services', value: '$3,455' },
+                                        { label: 'QB Bills', value: 'QB-4421 + QB-4424' },
+                                    ].map(stat => (
+                                        <div key={stat.label} className="text-center p-2 rounded-lg bg-muted/30">
+                                            <p className="text-xs font-bold text-foreground">{stat.value}</p>
+                                            <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Daily Log Entry */}
+                                <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <ClipboardDocumentListIcon className="w-3.5 h-3.5 text-blue-500" />
+                                        <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300">Daily Log DL-004</span>
+                                    </div>
+                                    <p className="text-[11px] text-muted-foreground">"Receiving complete — partial delivery noted. 2 Task Chairs pending backorder."</p>
+                                </div>
+
+                                {/* Source badges */}
+                                <div className="mt-3">
+                                    <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                    <div className="flex flex-wrap gap-1.5 mt-1">
+                                        <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold">📦 Receiving System</span>
+                                        <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">💰 QuickBooks</span>
+                                        <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold">📋 Daily Log</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {!milestoneVisible18 && (
+                        <div className="flex items-center justify-center py-12">
+                            <div className="flex items-center gap-3 text-muted-foreground">
+                                <ArrowPathIcon className="w-5 h-5 animate-spin" />
+                                <span className="text-sm">Updating CRM project timeline...</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    // OPS Step 3.3 — Budget vs. Actual Analysis
+    if (isOps && stepId === '3.3') {
+        return (
+            <div className="h-full flex flex-col bg-background">
+                <div className="border-b border-border bg-card px-6 py-3">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h2 className="text-sm font-semibold text-foreground">Budget vs. Actual Analysis</h2>
+                            <p className="text-[10px] text-muted-foreground">Apex Furniture — complete financial variance analysis</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <SparklesIcon className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground">AI-powered · Every dollar documented</span>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-4" data-demo-target="budget-vs-actual-chart">
+                    {/* Agent Context */}
+                    <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                        <AIAgentAvatar className="mt-0.5" />
+                        <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                            <span className="font-bold">BudgetAnalysisAgent:</span> Complete variance analysis for Apex Furniture — all changes documented with approval chain. Total actual: $50,205 (+14.7% vs. base quote).
+                        </div>
+                    </div>
+
+                    {/* Waterfall Breakdown */}
+                    <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+                        <div className="p-4 border-b border-border/50">
+                            <h3 className="text-sm font-bold text-foreground">Budget vs. Actual — Apex Furniture</h3>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">Waterfall breakdown with documented justification</p>
+                        </div>
+
+                        <div className="p-4 space-y-3">
+                            {[
+                                { label: 'Base Quote', amount: '$43,750', pct: '100%', type: 'base' as const, note: 'Original approved quote QT-1025' },
+                                { label: 'CO-007: Ergonomic Upgrade', amount: '+$3,200', pct: '+7.3%', type: 'add' as const, note: 'Customer portal request, approved by approval chain' },
+                                { label: 'Services March 2026', amount: '+$3,455', pct: '+7.9%', type: 'add' as const, note: 'Daily Log sourced — 24h labor + 3 delivery trips' },
+                                { label: 'Backorder Adjustment', amount: '-$200', pct: '-0.5%', type: 'subtract' as const, note: 'Partial delivery credit for 2 Task Chairs' },
+                            ].map((item, i) => (
+                                <div key={i} className={`flex items-center gap-4 p-3 rounded-xl border ${
+                                    item.type === 'base' ? 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/20' :
+                                    item.type === 'add' ? 'border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20' :
+                                    'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20'
+                                }`}>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-foreground">{item.label}</span>
+                                            <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                                                item.type === 'base' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                                                item.type === 'add' ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300' :
+                                                'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                                            }`}>{item.pct}</span>
+                                        </div>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">{item.note}</p>
+                                    </div>
+                                    <span className={`text-sm font-bold ${
+                                        item.type === 'base' ? 'text-foreground' :
+                                        item.type === 'add' ? 'text-amber-600 dark:text-amber-400' :
+                                        'text-emerald-600 dark:text-emerald-400'
+                                    }`}>{item.amount}</span>
+                                </div>
+                            ))}
+
+                            {/* Total */}
+                            <div className="flex items-center gap-4 p-4 rounded-xl border-2 border-foreground/20 bg-muted/30 mt-2">
+                                <div className="flex-1">
+                                    <span className="text-sm font-bold text-foreground">Total Actual</span>
+                                </div>
+                                <span className="text-xl font-bold text-foreground">$50,205</span>
+                            </div>
+                        </div>
+
+                        {/* Variance summary */}
+                        <div className="px-4 py-3 border-t border-border/50 bg-muted/20">
+                            <div className="flex items-center gap-6">
+                                <div className="text-center">
+                                    <p className="text-sm font-bold text-amber-600 dark:text-amber-400">+$6,455</p>
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Variance</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-sm font-bold text-amber-600 dark:text-amber-400">+14.7%</p>
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">vs. Base</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">3/3</p>
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Documented</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">0</p>
+                                    <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Unexplained</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Zero surprises callout */}
+                    <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+                        <div className="flex items-center gap-2">
+                            <SparklesIcon className="w-4 h-4 text-emerald-500" />
+                            <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">Zero surprises — every dollar documented with approval trail</span>
+                        </div>
+                    </div>
+
+                    {/* Download Button */}
+                    <div className="flex justify-end">
+                        <button
+                            onClick={() => nextStep()}
+                            className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2"
+                        >
+                            <CheckCircleIcon className="w-4 h-4" />
+                            Download Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     // Dashboard page — shows Daily Log + summary
     if (crmPage === 'dashboard') {

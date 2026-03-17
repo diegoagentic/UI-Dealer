@@ -55,6 +55,7 @@ import { useGenUI } from './context/GenUIContext'
 import DashboardMetricsGrid from './components/DashboardMetricsGrid';
 import { Card } from 'strata-design-system';
 import { useDemo } from './context/DemoContext'
+import { useDemoProfile } from './context/DemoProfileContext'
 import AgentPipelineStrip from './components/simulations/AgentPipelineStrip'
 import DemoAvatar, { AIAgentAvatar } from './components/simulations/DemoAvatars'
 import MobileDeviceFrame from './components/simulations/MobileDeviceFrame'
@@ -438,6 +439,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const { currentTenant } = useTenant()
     const { sendMessage, setStreamOpen, setShowTriggers } = useGenUI()
     const { currentStep, nextStep, isDemoActive, isPaused } = useDemo()
+    const { activeProfile } = useDemoProfile();
+    const isOps = activeProfile.id === 'ops';
 
     // Pause-aware timer helper (same pattern as DemoProcessPanel)
     const isPausedRef = useRef(isPaused);
@@ -516,17 +519,17 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [lineItemPage17, setLineItemPage17] = useState(0)
     const [requestChangesOpen17, setRequestChangesOpen17] = useState(false)
     useEffect(() => {
-        if (currentStep.id !== '1.7') { setManagerApproved17(false); setNotifArrived17(false); setContentVisible17(false); setLineItemPage17(0); setRequestChangesOpen17(false); return; }
+        if (currentStep.id !== '1.7' || isOps) { setManagerApproved17(false); setNotifArrived17(false); setContentVisible17(false); setLineItemPage17(0); setRequestChangesOpen17(false); return; }
         const t: ReturnType<typeof setTimeout>[] = [];
         t.push(setTimeout(pauseAware(() => setNotifArrived17(true)), 1080));
         t.push(setTimeout(pauseAware(() => setContentVisible17(true)), 2700));
         return () => t.forEach(clearTimeout);
-    }, [currentStep.id, pauseAware]);
+    }, [currentStep.id, pauseAware, isOps]);
 
-    // Step 1.6 — Quote Approval Chain (2 approvers: System Policy auto → David Park → auto-advance)
+    // Step 1.6 — Quote Approval Chain (2 approvers: System Policy auto → David Park → auto-advance) — COI only
     const [approvalStates16, setApprovalStates16] = useState<('pending' | 'approved')[]>(['pending', 'pending'])
     useEffect(() => {
-        if (currentStep.id !== '1.6') {
+        if (currentStep.id !== '1.6' || isOps) {
             setApprovalStates16(['pending', 'pending']);
             return;
         }
@@ -535,15 +538,15 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
         timeouts.push(setTimeout(pauseAware(() => setApprovalStates16(['approved', 'approved'])), 13500));
         timeouts.push(setTimeout(pauseAware(() => nextStep()), 18900));
         return () => timeouts.forEach(clearTimeout);
-    }, [currentStep.id, pauseAware]);
+    }, [currentStep.id, pauseAware, isOps]);
     const approvedCount16 = approvalStates16.filter(s => s === 'approved').length;
 
-    // Step 1.9 — PO Generation + Order Approval Chain (fully automated)
+    // Step 1.9 — PO Generation + Order Approval Chain (fully automated) — COI only
     const [phase18, setPhase18] = useState<'showing-approvals' | 'po-generating' | 'po-complete' | 'order-chain' | 'order-complete' | 'done'>('showing-approvals')
     const [poGenPhase18, setPoGenPhase18] = useState<'building' | 'mapping' | 'validating' | 'complete'>('building')
     const [orderApprovalStates18, setOrderApprovalStates18] = useState<('pending' | 'approved')[]>(['pending', 'pending', 'pending'])
     useEffect(() => {
-        if (currentStep.id !== '1.9') {
+        if (currentStep.id !== '1.9' || isOps) {
             setPhase18('showing-approvals');
             setPoGenPhase18('building');
             setOrderApprovalStates18(['pending', 'pending', 'pending']);
@@ -565,6 +568,35 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const orderApprovedCount18 = orderApprovalStates18.filter(s => s === 'approved').length;
 
     // Step 1.10 — Smart Notifications (Action Center shows the notification)
+
+    // OPS state variables
+    const [qbSynced16, setQbSynced16] = useState(false);
+    const [qbConfirmed17, setQbConfirmed17] = useState(false);
+    const [coDone21, setCoDone21] = useState(false);
+    // OPS Step 2.4 — auto step animation states
+    const [opsAmendCards, setOpsAmendCards] = useState<number>(0);
+
+    const [exportedReport32, setExportedReport32] = useState(false);
+
+    // Reset OPS states when step changes
+    useEffect(() => {
+        if (!isOps) return;
+        setQbSynced16(false);
+        setQbConfirmed17(false);
+        setCoDone21(false);
+        setOpsAmendCards(0);
+        setExportedReport32(false);
+    }, [currentStep.id, isOps]);
+
+    // OPS Step 2.4 — staggered card animation (auto 18s)
+    useEffect(() => {
+        if (currentStep.id !== '2.4' || !isOps) return;
+        const t: ReturnType<typeof setTimeout>[] = [];
+        t.push(setTimeout(pauseAware(() => setOpsAmendCards(1)), 3000));
+        t.push(setTimeout(pauseAware(() => setOpsAmendCards(2)), 6000));
+        t.push(setTimeout(pauseAware(() => setOpsAmendCards(3)), 9000));
+        return () => t.forEach(clearTimeout);
+    }, [currentStep.id, isOps, pauseAware]);
 
     const [expandedActivityId, setExpandedActivityId] = useState<number | null>(null)
     const [expandedSuggestionId, setExpandedSuggestionId] = useState<number | null>(null)
@@ -676,11 +708,11 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     }, [])
 
     return (
-        <div className={`font-sans text-foreground ${['1.8', '3.5'].includes(currentStep.id) ? 'min-h-[200vh] bg-zinc-950 -mt-16 pt-16' : 'min-h-screen bg-background pb-10'}`}>
-            {!['1.8', '3.5'].includes(currentStep.id) && <GenUIContainer />}
+        <div className={`font-sans text-foreground ${!isOps && ['1.8', '3.5'].includes(currentStep.id) ? 'min-h-[200vh] bg-zinc-950 -mt-16 pt-16' : 'min-h-screen bg-background pb-10'}`}>
+            {!(!isOps && ['1.8', '3.5'].includes(currentStep.id)) && <GenUIContainer />}
 
-            {/* ===== Step 1.8: Sales Approval — Mobile device inline ===== */}
-            {currentStep.id === '1.8' && (
+            {/* ===== Step 1.8: Sales Approval — Mobile device inline (COI only) ===== */}
+            {currentStep.id === '1.8' && !isOps && (
                 <div data-demo-target="mobile-dealer-approval" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
                     {/* Mobile Device Frame — centered, nothing else */}
                     <MobileDeviceFrame>
@@ -795,8 +827,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* ===== Step 3.5: End User Punch List Report — Mobile device inline ===== */}
-            {currentStep.id === '3.5' && (
+            {/* ===== Step 3.5: End User Punch List Report — Mobile device inline (COI only) ===== */}
+            {currentStep.id === '3.5' && !isOps && (
                 <div data-demo-target="mobile-enduser-report" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
                     <MobileDeviceFrame>
                         {/* Mobile Navbar */}
@@ -1239,8 +1271,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* Main Content — hidden during step 1.8 / 3.5 (fullscreen mobile overlay) */}
-            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${['1.8', '3.5'].includes(currentStep.id) ? 'hidden' : ''}`}>
+            {/* Main Content — hidden during step 1.8 / 3.5 (fullscreen mobile overlay, COI only) */}
+            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${!isOps && ['1.8', '3.5'].includes(currentStep.id) ? 'hidden' : ''}`}>
                 {/* Page Title & Search */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
@@ -1262,8 +1294,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                 </div>
 
-                {/* ===== Step 1.6: Quote Approval Chain ===== */}
-                {currentStep.id === '1.6' && (
+                {/* ===== Step 1.6: Quote Approval Chain (COI only) ===== */}
+                {currentStep.id === '1.6' && !isOps && (
                     <div data-demo-target="approval-chain-progress" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-lg">
                             <div className="px-6 py-4 border-b border-border/50 flex items-center justify-between">
@@ -1361,8 +1393,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 1.9: PO Generation & Order Approval ===== */}
-                {currentStep.id === '1.9' && (
+                {/* ===== Step 1.9: PO Generation & Order Approval (COI only) ===== */}
+                {currentStep.id === '1.9' && !isOps && (
                     <div data-demo-target="po-order-approval" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
@@ -1508,8 +1540,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 1.7: Manager Approval (Sara's Dashboard) ===== */}
-                {currentStep.id === '1.7' && (
+                {/* ===== Step 1.7: Manager Approval (Sara's Dashboard) (COI only) ===== */}
+                {currentStep.id === '1.7' && !isOps && (
                     <div data-demo-target="manager-approval-view" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* Notification arrival toast */}
                         {notifArrived17 && (
@@ -1845,8 +1877,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ===== Step 2.7: Smart Notifications (Action Center opens in Navbar) ===== */}
-                {currentStep.id === '2.7' && (
+                {/* ===== Step 2.7: Smart Notifications (Action Center opens in Navbar) (COI only) ===== */}
+                {currentStep.id === '2.7' && !isOps && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
@@ -1869,8 +1901,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                 {/* Step 1.8 renders as fullscreen mobile overlay — see portal above */}
 
-                {/* ===== Step 1.10: Smart Notifications (Action Center opens in Navbar) ===== */}
-                {currentStep.id === '1.10' && (
+                {/* ===== Step 1.10: Smart Notifications (Action Center opens in Navbar) (COI only) ===== */}
+                {currentStep.id === '1.10' && !isOps && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Attribution */}
                         <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
@@ -1900,6 +1932,526 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ═══════════════════════════════════════════ */}
+                {/* OPS DEMO: QuickBooks Hero Moment */}
+                {/* ═══════════════════════════════════════════ */}
+
+                {/* OPS Step 1.6 — QuickBooks Sync Batch (interactive) */}
+                {currentStep.id === '1.6' && isOps && (
+                    <div data-demo-target="qb-sync-batch-panel" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Agent Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">QuickBooksAgent:</span> Sync batch ready — 2 invoices totaling $44,605 mapped to GL codes. Customer "Apex Furniture" matched in QuickBooks.
+                            </div>
+                        </div>
+
+                        {/* QB Sync Panel */}
+                        <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+                            <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                        <CloudArrowUpIcon className="w-5 h-5 text-emerald-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-sm font-bold text-foreground">QuickBooks Sync Batch</h3>
+                                        <p className="text-[10px] text-muted-foreground mt-0.5">2 invoices ready for sync · Customer matched</p>
+                                    </div>
+                                </div>
+                                <span className="text-lg font-bold text-foreground">$44,605</span>
+                            </div>
+
+                            {/* Invoice Cards */}
+                            <div className="p-4 grid grid-cols-2 gap-3">
+                                {[
+                                    { id: 'INV-2055', type: 'Product', amount: '$41,150', lines: 6, icon: CubeIcon },
+                                    { id: 'SVC-03-2026', type: 'Services', amount: '$3,455', lines: 3, icon: WrenchScrewdriverIcon },
+                                ].map(inv => (
+                                    <div key={inv.id} className="rounded-xl border border-border p-3 bg-muted/20">
+                                        <div className="flex items-center gap-2 mb-1.5">
+                                            <inv.icon className="w-4 h-4 text-muted-foreground" />
+                                            <span className="text-xs font-bold text-foreground">{inv.id}</span>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold">{inv.type}</span>
+                                        </div>
+                                        <p className="text-lg font-bold text-foreground">{inv.amount}</p>
+                                        <p className="text-[10px] text-muted-foreground">{inv.lines} line items</p>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* GL Code Mapping */}
+                            <div className="px-4 pb-3">
+                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">GL Code Mapping</h4>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-border/50">
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">Category</th>
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">GL Code</th>
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase text-right">Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {[
+                                                { category: 'Furniture', gl: 'COGS-F01', amount: '$38,150' },
+                                                { category: 'Freight', gl: 'SHIP-EXP', amount: '$3,000' },
+                                                { category: 'Services', gl: 'SVC-REV', amount: '$3,455' },
+                                            ].map((row, i) => (
+                                                <tr key={i} className="border-b border-border/30">
+                                                    <td className="px-3 py-2 text-xs text-foreground">{row.category}</td>
+                                                    <td className="px-3 py-2 text-[11px] font-mono text-muted-foreground">{row.gl}</td>
+                                                    <td className="px-3 py-2 text-xs text-right font-bold text-foreground">{row.amount}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Customer match + Tax */}
+                            <div className="px-4 py-3 border-t border-border/50 bg-muted/20 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
+                                    <span className="text-[11px] text-foreground font-medium">Customer: Apex Furniture (matched in QB)</span>
+                                </div>
+                                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">Tax Applied</span>
+                            </div>
+                        </div>
+
+                        {/* Sync Button */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => { setQbSynced16(true); nextStep(); }}
+                                disabled={qbSynced16}
+                                className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                            >
+                                <CloudArrowUpIcon className="w-4 h-4" />
+                                Sync to QuickBooks
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 1.7 — Sync Confirmation (interactive) */}
+                {currentStep.id === '1.7' && isOps && (
+                    <div data-demo-target="qb-sync-confirmation" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Success Banner */}
+                        <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center gap-3">
+                            <CheckCircleIcon className="w-6 h-6 text-emerald-500" />
+                            <span className="text-sm font-bold text-emerald-700 dark:text-emerald-300">QuickBooks Sync Complete</span>
+                        </div>
+
+                        {/* Confirmation Cards */}
+                        <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+                            <div className="p-4 space-y-3">
+                                {[
+                                    { invoice: 'INV-2055', qbBill: 'QB-4421', amount: '$41,150', type: 'Product' },
+                                    { invoice: 'SVC-03-2026', qbBill: 'QB-4424', amount: '$3,455', type: 'Services' },
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
+                                        <CheckCircleIcon className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-foreground">{item.invoice}</span>
+                                                <ArrowRightIcon className="w-3 h-3 text-muted-foreground" />
+                                                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{item.qbBill}</span>
+                                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold">{item.type}</span>
+                                            </div>
+                                        </div>
+                                        <span className="text-sm font-bold text-foreground">{item.amount}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* GL Breakdown with status */}
+                            <div className="px-4 pb-3">
+                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">GL Breakdown</h4>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-left border-collapse">
+                                        <thead>
+                                            <tr className="border-b border-border/50">
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase">Category</th>
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase text-right">Amount</th>
+                                                <th className="px-3 py-2 text-[10px] font-bold text-muted-foreground uppercase text-center">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {[
+                                                { category: 'Furniture (COGS-F01)', amount: '$38,150' },
+                                                { category: 'Freight (SHIP-EXP)', amount: '$3,000' },
+                                                { category: 'Services (SVC-REV)', amount: '$3,455' },
+                                            ].map((row, i) => (
+                                                <tr key={i} className="border-b border-border/30">
+                                                    <td className="px-3 py-2 text-xs text-foreground">{row.category}</td>
+                                                    <td className="px-3 py-2 text-xs text-right font-bold text-foreground">{row.amount}</td>
+                                                    <td className="px-3 py-2 text-center">
+                                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">Posted</span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Timestamp + zero re-entry */}
+                            <div className="px-4 py-3 border-t border-border/50 bg-muted/20 space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <ClockIcon className="w-3.5 h-3.5 text-muted-foreground" />
+                                    <span className="text-[11px] text-muted-foreground">Synced March 15, 2026 at 2:45 PM</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <SparklesIcon className="w-3.5 h-3.5 text-emerald-500" />
+                                    <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">Zero re-entry into QuickBooks</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Done Button */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => { setQbConfirmed17(true); nextStep(); }}
+                                disabled={qbConfirmed17}
+                                className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                            >
+                                <CheckCircleIcon className="w-4 h-4" />
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 2.1 — CO Request Received (interactive) */}
+                {currentStep.id === '2.1' && isOps && (
+                    <div data-demo-target="co-request-incoming" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Agent Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">CostAnalysisAgent:</span> Change Order CO-007 received via Customer Portal — 22 line items, ergonomic upgrade request for Apex Furniture. No emails, no phone calls required to initiate.
+                            </div>
+                        </div>
+
+                        {/* CO Request Card */}
+                        <div className="bg-card glass border-2 border-amber-300 dark:border-amber-600 rounded-2xl overflow-hidden shadow-xl shadow-amber-500/10">
+                            <div className="p-5">
+                                <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                                            <DocumentPlusIcon className="w-5 h-5 text-amber-500" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-sm font-bold text-foreground">Change Order CO-007</h3>
+                                            <p className="text-[10px] text-muted-foreground mt-0.5">From: Apex Furniture Customer Portal</p>
+                                        </div>
+                                    </div>
+                                    <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold">Under Review</span>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-3 mt-4">
+                                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                                        <p className="text-lg font-bold text-foreground">22</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Line Items</p>
+                                    </div>
+                                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                                        <p className="text-lg font-bold text-foreground">ERG</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Upgrade Type</p>
+                                    </div>
+                                    <div className="text-center p-3 rounded-lg bg-muted/30">
+                                        <p className="text-lg font-bold text-blue-600 dark:text-blue-400">Portal</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Source</p>
+                                    </div>
+                                </div>
+
+                                {/* Source badges */}
+                                <div className="mt-4">
+                                    <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                    <div className="flex flex-wrap gap-1.5 mt-1">
+                                        <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">🌐 Customer Portal</span>
+                                        <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">📋 PO ORD-2055</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-4 p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+                                    <div className="flex items-center gap-2">
+                                        <SparklesIcon className="w-4 h-4 text-emerald-500" />
+                                        <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">No emails, no phone calls to initiate — received automatically via portal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Begin Analysis Button */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => { setCoDone21(true); nextStep(); }}
+                                disabled={coDone21}
+                                className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                            >
+                                <ArrowRightIcon className="w-4 h-4" />
+                                Begin CO Analysis
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 2.4 — Invoice + QB Amendment (auto 18s) */}
+                {currentStep.id === '2.4' && isOps && (
+                    <div data-demo-target="invoice-amendment-parallel" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Agent Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">ParallelSyncAgent:</span> Applying CO-007 amendments across all systems in parallel — invoice, QuickBooks, and Daily Log updated simultaneously.
+                            </div>
+                        </div>
+
+                        {/* Staggered Amendment Cards */}
+                        <div className="space-y-3">
+                            {[
+                                { agent: 'InvoiceDeltaAgent', title: 'Invoice INV-2055 Amended', detail: '$46,950 (+$3,200)', icon: DocumentTextIcon, color: 'blue' },
+                                { agent: 'QuickBooksAgent', title: 'QB Bill QB-4421 Amended', detail: 'GL codes updated', icon: CloudArrowUpIcon, color: 'emerald' },
+                                { agent: 'DailyLogAgent', title: 'Daily Log DL-007 Recorded', detail: 'CO-007 activity logged', icon: ClipboardDocumentListIcon, color: 'purple' },
+                            ].map((card, i) => (
+                                <div
+                                    key={i}
+                                    className={`bg-card glass border rounded-2xl p-4 shadow-lg transition-all duration-700 ${
+                                        i < opsAmendCards
+                                            ? 'border-emerald-300 dark:border-emerald-700 opacity-100 translate-y-0'
+                                            : 'border-border opacity-30 translate-y-2'
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                                            i < opsAmendCards
+                                                ? 'bg-emerald-500/10'
+                                                : 'bg-muted/30'
+                                        }`}>
+                                            {i < opsAmendCards
+                                                ? <CheckCircleIcon className="w-5 h-5 text-emerald-500" />
+                                                : <card.icon className="w-5 h-5 text-muted-foreground" />
+                                            }
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-foreground">{card.title}</span>
+                                                <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                                                    card.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                                                    card.color === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' :
+                                                    'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                                                }`}>{card.agent}</span>
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">{card.detail}</p>
+                                        </div>
+                                        {i < opsAmendCards && (
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">Synced</span>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Footer note */}
+                        {opsAmendCards >= 3 && (
+                            <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-2">
+                                    <SparklesIcon className="w-4 h-4 text-emerald-500" />
+                                    <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">All systems updated in parallel — zero re-entry</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ═══════════════════════════════════════════ */}
+                {/* OPS DEMO: Financial Command Center (Flow 3) */}
+                {/* ═══════════════════════════════════════════ */}
+
+                {/* OPS Step 3.1 — Multi-Project Financial Dashboard (interactive) */}
+                {currentStep.id === '3.1' && isOps && (
+                    <div data-demo-target="financial-command-center" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Agent Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">FinancialCommandAgent:</span> Multi-project financial overview ready — 3 active projects, $157,650 total pipeline. All data synced from QuickBooks and project management systems.
+                            </div>
+                        </div>
+
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-foreground">Financial Command Center</h2>
+                            <span className="text-sm px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">$157,650</span>
+                        </div>
+
+                        {/* Project Cards */}
+                        <div className="grid grid-cols-3 gap-4">
+                            {[
+                                { name: 'Apex Furniture', amount: '$46,950', delivery: '82%', qb: true, cos: 1, status: 'Delivering', color: 'emerald' },
+                                { name: 'Workspace Group', amount: '$12,300', delivery: '100%', qb: true, cos: 0, status: 'Invoiced', color: 'blue' },
+                                { name: 'Meridian Group', amount: '$98,400', delivery: '0%', qb: false, cos: 0, status: 'Quote Approved', color: 'amber' },
+                            ].map((project, i) => (
+                                <div key={i} className="bg-card glass border border-border rounded-2xl p-4 shadow-lg">
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h3 className="text-xs font-bold text-foreground">{project.name}</h3>
+                                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
+                                            project.color === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300' :
+                                            project.color === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' :
+                                            'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                                        }`}>{project.status}</span>
+                                    </div>
+                                    <p className="text-xl font-bold text-foreground mb-2">{project.amount}</p>
+                                    <div className="space-y-1.5 text-[10px] text-muted-foreground">
+                                        <div className="flex justify-between">
+                                            <span>Delivered</span>
+                                            <span className="font-bold text-foreground">{project.delivery}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>QB Synced</span>
+                                            <span className={`font-bold ${project.qb ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>{project.qb ? 'Yes' : 'Pending'}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>Change Orders</span>
+                                            <span className="font-bold text-foreground">{project.cos}</span>
+                                        </div>
+                                        {i === 2 && (
+                                            <div className="flex justify-between">
+                                                <span>Win Probability</span>
+                                                <span className="font-bold text-amber-600 dark:text-amber-400">68%</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Pipeline Summary */}
+                        <div className="bg-card glass border border-border rounded-2xl p-4 shadow-lg">
+                            <div className="flex items-center gap-6">
+                                {[
+                                    { label: 'Total Pipeline', value: '$157,650', color: 'text-foreground' },
+                                    { label: 'QB-Synced', value: '2', color: 'text-emerald-600 dark:text-emerald-400' },
+                                    { label: 'Open COs', value: '1', color: 'text-amber-600 dark:text-amber-400' },
+                                    { label: 'Overdue', value: '0', color: 'text-emerald-600 dark:text-emerald-400' },
+                                ].map(kpi => (
+                                    <div key={kpi.label} className="text-center">
+                                        <p className={`text-sm font-bold ${kpi.color}`}>{kpi.value}</p>
+                                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{kpi.label}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Zero re-entry callout */}
+                        <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800">
+                            <div className="flex items-center gap-2">
+                                <SparklesIcon className="w-4 h-4 text-emerald-500" />
+                                <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">No Excel, no QB login, no calls — real-time financial visibility</span>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => nextStep()}
+                                className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2"
+                            >
+                                <ArrowRightIcon className="w-4 h-4" />
+                                Continue
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 3.2 — QuickBooks Reconciliation (interactive) */}
+                {currentStep.id === '3.2' && isOps && (
+                    <div data-demo-target="qb-reconciliation-report" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                        {/* Agent Context */}
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">ReconciliationAgent:</span> QuickBooks reconciliation complete — all invoices match QB bills with zero discrepancies. Total posted: $60,250.
+                            </div>
+                        </div>
+
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-foreground">QB Reconciliation</h2>
+                            <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold">0 Discrepancies</span>
+                        </div>
+
+                        {/* Reconciliation Table */}
+                        <div className="bg-card glass border border-border rounded-2xl overflow-hidden shadow-xl shadow-black/5">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-border/50 bg-zinc-50/50 dark:bg-zinc-800/50">
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Invoice</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-right">Amount</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">QB Bill</th>
+                                            <th className="px-4 py-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider text-center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {[
+                                            { invoice: 'INV-2055', amount: '$46,950', qb: 'QB-4421' },
+                                            { invoice: 'SVC-03-2026', amount: '$3,455', qb: 'QB-4424' },
+                                            { invoice: 'INV-2048', amount: '$12,300', qb: 'QB-4422' },
+                                        ].map((row, i) => (
+                                            <tr key={i} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                                                <td className="px-4 py-3 text-xs font-bold text-foreground">{row.invoice}</td>
+                                                <td className="px-4 py-3 text-xs text-right font-bold text-foreground">{row.amount}</td>
+                                                <td className="px-4 py-3 text-xs text-emerald-600 dark:text-emerald-400 font-bold">{row.qb}</td>
+                                                <td className="px-4 py-3 text-center">
+                                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 font-bold flex items-center gap-1 justify-center w-fit mx-auto">
+                                                        <CheckCircleIcon className="w-3 h-3" /> Matched
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            {/* Total + GL Breakdown */}
+                            <div className="px-4 py-3 border-t border-border/50 bg-muted/20">
+                                <div className="flex items-center justify-between mb-3">
+                                    <span className="text-xs font-bold text-foreground">Total Posted</span>
+                                    <span className="text-lg font-bold text-foreground">$60,250</span>
+                                </div>
+                                <div className="flex items-center gap-4 text-[10px]">
+                                    {[
+                                        { label: 'Furniture', value: '$41,150' },
+                                        { label: 'Services', value: '$3,455' },
+                                        { label: 'Freight', value: '$2,345' },
+                                    ].map(gl => (
+                                        <div key={gl.label} className="flex items-center gap-1.5">
+                                            <span className="text-muted-foreground">{gl.label}:</span>
+                                            <span className="font-bold text-foreground">{gl.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-2 flex items-center gap-2">
+                                    <span className="text-[10px] text-muted-foreground">Aging AP:</span>
+                                    <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">0 overdue</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Export Button */}
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => { setExportedReport32(true); nextStep(); }}
+                                disabled={exportedReport32}
+                                className="px-5 py-2.5 rounded-xl bg-brand-300 dark:bg-brand-400 text-zinc-900 font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                            >
+                                <ArrowDownTrayIcon className="w-4 h-4" />
+                                Export to Controller
+                            </button>
                         </div>
                     </div>
                 )}
