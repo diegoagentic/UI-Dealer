@@ -9,7 +9,7 @@ import {
     ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
     CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon, CheckCircleIcon,
     ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
-    FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon, ArrowDownTrayIcon
+    FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon, ArrowDownTrayIcon, ArrowsRightLeftIcon, DocumentMagnifyingGlassIcon
 } from '@heroicons/react/24/outline'
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
@@ -22,6 +22,8 @@ import SmartQuoteHub from './components/widgets/SmartQuoteHub'
 import BatchAckModal from './components/BatchAckModal'
 import Breadcrumbs from './components/Breadcrumbs'
 import PEDExportModal, { getMockPEDData, type PEDData, type PEDDocumentType } from './components/PEDExportModal'
+import DocumentConversionModal from './components/DocumentConversionModal'
+import AckReconciliationModal from './components/AckReconciliationModal'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { useDemo } from './context/DemoContext'
@@ -241,6 +243,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false);
     const [isPEDOpen, setIsPEDOpen] = useState(false);
     const [pedData, setPedData] = useState<PEDData | null>(null);
+    const [isConversionOpen, setIsConversionOpen] = useState(false);
+    const [conversionMode, setConversionMode] = useState<'quote-to-order' | 'order-to-ack'>('quote-to-order');
+    const [isReconciliationOpen, setIsReconciliationOpen] = useState(false);
 
     const openPEDPreview = (type: PEDDocumentType, id?: string) => {
         setPedData(getMockPEDData(type, id));
@@ -477,7 +482,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 lifecycleTab === 'quotes'
                                     ? "bg-brand-300 dark:bg-brand-500 text-zinc-900 shadow-sm"
 
-                                    : "text-muted-foreground hover:bg-white/50 dark:hover:bg-zinc-700/50 hover:text-foreground"
+                                    : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
                             <DocumentTextIcon className="w-4 h-4" />
@@ -979,6 +984,56 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
                                             <div className="w-px h-8 bg-border hidden xl:block mx-1"></div>
 
+                                            {/* Quick Actions — icon-only with hover tooltip */}
+                                            {activeTab !== 'metrics' && (
+                                                <div className="flex items-center gap-1">
+                                                    {lifecycleTab === 'quotes' && (<>
+                                                        <button onClick={() => triggerToast('Duplicate Quote', 'Select a quote to duplicate from the list.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Duplicate">
+                                                            <DocumentDuplicateIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => openPEDPreview('quote')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Export PDF">
+                                                            <DocumentTextIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => triggerToast('Send to Client', 'Email prepared with quote summary. Ready to review and send.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Send to Client">
+                                                            <EnvelopeIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => { setConversionMode('quote-to-order'); setIsConversionOpen(true); }} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Convert to Order">
+                                                            <ArrowsRightLeftIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </>)}
+                                                    {lifecycleTab === 'acknowledgments' && (<>
+                                                        <button onClick={() => openPEDPreview('acknowledgment')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Export PDF">
+                                                            <DocumentTextIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => triggerToast('Email Vendor', 'Drafting vendor communication with acknowledgement details.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Email Vendor">
+                                                            <EnvelopeIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => setIsBatchAckOpen(true)} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Batch Approve">
+                                                            <CheckBadgeIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => setIsReconciliationOpen(true)} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Reconcile PO vs ACK">
+                                                            <DocumentMagnifyingGlassIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </>)}
+                                                    {lifecycleTab === 'orders' && (<>
+                                                        <button onClick={() => triggerToast('Duplicate Order', 'Select an order to duplicate from the list.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Duplicate">
+                                                            <DocumentDuplicateIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => openPEDPreview('order')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Export PDF">
+                                                            <DocumentTextIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => triggerToast('Send Email', 'Email drafted with order confirmation details.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Send Email">
+                                                            <EnvelopeIcon className="w-5 h-5" />
+                                                        </button>
+                                                        <button onClick={() => { setConversionMode('order-to-ack'); setIsConversionOpen(true); }} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Convert to Acknowledgment">
+                                                            <ArrowsRightLeftIcon className="w-5 h-5" />
+                                                        </button>
+                                                    </>)}
+                                                </div>
+                                            )}
+
+                                            <div className="w-px h-8 bg-border hidden xl:block mx-1"></div>
+
                                             <button
                                                 onClick={() => {
                                                     if (lifecycleTab === 'quotes') {
@@ -1001,66 +1056,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         </div>
                                     </div>
                                 </div>
-
-                                {/* Quick Actions — always visible except in Metrics tab */}
-                                {activeTab !== 'metrics' && (
-                                    <div className="flex items-center gap-2 flex-wrap mt-3">
-                                        {lifecycleTab === 'quotes' && (<>
-                                            <button onClick={() => setIsQuoteWidgetOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <PlusIcon className="w-3.5 h-3.5 text-green-500" />
-                                                New Quote
-                                            </button>
-                                            <button onClick={() => triggerToast('Duplicate Quote', 'Select a quote to duplicate from the list.', 'info')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <DocumentDuplicateIcon className="w-3.5 h-3.5 text-blue-500" />
-                                                Duplicate
-                                            </button>
-                                            <button onClick={() => openPEDPreview('quote')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <DocumentTextIcon className="w-3.5 h-3.5 text-zinc-500" />
-                                                Export PDF
-                                            </button>
-                                            <button onClick={() => triggerToast('Send to Client', 'Email prepared with quote summary. Ready to review and send.', 'info')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <EnvelopeIcon className="w-3.5 h-3.5 text-indigo-500" />
-                                                Send to Client
-                                            </button>
-                                        </>)}
-                                        {lifecycleTab === 'acknowledgments' && (<>
-                                            <button onClick={() => setIsAckModalOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <CloudArrowUpIcon className="w-3.5 h-3.5 text-green-500" />
-                                                Upload Acknowledgement
-                                            </button>
-                                            <button onClick={() => openPEDPreview('acknowledgment')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <DocumentTextIcon className="w-3.5 h-3.5 text-zinc-500" />
-                                                Export PDF
-                                            </button>
-                                            <button onClick={() => triggerToast('Email Vendor', 'Drafting vendor communication with acknowledgement details.', 'info')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <EnvelopeIcon className="w-3.5 h-3.5 text-blue-500" />
-                                                Email Vendor
-                                            </button>
-                                            <button onClick={() => setIsBatchAckOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <CheckBadgeIcon className="w-3.5 h-3.5 text-green-500" />
-                                                Batch Approve
-                                            </button>
-                                        </>)}
-                                        {lifecycleTab === 'orders' && (<>
-                                            <button onClick={() => setIsCreateOrderOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <PlusIcon className="w-3.5 h-3.5 text-green-500" />
-                                                New Order
-                                            </button>
-                                            <button onClick={() => triggerToast('Duplicate Order', 'Select an order to duplicate from the list.', 'info')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <DocumentDuplicateIcon className="w-3.5 h-3.5 text-blue-500" />
-                                                Duplicate
-                                            </button>
-                                            <button onClick={() => openPEDPreview('order')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <DocumentTextIcon className="w-3.5 h-3.5 text-zinc-500" />
-                                                Export PDF
-                                            </button>
-                                            <button onClick={() => triggerToast('Send Email', 'Email drafted with order confirmation details.', 'info')} className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-white dark:bg-zinc-800 text-foreground hover:border-primary/30 hover:shadow-sm transition-all">
-                                                <EnvelopeIcon className="w-3.5 h-3.5 text-indigo-500" />
-                                                Send Email
-                                            </button>
-                                        </>)}
-                                    </div>
-                                )}
                             </div>
                             <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
 
@@ -1733,6 +1728,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} />
             <CreateQuoteModal isOpen={isQuoteWidgetOpen} onClose={() => setIsQuoteWidgetOpen(false)} onNavigate={onNavigate} />
             <PEDExportModal isOpen={isPEDOpen} onClose={() => setIsPEDOpen(false)} data={pedData} />
+            <DocumentConversionModal isOpen={isConversionOpen} onClose={() => setIsConversionOpen(false)} mode={conversionMode} triggerToast={triggerToast} />
+            <AckReconciliationModal isOpen={isReconciliationOpen} onClose={() => setIsReconciliationOpen(false)} triggerToast={triggerToast} />
 
             {/* Toast Notification */}
             {showToast && (

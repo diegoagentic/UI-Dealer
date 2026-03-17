@@ -164,7 +164,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                 </div>
 
                 {/* Tabs */}
-                <div className="flex gap-1 bg-card/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
+                <div className="flex items-center gap-1 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-xl w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                     {[
                         { id: 'requests', label: 'Requests', icon: ClipboardDocumentCheckIcon },
                         { id: 'movements', label: 'Movements', icon: ArrowPathRoundedSquareIcon },
@@ -176,10 +176,10 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={cn(
-                                "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-all whitespace-nowrap",
+                                "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all whitespace-nowrap",
                                 activeTab === tab.id
-                                    ? "bg-card text-brand-600 dark:text-brand-400 shadow-sm border border-border"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent",
+                                    ? "bg-brand-300 dark:bg-brand-500 text-zinc-900 shadow-sm"
+                                    : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white",
                                 highlightedTab === tab.id && "ring-4 ring-brand-500 shadow-[0_0_30px_rgba(var(--brand-500),0.6)] animate-pulse"
                             )}
                         >

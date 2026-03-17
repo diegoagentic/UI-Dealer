@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon, ChevronRightIcon, ChevronLeftIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import logoLightBrand from './assets/logo-light-brand.png'
 import logoDarkBrand from './assets/logo-dark-brand.png'
 import { useAuth } from './context/AuthContext'
@@ -33,6 +33,62 @@ export default function Login() {
 
     const MFA_PHONE = '+1 (832) ***-4582'
     const MFA_CODE = ['8', '3', '1', '9', '0', '7']
+
+    // Access selection state (tenant → role)
+    type AccessPhase = 'tenants' | 'roles';
+    const [showAccess, setShowAccess] = useState(false)
+    const [accessPhase, setAccessPhase] = useState<AccessPhase>('tenants')
+    const [selectedTenant, setSelectedTenant] = useState<string | null>(null)
+    const [selectedRole, setSelectedRole] = useState<string | null>(null)
+    const [tenantSearch, setTenantSearch] = useState('')
+    const [roleSearch, setRoleSearch] = useState('')
+
+    const TENANTS = [
+        { name: 'A New Tenant', description: 'New tenant environment' },
+        { name: 'AIS', description: 'AIS Partners LLC' },
+        { name: 'Hartford Office Interiors', description: 'Testing purposes' },
+        { name: 'Tangram Interiors', description: 'Tangram Interiors Corp.' },
+    ]
+
+    const TENANT_ROLES: Record<string, string[]> = {
+        'A New Tenant': ['Administrator'],
+        'AIS': ['Administrator', 'Sales Representative'],
+        'Hartford Office Interiors': ['Administrator', 'Project Manager', 'Viewer'],
+        'Tangram Interiors': ['Administrator', 'cApital Duplicated 2'],
+    }
+
+    const filteredTenants = TENANTS.filter(t =>
+        t.name.toLowerCase().includes(tenantSearch.toLowerCase())
+    )
+    const currentRoles = selectedTenant ? (TENANT_ROLES[selectedTenant] || []) : []
+    const filteredRoles = currentRoles.filter(r =>
+        r.toLowerCase().includes(roleSearch.toLowerCase())
+    )
+
+    const handleTenantSelect = (name: string) => {
+        setSelectedTenant(name)
+        setSelectedRole(null)
+        setRoleSearch('')
+        setAccessPhase('roles')
+    }
+
+    const handleAccessBack = () => {
+        if (accessPhase === 'roles') {
+            setAccessPhase('tenants')
+            setSelectedRole(null)
+            setRoleSearch('')
+        } else {
+            setShowAccess(false)
+            setSelectedTenant(null)
+            setSelectedRole(null)
+            setTenantSearch('')
+        }
+    }
+
+    const handleAccessLogin = () => {
+        setShowAccess(false)
+        startMfaFlow()
+    }
 
     const startMfaFlow = useCallback(() => {
         setMfaPhase('welcome')
@@ -121,9 +177,14 @@ export default function Login() {
             return
         }
 
-        // Credentials valid — start MFA flow
+        // Credentials valid — show access selection (tenant → role → MFA)
         setMfaEmail(email)
-        startMfaFlow()
+        setShowAccess(true)
+        setAccessPhase('tenants')
+        setSelectedTenant(null)
+        setSelectedRole(null)
+        setTenantSearch('')
+        setRoleSearch('')
     }
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -159,10 +220,15 @@ export default function Login() {
 
     const handleMicrosoftLogin = async () => {
         setIsSubmitting(true)
-        // Microsoft auto-uses goavanto account — trigger MFA
+        // Microsoft auto-uses goavanto account — show access selection
         setMfaEmail('test@goavanto.com')
         setIsSubmitting(false)
-        startMfaFlow()
+        setShowAccess(true)
+        setAccessPhase('tenants')
+        setSelectedTenant(null)
+        setSelectedRole(null)
+        setTenantSearch('')
+        setRoleSearch('')
     }
 
     const handleForgotPassword = async (e: React.FormEvent) => {
@@ -226,6 +292,125 @@ export default function Login() {
         <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 font-sans bg-background transition-colors duration-300">
             {/* Toast Notifications */}
             <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
+            {/* Access Selection Modal (Tenant → Role) */}
+            {showAccess && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div className="w-full max-w-md mx-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        {/* Header */}
+                        <div className="px-8 pt-8 pb-2">
+                            <h3 className="text-2xl font-brand font-bold text-zinc-900 dark:text-white mb-1">Access</h3>
+                            {accessPhase === 'tenants' ? (
+                                <p className="text-sm font-bold text-zinc-700 dark:text-zinc-300">Tenants</p>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={handleAccessBack}
+                                        className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"
+                                    >
+                                        <ChevronLeftIcon className="w-4 h-4" />
+                                    </button>
+                                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                                        {selectedTenant} <span className="mx-1">{'>'}</span> <span className="font-bold text-zinc-700 dark:text-zinc-300">Roles</span>
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Search */}
+                        <div className="px-8 py-3">
+                            <div className="relative">
+                                <MagnifyingGlassIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <input
+                                    type="text"
+                                    placeholder="Find in list"
+                                    value={accessPhase === 'tenants' ? tenantSearch : roleSearch}
+                                    onChange={(e) => accessPhase === 'tenants' ? setTenantSearch(e.target.value) : setRoleSearch(e.target.value)}
+                                    className="w-full bg-zinc-50 dark:bg-white/5 border border-zinc-200 dark:border-white/15 text-zinc-900 dark:text-white rounded-lg h-10 pl-9 pr-4 text-sm placeholder:text-zinc-400 dark:placeholder:text-zinc-500 outline-none focus:border-zinc-400 dark:focus:border-white/30 transition-colors"
+                                />
+                            </div>
+                        </div>
+
+                        {/* List */}
+                        <div className="px-8 pb-2 max-h-[260px] overflow-y-auto scrollbar-minimal">
+                            {accessPhase === 'tenants' ? (
+                                <div className="space-y-1">
+                                    {filteredTenants.map(tenant => (
+                                        <button
+                                            key={tenant.name}
+                                            onClick={() => handleTenantSelect(tenant.name)}
+                                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors group text-left"
+                                        >
+                                            <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center ${
+                                                selectedTenant === tenant.name
+                                                    ? 'border-indigo-500 bg-indigo-500'
+                                                    : 'border-zinc-300 dark:border-zinc-600'
+                                            }`}>
+                                                {selectedTenant === tenant.name && (
+                                                    <div className="w-2 h-2 rounded-full bg-white" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <span className="text-sm text-zinc-900 dark:text-white font-medium">{tenant.name}</span>
+                                                <span className="text-sm text-zinc-400 dark:text-zinc-500"> — {tenant.description}</span>
+                                            </div>
+                                            <ChevronRightIcon className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors shrink-0" />
+                                        </button>
+                                    ))}
+                                    {filteredTenants.length === 0 && (
+                                        <p className="text-sm text-zinc-400 text-center py-6">No tenants found</p>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="space-y-1">
+                                    {filteredRoles.map(role => (
+                                        <button
+                                            key={role}
+                                            onClick={() => setSelectedRole(role)}
+                                            className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors text-left"
+                                        >
+                                            <div className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center ${
+                                                selectedRole === role
+                                                    ? 'border-indigo-500 bg-indigo-500'
+                                                    : 'border-zinc-300 dark:border-zinc-600'
+                                            }`}>
+                                                {selectedRole === role && (
+                                                    <div className="w-2 h-2 rounded-full bg-white" />
+                                                )}
+                                            </div>
+                                            <span className="text-sm text-zinc-900 dark:text-white font-medium">{role}</span>
+                                        </button>
+                                    ))}
+                                    {filteredRoles.length === 0 && (
+                                        <p className="text-sm text-zinc-400 text-center py-6">No roles found</p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-8 py-5 flex items-center justify-center gap-3 border-t border-zinc-100 dark:border-white/10">
+                            <button
+                                onClick={handleAccessBack}
+                                className="px-6 py-2.5 rounded-lg border border-zinc-300 dark:border-white/20 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-white/5 transition-colors"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onClick={handleAccessLogin}
+                                disabled={accessPhase === 'tenants' ? !selectedTenant : !selectedRole}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors ${
+                                    (accessPhase === 'tenants' ? selectedTenant : selectedRole)
+                                        ? 'bg-primary text-primary-foreground hover:opacity-90'
+                                        : 'bg-zinc-200 dark:bg-white/10 text-zinc-400 dark:text-zinc-600 cursor-not-allowed'
+                                }`}
+                            >
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* MFA Modal */}
             {showMfa && (
