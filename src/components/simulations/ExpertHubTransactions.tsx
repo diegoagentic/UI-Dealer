@@ -1078,10 +1078,20 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
 
                 {/* Step 1.5: AI Context */}
                 {currentStep.id === '1.5' && (
-                    <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3 animate-in fade-in duration-500">
-                        <AIAgentAvatar className="mt-0.5" />
-                        <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
-                            <span className="font-bold">ValidatorAgent:</span> RFQ extraction complete — freight calculation for Austin, TX failed due to multi-zone delivery complexity. Escalating to expert for manual validation.
+                    <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 animate-in fade-in duration-500">
+                        <div className="flex items-start gap-3">
+                            <AIAgentAvatar className="mt-0.5" />
+                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                <span className="font-bold">ValidatorAgent:</span> RFQ extraction complete — freight calculation for Austin, TX failed due to multi-zone delivery complexity. Escalating to expert for manual validation.
+                            </div>
+                        </div>
+                        <div className="mt-2 ml-9">
+                            <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                            <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📧 MillerKnoll Vendor Email</span>
+                                <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ MillerKnoll Catalog (API)</span>
+                                <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold flex items-center gap-1">📋 Dealer Pricing Rules</span>
+                            </div>
                         </div>
                     </div>
                 )}
@@ -2003,7 +2013,8 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                                     <h3 className="text-sm font-bold text-foreground">Acknowledgement Pipeline — Incoming</h3>
                                     <div className="flex items-center gap-2">
                                         <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium">47 today — showing 2</span>
-                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium flex items-center gap-1">⚡ eManage ONE</span>
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ eManage ONE</span>
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📄 MillerKnoll EDI/855</span>
                                     </div>
                                 </div>
                                 <p className="text-xs text-muted-foreground mt-0.5">2 new acknowledgments received from ERPConnector</p>
@@ -2081,10 +2092,20 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
                 {currentStep.id === '2.2' && (
                     <div data-demo-target="ack-dual-normalization" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">DataNormAgent:</span> Normalizing and comparing Acknowledgement data field-by-field against PO-1064B. Smart rules applying corrections automatically.
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <div className="flex items-start gap-3">
+                                <AIAgentAvatar className="mt-0.5" />
+                                <div className="text-xs text-indigo-700 dark:text-indigo-300">
+                                    <span className="font-bold">DataNormAgent:</span> Comparing Acknowledgement from <span className="font-bold">MillerKnoll (EDI/855)</span> against PO-1064B from <span className="font-bold">eManage ONE</span>. Field-by-field validation with smart rules applying corrections automatically.
+                                </div>
+                            </div>
+                            <div className="mt-2 ml-9">
+                                <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ eManage ONE → PO-1064B</span>
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📄 MillerKnoll → EDI/855 ACK</span>
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-bold flex items-center gap-1">🤖 AI Vendor Rules (HAT)</span>
+                                </div>
                             </div>
                         </div>
 
@@ -2279,10 +2300,19 @@ IEA*1*000002055~`}
                 {currentStep.id === '2.3' && (
                     <div data-demo-target="ack-delta-results" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">DiscrepResolverAgent:</span> Analyzing 3 exceptions from PO vs Acknowledgement comparison — resolving grommet config error, date shifts, and quantity shortfalls against auto-fix thresholds.
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <div className="flex items-start gap-3">
+                                <AIAgentAvatar className="mt-0.5" />
+                                <div className="flex-1 text-xs text-indigo-700 dark:text-indigo-300">
+                                    <span className="font-bold">DiscrepResolverAgent:</span> Analyzing 3 exceptions from PO vs Acknowledgement comparison — resolving grommet config error, date shifts, and quantity shortfalls against auto-fix thresholds.
+                                </div>
+                            </div>
+                            <div className="mt-2 ml-9">
+                                <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ eManage ONE → PO Original</span>
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📄 MillerKnoll → EDI/855 ACK</span>
+                                </div>
                             </div>
                         </div>
 
@@ -2418,10 +2448,19 @@ IEA*1*000002055~`}
                 {currentStep.id === '2.4' && (
                     <div data-demo-target="expert-ack-review" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">DiscrepResolverAgent:</span> AI reviewed 50 line items — 2 corrections applied automatically, 1 quantity shortfall escalated to expert review. <span className="font-medium">Click the edit icon on flagged rows to modify.</span>
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <div className="flex items-start gap-3">
+                                <AIAgentAvatar className="mt-0.5" />
+                                <div className="text-xs text-indigo-700 dark:text-indigo-300">
+                                    <span className="font-bold">DiscrepResolverAgent:</span> AI reviewed 50 line items — 2 corrections applied automatically, 1 quantity shortfall escalated to expert review. <span className="font-medium">Click the edit icon on flagged rows to modify.</span>
+                                </div>
+                            </div>
+                            <div className="mt-2 ml-9">
+                                <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ eManage ONE → PO-1029</span>
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📄 MillerKnoll → ACK-855</span>
+                                </div>
                             </div>
                         </div>
 
@@ -2611,10 +2650,19 @@ IEA*1*000002055~`}
                 {currentStep.id === '2.5' && (
                     <div data-demo-target="backorder-approval-chain" className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-500">
                         {/* AI Context */}
-                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
-                            <AIAgentAvatar className="mt-0.5" />
-                            <div className="text-xs text-indigo-700 dark:text-indigo-300">
-                                <span className="font-bold">ApprovalAgent:</span> Expert review complete for {ACK_AIS.id} — routing to automated 3-approver authorization chain.
+                        <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <div className="flex items-start gap-3">
+                                <AIAgentAvatar className="mt-0.5" />
+                                <div className="text-xs text-indigo-700 dark:text-indigo-300">
+                                    <span className="font-bold">ApprovalOrchestratorAgent:</span> Expert review complete for {ACK_AIS.id} — routing ACK changes through 3-level authorization. Delta value $2,340 triggers policy-based review chain.
+                                </div>
+                            </div>
+                            <div className="mt-2 ml-9">
+                                <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                                <div className="flex flex-wrap gap-1.5 mt-0.5">
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-bold flex items-center gap-1">⚡ eManage ONE → PO Original</span>
+                                    <span className="text-[9px] px-2.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold flex items-center gap-1">📄 MillerKnoll → EDI/855 ACK</span>
+                                </div>
                             </div>
                         </div>
 

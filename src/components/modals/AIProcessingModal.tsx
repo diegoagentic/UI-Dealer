@@ -250,6 +250,18 @@ export default function AIProcessingModal({ open, onComplete }: AIProcessingModa
                     <AgentPipelineStrip agents={pipeline} accentColor="purple" />
                 </div>
 
+                {/* External Source Connection */}
+                <div className="px-6 pb-3 flex flex-wrap items-center gap-2">
+                    <span className="text-[9px] text-zinc-400 font-medium uppercase tracking-wider">Connected to:</span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-[11px] font-bold text-blue-500">
+                        <EnvelopeOpenIcon className="w-3.5 h-3.5" /> MillerKnoll Vendor Email
+                    </span>
+                    <ArrowRightIcon className="w-3 h-3 text-zinc-500" />
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-[11px] font-bold text-purple-500">
+                        <DocumentTextIcon className="w-3.5 h-3.5" /> PDF Spec + CSV Pricing
+                    </span>
+                </div>
+
                 {/* Progress Bar */}
                 <div className="px-6 pb-4">
                     <div className="flex items-center justify-between mb-1.5">

@@ -15,7 +15,9 @@ import {
     Cpu,
 } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
+import { useDemoProfile } from '../../context/DemoProfileContext';
 import { useTheme } from 'strata-design-system';
+import ThreeWayMatchView, { type MatchLine } from '../widgets/ThreeWayMatchView';
 
 // Mini preview config for each lupa step — matches DemoProcessPanel titles/content
 const STEP_CARD_PREVIEW: Record<string, {
@@ -62,6 +64,35 @@ const STEP_CARD_PREVIEW: Record<string, {
     },
 };
 
+// OPS profile card previews (overrides STEP_CARD_PREVIEW when isOps)
+const OPS_STEP_CARD_PREVIEW: typeof STEP_CARD_PREVIEW = {
+    '1.3': {
+        icon: <Sparkles size={12} className="text-teal-600 dark:text-teal-400" />,
+        title: 'Three-Way Match Engine',
+        subtitle: '5 agents — PO · ACK · Invoice',
+        detail: 'Verifying PO #ORD-2055 against ACK-2055 and delivery receipt DL-004.',
+        accentClass: 'border-teal-500/20 bg-teal-500/5',
+    },
+    '2.2': {
+        icon: <Cpu size={12} className="text-purple-600 dark:text-purple-400" />,
+        title: 'CO Delta Engine',
+        subtitle: '4 agents — Change Order CO-007',
+        detail: 'Recalculating impact on QB-4421 and QB-4424. Supplier verification in progress.',
+        accentClass: 'border-purple-500/20 bg-purple-500/5',
+    },
+};
+
+// OPS 3-Way Match line items for ThreeWayMatchView
+const OPS_MATCH_LINES: MatchLine[] = [
+    { lineItem: 'Task Chair ERG-5100', sku: 'ERG-5100', poValue: '200 units', ackValue: '200 units', invoiceValue: '200 units', status: 'match' },
+    { lineItem: 'Installation Svc', sku: 'SVC-INST', poValue: '$1,200', ackValue: '$1,200', invoiceValue: '$1,200', status: 'match' },
+    { lineItem: 'Project Management', sku: 'SVC-PM', poValue: '$955', ackValue: '$955', invoiceValue: '$955', status: 'match' },
+    { lineItem: 'Extended Warranty', sku: 'SVC-EW', poValue: '$1,000', ackValue: '$1,000', invoiceValue: '$1,000', status: 'match' },
+    { lineItem: 'Disposal Svc', sku: 'SVC-DISP', poValue: '$300', ackValue: '$300', invoiceValue: '$300', status: 'match' },
+    { lineItem: 'Freight — Zone A/B', sku: 'FRT-001', poValue: '$45', ackValue: '$45', invoiceValue: '$58', status: 'partial', delta: '+$13' },
+    { lineItem: 'White Glove Delivery', sku: 'SVC-WG', poValue: '—', ackValue: '—', invoiceValue: '$300', status: 'mismatch', delta: '+$300' },
+];
+
 const COLUMNS = [
     { id: 'awaiting', title: 'Awaiting Validation', count: 12 },
     { id: 'active', title: 'Active Processing', count: 5 },
@@ -80,15 +111,16 @@ const CARDS = [
 // Steps where each card gets a minimal "processing" indicator (detail is in DemoProcessPanel)
 const CARD1_PANEL_STEPS = ['1.2', '1.3', '1.4'];
 const CARD5_PANEL_STEPS = ['2.2', '2.3'];
-const CARD6_PANEL_STEPS: string[] = [];
 
 export default function DealerMonitorKanban(_props: { onNavigate?: (page: string) => void }) {
     const { theme } = useTheme();
     const { currentStep } = useDemo();
+    const { activeProfile } = useDemoProfile();
+    const isOps = activeProfile.id === 'ops';
 
     const displayCards = CARDS.filter(c => {
-        if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id)) return false;
-        if (c.id === 6) return false;
+        if (c.id === 5 && !['2.2', '2.3'].includes(currentStep.id) && !(isOps && currentStep.id === '1.3')) return false;
+        if (c.id === 6 && !(isOps && currentStep.id === '1.3')) return false;
         return true;
     });
 
@@ -155,15 +187,15 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                     // Determine data-demo-target for spotlight
                                     const demoTarget =
                                         card.id === 1 && CARD1_PANEL_STEPS.includes(currentStep.id) ? 'kanban-ai-extraction' :
-                                        card.id === 5 && CARD5_PANEL_STEPS.includes(currentStep.id) ? 'kanban-ack-normalize' :
-                                        card.id === 6 && CARD6_PANEL_STEPS.includes(currentStep.id) ? 'doc-classification' :
+                                        card.id === 5 && (CARD5_PANEL_STEPS.includes(currentStep.id) || (isOps && currentStep.id === '1.3')) ? 'kanban-ack-normalize' :
+                                        card.id === 6 && isOps && currentStep.id === '1.3' ? 'three-way-match-engine' :
                                         undefined;
 
                                     // Is this card currently showing a panel?
                                     const hasPanel =
                                         (card.id === 1 && CARD1_PANEL_STEPS.includes(currentStep.id)) ||
-                                        (card.id === 5 && CARD5_PANEL_STEPS.includes(currentStep.id)) ||
-                                        (card.id === 6 && CARD6_PANEL_STEPS.includes(currentStep.id));
+                                        (card.id === 5 && (CARD5_PANEL_STEPS.includes(currentStep.id) || (isOps && currentStep.id === '1.3'))) ||
+                                        (card.id === 6 && isOps && currentStep.id === '1.3');
 
                                     return (
                                         <div
@@ -206,8 +238,8 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                                                 </div>
 
                                                 {/* Step-specific preview (matches lupa content) during panel steps */}
-                                                {hasPanel && STEP_CARD_PREVIEW[currentStep.id] && (() => {
-                                                    const preview = STEP_CARD_PREVIEW[currentStep.id];
+                                                {hasPanel && (isOps ? OPS_STEP_CARD_PREVIEW : STEP_CARD_PREVIEW)[currentStep.id] && (() => {
+                                                    const preview = (isOps ? OPS_STEP_CARD_PREVIEW : STEP_CARD_PREVIEW)[currentStep.id];
                                                     return (
                                                         <div className={`mt-2 pt-3 border-t border-gray-200/50 dark:border-zinc-700/50 space-y-2 animate-in fade-in slide-in-from-bottom-2 duration-500`}>
                                                             <div className={`flex items-center gap-2 px-2.5 py-2 rounded-lg border ${preview.accentClass}`}>
@@ -309,6 +341,19 @@ export default function DealerMonitorKanban(_props: { onNavigate?: (page: string
                         </div>
                     ))}
                 </div>
+
+                {/* OPS: Three-Way Match View — shows during OPS step 1.3 */}
+                {isOps && currentStep.id === '1.3' && (
+                    <div
+                        data-demo-target="three-way-match-engine"
+                        className="animate-in fade-in slide-in-from-bottom-4 duration-700"
+                    >
+                        <ThreeWayMatchView
+                            orderId="ORD-2055"
+                            lines={OPS_MATCH_LINES}
+                        />
+                    </div>
+                )}
             </main>
         </div>
     );

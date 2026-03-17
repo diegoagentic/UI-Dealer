@@ -676,12 +676,12 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     }, [])
 
     return (
-        <div className="min-h-screen bg-background font-sans text-foreground pb-10">
+        <div className={`min-h-screen font-sans text-foreground ${['1.8', '3.5'].includes(currentStep.id) ? 'bg-zinc-950' : 'bg-background pb-10'}`}>
             {!['1.8', '3.5'].includes(currentStep.id) && <GenUIContainer />}
 
-            {/* ===== Step 1.8: Sales Approval — Fullscreen mobile overlay ===== */}
+            {/* ===== Step 1.8: Sales Approval — Mobile device inline ===== */}
             {currentStep.id === '1.8' && (
-                <div data-demo-target="mobile-dealer-approval" className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950 animate-in fade-in duration-500">
+                <div data-demo-target="mobile-dealer-approval" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
                     {/* Mobile Device Frame — centered, nothing else */}
                     <MobileDeviceFrame>
                         {/* Mobile Navbar */}
@@ -795,9 +795,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* ===== Step 3.5: End User Punch List Report — Fullscreen mobile overlay ===== */}
+            {/* ===== Step 3.5: End User Punch List Report — Mobile device inline ===== */}
             {currentStep.id === '3.5' && (
-                <div data-demo-target="mobile-enduser-report" className="fixed inset-0 z-[200] flex items-center justify-center bg-zinc-950 animate-in fade-in duration-500">
+                <div data-demo-target="mobile-enduser-report" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
                     <MobileDeviceFrame>
                         {/* Mobile Navbar */}
                         <div className="flex items-center justify-between px-4 pt-10 pb-3 border-b border-border">
@@ -1701,11 +1701,65 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         );
                                     })()}
 
+                                    {/* External Connections — Data Sources */}
+                                    <div className="p-3 rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-500/5 dark:to-blue-500/5 border border-purple-200/50 dark:border-purple-500/20">
+                                        <div className="flex items-center gap-2 mb-2.5">
+                                            <LinkIcon className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                                            <span className="text-[10px] font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">External Systems — Synced</span>
+                                            <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400 font-bold uppercase">Live</span>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-2">
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-white/60 dark:bg-zinc-900/40 border border-blue-200/50 dark:border-blue-500/20">
+                                                <EnvelopeIcon className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                                                <div>
+                                                    <div className="flex items-center gap-1">
+                                                        <p className="text-[10px] font-bold text-blue-700 dark:text-blue-300">MillerKnoll</p>
+                                                        <span className="text-[7px] px-1 py-px rounded bg-blue-200/60 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-bold">EXTERNAL</span>
+                                                    </div>
+                                                    <p className="text-[8px] text-blue-500 dark:text-blue-400">Vendor Email (PDF + CSV)</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-white/60 dark:bg-zinc-900/40 border border-purple-200/50 dark:border-purple-500/20">
+                                                <ComputerDesktopIcon className="w-4 h-4 text-purple-600 dark:text-purple-400 shrink-0" />
+                                                <div>
+                                                    <div className="flex items-center gap-1">
+                                                        <p className="text-[10px] font-bold text-purple-700 dark:text-purple-300">MillerKnoll</p>
+                                                        <span className="text-[7px] px-1 py-px rounded bg-purple-200/60 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold">EXTERNAL</span>
+                                                    </div>
+                                                    <p className="text-[8px] text-purple-500 dark:text-purple-400">Product Catalog (API) — Synced</p>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2 p-2 rounded-lg bg-white/60 dark:bg-zinc-900/40 border border-amber-200/50 dark:border-amber-500/20">
+                                                <TruckIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                                                <div>
+                                                    <div className="flex items-center gap-1">
+                                                        <p className="text-[10px] font-bold text-amber-700 dark:text-amber-300">ShipCalc</p>
+                                                        <span className="text-[7px] px-1 py-px rounded bg-amber-200/60 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold">EXTERNAL</span>
+                                                    </div>
+                                                    <p className="text-[8px] text-amber-500 dark:text-amber-400">Freight Calculator (API) — Synced</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Processing Pipeline — Full Agent Chain */}
+                                    <div>
+                                        <p className="text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">Processing Pipeline — 6 Agents</p>
+                                        <AgentPipelineStrip agents={[
+                                            { id: 'email', name: 'EmailIntake', status: 'done' as const, detail: 'RFQ detected' },
+                                            { id: 'ocr', name: 'OCR Extract', status: 'done' as const, detail: '2 attachments' },
+                                            { id: 'parser', name: 'DataParser', status: 'done' as const, detail: '200 items' },
+                                            { id: 'norm', name: 'Normalizer', status: 'done' as const, detail: 'Catalog matched' },
+                                            { id: 'quote', name: 'QuoteBuilder', status: 'done' as const, detail: 'QT-1025' },
+                                            { id: 'policy', name: 'PolicyEngine', status: 'done' as const, detail: '94% confidence' },
+                                        ]} accentColor="green" />
+                                    </div>
+
                                     {/* AI Summary for dealer */}
                                     <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-start gap-3">
                                         <AIAgentAvatar className="mt-0.5" />
                                         <div className="text-xs text-indigo-700 dark:text-indigo-300 space-y-1">
-                                            <p><span className="font-bold">AI Summary:</span> Quote generated from your RFQ email + attachments. All 50 SKUs matched to catalog across 8 product categories. Pricing verified. Early payment discount (2%) + volume discount (2%) applied automatically.</p>
+                                            <p><span className="font-bold">QuoteSummaryAgent:</span> Quote generated from MillerKnoll vendor email + attachments. All 200 SKUs matched to MillerKnoll catalog across 8 product categories. Pricing cross-validated against manufacturer API. Early payment discount (2%) + volume discount (2%) applied automatically.</p>
                                             <p>Estimated savings vs. list price: <span className="font-bold text-green-600 dark:text-green-400">$27,497 (4%)</span></p>
                                         </div>
                                     </div>
@@ -1715,10 +1769,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         <p className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 mb-2">Automatically Resolved</p>
                                         <div className="space-y-1">
                                             {[
-                                                'Freight calculated: $12,850 (multi-zone LTL to Austin, TX — 50 SKUs)',
-                                                'All 50 quantities confirmed from PDF spec + CSV cross-reference',
-                                                'Armrest upgraded: 4D Adjustable (faster delivery, +$750)',
-                                                '8 vendor substitutions applied (equivalent or better specs)',
+                                                'Freight calculated via ShipCalc API: $12,850 (multi-zone LTL to Austin, TX)',
+                                                'All 200 quantities cross-validated: Vendor PDF ↔ MillerKnoll Catalog',
+                                                'Armrest upgraded per MillerKnoll availability: 4D Adjustable (+$750)',
+                                                '8 substitutions from MillerKnoll Catalog (equivalent or better specs)',
                                             ].map((item, i) => (
                                                 <div key={i} className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                                                     <CheckCircleIcon className="w-3.5 h-3.5 shrink-0" />

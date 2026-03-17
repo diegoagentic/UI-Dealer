@@ -10,12 +10,14 @@ import {
     SearchIcon,
 } from 'lucide-react';
 import { useDemo } from '../../context/DemoContext';
+import { useDemoProfile } from '../../context/DemoProfileContext';
 import AgentPipelineStrip from '../simulations/AgentPipelineStrip';
 import type { AgentStep } from '../simulations/AgentPipelineStrip';
 import ConfidenceScoreBadge from '../widgets/ConfidenceScoreBadge';
 
-// Steps that show the floating lupa panel
-const PANEL_STEPS = ['1.2', '1.3', '1.4'];
+// Steps that show the floating lupa panel (per profile)
+const COI_PANEL_STEPS = ['1.2', '1.3', '1.4'];
+const OPS_PANEL_STEPS_IDS = ['1.1', '1.3', '2.2', '2.4'];
 
 interface DemoProcessPanelProps {
     onNavigate?: (page: string) => void;
@@ -26,6 +28,8 @@ const PANEL_REVEAL_DELAY = 2025;
 
 export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) {
     const { currentStep, nextStep, isDemoActive, isPaused } = useDemo();
+    const { activeProfile } = useDemoProfile();
+    const isOps = activeProfile.id === 'ops';
 
     const [panelVisible, setPanelVisible] = useState(false);
     const [agentProgress, setAgentProgress] = useState(0);
@@ -49,17 +53,19 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
     // Delayed panel reveal — audience sees the kanban first, then the lupa zooms in
     useEffect(() => {
-        if (!isDemoActive || !PANEL_STEPS.includes(currentStep.id)) {
+        const panelSteps = isOps ? OPS_PANEL_STEPS_IDS : COI_PANEL_STEPS;
+        if (!isDemoActive || !panelSteps.includes(currentStep.id)) {
             setPanelVisible(false);
             return;
         }
         const revealTimer = setTimeout(() => setPanelVisible(true), PANEL_REVEAL_DELAY);
         return () => { clearTimeout(revealTimer); setPanelVisible(false); };
-    }, [isDemoActive, currentStep.id]);
+    }, [isDemoActive, currentStep.id, isOps]);
 
     // Reset + run timeline for each step (timelines shifted by PANEL_REVEAL_DELAY)
     useEffect(() => {
-        if (!isDemoActive || !PANEL_STEPS.includes(currentStep.id)) return;
+        const panelSteps = isOps ? OPS_PANEL_STEPS_IDS : COI_PANEL_STEPS;
+        if (!isDemoActive || !panelSteps.includes(currentStep.id)) return;
 
         // Reset
         setAgentProgress(0);
@@ -92,7 +98,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             // Auto-advance after panel is visible for ~27s (presenter explains extraction results)
             timers.push(setTimeout(pauseAware(() => nextStep()), D + 27000));
 
-        } else if (currentStep.id === '1.3') {
+        } else if (currentStep.id === '1.3' && !isOps) {
             timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing Normalization Pipeline...']);
                 setPipelineAgents([
@@ -166,7 +172,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 }), delay));
             });
 
-        } else if (currentStep.id === '2.2') {
+        } else if (currentStep.id === '2.2' && !isOps) {
             timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['Initializing ERP Normalization Pipeline...']);
                 setPipelineAgents([
@@ -283,13 +289,237 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 }), delay));
             });
 
+        } else if (currentStep.id === '1.1') {
+            // OPS: Receiving Verification (14s)
+            timers.push(setTimeout(pauseAware(() => {
+                setAgentLogs(['ReceivingAgent: Loading incoming shipment PO #ORD-2055...']);
+                setPipelineAgents([
+                    { id: 'receive', name: 'ReceivingAgent', status: 'running' },
+                    { id: 'asn', name: 'ASNMatcher', status: 'pending' },
+                    { id: 'qty', name: 'QtyVerifier', status: 'pending' },
+                ]);
+            }), D));
+
+            const opsReceiveTimeline = [
+                { delay: D + 4000, log: 'ReceivingAgent: Shipment PO #ORD-2055 received from Apex Furniture. 6 line items.' },
+                { delay: D + 8000, log: 'ASNMatcher: Cross-referencing with supplier ASN #ASN-2055. All SKUs confirmed.' },
+                { delay: D + 12000, log: 'QtyVerifier: All quantities match. No discrepancies. Ready for 3-way match.' },
+            ];
+
+            opsReceiveTimeline.forEach(({ delay, log }, index) => {
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgentProgress((index + 1) * 33.3);
+                    setAgentLogs(prev => [...prev, log]);
+
+                    if (index === 0) {
+                        setPipelineAgents([
+                            { id: 'receive', name: 'ReceivingAgent', status: 'done', detail: '6 lines' },
+                            { id: 'asn', name: 'ASNMatcher', status: 'running' },
+                            { id: 'qty', name: 'QtyVerifier', status: 'pending' },
+                        ]);
+                    }
+                    if (index === 2) {
+                        setPipelineAgents([
+                            { id: 'receive', name: 'ReceivingAgent', status: 'done', detail: '6 lines' },
+                            { id: 'asn', name: 'ASNMatcher', status: 'done', detail: 'Matched' },
+                            { id: 'qty', name: 'QtyVerifier', status: 'done', detail: '100%' },
+                        ]);
+                        setAgentProgress(100);
+                        setConfidenceFields([
+                            { field: 'Items Received', score: 100 },
+                            { field: 'Qty Match', score: 100 },
+                            { field: 'ASN Match', score: 98 },
+                            { field: 'Condition', score: 96 },
+                        ]);
+                    }
+                }), delay));
+            });
+
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 14000));
+
+        } else if (currentStep.id === '1.3' && isOps) {
+            // OPS: 3-Way Match Engine (28s)
+            timers.push(setTimeout(pauseAware(() => {
+                setAgentLogs(['MatchEngine: Loading PO #ORD-2055 for 3-way verification...']);
+                setPipelineAgents([
+                    { id: 'po', name: 'POLoader', status: 'running' },
+                    { id: 'ack', name: 'ACKMatcher', status: 'pending' },
+                    { id: 'del', name: 'DeliveryMatcher', status: 'pending' },
+                    { id: 'match', name: 'MatchEngine', status: 'pending' },
+                    { id: 'inv', name: 'InvoiceDraft', status: 'pending' },
+                ]);
+            }), D));
+
+            const opsMatchTimeline = [
+                { delay: D + 5000, log: 'POLoader: PO #ORD-2055 loaded. 6 lines, $41,150 product total.' },
+                { delay: D + 10000, log: 'ACKMatcher: Acknowledgement #ACK-2055 matched — 6/6 lines confirmed.' },
+                { delay: D + 16000, log: 'DeliveryMatcher: Delivery #DL-004 linked. All items confirmed received.' },
+                { delay: D + 22000, log: 'MatchEngine: 3-way match complete. 5 matches, 1 partial (Freight $45→$58).' },
+                { delay: D + 27000, log: 'InvoiceDraft: INV-2055 auto-generated. $41,150 + $3,455 services = $44,605.' },
+            ];
+
+            opsMatchTimeline.forEach(({ delay, log }, index) => {
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgentProgress((index + 1) * 20);
+                    setAgentLogs(prev => [...prev, log]);
+
+                    if (index === 0) {
+                        setPipelineAgents([
+                            { id: 'po', name: 'POLoader', status: 'done', detail: '6 lines' },
+                            { id: 'ack', name: 'ACKMatcher', status: 'running' },
+                            { id: 'del', name: 'DeliveryMatcher', status: 'pending' },
+                            { id: 'match', name: 'MatchEngine', status: 'pending' },
+                            { id: 'inv', name: 'InvoiceDraft', status: 'pending' },
+                        ]);
+                    }
+                    if (index === 1) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'ack' ? { ...a, status: 'done' as const } :
+                            a.id === 'del' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 2) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'del' ? { ...a, status: 'done' as const } :
+                            a.id === 'match' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 3) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'match' ? { ...a, status: 'done' as const, detail: '5+1 partial' } :
+                            a.id === 'inv' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 4) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'inv' ? { ...a, status: 'done' as const, detail: '$44,605' } : a
+                        ));
+                        setConfidenceFields([
+                            { field: 'PO Match', score: 100 },
+                            { field: 'ACK Match', score: 100 },
+                            { field: 'Delivery', score: 98 },
+                            { field: 'Freight', score: 78 },
+                        ]);
+                    }
+                }), delay));
+            });
+
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 28000));
+
+        } else if (currentStep.id === '2.2' && isOps) {
+            // OPS: CO Delta Engine (22s)
+            timers.push(setTimeout(pauseAware(() => {
+                setAgentLogs(['COParser: Loading Change Order #CO-007...']);
+                setPipelineAgents([
+                    { id: 'coparser', name: 'COParser', status: 'running' },
+                    { id: 'cost', name: 'CostCalc', status: 'pending' },
+                    { id: 'supplier', name: 'SupplierVerify', status: 'pending' },
+                    { id: 'impact', name: 'ImpactReport', status: 'pending' },
+                ]);
+            }), D));
+
+            const opsCOTimeline = [
+                { delay: D + 5000, log: 'COParser: CO-007 parsed. 2 affected quotes: QB-4421, QB-4424.' },
+                { delay: D + 10000, log: 'CostCalc: Recalculating with updated spec (ERG-5100R → ERG-6200R). +$4,550 delta.' },
+                { delay: D + 16000, log: 'SupplierVerify: Supplier confirmed availability. Lead time +3 days.' },
+                { delay: D + 21000, log: 'ImpactReport: Total impact +$4,550. QB-4421 +$2,800, QB-4424 +$1,750.' },
+            ];
+
+            opsCOTimeline.forEach(({ delay, log }, index) => {
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgentProgress((index + 1) * 25);
+                    setAgentLogs(prev => [...prev, log]);
+
+                    if (index === 0) {
+                        setPipelineAgents([
+                            { id: 'coparser', name: 'COParser', status: 'done', detail: '2 quotes' },
+                            { id: 'cost', name: 'CostCalc', status: 'running' },
+                            { id: 'supplier', name: 'SupplierVerify', status: 'pending' },
+                            { id: 'impact', name: 'ImpactReport', status: 'pending' },
+                        ]);
+                    }
+                    if (index === 1) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'cost' ? { ...a, status: 'done' as const } :
+                            a.id === 'supplier' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 3) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'supplier' ? { ...a, status: 'done' as const } :
+                            a.id === 'impact' ? { ...a, status: 'done' as const, detail: '+$4,550' } : a
+                        ));
+                        setConfidenceFields([
+                            { field: 'CO Parsed', score: 99 },
+                            { field: 'Cost Delta', score: 97 },
+                            { field: 'Availability', score: 92 },
+                            { field: 'Lead Time', score: 88 },
+                        ]);
+                    }
+                }), delay));
+            });
+
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 22000));
+
+        } else if (currentStep.id === '2.4') {
+            // OPS: Invoice Reconciliation (18s)
+            timers.push(setTimeout(pauseAware(() => {
+                setAgentLogs(['InvoiceDelta: Reconciling INV-2055 against PO #ORD-2055...']);
+                setPipelineAgents([
+                    { id: 'invdelta', name: 'InvoiceDelta', status: 'running' },
+                    { id: 'qb', name: 'QuickBooksAgent', status: 'pending' },
+                    { id: 'log', name: 'DailyLogAgent', status: 'pending' },
+                ]);
+            }), D));
+
+            const opsInvTimeline = [
+                { delay: D + 5000, log: 'InvoiceDelta: INV-2055 vs PO #ORD-2055 — $44,605 match confirmed.' },
+                { delay: D + 10000, log: 'QuickBooksAgent: Pushing to QuickBooks. Voucher VCH-2055 created.' },
+                { delay: D + 16000, log: 'DailyLogAgent: DL-004 updated. Receiving → Invoice link established.' },
+            ];
+
+            opsInvTimeline.forEach(({ delay, log }, index) => {
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgentProgress((index + 1) * 33.3);
+                    setAgentLogs(prev => [...prev, log]);
+
+                    if (index === 0) {
+                        setPipelineAgents([
+                            { id: 'invdelta', name: 'InvoiceDelta', status: 'done', detail: 'Matched' },
+                            { id: 'qb', name: 'QuickBooksAgent', status: 'running' },
+                            { id: 'log', name: 'DailyLogAgent', status: 'pending' },
+                        ]);
+                    }
+                    if (index === 1) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'qb' ? { ...a, status: 'done' as const, detail: 'VCH-2055' } :
+                            a.id === 'log' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 2) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'log' ? { ...a, status: 'done' as const, detail: 'DL-004' } : a
+                        ));
+                        setAgentProgress(100);
+                        setConfidenceFields([
+                            { field: 'Invoice Match', score: 100 },
+                            { field: 'QB Sync', score: 99 },
+                            { field: 'Daily Log', score: 100 },
+                            { field: 'Reconciled', score: 98 },
+                        ]);
+                    }
+                }), delay));
+            });
+
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 18000));
         }
 
         return () => timers.forEach(clearTimeout);
-    }, [isDemoActive, currentStep.id, nextStep, pauseAware]);
+    }, [isDemoActive, currentStep.id, nextStep, pauseAware, isOps]);
 
     // Don't render at all if not in a panel step
-    if (!isDemoActive || !PANEL_STEPS.includes(currentStep.id)) return null;
+    const panelSteps = isOps ? OPS_PANEL_STEPS_IDS : COI_PANEL_STEPS;
+    if (!isDemoActive || !panelSteps.includes(currentStep.id)) return null;
     // Don't render until the reveal delay has passed — audience sees normal page first
     if (!panelVisible) return null;
 
@@ -336,9 +566,41 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             accentColor: 'red',
             progressColor: 'bg-red-500',
         },
+        // OPS profile entries
+        'ops-1.1': {
+            icon: <CheckCircle2 className="text-blue-600 dark:text-blue-400" size={18} />,
+            title: 'Receiving Verification',
+            titleDone: 'Shipment Verified',
+            accentColor: 'blue',
+            progressColor: 'bg-blue-500',
+        },
+        'ops-1.3': {
+            icon: <Sparkles className="text-teal-600 dark:text-teal-400 animate-pulse" size={18} />,
+            title: 'Three-Way Match Engine',
+            titleDone: 'Match Complete — Invoice Ready',
+            accentColor: 'blue',
+            progressColor: 'bg-teal-500',
+        },
+        'ops-2.2': {
+            icon: <Cpu className="text-purple-600 dark:text-purple-400" size={18} />,
+            title: 'CO Delta Engine',
+            titleDone: 'Change Order Processed',
+            accentColor: 'purple',
+            progressColor: 'bg-purple-500',
+        },
+        'ops-2.4': {
+            icon: <CheckCircle2 className="text-green-600 dark:text-green-400" size={18} />,
+            title: 'Invoice Reconciliation',
+            titleDone: 'Invoice Reconciled',
+            accentColor: 'green',
+            progressColor: 'bg-green-500',
+        },
     };
 
-    const config = stepConfig[currentStep.id];
+    const configKey = isOps && ['1.1', '1.3', '2.2', '2.4'].includes(currentStep.id)
+        ? `ops-${currentStep.id}`
+        : currentStep.id;
+    const config = stepConfig[configKey];
     const isDone = agentProgress >= 99;
 
     return (
@@ -380,13 +642,50 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                     </div>
                 </div>
 
-                {/* Source Badge for 2.2 */}
-                {currentStep.id === '2.2' && (
+                {/* Source Badge */}
+                {currentStep.id === '2.2' && !isOps && (
                     <div className="px-6 pb-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-600 dark:text-blue-400">
-                            <Cpu size={10} />
-                            eManage ONE (EDI/855)
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                                <Cpu size={10} />
+                                eManage ONE → PO Original
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                <FileText size={10} />
+                                MillerKnoll → EDI/855 ACK
+                            </span>
+                        </div>
+                    </div>
+                )}
+                {currentStep.id === '1.3' && isOps && (
+                    <div className="px-6 pb-2 flex gap-2">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-[10px] font-bold text-teal-600 dark:text-teal-400">
+                            <CheckCircle2 size={10} />
+                            PO · ACK · Invoice
                         </span>
+                    </div>
+                )}
+                {/* Source badges for Flow 1 extraction steps (COI) */}
+                {['1.2', '1.3', '1.4'].includes(currentStep.id) && !isOps && (
+                    <div className="px-6 pb-2">
+                        <div className="flex items-center gap-1.5 mb-1">
+                            <span className="text-[8px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">External Systems · Synced</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                <FileText size={10} />
+                                MillerKnoll → Vendor Email (PDF + CSV)
+                            </span>
+                            {currentStep.id !== '1.2' && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-[10px] font-bold text-purple-600 dark:text-purple-400">
+                                    <Cpu size={10} />
+                                    MillerKnoll Product Catalog (API)
+                                </span>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -777,6 +1076,145 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                             Escalate 2 Exceptions to Expert Hub
                             <ArrowUpRight size={14} />
                         </button>
+                    </div>
+                )}
+
+                {/* OPS Step 1.1: Receiving Summary */}
+                {currentStep.id === '1.1' && isOps && (
+                    <div className="px-6 pb-5 space-y-4">
+                        {!isDone && (
+                            <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
+                                <span>Verifying shipment against ASN...</span>
+                                <ArrowUpRight size={14} />
+                            </div>
+                        )}
+                        {isDone && confidenceFields.length > 0 && (
+                            <>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {confidenceFields.map(f => (
+                                        <div key={f.field} className="flex items-center justify-between bg-white dark:bg-zinc-800 rounded-lg px-3 py-2">
+                                            <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{f.field}</span>
+                                            <ConfidenceScoreBadge score={f.score} size="sm" />
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                                    <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
+                                    <p className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 leading-relaxed">
+                                        3 agents verified shipment in real-time. All 6 line items confirmed against ASN #ASN-2055.
+                                    </p>
+                                </div>
+                                <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
+                                    <span>Auto-advancing to 3-Way Match...</span>
+                                    <ArrowUpRight size={14} />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                )}
+
+                {/* OPS Step 1.3: 3-Way Match Summary */}
+                {currentStep.id === '1.3' && isOps && isDone && (
+                    <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
+                        <div className="rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4">
+                            <div className="flex items-center gap-2 mb-2">
+                                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                                <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">3-Way Match Complete</span>
+                            </div>
+                            <div className="space-y-1.5 text-[12px]">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-zinc-500 dark:text-zinc-400">PO #ORD-2055</span>
+                                    <span className="text-zinc-700 dark:text-zinc-300 font-medium">$41,150 · 6 lines</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-zinc-500 dark:text-zinc-400">INV-2055 (auto-generated)</span>
+                                    <span className="text-emerald-600 dark:text-emerald-400 font-medium">$44,605 ready</span>
+                                </div>
+                            </div>
+                        </div>
+                        {confidenceFields.length > 0 && (
+                            <div className="grid grid-cols-2 gap-2">
+                                {confidenceFields.map(f => (
+                                    <div key={f.field} className="flex items-center justify-between bg-white dark:bg-zinc-800 rounded-lg px-3 py-2">
+                                        <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{f.field}</span>
+                                        <ConfidenceScoreBadge score={f.score} size="sm" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
+                            <span>Auto-advancing to invoice review...</span>
+                            <ArrowUpRight size={14} />
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 2.2: CO Delta Summary */}
+                {currentStep.id === '2.2' && isOps && isDone && (
+                    <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
+                        <div className="rounded-xl border border-gray-200 dark:border-zinc-700 overflow-hidden">
+                            <div className="px-4 py-2 bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700">
+                                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Change Order Impact — CO-007</span>
+                            </div>
+                            <table className="w-full text-[12px]">
+                                <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
+                                    {[
+                                        { quote: 'QB-4421', item: 'ERG-5100R → ERG-6200R', delta: '+$2,800' },
+                                        { quote: 'QB-4424', item: 'ERG-5100R → ERG-6200R', delta: '+$1,750' },
+                                    ].map((row, i) => (
+                                        <tr key={i}>
+                                            <td className="px-4 py-2 font-mono text-purple-600 dark:text-purple-400">{row.quote}</td>
+                                            <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">{row.item}</td>
+                                            <td className="px-4 py-2 font-medium text-amber-600 dark:text-amber-400">{row.delta}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {confidenceFields.length > 0 && (
+                            <div className="grid grid-cols-2 gap-2">
+                                {confidenceFields.map(f => (
+                                    <div key={f.field} className="flex items-center justify-between bg-white dark:bg-zinc-800 rounded-lg px-3 py-2">
+                                        <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{f.field}</span>
+                                        <ConfidenceScoreBadge score={f.score} size="sm" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
+                            <span>Auto-advancing to quote update...</span>
+                            <ArrowUpRight size={14} />
+                        </div>
+                    </div>
+                )}
+
+                {/* OPS Step 2.4: Invoice Reconciliation Summary */}
+                {currentStep.id === '2.4' && isDone && (
+                    <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
+                        <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
+                            <span className="text-zinc-400 dark:text-zinc-500">Final Invoice:</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">INV-2055 · $44,605 · Reconciled ✓</span>
+                        </div>
+                        {confidenceFields.length > 0 && (
+                            <div className="grid grid-cols-2 gap-2">
+                                {confidenceFields.map(f => (
+                                    <div key={f.field} className="flex items-center justify-between bg-white dark:bg-zinc-800 rounded-lg px-3 py-2">
+                                        <span className="text-[12px] text-zinc-500 dark:text-zinc-400">{f.field}</span>
+                                        <ConfidenceScoreBadge score={f.score} size="sm" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-start gap-2 px-3 py-2.5 rounded-lg bg-indigo-500/5 border border-indigo-500/15">
+                            <Sparkles size={12} className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0 animate-pulse" />
+                            <p className="text-[11px] text-indigo-600/80 dark:text-indigo-300/80 leading-relaxed">
+                                3 agents reconciled invoice, synced to QuickBooks, and updated the daily log in 18s.
+                            </p>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 text-[11px] text-indigo-600 dark:text-indigo-400 animate-pulse">
+                            <span>Auto-advancing to Flow 3...</span>
+                            <ArrowUpRight size={14} />
+                        </div>
                     </div>
                 )}
 

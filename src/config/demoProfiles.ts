@@ -5,8 +5,8 @@
 import type { StepBehavior } from '../components/demo/DemoStepBanner';
 import { COI_STEPS, COI_STEP_BEHAVIOR, COI_STEP_MESSAGES, COI_SELF_INDICATED } from './profiles/coi';
 import { COI_DEMO_STEPS, COI_DEMO_STEP_BEHAVIOR, COI_DEMO_STEP_MESSAGES, COI_DEMO_SELF_INDICATED } from './profiles/coi-demo';
-import { CRM_STEPS, CRM_STEP_BEHAVIOR, CRM_STEP_MESSAGES, CRM_SELF_INDICATED } from './profiles/crm';
 import { DUPLER_STEPS, DUPLER_STEP_BEHAVIOR, DUPLER_STEP_MESSAGES, DUPLER_SELF_INDICATED } from './profiles/dupler';
+import { OPS_DEMO_STEPS, OPS_DEMO_STEP_BEHAVIOR, OPS_DEMO_STEP_MESSAGES, OPS_DEMO_SELF_INDICATED } from './profiles/ops-demo';
 
 export type SimulationApp =
     | 'dashboard' | 'expert-hub' | 'email-marketplace'
@@ -26,7 +26,7 @@ export interface DemoStep {
     highlightId?: string;
 }
 
-export type DemoProfileId = 'acme' | 'coi' | 'crm' | 'dupler';
+export type DemoProfileId = 'acme' | 'coi' | 'dupler' | 'ops';
 
 export interface DemoProfile {
     id: DemoProfileId;
@@ -64,15 +64,15 @@ export const DEMO_PROFILES: DemoProfile[] = [
         selfIndicatedSteps: COI_DEMO_SELF_INDICATED,
     },
     {
-        id: 'crm',
-        name: 'CRM Demo',
-        companyName: 'Globex Industries',
-        description: 'CRM workflow automation',
-        icon: '📊',
-        steps: CRM_STEPS,
-        stepBehavior: CRM_STEP_BEHAVIOR,
-        stepMessages: CRM_STEP_MESSAGES,
-        selfIndicatedSteps: CRM_SELF_INDICATED,
+        id: 'ops',
+        name: 'OPS Demo (Demo 2)',
+        companyName: 'Apex Furniture',
+        description: 'Receiving, invoicing & financial control',
+        icon: '📦',
+        steps: OPS_DEMO_STEPS,
+        stepBehavior: OPS_DEMO_STEP_BEHAVIOR,
+        stepMessages: OPS_DEMO_STEP_MESSAGES,
+        selfIndicatedSteps: OPS_DEMO_SELF_INDICATED,
     },
     {
         id: 'dupler',

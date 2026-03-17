@@ -2025,6 +2025,7 @@ function InvoicingView() {
 type CRMTab = 'projects' | 'customer360' | 'timeline' | 'invoicing' | 'reports'
 
 const STEP_TO_TAB: Record<string, CRMTab> = {
+    '1.8': 'timeline',
     '1.12': 'projects',
     '1.13': 'customer360',
     '2.8': 'timeline',
