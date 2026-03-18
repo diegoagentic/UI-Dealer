@@ -7,6 +7,7 @@ import { COI_STEPS, COI_STEP_BEHAVIOR, COI_STEP_MESSAGES, COI_SELF_INDICATED } f
 import { COI_DEMO_STEPS, COI_DEMO_STEP_BEHAVIOR, COI_DEMO_STEP_MESSAGES, COI_DEMO_SELF_INDICATED } from './profiles/coi-demo';
 import { DUPLER_STEPS, DUPLER_STEP_BEHAVIOR, DUPLER_STEP_MESSAGES, DUPLER_SELF_INDICATED } from './profiles/dupler';
 import { OPS_DEMO_STEPS, OPS_DEMO_STEP_BEHAVIOR, OPS_DEMO_STEP_MESSAGES, OPS_DEMO_SELF_INDICATED } from './profiles/ops-demo';
+import { CONTINUA_DEMO_STEPS, CONTINUA_DEMO_STEP_BEHAVIOR, CONTINUA_DEMO_STEP_MESSAGES, CONTINUA_DEMO_SELF_INDICATED } from './profiles/continua-demo';
 
 export type SimulationApp =
     | 'dashboard' | 'expert-hub' | 'email-marketplace'
@@ -26,7 +27,7 @@ export interface DemoStep {
     highlightId?: string;
 }
 
-export type DemoProfileId = 'acme' | 'coi' | 'dupler' | 'ops';
+export type DemoProfileId = 'acme' | 'coi' | 'dupler' | 'ops' | 'continua';
 
 export interface DemoProfile {
     id: DemoProfileId;
@@ -84,5 +85,16 @@ export const DEMO_PROFILES: DemoProfile[] = [
         stepBehavior: DUPLER_STEP_BEHAVIOR,
         stepMessages: DUPLER_STEP_MESSAGES,
         selfIndicatedSteps: DUPLER_SELF_INDICATED,
+    },
+    {
+        id: 'continua',
+        name: 'Continua (Demo 3)',
+        companyName: 'Continua',
+        description: 'Receiving, invoicing & financial control',
+        icon: '🔄',
+        steps: CONTINUA_DEMO_STEPS,
+        stepBehavior: CONTINUA_DEMO_STEP_BEHAVIOR,
+        stepMessages: CONTINUA_DEMO_STEP_MESSAGES,
+        selfIndicatedSteps: CONTINUA_DEMO_SELF_INDICATED,
     },
 ];
