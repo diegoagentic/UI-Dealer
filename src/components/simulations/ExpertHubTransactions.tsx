@@ -193,11 +193,11 @@ const MANUFACTURER_ACKS = [
 
 // ─── Continua Step 2.2: Reuse Assessment & Cataloging Constants ──────────────
 const REUSE_AGENTS = [
-    { name: 'TeardownCataloger', detail: 'Scanning floor 7 teardown — 340 items inventoried...' },
-    { name: 'ConditionScorer', detail: 'AI condition scoring with photo evidence + wear analysis...' },
-    { name: 'MaterialClassifier', detail: 'Classifying: 180 reusable, 95 recyclable, 65 EOL...' },
-    { name: 'ValueEstimator', detail: 'Estimating refurbished value — $89,000 savings vs new...' },
-    { name: 'InventoryLister', detail: 'Auto-listing reusable items with "Refurbished" tag...' },
+    { name: 'TeardownCataloger', detail: 'UAL HQ → Floor 7: scanning pre-renovation teardown — 340 items inventoried...' },
+    { name: 'ConditionScorer', detail: 'UAL Floor 7: AI condition scoring with photo evidence + wear analysis per item...' },
+    { name: 'MaterialClassifier', detail: 'UAL Floor 7: classifying 180 reusable, 95 recyclable, 65 EOL...' },
+    { name: 'ValueEstimator', detail: 'UAL HQ: estimating refurbished value — $89,000 savings vs new procurement...' },
+    { name: 'InventoryLister', detail: 'UAL Floor 7 → Chicago Warehouse: auto-listing reusable items with "Refurbished" tag...' },
 ]
 const REUSE_ITEMS = [
     { name: 'Aeron Chair (Graphite)', qty: 45, condition: 4.2, category: 'reusable' as const, value: '$18,900', action: 'Refurbish + Relist' },
@@ -3540,6 +3540,16 @@ IEA*1*000002055~`}
                 {/* ═══ Continua Step 2.2 — Reuse Assessment & Cataloging (interactive) ═══ */}
                 {isContinua && stepId === '1.2' && reusePhase !== 'idle' && (
                     <div data-demo-target="reuse-assessment-catalog" className="space-y-4 mb-6">
+                        {/* Client Context Banner */}
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 animate-in fade-in duration-300">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center text-[10px] font-black shrink-0">UAL</div>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[11px] font-bold text-foreground">United Airlines HQ — Office Renovation Project</p>
+                                <p className="text-[10px] text-muted-foreground">Chicago, IL · Floor 7 Pre-Renovation Teardown · Order #ORD-2055 · $385,000 scope</p>
+                            </div>
+                            <span className="text-[9px] px-2 py-1 rounded-full bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-bold border border-green-200 dark:border-green-500/20 shrink-0">ACTIVE PROJECT</span>
+                        </div>
+
                         {/* Notification */}
                         {reusePhase === 'notification' && (
                             <button onClick={() => setReusePhase('processing')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
@@ -3548,10 +3558,10 @@ IEA*1*000002055~`}
                                         <div className="p-2 rounded-lg bg-green-600 text-white"><ArrowPathIcon className="h-4 w-4" /></div>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-foreground">Reuse Assessment — Floor 7 Teardown</span>
+                                                <span className="text-xs font-bold text-foreground">UAL HQ — Floor 7 Reuse Assessment</span>
                                                 <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-600 text-white font-bold">340 items</span>
                                             </div>
-                                            <p className="text-[11px] text-muted-foreground mt-1">SustainabilityAgent: Cataloging <span className="font-semibold text-foreground">340 items</span> from floor 7 pre-renovation teardown — AI condition scoring, material classification, value estimation.</p>
+                                            <p className="text-[11px] text-muted-foreground mt-1">SustainabilityAgent: Cataloging <span className="font-semibold text-foreground">340 items</span> from <span className="font-semibold text-foreground">UAL HQ Floor 7</span> pre-renovation teardown — AI condition scoring, material classification, value estimation.</p>
                                             <p className="text-[10px] text-brand-600 dark:text-brand-400 mt-2 flex items-center gap-1">Click to review assessment <ArrowRightIcon className="h-3 w-3" /></p>
                                         </div>
                                     </div>
@@ -3564,7 +3574,7 @@ IEA*1*000002055~`}
                             <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
                                 <div className="flex items-center gap-2 mb-3">
                                     <AIAgentAvatar size="sm" />
-                                    <span className="text-xs font-bold text-foreground">SustainabilityAgent Cataloging Teardown...</span>
+                                    <span className="text-xs font-bold text-foreground">SustainabilityAgent — UAL HQ Floor 7 Teardown...</span>
                                 </div>
                                 <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
                                     <div className="h-full rounded-full bg-green-500 transition-all duration-[3500ms] ease-linear" style={{ width: `${reuseProgress}%` }} />
@@ -3585,7 +3595,7 @@ IEA*1*000002055~`}
                         {reusePhase === 'breathing' && (
                             <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-xs font-semibold text-muted-foreground">Processing complete — syncing external systems...</span>
+                                <span className="text-xs font-semibold text-muted-foreground">UAL HQ Floor 7 — cataloging complete, syncing to Chicago Warehouse...</span>
                             </div>
                         )}
 
@@ -3595,7 +3605,7 @@ IEA*1*000002055~`}
                                 <div className="flex items-start gap-2">
                                     <AIAgentAvatar size="sm" />
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-green-800 dark:text-green-200"><span className="font-bold">SustainabilityAgent:</span> 340 items cataloged — <span className="font-semibold">180 reusable</span>, 95 recyclable, 65 EOL. Estimated savings: <span className="font-semibold">$89,000</span> vs new procurement.</p>
+                                        <p className="text-xs text-green-800 dark:text-green-200"><span className="font-bold">SustainabilityAgent:</span> <span className="font-semibold">UAL HQ Floor 7</span> — 340 items cataloged. <span className="font-semibold">180 reusable</span>, 95 recyclable, 65 EOL. Savings: <span className="font-semibold">$89,000</span> vs new. Items routed to Chicago Warehouse.</p>
                                         <div className="flex items-center gap-2 mt-2">
                                             <span className="text-[9px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">External Systems · Synced</span>
                                         </div>
@@ -3618,8 +3628,8 @@ IEA*1*000002055~`}
                                     {/* Header */}
                                     <div className="p-4 border-b border-border/50 flex items-center justify-between">
                                         <div>
-                                            <h3 className="text-sm font-bold text-foreground">Reuse Assessment — Floor 7 Teardown</h3>
-                                            <p className="text-[11px] text-muted-foreground mt-0.5">340 items evaluated · AI condition scoring · Photo evidence</p>
+                                            <h3 className="text-sm font-bold text-foreground">UAL HQ — Floor 7 Reuse Assessment</h3>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">Client: United Airlines · Chicago, IL · 340 items · AI condition scoring</p>
                                         </div>
                                         <span className="text-sm font-bold text-green-600 dark:text-green-400">$89K savings</span>
                                     </div>
@@ -3673,7 +3683,7 @@ IEA*1*000002055~`}
                                     {/* Savings Summary + CTA */}
                                     <div className="px-4 py-3 border-t border-border/50 flex items-center justify-between bg-muted/20">
                                         <div>
-                                            <p className="text-[10px] text-muted-foreground">180 items auto-listed with "Refurbished" tag in inventory</p>
+                                            <p className="text-[10px] text-muted-foreground">UAL Floor 7 → 180 items auto-listed with "Refurbished" tag in Chicago Warehouse</p>
                                             <p className="text-[11px] font-bold text-green-600 dark:text-green-400 mt-0.5">Total savings vs new: $89,000</p>
                                         </div>
                                         <button onClick={nextStep} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]">

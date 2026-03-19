@@ -17,7 +17,7 @@ import ConfidenceScoreBadge from '../widgets/ConfidenceScoreBadge';
 
 // Steps that show the floating lupa panel (per profile)
 const COI_PANEL_STEPS = ['1.2', '1.3', '1.4'];
-const CONTINUA_PANEL_STEPS = ['2.2', '2.4'];
+const CONTINUA_PANEL_STEPS = ['1.3', '2.2', '2.4'];
 
 // Simplified procurement phases for Continua 2.2 (human-friendly labels instead of technical agent names)
 const CONTINUA_PROC_PHASES = [
@@ -148,6 +148,65 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 ]);
             }), D));
             timers.push(setTimeout(pauseAware(() => nextStep()), D + 27000));
+
+        } else if (currentStep.id === '1.3' && isContinua) {
+            // Continua 1.3: Price Verification Engine — UAL HQ Floor 7 context (10s auto)
+            timers.push(setTimeout(pauseAware(() => {
+                setAgentLogs(['PriceVerificationEngine: UAL HQ — Scanning 200+ manufacturer price lists...']);
+                setPipelineAgents([
+                    { id: 'scan', name: 'PriceScanner', status: 'running' },
+                    { id: 'compare', name: 'MarginAnalyzer', status: 'pending' },
+                    { id: 'flag', name: 'ExceptionFlagger', status: 'pending' },
+                    { id: 'update', name: 'PriceUpdater', status: 'pending' },
+                ]);
+            }), D));
+
+            const continuaPriceTimeline = [
+                { delay: D + 2500, log: 'PriceScanner: UAL HQ project — scanning Q1 updates across Herman Miller, Steelcase, DIRTT...' },
+                { delay: D + 5000, log: 'PriceScanner: 14 items with outdated cost basis detected (avg +3.2% increase).' },
+                { delay: D + 7000, log: 'MarginAnalyzer: UAL Floor 7 spec — recalculating margins. Average 34% → 6 items below 25% threshold.' },
+                { delay: D + 9000, log: 'ExceptionFlagger: 3 consignment items from Herman Miller — 90-day review pending.' },
+                { delay: D + 10500, log: 'PriceUpdater: Suggested price updates generated — $110K savings identified. Report sent to expert.' },
+            ];
+
+            continuaPriceTimeline.forEach(({ delay, log }, index) => {
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgentProgress(Math.round(((index + 1) / continuaPriceTimeline.length) * 100));
+                    setAgentLogs(prev => [...prev, log]);
+
+                    if (index === 1) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'scan' ? { ...a, status: 'done' as const } :
+                            a.id === 'compare' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 2) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'compare' ? { ...a, status: 'done' as const } :
+                            a.id === 'flag' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 3) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'flag' ? { ...a, status: 'done' as const } :
+                            a.id === 'update' ? { ...a, status: 'running' as const } : a
+                        ));
+                    }
+                    if (index === 4) {
+                        setPipelineAgents(prev => prev.map(a =>
+                            a.id === 'update' ? { ...a, status: 'done' as const } : a
+                        ));
+                        setConfidenceFields([
+                            { field: 'Contract Prices', score: 100 },
+                            { field: 'Margin Analysis', score: 96 },
+                            { field: 'Consignment Review', score: 88 },
+                            { field: 'Price Updates', score: 94 },
+                        ]);
+                    }
+                }), delay));
+            });
+
+            timers.push(setTimeout(pauseAware(() => nextStep()), D + 12000));
 
         } else if (currentStep.id === '1.3' && !isOps) {
             timers.push(setTimeout(pauseAware(() => {
@@ -646,6 +705,13 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             accentColor: 'blue',
             progressColor: 'bg-indigo-500',
         },
+        'continua-1.3': {
+            icon: <Sparkles className="text-amber-600 dark:text-amber-400 animate-pulse" size={18} />,
+            title: 'UAL HQ — Price Verification Engine',
+            titleDone: 'Prices Verified — $110K Savings',
+            accentColor: 'amber',
+            progressColor: 'bg-amber-500',
+        },
         'continua-2.4': {
             icon: <Cpu className="text-teal-600 dark:text-teal-400" size={18} />,
             title: 'Warehouse Receiving Agent',
@@ -719,7 +785,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         },
     };
 
-    const configKey = isContinua && ['2.2', '2.4'].includes(currentStep.id)
+    const configKey = isContinua && ['1.3', '2.2', '2.4'].includes(currentStep.id)
         ? `continua-${currentStep.id}`
         : isOps && ['1.1', '1.3', '2.2', '2.4'].includes(currentStep.id)
         ? `ops-${currentStep.id}`
