@@ -296,14 +296,7 @@ const CONSIGNMENT_ITEMS = [
 type ConsignPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
 
 // ─── FM Flow: Quick Action Relocation (2.4) ──────────────────────────────────
-type FMRelocPhase = 'idle' | 'notification' | 'relocating' | 'committed'
-
-const FM_RELOC_ASSETS = [
-    { id: 'r1', name: 'Laptop Dock', icon: 'laptop' as const },
-    { id: 'r2', name: 'Monitor (2x)', icon: 'monitor' as const },
-    { id: 'r3', name: 'Keyboard + Mouse', icon: 'keyboard' as const },
-    { id: 'r4', name: 'Desk Lamp', icon: 'lamp' as const },
-];
+type FMRelocPhase = 'idle' | 'notification' | 'modal-open' | 'committed'
 
 // --- Components ---
 
@@ -594,8 +587,6 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
     // ─── FM Step 2.4: Quick Action Relocation state ──────────────────────────
     const [fmRelocPhase, setFmRelocPhase] = useState<FMRelocPhase>('idle')
-    const [relocAssets, setRelocAssets] = useState(FM_RELOC_ASSETS.map(a => ({ ...a, moved: false })));
-    const [relocCommitted, setRelocCommitted] = useState(false);
 
     // 2.4 orchestration — notification after delay
     const tp24 = CONTINUA_STEP_TIMING['2.4'];
@@ -607,20 +598,17 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         return () => timers.forEach(clearTimeout);
     }, [isContinua, stepId]);
 
-    // 2.4: relocating → auto-animate asset moves with stagger
+    // 2.4: modal-open → open the QuickMovementsModal
     useEffect(() => {
-        if (fmRelocPhase !== 'relocating') return;
-        setRelocAssets(FM_RELOC_ASSETS.map(a => ({ ...a, moved: false })));
-        setRelocCommitted(false);
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        FM_RELOC_ASSETS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() =>
-                setRelocAssets(prev => prev.map((a, j) => j === i ? { ...a, moved: true } : a))
-            ), 800 + i * 600));
-        });
-        timers.push(setTimeout(pauseAware(() => setRelocCommitted(true)),
-            800 + FM_RELOC_ASSETS.length * 600 + 400));
-        return () => timers.forEach(clearTimeout);
+        if (fmRelocPhase !== 'modal-open') return;
+        setIsQuickMovementsModalOpen(true);
+    }, [fmRelocPhase]);
+
+    // 2.4: committed → auto-advance after delay
+    useEffect(() => {
+        if (fmRelocPhase !== 'committed') return;
+        const t = setTimeout(pauseAware(() => nextStep()), 2000);
+        return () => clearTimeout(t);
     }, [fmRelocPhase]);
 
     // State
@@ -1476,12 +1464,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ═══ FM Step 2.4 — Quick Action Office Relocation (inline animation) ═══ */}
+                {/* ═══ FM Step 2.4 — Quick Action Office Relocation ═══ */}
                 {isContinua && stepId === '2.4' && fmRelocPhase !== 'idle' && (
                     <div className="space-y-4 mb-6">
                         {/* Notification Banner */}
                         {fmRelocPhase === 'notification' && (
-                            <button onClick={() => setFmRelocPhase('relocating')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
+                            <button onClick={() => setFmRelocPhase('modal-open')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border-2 border-blue-300 dark:border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-shadow cursor-pointer">
                                     <div className="flex items-start gap-3">
                                         <div className="p-2 rounded-lg bg-blue-500 text-white"><ArrowPathRoundedSquareIcon className="h-4 w-4" /></div>
@@ -1498,125 +1486,18 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                             </button>
                         )}
 
-                        {/* Inline Relocation Animation */}
-                        {fmRelocPhase === 'relocating' && (
-                            <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
-                                {/* Header */}
-                                <div className="flex items-center gap-3 px-1">
-                                    <ArrowPathRoundedSquareIcon className="h-5 w-5 text-blue-500 animate-spin" />
-                                    <div className="flex-1">
-                                        <p className="text-xs font-bold text-foreground">Relocating Assets — Office 3-214 → Office 3-216</p>
-                                        <p className="text-[10px] text-muted-foreground">Temporary workspace while Aeron chair is replaced</p>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
-                                        {relocAssets.filter(a => a.moved).length}/{relocAssets.length}
-                                    </span>
-                                </div>
-
-                                {/* Progress bar */}
-                                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                    <div
-                                        className="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out"
-                                        style={{ width: `${(relocAssets.filter(a => a.moved).length / relocAssets.length) * 100}%` }}
-                                    />
-                                </div>
-
-                                {/* Two-column office cards */}
-                                <div className="grid grid-cols-2 gap-3">
-                                    {/* FROM: Office 3-214 */}
-                                    <div className="rounded-xl border border-border bg-card overflow-hidden">
-                                        <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border-b border-border flex items-center gap-2">
-                                            <MapPinIcon className="h-3.5 w-3.5 text-red-500" />
-                                            <span className="text-[10px] font-bold text-red-700 dark:text-red-300">FROM: Office 3-214</span>
-                                        </div>
-                                        <div className="p-2.5 space-y-1.5">
-                                            {relocAssets.map((asset) => (
-                                                <div
-                                                    key={asset.id}
-                                                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all duration-500 ${
-                                                        asset.moved
-                                                            ? 'border-border/50 bg-muted/30 opacity-40 scale-95'
-                                                            : 'border-border bg-card'
-                                                    }`}
-                                                >
-                                                    <CubeIcon className={`h-3.5 w-3.5 shrink-0 ${asset.moved ? 'text-muted-foreground/40' : 'text-blue-500'}`} />
-                                                    <span className={`text-[11px] font-medium ${asset.moved ? 'text-muted-foreground/40 line-through' : 'text-foreground'}`}>
-                                                        {asset.name}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* TO: Office 3-216 */}
-                                    <div className="rounded-xl border border-border bg-card overflow-hidden">
-                                        <div className="px-3 py-2 bg-green-50 dark:bg-green-500/10 border-b border-border flex items-center gap-2">
-                                            <MapPinIcon className="h-3.5 w-3.5 text-green-500" />
-                                            <span className="text-[10px] font-bold text-green-700 dark:text-green-300">TO: Office 3-216 (vacant)</span>
-                                        </div>
-                                        <div className="p-2.5 space-y-1.5">
-                                            {relocAssets.map((asset) => (
-                                                <div
-                                                    key={asset.id}
-                                                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all duration-500 ${
-                                                        asset.moved
-                                                            ? 'border-green-200 dark:border-green-500/30 bg-green-50/50 dark:bg-green-500/5 animate-in fade-in slide-in-from-left-2'
-                                                            : 'border-dashed border-border/50 bg-muted/10 opacity-30'
-                                                    }`}
-                                                >
-                                                    {asset.moved ? (
-                                                        <CheckCircleIcon className="h-3.5 w-3.5 shrink-0 text-green-500" />
-                                                    ) : (
-                                                        <CubeIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" />
-                                                    )}
-                                                    <span className={`text-[11px] font-medium ${asset.moved ? 'text-green-700 dark:text-green-300' : 'text-muted-foreground/30'}`}>
-                                                        {asset.name}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Commit button — appears when all assets moved */}
-                                {relocCommitted && (
-                                    <button
-                                        onClick={() => setFmRelocPhase('committed')}
-                                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
-                                    >
-                                        <CheckCircleIcon className="h-4 w-4" />
-                                        Commit Moves
-                                    </button>
-                                )}
-                            </div>
-                        )}
-
                         {/* Committed confirmation */}
                         {fmRelocPhase === 'committed' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
-                                <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
-                                    <div className="flex items-start gap-3">
-                                        <CheckCircleIcon className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-3">
+                                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-300 dark:border-green-500/30">
+                                    <div className="flex items-start gap-2">
+                                        <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0 mt-0.5" />
                                         <div className="flex-1 min-w-0">
                                             <p className="text-xs font-bold text-green-800 dark:text-green-200">Assets Relocated Successfully</p>
-                                            <p className="text-[11px] text-green-700 dark:text-green-300 mt-1">Workstation assets moved from Office 3-214 → Office 3-216. Carlos can continue working while the Aeron is replaced. Inventory updated in real-time.</p>
-                                            <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                                                {FM_RELOC_ASSETS.map(item => (
-                                                    <span key={item.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
-                                                        <CheckCircleIcon className="h-3 w-3" />{item.name}
-                                                    </span>
-                                                ))}
-                                            </div>
+                                            <p className="text-[10px] text-green-700 dark:text-green-300 mt-1">Office 3-214 → Office 3-216. Inventory updated.</p>
                                         </div>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => nextStep()}
-                                    className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
-                                >
-                                    Next Step
-                                    <ArrowRightIcon className="h-3.5 w-3.5" />
-                                </button>
                             </div>
                         )}
                     </div>
@@ -2279,6 +2160,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                 isOpen={isQuickMovementsModalOpen}
                 onClose={() => {
                     setIsQuickMovementsModalOpen(false);
+                    if (fmRelocPhase === 'modal-open') setFmRelocPhase('committed');
                 }}
             />
         </div >

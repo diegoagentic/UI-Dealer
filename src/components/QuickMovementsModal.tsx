@@ -381,7 +381,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                 </Transition.Child>
 
                 <div className="fixed inset-0 overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
+                    <div className="flex min-h-full items-center justify-center p-4 pl-[340px]">
                         <Transition.Child
                             as={Fragment}
                             enter="ease-out duration-300"
@@ -391,7 +391,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95"
                         >
-                            <Dialog.Panel className="w-full max-w-6xl h-[80vh] flex flex-col bg-background rounded-3xl shadow-2xl overflow-hidden border border-border">
+                            <Dialog.Panel className="w-full max-w-5xl h-[75vh] flex flex-col bg-background rounded-3xl shadow-2xl overflow-hidden border border-border">
 
                                 {/* Header */}
                                 <div className="p-6 bg-card border-b border-border flex justify-between items-center z-10">
