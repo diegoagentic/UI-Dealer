@@ -349,9 +349,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     useEffect(() => { procPhaseRef.current = procPhase }, [procPhase])
 
     // Phase orchestration: idle → notification → expert-question → (answer triggers lupa) → highlight → done
-    const tp22 = CONTINUA_STEP_TIMING['2.2']
+    const tp22 = CONTINUA_STEP_TIMING['3.2']
     useEffect(() => {
-        if (!isContinua || stepId !== '2.2') { setProcPhase('idle'); return }
+        if (!isContinua || stepId !== '3.2') { setProcPhase('idle'); return }
         setProcPhase('idle')
         setExpertAnswer(null)
         const timers: ReturnType<typeof setTimeout>[] = []
@@ -374,21 +374,21 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         if (procPhase !== 'highlight') return
         const t = setTimeout(() => {
             setProcPhase('lupa-active')
-            setLupaStep('2.2')
+            setLupaStep('3.2')
         }, 1500)
         return () => clearTimeout(t)
     }, [procPhase, setLupaStep])
 
     // procCompleteStep signal from DemoProcessPanel → done with chip
     useEffect(() => {
-        if (procCompleteStep !== '2.2' || procPhase === 'done') return
+        if (procCompleteStep !== '3.2' || procPhase === 'done') return
         setProcPhase('done')
     }, [procCompleteStep, procPhase])
 
     // done → show chip 1.2s → simulate click (scale down) → navigate to order detail
     const [clickSimActive, setClickSimActive] = useState(false)
     useEffect(() => {
-        if (procPhase !== 'done' || !isContinua || currentStep?.id !== '2.2') return
+        if (procPhase !== 'done' || !isContinua || currentStep?.id !== '3.2') return
         const t1 = setTimeout(() => setClickSimActive(true), 1200)      // flash "click"
         const t2 = setTimeout(() => onNavigateToDetail('order-detail'), 1800) // navigate
         return () => { clearTimeout(t1); clearTimeout(t2) }
@@ -404,9 +404,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [ackClickSim, setAckClickSim] = useState(false)
 
     // 1.3 phase orchestration: idle → notification → tab-switch → validating → alert → click-sim → navigating
-    const tp23 = CONTINUA_STEP_TIMING['2.3']
+    const tp23 = CONTINUA_STEP_TIMING['3.3']
     useEffect(() => {
-        if (!isContinua || stepId !== '2.3') {
+        if (!isContinua || stepId !== '3.3') {
             setAckPhase('idle'); setAckValidatedCount(0); setAckKnollAlert(false); setAckClickSim(false)
             return
         }
@@ -1401,7 +1401,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <div className="p-6 bg-zinc-50/50 dark:bg-black/20 min-h-[500px]">
 
                                 {/* ═══ CONTINUA STEP 2.2 — Procurement: Notification + Expert Question (inline) ═══ */}
-                                {isContinua && stepId === '2.2' && (procPhase === 'notification' || procPhase === 'expert-question') && (
+                                {isContinua && stepId === '3.2' && (procPhase === 'notification' || procPhase === 'expert-question') && (
                                     <div className="space-y-4 mb-6">
                                         {/* Notification */}
                                         {procPhase === 'notification' && (
@@ -1489,7 +1489,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 )}
 
                                 {/* ═══ Continua Step 2.3 — ACK Tracking & Validation (inline) ═══ */}
-                                {isContinua && stepId === '2.3' && ackPhase !== 'idle' && (
+                                {isContinua && stepId === '3.3' && ackPhase !== 'idle' && (
                                     <div data-demo-target="ack-tracking-dashboard" className="space-y-4 mb-6">
                                         {/* Notification banner */}
                                         {ackPhase === 'notification' && (

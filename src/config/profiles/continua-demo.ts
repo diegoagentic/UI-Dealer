@@ -42,7 +42,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: Inventory & Asset Intelligence',
         title: 'Reuse Assessment & Cataloging',
         description: 'SustainabilityAgent catalogs furniture from floor 7 teardown (pre-renovation). 340 items evaluated: 180 reusable (refurbish), 95 recyclable (metal/fabric), 65 end-of-life. AI assigns condition score (1-5) with photo evidence. Reusable items auto-listed in inventory with "Refurbished" tag and estimated value. Savings: $89,000 vs new procurement.',
-        app: 'expert-hub',
+        app: 'inventory',
         role: 'Expert',
         highlightId: 'reuse-assessment-catalog',
     },
@@ -72,9 +72,20 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         groupTitle: 'Flow 1: Inventory & Asset Intelligence',
         title: 'Consignment & Vendor Returns',
         description: 'ConsignmentAgent manages 35 items on consignment from 4 manufacturers. 12 items approaching 90-day return window — AI prioritizes: 8 high-value chairs ($24,000 total) need decision this week. Auto-generates RMA requests for 4 confirmed returns. Expert reviews remaining 4 with AI recommendation: convert to purchase (demand trending up 12%).',
-        app: 'transactions',
+        app: 'inventory',
         role: 'Expert',
         highlightId: 'consignment-management',
+    },
+
+    {
+        id: '1.6',
+        groupId: 1,
+        groupTitle: 'Flow 1: Inventory & Asset Intelligence',
+        title: 'Client Review & Approval',
+        description: 'UAL project manager (Emily Chen) receives a consolidated Inventory Intelligence Report covering all changes: warehouse capacity optimized (120 items relocated, $4,200/mo savings), reuse assessment cataloged (180 items, $89K savings), prices verified (14 updated, 6 margin flags), locations synced ($1,800 freight saved), consignment decisions processed. End user reviews each section with AI confidence scores, then signs off digitally.',
+        app: 'dashboard',
+        role: 'End User',
+        highlightId: 'mobile-client-review',
     },
 
     // ═══════════════════════════════════════════
@@ -83,17 +94,17 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
     // 2 auto (System) + 2 interactive (Expert/Dealer) + 1 interactive (End User)
     // ═══════════════════════════════════════════
     {
-        id: 'F.1',
+        id: '2.1',
         groupId: 2,
         groupTitle: 'Flow 2: Facility Management & Service Center',
         title: 'Service Request Intake',
         description: 'Carlos Rivera (Facilities Coordinator) reports a broken Aeron chair (gas cylinder failure — safety concern) and a flickering desk lamp in Office 3-214 via the Service Center. ServiceIntakeAgent extracts request details, identifies affected assets (AST-1847, AST-2103), cross-references warranty coverage, and classifies as Priority: HIGH with safety flag. Request REQ-FM-2026-018 created.',
-        app: 'mac',
+        app: 'dashboard',
         role: 'End User',
-        highlightId: 'fm-service-request',
+        highlightId: 'mobile-service-request',
     },
     {
-        id: 'F.2',
+        id: '2.2',
         groupId: 2,
         groupTitle: 'Flow 2: Facility Management & Service Center',
         title: 'AI Triage & Cross-Reference',
@@ -103,7 +114,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'fm-ai-triage',
     },
     {
-        id: 'F.3',
+        id: '2.3',
         groupId: 2,
         groupTitle: 'Flow 2: Facility Management & Service Center',
         title: 'Expert Review & Dispatch',
@@ -113,7 +124,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'fm-expert-dispatch',
     },
     {
-        id: 'F.4',
+        id: '2.4',
         groupId: 2,
         groupTitle: 'Flow 2: Facility Management & Service Center',
         title: 'Quick Action — Office Relocation',
@@ -123,7 +134,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'fm-quick-relocation',
     },
     {
-        id: 'F.5',
+        id: '2.5',
         groupId: 2,
         groupTitle: 'Flow 2: Facility Management & Service Center',
         title: 'Resolution & Installer Report',
@@ -139,17 +150,17 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
     // 2 auto (System) + 2 interactive (Expert) + 1 interactive (Sales Rep)
     // ═══════════════════════════════════════════
     {
-        id: '2.1',
+        id: '3.1',
         groupId: 3,
         groupTitle: 'Flow 3: Project Lifecycle & Procurement',
         title: 'Project Intake & Scope',
-        description: 'CRMAgent ingests RFP from corporate client (new HQ — 8 floors). Auto-extracts requirements: 1,200 workstations, 40 conference rooms, 2 cafeterias, AV integration. AI calculates preliminary estimate $3.2M, identifies required manufacturers (Herman Miller, Knoll, DIRTT), suggests project team based on capacity. Pipeline updated automatically.',
+        description: 'Corporate client submits workspace project request through the Strata app — new HQ with 8 floors, 1,200 workstations, 40 conference rooms, 2 cafeterias, AV integration. Budget estimate $3.2M. Request triggers AI-powered project intake pipeline.',
         app: 'crm',
-        role: 'Sales Rep',
-        highlightId: 'crm-project-intake',
+        role: 'End User',
+        highlightId: 'project-intake',
     },
     {
-        id: '2.2',
+        id: '3.2',
         groupId: 3,
         groupTitle: 'Flow 3: Project Lifecycle & Procurement',
         title: 'Purchase Order Generation',
@@ -159,7 +170,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'procurement-po-package',
     },
     {
-        id: '2.3',
+        id: '3.3',
         groupId: 3,
         groupTitle: 'Flow 3: Project Lifecycle & Procurement',
         title: 'Order Tracking & ACK Validation',
@@ -169,7 +180,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'ack-tracking-dashboard',
     },
     {
-        id: '2.4',
+        id: '3.4',
         groupId: 3,
         groupTitle: 'Flow 3: Project Lifecycle & Procurement',
         title: 'Warehouse Receiving & QC',
@@ -179,7 +190,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'warehouse-receiving-qc',
     },
     {
-        id: '2.5',
+        id: '3.5',
         groupId: 3,
         groupTitle: 'Flow 3: Project Lifecycle & Procurement',
         title: 'Installation Schedule & Dispatch',
@@ -195,7 +206,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
     // 2 auto (System) + 2 interactive (Expert/Dealer) + 1 interactive (End User)
     // ═══════════════════════════════════════════
     {
-        id: '3.1',
+        id: '4.1',
         groupId: 4,
         groupTitle: 'Flow 4: Sustainability & Client Reporting',
         title: 'Sustainability Dashboard',
@@ -205,7 +216,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'sustainability-dashboard',
     },
     {
-        id: '3.2',
+        id: '4.2',
         groupId: 4,
         groupTitle: 'Flow 4: Sustainability & Client Reporting',
         title: 'Client Project Portal',
@@ -215,7 +226,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'client-project-portal',
     },
     {
-        id: '3.3',
+        id: '4.3',
         groupId: 4,
         groupTitle: 'Flow 4: Sustainability & Client Reporting',
         title: 'Financial Reconciliation',
@@ -225,7 +236,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'financial-reconciliation',
     },
     {
-        id: '3.4',
+        id: '4.4',
         groupId: 4,
         groupTitle: 'Flow 4: Sustainability & Client Reporting',
         title: 'Post-Occupancy Intelligence',
@@ -235,7 +246,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         highlightId: 'post-occupancy-survey',
     },
     {
-        id: '3.5',
+        id: '4.5',
         groupId: 4,
         groupTitle: 'Flow 4: Sustainability & Client Reporting',
         title: 'Smart Warranty & Maintenance',
@@ -255,27 +266,28 @@ export const CONTINUA_DEMO_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '1.3': { mode: 'auto', duration: 10, aiSummary: 'PriceVerificationAgent: scanning 200+ manufacturer price lists — detecting 14 outdated costs, recalculating margins, flagging 6 items below 25%' },
     '1.4': { mode: 'auto', duration: 8, aiSummary: 'LocationSyncAgent: synchronizing 3 warehouses + 2 job sites — optimizing delivery routing, consolidating shipments for $1,800 freight savings' },
     '1.5': { mode: 'interactive', userAction: 'Review consignment: 35 items, 12 approaching 90-day window. 4 RMA auto-generated. AI recommends converting 4 items to purchase (demand up 12%). Click "Process Decisions"' },
+    '1.6': { mode: 'interactive', userAction: 'Emily Chen (UAL PM) reviews consolidated Inventory Intelligence Report — capacity, reuse, pricing, logistics, consignment. Click "Approve All Changes"' },
 
     // Flow 2: Facility Management & Service Center
-    'F.1': { mode: 'interactive', userAction: 'Carlos reports broken Aeron chair (gas cylinder — safety) + flickering lamp in Office 3-214. Watch AI extract details and classify priority. Click "Submit Request"' },
-    'F.2': { mode: 'auto', duration: 14, aiSummary: 'TriageAgent: cross-referencing warranty, inventory, contracts, and scheduling — generating resolution plan with consignment swap option' },
-    'F.3': { mode: 'interactive', userAction: 'Review AI resolution: warranty claim auto-drafted, consignment Aeron available ($0 cost, 98% match), installer dispatched tomorrow. Click "Approve & Notify"' },
-    'F.4': { mode: 'interactive', userAction: 'Sara opens Quick Transfer to relocate Carlos\'s workstation assets from Office 3-214 to 3-216 (vacant). Drag items to new office, then click "Commit Moves"' },
-    'F.5': { mode: 'auto', duration: 10, aiSummary: 'ResolutionAgent: processing installer report, updating inventory, filing warranty claim, notifying all stakeholders — $0 cost resolution' },
+    '2.1': { mode: 'interactive', userAction: 'Carlos reports broken Aeron chair (gas cylinder — safety) + flickering lamp in Office 3-214. Watch AI extract details and classify priority. Click "Submit Request"' },
+    '2.2': { mode: 'auto', duration: 14, aiSummary: 'TriageAgent: cross-referencing warranty, inventory, contracts, and scheduling — generating resolution plan with consignment swap option' },
+    '2.3': { mode: 'interactive', userAction: 'Review AI resolution: warranty claim auto-drafted, consignment Aeron available ($0 cost, 98% match), installer dispatched tomorrow. Click "Approve & Notify"' },
+    '2.4': { mode: 'interactive', userAction: 'Sara opens Quick Transfer to relocate Carlos\'s workstation assets from Office 3-214 to 3-216 (vacant). Drag items to new office, then click "Commit Moves"' },
+    '2.5': { mode: 'auto', duration: 10, aiSummary: 'ResolutionAgent: processing installer report, updating inventory, filing warranty claim, notifying all stakeholders — $0 cost resolution' },
 
     // Flow 3: Project Lifecycle & Procurement
-    '2.1': { mode: 'interactive', userAction: 'Watch IntakeAgent process the incoming RFP. Review extracted scope ($3.2M, 1,200 workstations, Herman Miller/Knoll/DIRTT), confirm team assignments, then click "Confirm Team & Proceed"' },
-    '2.2': { mode: 'interactive', userAction: 'Review PO package: 12 manufacturers, $2.8M furniture + $280K AV + $120K architectural. Check contract vs list pricing. Flag lead time >8 weeks. Click "Submit PO Package"' },
-    '2.3': { mode: 'auto', duration: 22, aiSummary: 'TrackingAgent: monitoring 12 POs — validating 9 ACKs against purchase orders, flagging 3 pending, detecting Knoll price discrepancy +4%' },
-    '2.4': { mode: 'interactive', userAction: 'Review receiving: 47/50 items matched. QC flag: 2 chairs with fabric defect. Accept AI location assignment (Zone B, Rack 14). Click "Confirm Receiving"' },
-    '2.5': { mode: 'auto', duration: 10, aiSummary: 'InstallationAgent: generating schedule for floors 4-6 — coordinating 8 installers + 2 AV techs, re-sequencing around Herman Miller delay' },
+    '3.1': { mode: 'interactive', userAction: 'As the corporate client, review the workspace project request details (8 floors, 1,200 workstations, $3.2M). Click "Submit Project Request" to send to your dealer network.' },
+    '3.2': { mode: 'interactive', userAction: 'Review PO package: 12 manufacturers, $2.8M furniture + $280K AV + $120K architectural. Check contract vs list pricing. Flag lead time >8 weeks. Click "Submit PO Package"' },
+    '3.3': { mode: 'auto', duration: 22, aiSummary: 'TrackingAgent: monitoring 12 POs — validating 9 ACKs against purchase orders, flagging 3 pending, detecting Knoll price discrepancy +4%' },
+    '3.4': { mode: 'interactive', userAction: 'Review receiving: 47/50 items matched. QC flag: 2 chairs with fabric defect. Accept AI location assignment (Zone B, Rack 14). Click "Confirm Receiving"' },
+    '3.5': { mode: 'auto', duration: 10, aiSummary: 'InstallationAgent: generating schedule for floors 4-6 — coordinating 8 installers + 2 AV techs, re-sequencing around Herman Miller delay' },
 
     // Flow 4: Sustainability & Client Reporting
-    '3.1': { mode: 'auto', duration: 10, aiSummary: 'SustainabilityMetricsAgent: compiling impact data — 194 tons diverted, 78% carbon reduction, generating award submission narrative' },
-    '3.2': { mode: 'interactive', userAction: 'Review client portal: timeline 82% complete, $2.65M/$3.2M invoiced, 3 pending deliveries, 1 warranty claim. Click "Publish Portal Update"' },
-    '3.3': { mode: 'interactive', userAction: 'Review reconciliation: 47 POs, 42 invoices, 38 payments. 4 invoices >30 days — AI categorized with actions. Margin 33.2% vs 34% quoted. Click "Export Aging Report"' },
-    '3.4': { mode: 'interactive', userAction: 'Review survey results: 85 responses, 92% satisfaction. Chairs 4.6/5, AV 3.8/5 (recalibrate mics). Click "Send Report to Client"' },
-    '3.5': { mode: 'auto', duration: 10, aiSummary: 'WarrantyAgent: monitoring 1,200 items — flagging 15 Aeron chairs near warranty end, triaging 3 maintenance requests, filing vendor claims' },
+    '4.1': { mode: 'auto', duration: 10, aiSummary: 'SustainabilityMetricsAgent: compiling impact data — 194 tons diverted, 78% carbon reduction, generating award submission narrative' },
+    '4.2': { mode: 'interactive', userAction: 'Review client portal: timeline 82% complete, $2.65M/$3.2M invoiced, 3 pending deliveries, 1 warranty claim. Click "Publish Portal Update"' },
+    '4.3': { mode: 'interactive', userAction: 'Review reconciliation: 47 POs, 42 invoices, 38 payments. 4 invoices >30 days — AI categorized with actions. Margin 33.2% vs 34% quoted. Click "Export Aging Report"' },
+    '4.4': { mode: 'interactive', userAction: 'Review survey results: 85 responses, 92% satisfaction. Chairs 4.6/5, AV 3.8/5 (recalibrate mics). Click "Send Report to Client"' },
+    '4.5': { mode: 'auto', duration: 10, aiSummary: 'WarrantyAgent: monitoring 1,200 items — flagging 15 Aeron chairs near warranty end, triaging 3 maintenance requests, filing vendor claims' },
 };
 
 // ─── STEP MESSAGES ───────────────────────────────────────────────────────────
@@ -312,33 +324,39 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
         '8 chairs ($24,000) need decision this week — 4 RMA auto-generated',
         'AI recommendation: convert remaining 4 to purchase — demand up 12%',
     ],
+    '1.6': [
+        'Inventory Intelligence Report ready for UAL project review...',
+        'Consolidated: 5 intelligence modules — capacity, reuse, pricing, logistics, consignment',
+        'Total savings identified: $95,200 + $4,200/mo ongoing',
+        'Awaiting client approval — Emily Chen (UAL PM) notified',
+    ],
 
     // Flow 2: Facility Management & Service Center
-    'F.1': [
+    '2.1': [
         'ServiceIntakeAgent: incoming request from Carlos Rivera — Office 3-214...',
         'Extracting: broken Aeron chair (gas cylinder failure) + flickering desk lamp',
         'Warranty check: AST-1847 covered until Mar 2027 — auto-claim eligible',
         'Priority classified: HIGH (safety concern — gas cylinder failure)',
     ],
-    'F.2': [
+    '2.2': [
         'TriageAgent: cross-referencing 4 databases for REQ-FM-2026-018...',
         'Warranty DB: Aeron chair covered — auto-claim eligible',
         'Inventory: 3 replacement Aeron chairs in Warehouse Zone A (consignment)',
         'Resolution plan: warranty claim + consignment swap + temporary relocation',
     ],
-    'F.3': [
+    '2.3': [
         'Expert review: David Park reviewing AI resolution plan...',
         'Consignment match: Aeron Remastered from Zone A — 98% match, $0 cost',
         'Installer dispatch: ProInstall LLC, tomorrow 9AM-12PM — certified vendor',
         'Approval sent — notifications dispatched to Carlos, Sara, ProInstall',
     ],
-    'F.4': [
+    '2.4': [
         'RelocationAgent: preparing asset transfer — Office 3-214 → 3-216...',
         'Assets identified: laptop dock, 2 monitors, keyboard, personal items',
         'Target: Office 3-216 (vacant workstation, same floor, ergonomic match)',
         'Quick Transfer modal ready — drag-and-drop to commit moves',
     ],
-    'F.5': [
+    '2.5': [
         'ResolutionAgent: installer report received from ProInstall LLC...',
         'Chair swap complete: old Aeron removed, consignment Aeron installed',
         'Inventory updated: AST-3201 activated, AST-1847 marked for warranty return',
@@ -346,31 +364,31 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
     ],
 
     // Flow 3: Project Lifecycle & Procurement
-    '2.1': [
+    '3.1': [
         'CRMAgent: RFP received — corporate HQ project, 8 floors',
         'Auto-extracting requirements: 1,200 workstations, 40 conference rooms, 2 cafeterias',
         'Preliminary estimate calculated: $3.2M across Herman Miller, Knoll, DIRTT',
         'Project team suggested based on current capacity and expertise',
     ],
-    '2.2': [
+    '3.2': [
         'ProcurementAgent: generating consolidated POs for 12 manufacturers...',
         'Contract pricing applied — tiered discounts for MillerKnoll products',
         'Lead time flags: 3 items >8 weeks (DIRTT modular walls, custom desks)',
         'PO package ready: $2.8M furniture + $280K AV + $120K architectural',
     ],
-    '2.3': [
+    '3.3': [
         'TrackingAgent: monitoring 12 active purchase orders...',
         '9 ACKs received — auto-validating qty, price, delivery dates',
         'Knoll ACK: price increase +4% on task chairs vs contract detected',
         'Auto-generating dispute draft with contractual evidence — expert review pending',
     ],
-    '2.4': [
+    '3.4': [
         'ReceivingAgent: processing 3 shipments at Chicago warehouse...',
         'QR scan → auto-matching against PO line items: 47/50 matched',
         'QC flag: 2 task chairs — fabric defect detected, photo evidence captured',
         'Inventory updated: Zone B, Rack 14 | Warehouse utilization: 72%',
     ],
-    '2.5': [
+    '3.5': [
         'InstallationAgent: generating schedule for floors 4-6 (phase 2)...',
         'Coordinating: 8 installers + 2 AV techs + delivery trucks',
         'Conflict detected: Herman Miller delivery delayed 3 days for floor 5',
@@ -378,31 +396,31 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
     ],
 
     // Flow 4: Sustainability & Client Reporting
-    '3.1': [
+    '4.1': [
         'SustainabilityMetricsAgent: compiling UAL project impact data...',
         '194 tons diverted from landfill | 78% embodied carbon reduction',
         '2,000 items refurbished | Shaw carpet take-back: 103 tons recycled',
         'Award narrative generated — benchmarked against industry standards',
     ],
-    '3.2': [
+    '4.2': [
         'ClientPortalAgent: generating single-pane view for facilities team...',
         'Timeline: 82% complete | Budget: $2.65M of $3.2M invoiced',
         'Open items: 3 pending deliveries, 1 warranty claim, 0 overdue invoices',
         '"One contact, one contract, one invoice" — change requests routed to PM',
     ],
-    '3.3': [
+    '4.3': [
         'FinancialAgent: reconciling UAL project — 47 POs, 42 invoices...',
         '38 payments received | 4 invoices pending >30 days',
         'AI categorization: 2 awaiting ACK, 1 partial delivery, 1 client approval',
         'Margin analysis: 33.2% realized vs 34% quoted — 6 items with price variance',
     ],
-    '3.4': [
+    '4.4': [
         'PostOccupancyAgent: deploying conversational survey — floor 4 occupants...',
         '85 responses collected: workspace comfort, ergonomics, AV quality',
         'Overall: 92% satisfaction | Task chairs: 4.6/5 | AV: 3.8/5',
         'Recommendation: recalibrate conference room mic arrays — report generated',
     ],
-    '3.5': [
+    '4.5': [
         'WarrantyAgent: monitoring 1,200 items under active warranty...',
         'AI predictive: 15 Aeron chairs approaching 12-year warranty end',
         'Extended coverage recommended: $180/chair vs $950 replacement',
@@ -415,13 +433,13 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
 // System-role auto steps display AgentPipelineStrip + timeline in the lupa panel.
 
 export const CONTINUA_DEMO_SELF_INDICATED: string[] = [
-    '1.1', '1.3', '1.4',
-    'F.1', 'F.2', 'F.5',
-    '2.1', '2.2', '2.3', '3.1', '3.5',
+    '1.1', '1.2', '1.3', '1.4', '1.5', '1.6',
+    '2.1', '2.2', '2.5',
+    '3.1', '3.2', '3.3', '4.1', '4.5',
 ];
 
 // ─── STEP TIMING PROFILES ────────────────────────────────────────────────────
-// Per-step timing for varied pacing. Hero steps (1.2, 2.2, 3.1) are slower;
+// Per-step timing for varied pacing. Hero steps (1.2, 3.2, 4.1) are slower;
 // System auto-steps (2.4) are faster. Interactive steps have resultsDur=0 (manual).
 export interface StepTiming {
     notifDelay: number;     // ms before notification appears
@@ -438,20 +456,21 @@ export const CONTINUA_STEP_TIMING: Record<string, StepTiming> = {
     '1.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
     '1.4': { notifDelay: 1500, notifDuration: 4000, agentStagger: 600,  agentDone: 400,  breathing: 800,  resultsDur: 8000 },
     '1.5': { notifDelay: 2500, notifDuration: 7000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
+    '1.6': { notifDelay: 2000, notifDuration: 6000, agentStagger: 0,    agentDone: 0,    breathing: 0,    resultsDur: 0 },
     // Flow 2: FM & Service Center
-    'F.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 600,  agentDone: 400,  breathing: 1200, resultsDur: 0 },
-    'F.2': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1500, resultsDur: 12000 },
-    'F.3': { notifDelay: 2500, notifDuration: 7000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
-    'F.4': { notifDelay: 2500, notifDuration: 5000, agentStagger: 0,    agentDone: 0,    breathing: 0,    resultsDur: 0 },
-    'F.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 700,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
-    '2.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 0,    agentDone: 0,   breathing: 1500, resultsDur: 0 },
-    '2.2': { notifDelay: 3000, notifDuration: 8000, agentStagger: 1200, agentDone: 800,  breathing: 2000, resultsDur: 0 },
-    '2.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 12000 },
-    '2.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800,  agentDone: 500,  breathing: 1500, resultsDur: 0 },
+    '2.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 600,  agentDone: 400,  breathing: 1200, resultsDur: 0 },
+    '2.2': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1500, resultsDur: 12000 },
+    '2.3': { notifDelay: 2500, notifDuration: 7000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
+    '2.4': { notifDelay: 2500, notifDuration: 5000, agentStagger: 0,    agentDone: 0,    breathing: 0,    resultsDur: 0 },
     '2.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 700,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
-    '3.1': { notifDelay: 3000, notifDuration: 7000, agentStagger: 1100, agentDone: 700,  breathing: 2000, resultsDur: 12000 },
-    '3.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
-    '3.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1200, resultsDur: 0 },
-    '3.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
+    '3.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 0,    agentDone: 0,   breathing: 1500, resultsDur: 0 },
+    '3.2': { notifDelay: 3000, notifDuration: 8000, agentStagger: 1200, agentDone: 800,  breathing: 2000, resultsDur: 0 },
+    '3.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 12000 },
+    '3.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800,  agentDone: 500,  breathing: 1500, resultsDur: 0 },
     '3.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 700,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
+    '4.1': { notifDelay: 3000, notifDuration: 7000, agentStagger: 1100, agentDone: 700,  breathing: 2000, resultsDur: 12000 },
+    '4.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
+    '4.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1200, resultsDur: 0 },
+    '4.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
+    '4.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 700,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
 };

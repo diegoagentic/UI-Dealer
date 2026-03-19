@@ -19,7 +19,7 @@ import { useDemoProfile } from '../../context/DemoProfileContext';
 import { AIAgentAvatar } from './DemoAvatars';
 import { CONTINUA_STEP_TIMING } from '../../config/profiles/continua-demo';
 
-// ─── Continua Step 3.4: Post-Occupancy Intelligence Constants ───────────────
+// ─── Continua Step 4.4: Post-Occupancy Intelligence Constants ───────────────
 const SURVEY_AGENTS = [
     { name: 'SurveyDeployer', detail: 'Deploying survey to floor 4 occupants (60-day post-install)...' },
     { name: 'ResponseCollector', detail: 'Collecting responses — 85 of 92 employees responded...' },
@@ -62,21 +62,21 @@ export default function ConversationalSurvey() {
         };
     }, []);
 
-    // ─── Continua Step 3.4: Post-Occupancy Intelligence ─────────────────────────
+    // ─── Continua Step 4.4: Post-Occupancy Intelligence ─────────────────────────
     const [survDemoPhase, setSurvDemoPhase] = useState<SurveyDemoPhase>('idle');
     const survDemoPhaseRef = useRef(survDemoPhase);
     useEffect(() => { survDemoPhaseRef.current = survDemoPhase; }, [survDemoPhase]);
     const [survDemoAgents, setSurvDemoAgents] = useState(SURVEY_AGENTS.map(a => ({ ...a, visible: false, done: false })));
     const [survDemoProgress, setSurvDemoProgress] = useState(0);
 
-    const tp34 = CONTINUA_STEP_TIMING['3.4'];
+    const tp44 = CONTINUA_STEP_TIMING['4.4'];
     useEffect(() => {
-        if (!isContinua || stepId !== '3.4') { setSurvDemoPhase('idle'); return; }
+        if (!isContinua || stepId !== '4.4') { setSurvDemoPhase('idle'); return; }
         setSurvDemoPhase('idle');
         setSurvDemoAgents(SURVEY_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setSurvDemoPhase('notification')), tp34.notifDelay));
-        timers.push(setTimeout(pauseAware(() => { if (survDemoPhaseRef.current === 'notification') setSurvDemoPhase('processing'); }), tp34.notifDelay + tp34.notifDuration));
+        timers.push(setTimeout(pauseAware(() => setSurvDemoPhase('notification')), tp44.notifDelay));
+        timers.push(setTimeout(pauseAware(() => { if (survDemoPhaseRef.current === 'notification') setSurvDemoPhase('processing'); }), tp44.notifDelay + tp44.notifDuration));
         return () => timers.forEach(clearTimeout);
     }, [isContinua, stepId]);
 
@@ -87,16 +87,16 @@ export default function ConversationalSurvey() {
         const timers: ReturnType<typeof setTimeout>[] = [];
         timers.push(setTimeout(() => setSurvDemoProgress(100), 50));
         SURVEY_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setSurvDemoAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp34.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setSurvDemoAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp34.agentStagger + tp34.agentDone));
+            timers.push(setTimeout(pauseAware(() => setSurvDemoAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp44.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setSurvDemoAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp44.agentStagger + tp44.agentDone));
         });
-        timers.push(setTimeout(pauseAware(() => setSurvDemoPhase('breathing')), SURVEY_AGENTS.length * tp34.agentStagger + tp34.agentDone + 300));
+        timers.push(setTimeout(pauseAware(() => setSurvDemoPhase('breathing')), SURVEY_AGENTS.length * tp44.agentStagger + tp44.agentDone + 300));
         return () => timers.forEach(clearTimeout);
     }, [survDemoPhase]);
 
     useEffect(() => {
         if (survDemoPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setSurvDemoPhase('revealed')), tp34.breathing);
+        const t = setTimeout(pauseAware(() => setSurvDemoPhase('revealed')), tp44.breathing);
         return () => clearTimeout(t);
     }, [survDemoPhase]);
 
@@ -166,8 +166,8 @@ export default function ConversationalSurvey() {
 
     return (
         <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f1115] text-foreground font-sans flex items-center justify-center p-4">
-            {/* ─── Continua Step 3.4: Post-Occupancy Intelligence Overlay ─── */}
-            {isContinua && stepId === '3.4' && survDemoPhase !== 'idle' && (
+            {/* ─── Continua Step 4.4: Post-Occupancy Intelligence Overlay ─── */}
+            {isContinua && stepId === '4.4' && survDemoPhase !== 'idle' && (
                 <div className="absolute inset-0 z-30 flex items-start justify-center overflow-y-auto pt-6 pb-8">
                     <div className="w-full max-w-2xl space-y-4 animate-in fade-in duration-300 px-4">
 

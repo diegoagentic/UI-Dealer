@@ -17,7 +17,7 @@ import ConfidenceScoreBadge from '../widgets/ConfidenceScoreBadge';
 
 // Steps that show the floating lupa panel (per profile)
 const COI_PANEL_STEPS = ['1.2', '1.3', '1.4'];
-const CONTINUA_PANEL_STEPS = ['1.3', '2.2', '2.4'];
+const CONTINUA_PANEL_STEPS = ['1.3', '3.2', '3.4'];
 
 // Simplified procurement phases for Continua 2.2 (human-friendly labels instead of technical agent names)
 const CONTINUA_PROC_PHASES = [
@@ -74,8 +74,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             return;
         }
         // Continua 2.2: wait for lupaStep signal from Transactions
-        if (isContinua && currentStep.id === '2.2') {
-            setPanelVisible(lupaStep === '2.2');
+        if (isContinua && currentStep.id === '3.2') {
+            setPanelVisible(lupaStep === '3.2');
             return;
         }
         const revealTimer = setTimeout(() => setPanelVisible(true), PANEL_REVEAL_DELAY);
@@ -97,10 +97,10 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         // All timeline delays are offset so animations start after the panel appears
         const D = PANEL_REVEAL_DELAY;
 
-        if (currentStep.id === '2.2' && isContinua) {
-            // Continua 2.2: Simplified procurement phases → summary verde
+        if (currentStep.id === '3.2' && isContinua) {
+            // Continua 3.2: Simplified procurement phases → summary verde
             // Expert question is handled inline in Transactions — panel appears AFTER expert answer via lupaStep
-            if (lupaStep !== '2.2') return; // Don't start timeline until signal received
+            if (lupaStep !== '3.2') return; // Don't start timeline until signal received
             setProcPhases(CONTINUA_PROC_PHASES.map(p => ({ ...p, visible: false, done: false })));
             setSummaryVisible(false);
 
@@ -125,7 +125,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 setSummaryVisible(true);
             }), totalPhaseTime));
             timers.push(setTimeout(pauseAware(() => {
-                setProcCompleteStep('2.2');
+                setProcCompleteStep('3.2');
                 setPanelVisible(false);
             }), totalPhaseTime + 2500));
 
@@ -571,8 +571,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
             timers.push(setTimeout(pauseAware(() => nextStep()), D + 22000));
 
-        } else if (currentStep.id === '2.4' && isContinua) {
-            // Continua 2.4: Warehouse Receiving — QC inspection pipeline (20s)
+        } else if (currentStep.id === '3.4' && isContinua) {
+            // Continua 3.4: Warehouse Receiving — QC inspection pipeline (20s)
             timers.push(setTimeout(pauseAware(() => {
                 setAgentLogs(['ReceivingAgent: Processing inbound shipments for Project Meridian...']);
                 setPipelineAgents([
@@ -698,7 +698,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         accentColor: 'green' | 'amber' | 'blue' | 'purple' | 'red';
         progressColor: string;
     }> = {
-        'continua-2.2': {
+        'continua-3.2': {
             icon: <Cpu className="text-indigo-600 dark:text-indigo-400" size={18} />,
             title: 'PO Package Generation',
             titleDone: 'Procurement Complete',
@@ -712,7 +712,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
             accentColor: 'amber',
             progressColor: 'bg-amber-500',
         },
-        'continua-2.4': {
+        'continua-3.4': {
             icon: <Cpu className="text-teal-600 dark:text-teal-400" size={18} />,
             title: 'Warehouse Receiving Agent',
             titleDone: 'Receiving Complete',
@@ -785,7 +785,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
         },
     };
 
-    const configKey = isContinua && ['1.3', '2.2', '2.4'].includes(currentStep.id)
+    const configKey = isContinua && ['1.3', '3.2', '3.4'].includes(currentStep.id)
         ? `continua-${currentStep.id}`
         : isOps && ['1.1', '1.3', '2.2', '2.4'].includes(currentStep.id)
         ? `ops-${currentStep.id}`
@@ -932,8 +932,8 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
 
                 {/* ─── Step-specific completion content ─── */}
 
-                {/* Step 2.2 Continua: Simplified procurement phases + summary verde */}
-                {currentStep.id === '2.2' && isContinua && (
+                {/* Step 3.2 Continua: Simplified procurement phases + summary verde */}
+                {currentStep.id === '3.2' && isContinua && (
                     <div className="px-6 pb-5 space-y-4">
                         {/* Simplified procurement phases */}
                         {procPhases.some(p => p.visible) && !summaryVisible && (
@@ -1183,7 +1183,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 )}
 
                 {/* Step 2.2: Schema Mapping + Run Delta */}
-                {currentStep.id === '2.2' && isDone && (
+                {(currentStep.id === '2.2' || currentStep.id === '3.2') && isDone && (
                     <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
                         {/* Entity Link */}
                         <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
@@ -1234,7 +1234,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 )}
 
                 {/* Step 2.3: Comparison Table + Escalate */}
-                {currentStep.id === '2.3' && isDone && (
+                {(currentStep.id === '2.3' || currentStep.id === '3.3') && isDone && (
                     <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
                         {/* Line-by-Line Comparison Table */}
                         <div className="rounded-xl border border-gray-200 dark:border-zinc-700 overflow-hidden">
@@ -1419,7 +1419,7 @@ export default function DemoProcessPanel({ onNavigate }: DemoProcessPanelProps) 
                 )}
 
                 {/* OPS Step 2.4: Invoice Reconciliation Summary */}
-                {currentStep.id === '2.4' && isDone && (
+                {(currentStep.id === '2.4' || currentStep.id === '3.4') && isDone && (
                     <div className="px-6 pb-5 space-y-4 animate-in fade-in duration-300">
                         <div className="flex items-center justify-between text-xs px-3 py-2 rounded-lg bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700">
                             <span className="text-zinc-400 dark:text-zinc-500">Final Invoice:</span>

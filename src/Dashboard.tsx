@@ -30,7 +30,9 @@ import {
     Bars3BottomLeftIcon,
     Bars3Icon,
     CheckBadgeIcon,
-    ClipboardDocumentCheckIcon
+    ClipboardDocumentCheckIcon,
+    BuildingOffice2Icon,
+    RocketLaunchIcon,
 } from '@heroicons/react/24/outline'
 import { Reorder } from 'framer-motion'
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
@@ -479,7 +481,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [sustProgress, setSustProgress] = useState(0)
 
     useEffect(() => {
-        if (!isContinua || stepId !== '3.1') { setSustPhase('idle'); return }
+        if (!isContinua || stepId !== '4.1') { setSustPhase('idle'); return }
         setSustPhase('idle')
         setSustAgents(SUST_AGENTS.map(a => ({ ...a, visible: false, done: false })))
         const timers: ReturnType<typeof setTimeout>[] = []
@@ -522,6 +524,18 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     const [deliveryConfirmed, setDeliveryConfirmed] = useState(false)
     useEffect(() => {
         if (currentStep.id !== '3.5') { setPunchComment(''); setPunchCommentSent(false); setShowAckModal(false); setPortalTab('orders'); setDeliveryConfirmed(false); }
+    }, [currentStep.id])
+
+    // Step 1.6: Client Review & Approval (Continua — End User mobile)
+    const [clientApproved, setClientApproved] = useState(false)
+    useEffect(() => {
+        if (currentStep.id !== '1.6') { setClientApproved(false); }
+    }, [currentStep.id])
+
+    // Step 2.1: Service Request (Continua — End User mobile)
+    const [serviceSubmitted, setServiceSubmitted] = useState(false)
+    useEffect(() => {
+        if (currentStep.id !== '2.1') { setServiceSubmitted(false); }
     }, [currentStep.id])
 
     const handleGenUIAction = (prompt: string) => {
@@ -768,8 +782,284 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
     }, [])
 
     return (
-        <div className={`font-sans text-foreground ${!isOps && ['1.8', '3.5'].includes(currentStep.id) ? 'min-h-[200vh] bg-zinc-950 -mt-16 pt-16' : 'min-h-screen bg-background pb-10'}`}>
-            {!(!isOps && ['1.8', '3.5'].includes(currentStep.id)) && <GenUIContainer />}
+        <div className={`font-sans text-foreground ${!isOps && ['1.8', '1.6', '2.1', '3.5'].includes(currentStep.id) ? 'min-h-[200vh] bg-zinc-950 -mt-16 pt-16' : 'min-h-screen bg-background pb-10'}`}>
+            {!(!isOps && ['1.8', '1.6', '2.1', '3.5'].includes(currentStep.id)) && <GenUIContainer />}
+
+            {/* ===== Step 1.6: Client Review & Approval — Mobile device (Continua) ===== */}
+            {currentStep.id === '1.6' && (
+                <div data-demo-target="mobile-client-review" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
+                    <MobileDeviceFrame>
+                        {/* Mobile Navbar */}
+                        <div className="flex items-center justify-between px-4 pt-10 pb-3 border-b border-border">
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                                    <span className="text-[10px] font-black text-primary-foreground">S</span>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground font-medium leading-none">Project Manager</p>
+                                    <p className="text-xs font-bold text-foreground leading-tight">Emily Chen</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <BellIcon className="w-5 h-5 text-foreground" />
+                                    <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center">1</div>
+                                </div>
+                                <div className="w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center">
+                                    <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400">EC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Push Notification */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 animate-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-start gap-2.5">
+                                <div className="p-1.5 bg-blue-500/20 rounded-lg shrink-0">
+                                    <DocumentTextIcon className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-blue-500 font-medium">Just now</p>
+                                    <p className="text-xs font-bold text-blue-700 dark:text-blue-300">Inventory Intelligence Report</p>
+                                    <p className="text-[11px] text-blue-600/80 dark:text-blue-400/80 mt-0.5">UAL HQ — 5 modules analyzed, ready for your approval.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Report Card */}
+                        <div className="mx-3 mt-3 rounded-xl bg-card border border-border overflow-hidden shadow-sm">
+                            {/* Visual Header */}
+                            <div className="relative bg-gradient-to-br from-indigo-600 to-purple-700 px-4 py-5 text-white overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-full opacity-20">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-full blur-3xl"></div>
+                                </div>
+                                <div className="relative z-10 text-center">
+                                    <SparklesIcon className="w-5 h-5 mx-auto mb-1.5 text-indigo-200" />
+                                    <p className="font-bold text-sm tracking-tight">UAL HQ — Chicago</p>
+                                    <p className="text-indigo-200 text-[9px] uppercase tracking-widest mt-0.5">Inventory Intelligence Report</p>
+                                </div>
+                            </div>
+
+                            {/* Summary Sections */}
+                            <div className="p-3 space-y-2">
+                                {[
+                                    { step: '1.1', title: 'Asset Health', summary: 'Score: 87% — 3 alerts flagged', color: 'blue' },
+                                    { step: '1.2', title: 'Reuse Assessment', summary: '12 items cataloged — $45K savings', color: 'emerald' },
+                                    { step: '1.3', title: 'Price Verified', summary: '$110K savings across 3 categories', color: 'amber' },
+                                    { step: '1.4', title: 'Locations Synced', summary: '4 locations — deliveries confirmed', color: 'violet' },
+                                    { step: '1.5', title: 'Consignment', summary: '4 RMA + 4 convert-to-purchase', color: 'rose' },
+                                ].map((section, i) => (
+                                    <div key={section.step} className={`p-2.5 rounded-lg border ${clientApproved ? 'border-green-300 dark:border-green-500/30 bg-green-50/30 dark:bg-green-500/5' : 'border-border bg-muted/20'} transition-all duration-300`} style={{ animationDelay: `${i * 80}ms` }}>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-[9px] font-bold shrink-0 ${
+                                                section.color === 'blue' ? 'bg-blue-500' :
+                                                section.color === 'emerald' ? 'bg-emerald-500' :
+                                                section.color === 'amber' ? 'bg-amber-500' :
+                                                section.color === 'violet' ? 'bg-violet-500' : 'bg-rose-500'
+                                            }`}>{section.step}</div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-[11px] font-bold text-foreground">{section.title}</p>
+                                                <p className="text-[9px] text-muted-foreground">{section.summary}</p>
+                                            </div>
+                                            {clientApproved && <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Key Metrics */}
+                            <div className="px-3 pb-3">
+                                <div className="grid grid-cols-3 gap-1.5">
+                                    {[
+                                        { label: 'Savings', value: '$166,600' },
+                                        { label: 'Assets', value: '1,247' },
+                                        { label: 'Locations', value: '4' },
+                                    ].map(item => (
+                                        <div key={item.label} className="p-1.5 rounded-lg bg-muted/50 text-center">
+                                            <p className="text-[8px] text-muted-foreground">{item.label}</p>
+                                            <p className="text-[11px] font-bold text-foreground">{item.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* AI Verified badge */}
+                        <div className="mx-3 mt-2 px-3 py-2 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
+                            <p className="text-[9px] text-indigo-700 dark:text-indigo-300 text-center leading-relaxed">
+                                <span className="font-semibold">AI Verified</span> — All 5 modules analyzed by Strata Intelligence Engine
+                            </p>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mx-3 mt-4 mb-4">
+                            {!clientApproved ? (
+                                <button
+                                    onClick={() => setClientApproved(true)}
+                                    className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                                >
+                                    <CheckCircleIcon className="w-4 h-4" />
+                                    Approve All Changes
+                                </button>
+                            ) : (
+                                <div className="space-y-3 animate-in fade-in duration-300">
+                                    <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                                            <div>
+                                                <p className="text-xs font-bold text-green-700 dark:text-green-300">All Changes Approved</p>
+                                                <p className="text-[10px] text-green-600/80 dark:text-green-400/70">Emily Chen · $166,600 savings confirmed</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => nextStep()}
+                                        className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
+                                    >
+                                        Continue
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </MobileDeviceFrame>
+                </div>
+            )}
+
+            {/* ===== Step 2.1: Service Request — Mobile device (Continua End User) ===== */}
+            {currentStep.id === '2.1' && !isOps && (
+                <div data-demo-target="mobile-service-request" className="flex items-start justify-center pt-6 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
+                    <MobileDeviceFrame>
+                        {/* Mobile Navbar */}
+                        <div className="flex items-center justify-between px-4 pt-10 pb-3 border-b border-border">
+                            <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                                    <span className="text-[10px] font-black text-primary-foreground">S</span>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-muted-foreground font-medium leading-none">Facilities Coordinator</p>
+                                    <p className="text-xs font-bold text-foreground leading-tight">Carlos Rivera</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <BellIcon className="w-5 h-5 text-foreground" />
+                                    <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[8px] font-bold flex items-center justify-center">2</div>
+                                </div>
+                                <div className="w-7 h-7 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
+                                    <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">CR</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Service Request Banner */}
+                        <div className="mx-3 mt-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 animate-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-start gap-2.5">
+                                <div className="p-1.5 bg-amber-500/20 rounded-lg shrink-0">
+                                    <ExclamationTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] text-amber-500 font-medium">Service Request</p>
+                                    <p className="text-xs font-bold text-amber-700 dark:text-amber-300">Report a Facility Issue</p>
+                                    <p className="text-[11px] text-amber-600/80 dark:text-amber-400/80 mt-0.5">Submit details to the Strata service center.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Service Request Card */}
+                        <div className="mx-3 mt-3 rounded-xl bg-card border border-border overflow-hidden shadow-sm">
+                            {/* Visual Header */}
+                            <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 px-4 py-5 text-white overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-full opacity-20">
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-white rounded-full blur-3xl"></div>
+                                </div>
+                                <div className="relative z-10 text-center">
+                                    <WrenchScrewdriverIcon className="w-5 h-5 mx-auto mb-1.5 text-amber-200" />
+                                    <p className="font-bold text-sm tracking-tight">Office 3-214 — Issue Report</p>
+                                    <p className="text-amber-200 text-[9px] uppercase tracking-widest mt-0.5">Facility Service Request</p>
+                                </div>
+                            </div>
+
+                            {/* Issue Items */}
+                            <div className="p-3 space-y-2">
+                                {[
+                                    { icon: ExclamationTriangleIcon, label: 'Issue #1 — SAFETY', value: 'Aeron Chair — Gas cylinder failure', asset: 'AST-1847', color: 'red', priority: true },
+                                    { icon: LightBulbIcon, label: 'Issue #2', value: 'Desk Lamp — Flickering / intermittent', asset: 'AST-2103', color: 'amber', priority: false },
+                                ].map((item, i) => (
+                                    <div key={item.label} className={`p-2.5 rounded-lg border ${serviceSubmitted ? 'border-green-300 dark:border-green-500/30 bg-green-50/30 dark:bg-green-500/5' : item.priority ? 'border-red-300 dark:border-red-500/30 bg-red-50/30 dark:bg-red-500/5' : 'border-border bg-muted/20'} transition-all duration-300 animate-in fade-in slide-in-from-bottom-1`} style={{ animationDelay: `${i * 80}ms` }}>
+                                        <div className="flex items-center gap-2.5">
+                                            <div className={`w-6 h-6 rounded-md flex items-center justify-center text-white shrink-0 ${item.color === 'red' ? 'bg-red-500' : 'bg-amber-500'}`}>
+                                                <item.icon className="w-3.5 h-3.5" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-1.5">
+                                                    <p className="text-[9px] text-muted-foreground">{item.label}</p>
+                                                    {item.priority && <span className="text-[7px] px-1 py-0.5 rounded bg-red-500 text-white font-bold">SAFETY</span>}
+                                                </div>
+                                                <p className="text-[11px] font-bold text-foreground">{item.value}</p>
+                                                <p className="text-[9px] text-muted-foreground">Asset: {item.asset}</p>
+                                            </div>
+                                            {serviceSubmitted && <CheckCircleIcon className="w-4 h-4 text-green-500 shrink-0" />}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Location & Priority */}
+                            <div className="px-3 pb-3">
+                                <div className="grid grid-cols-3 gap-1.5">
+                                    {[
+                                        { label: 'Location', value: 'Office 3-214' },
+                                        { label: 'Priority', value: 'HIGH' },
+                                        { label: 'Department', value: 'Facilities' },
+                                    ].map(item => (
+                                        <div key={item.label} className={`p-1.5 rounded-lg text-center ${item.label === 'Priority' ? 'bg-red-50 dark:bg-red-500/10' : 'bg-muted/50'}`}>
+                                            <p className="text-[8px] text-muted-foreground">{item.label}</p>
+                                            <p className={`text-[11px] font-bold ${item.label === 'Priority' ? 'text-red-600 dark:text-red-400' : 'text-foreground'}`}>{item.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Safety Flag Notice */}
+                        <div className="mx-3 mt-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
+                            <p className="text-[9px] text-red-700 dark:text-red-300 text-center leading-relaxed">
+                                <span className="font-semibold">⚠ Safety Flag:</span> Gas cylinder failure requires immediate attention
+                            </p>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mx-3 mt-4 mb-4">
+                            {!serviceSubmitted ? (
+                                <button
+                                    onClick={() => setServiceSubmitted(true)}
+                                    className="w-full py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                                >
+                                    <WrenchScrewdriverIcon className="w-4 h-4" />
+                                    Submit Service Request
+                                </button>
+                            ) : (
+                                <div className="space-y-3 animate-in fade-in duration-300">
+                                    <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
+                                        <div className="flex items-center gap-2">
+                                            <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                                            <div>
+                                                <p className="text-xs font-bold text-green-700 dark:text-green-300">REQ-FM-2026-018 Created</p>
+                                                <p className="text-[10px] text-green-600/80 dark:text-green-400/70">Carlos Rivera · Routed to Service Center</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => nextStep()}
+                                        className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
+                                    >
+                                        Continue
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </MobileDeviceFrame>
+                </div>
+            )}
 
             {/* ===== Step 1.8: Sales Approval — Mobile device inline (COI only) ===== */}
             {currentStep.id === '1.8' && !isOps && (
@@ -2332,8 +2622,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {/* OPS DEMO: Financial Command Center (Flow 3) */}
                 {/* ═══════════════════════════════════════════ */}
 
-                {/* ═══ Continua Step 3.1 — Sustainability Dashboard (auto 10s) ═══ */}
-                {isContinua && stepId === '3.1' && sustPhase !== 'idle' && (
+                {/* ═══ Continua Step 4.1 — Sustainability Dashboard (auto 10s) ═══ */}
+                {isContinua && stepId === '4.1' && sustPhase !== 'idle' && (
                     <div data-demo-target="sustainability-dashboard" className="space-y-4 mb-6">
                         {/* Notification */}
                         {sustPhase === 'notification' && (

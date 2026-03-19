@@ -227,7 +227,7 @@ const QC_FLAGS = [
 
 type ReceivingPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
 
-// ─── Continua Step 2.1: Inventory Health & Forecasting Constants ───────────
+// ─── Continua Step 3.1: Inventory Health & Forecasting Constants ───────────
 const INVENTORY_HEALTH_AGENTS = [
     { name: 'InventoryScanner', detail: 'Scanning 2,400 items across 3 warehouses...' },
     { name: 'CapacityForecaster', detail: 'Projecting Chicago warehouse → 85% in 2 weeks (UAL phase 3)...' },
@@ -246,7 +246,7 @@ const RELOCATION_RECS = [
 ]
 type HealthPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
 
-// ─── Continua Step 2.4: Multi-Location Sync Constants ──────────────────────
+// ─── Continua Step 3.4: Multi-Location Sync Constants ──────────────────────
 const LOCATION_SYNC_AGENTS = [
     { name: 'LocationSync', detail: 'Synchronizing 3 warehouses + 2 active job sites...' },
     { name: 'TransitTracker', detail: '45 items in-transit Chicago → project site...' },
@@ -263,8 +263,47 @@ const LOCATION_STATUS = [
 ]
 type SyncPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
 
-// ─── FM Flow: Quick Action Relocation (F.4) ──────────────────────────────────
-type FMRelocPhase = 'idle' | 'notification' | 'modal-open' | 'committed'
+// ─── Continua Step 1.2: Reuse Assessment & Cataloging Constants ──────────────
+const REUSE_AGENTS = [
+    { name: 'ConditionScanner', detail: 'Scanning 340 items from floor 7 teardown...' },
+    { name: 'ReuseClassifier', detail: 'Classifying: 180 reusable, 95 recyclable, 65 EOL...' },
+    { name: 'ValueEstimator', detail: 'Estimating refurbishment value — $89K savings...' },
+    { name: 'CatalogWriter', detail: 'Auto-listing 180 items with "Refurbished" tag...' },
+    { name: 'SustainabilityCalc', detail: 'Carbon offset: 2.4 tons CO₂ diverted from landfill...' },
+]
+const REUSE_ITEMS = [
+    { category: 'Task Chairs', reusable: 8, recyclable: 3, eol: 2, value: '$12,400', condition: 4.2 },
+    { category: 'Sit-Stand Desks', reusable: 4, recyclable: 2, eol: 1, value: '$8,600', condition: 3.8 },
+    { category: 'Conference Tables', reusable: 3, recyclable: 1, eol: 0, value: '$6,200', condition: 4.5 },
+    { category: 'Storage/Filing', reusable: 5, recyclable: 4, eol: 3, value: '$4,800', condition: 3.1 },
+]
+type ReusePhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
+
+// ─── Continua Step 1.5: Consignment & Vendor Returns Constants ──────────────
+const CONSIGN_AGENTS = [
+    { name: 'ConsignmentTracker', detail: 'Tracking 35 items across 4 manufacturers...' },
+    { name: 'ReturnAnalyzer', detail: '12 items approaching 90-day window — 8 high-value...' },
+    { name: 'DemandPredictor', detail: 'Demand trending up 12% — 4 items worth converting...' },
+    { name: 'RMAGenerator', detail: 'Auto-generating 4 RMA requests ($8,200 total)...' },
+    { name: 'DecisionOptimizer', detail: 'Recommending 4 convert-to-purchase ($3,400 savings)...' },
+]
+const CONSIGNMENT_ITEMS = [
+    { name: 'Aeron Chairs (4)', mfr: 'Herman Miller', daysLeft: 8, value: '$4,800', action: 'RMA' as const },
+    { name: 'Leap V2 Chairs (4)', mfr: 'Steelcase', daysLeft: 12, value: '$3,400', action: 'RMA' as const },
+    { name: 'Migration Desks (2)', mfr: 'Steelcase', daysLeft: 22, value: '$2,400', action: 'Convert' as const },
+    { name: 'Resolve Panels (2)', mfr: 'Herman Miller', daysLeft: 35, value: '$1,000', action: 'Convert' as const },
+]
+type ConsignPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
+
+// ─── FM Flow: Quick Action Relocation (2.4) ──────────────────────────────────
+type FMRelocPhase = 'idle' | 'notification' | 'relocating' | 'committed'
+
+const FM_RELOC_ASSETS = [
+    { id: 'r1', name: 'Laptop Dock', icon: 'laptop' as const },
+    { id: 'r2', name: 'Monitor (2x)', icon: 'monitor' as const },
+    { id: 'r3', name: 'Keyboard + Mouse', icon: 'keyboard' as const },
+    { id: 'r4', name: 'Desk Lamp', icon: 'lamp' as const },
+];
 
 // --- Components ---
 
@@ -304,7 +343,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
     // Continua 1.4: orchestration
     const tp14 = CONTINUA_STEP_TIMING['1.4'];
     useEffect(() => {
-        if (!isContinua || stepId !== '2.4') { setRcvPhase('idle'); return; }
+        if (!isContinua || stepId !== '3.4') { setRcvPhase('idle'); return; }
         setRcvPhase('idle');
         setRcvAgents(RECEIVING_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -344,29 +383,29 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         return () => clearTimeout(t);
     }, [rcvPhase]);
 
-    // ─── Continua Step 2.1: Inventory Health & Forecasting ──────────────────────
+    // ─── Continua Step 3.1: Inventory Health & Forecasting ──────────────────────
     const [hlthPhase, setHlthPhase] = useState<HealthPhase>('idle');
     const hlthPhaseRef = useRef(hlthPhase);
     useEffect(() => { hlthPhaseRef.current = hlthPhase; }, [hlthPhase]);
     const [hlthAgents, setHlthAgents] = useState(INVENTORY_HEALTH_AGENTS.map(a => ({ ...a, visible: false, done: false })));
     const [hlthProgress, setHlthProgress] = useState(0);
 
-    // Continua 2.1: orchestration
-    const tp21 = CONTINUA_STEP_TIMING['2.1'];
+    // Continua 3.1: orchestration
+    const tp31 = CONTINUA_STEP_TIMING['3.1'];
     useEffect(() => {
         if (!isContinua || stepId !== '1.1') { setHlthPhase('idle'); return; }
         setHlthPhase('idle');
         setHlthAgents(INVENTORY_HEALTH_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         setActiveTab('inventory');
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setHlthPhase('notification')), tp21.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setHlthPhase('notification')), tp31.notifDelay));
         timers.push(setTimeout(pauseAware(() => {
             if (hlthPhaseRef.current === 'notification') setHlthPhase('processing');
-        }), tp21.notifDelay + tp21.notifDuration));
+        }), tp31.notifDelay + tp31.notifDuration));
         return () => timers.forEach(clearTimeout);
     }, [isContinua, stepId]);
 
-    // Continua 2.1: processing → breathing
+    // Continua 3.1: processing → breathing
     useEffect(() => {
         if (hlthPhase !== 'processing') return;
         setHlthAgents(INVENTORY_HEALTH_AGENTS.map(a => ({ ...a, visible: false, done: false })));
@@ -374,50 +413,50 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         const timers: ReturnType<typeof setTimeout>[] = [];
         timers.push(setTimeout(() => setHlthProgress(100), 50));
         INVENTORY_HEALTH_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setHlthAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp21.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setHlthAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp21.agentStagger + tp21.agentDone));
+            timers.push(setTimeout(pauseAware(() => setHlthAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp31.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setHlthAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp31.agentStagger + tp31.agentDone));
         });
-        timers.push(setTimeout(pauseAware(() => setHlthPhase('breathing')), INVENTORY_HEALTH_AGENTS.length * tp21.agentStagger + tp21.agentDone + 300));
+        timers.push(setTimeout(pauseAware(() => setHlthPhase('breathing')), INVENTORY_HEALTH_AGENTS.length * tp31.agentStagger + tp31.agentDone + 300));
         return () => timers.forEach(clearTimeout);
     }, [hlthPhase]);
 
-    // Continua 2.1: breathing → revealed
+    // Continua 3.1: breathing → revealed
     useEffect(() => {
         if (hlthPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setHlthPhase('revealed')), tp21.breathing);
+        const t = setTimeout(pauseAware(() => setHlthPhase('revealed')), tp31.breathing);
         return () => clearTimeout(t);
     }, [hlthPhase]);
 
-    // Continua 2.1: revealed → results
+    // Continua 3.1: revealed → results
     useEffect(() => {
         if (hlthPhase !== 'revealed') return;
         const t = setTimeout(pauseAware(() => setHlthPhase('results')), 1500);
         return () => clearTimeout(t);
     }, [hlthPhase]);
 
-    // ─── Continua Step 2.4: Multi-Location Sync ─────────────────────────────────
+    // ─── Continua Step 3.4: Multi-Location Sync ─────────────────────────────────
     const [syncPhase, setSyncPhase] = useState<SyncPhase>('idle');
     const syncPhaseRef = useRef(syncPhase);
     useEffect(() => { syncPhaseRef.current = syncPhase; }, [syncPhase]);
     const [syncAgents, setSyncAgents] = useState(LOCATION_SYNC_AGENTS.map(a => ({ ...a, visible: false, done: false })));
     const [syncProgress, setSyncProgress] = useState(0);
 
-    // Continua 2.4: orchestration
-    const tp24 = CONTINUA_STEP_TIMING['2.4'];
+    // Continua 3.4: orchestration
+    const tp34 = CONTINUA_STEP_TIMING['3.4'];
     useEffect(() => {
         if (!isContinua || stepId !== '1.4') { setSyncPhase('idle'); return; }
         setSyncPhase('idle');
         setSyncAgents(LOCATION_SYNC_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         setActiveTab('locations');
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setSyncPhase('notification')), tp24.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setSyncPhase('notification')), tp34.notifDelay));
         timers.push(setTimeout(pauseAware(() => {
             if (syncPhaseRef.current === 'notification') setSyncPhase('processing');
-        }), tp24.notifDelay + tp24.notifDuration));
+        }), tp34.notifDelay + tp34.notifDuration));
         return () => timers.forEach(clearTimeout);
     }, [isContinua, stepId]);
 
-    // Continua 2.4: processing → breathing
+    // Continua 3.4: processing → breathing
     useEffect(() => {
         if (syncPhase !== 'processing') return;
         setSyncAgents(LOCATION_SYNC_AGENTS.map(a => ({ ...a, visible: false, done: false })));
@@ -425,58 +464,163 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         const timers: ReturnType<typeof setTimeout>[] = [];
         timers.push(setTimeout(() => setSyncProgress(100), 50));
         LOCATION_SYNC_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp24.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp24.agentStagger + tp24.agentDone));
+            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp34.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp34.agentStagger + tp34.agentDone));
         });
-        timers.push(setTimeout(pauseAware(() => setSyncPhase('breathing')), LOCATION_SYNC_AGENTS.length * tp24.agentStagger + tp24.agentDone + 300));
+        timers.push(setTimeout(pauseAware(() => setSyncPhase('breathing')), LOCATION_SYNC_AGENTS.length * tp34.agentStagger + tp34.agentDone + 300));
         return () => timers.forEach(clearTimeout);
     }, [syncPhase]);
 
-    // Continua 2.4: breathing → revealed
+    // Continua 3.4: breathing → revealed
     useEffect(() => {
         if (syncPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setSyncPhase('revealed')), tp24.breathing);
+        const t = setTimeout(pauseAware(() => setSyncPhase('revealed')), tp34.breathing);
         return () => clearTimeout(t);
     }, [syncPhase]);
 
-    // Continua 2.4: revealed → results
+    // Continua 3.4: revealed → results
     useEffect(() => {
         if (syncPhase !== 'revealed') return;
         const t = setTimeout(pauseAware(() => setSyncPhase('results')), 1500);
         return () => clearTimeout(t);
     }, [syncPhase]);
 
-    // Continua 2.4: auto-advance (System role, from results)
+    // Continua 3.4: card animation — animate status chips after results render
+    const [syncCardsAnimated, setSyncCardsAnimated] = useState(false);
     useEffect(() => {
-        if (syncPhase !== 'results') return;
-        const t = setTimeout(pauseAware(() => nextStep()), tp24.resultsDur);
+        if (syncPhase !== 'results') { setSyncCardsAnimated(false); return; }
+        const t = setTimeout(pauseAware(() => setSyncCardsAnimated(true)), 2000);
         return () => clearTimeout(t);
     }, [syncPhase]);
 
-    // ─── FM Step F.4: Quick Action Relocation state ──────────────────────────
-    const [fmRelocPhase, setFmRelocPhase] = useState<FMRelocPhase>('idle')
-
-    // F.4 orchestration — notification → auto-open modal → committed
-    const tpF4 = CONTINUA_STEP_TIMING['F.4'];
+    // Continua 3.4: auto-advance (System role, from results)
     useEffect(() => {
-        if (!isContinua || stepId !== 'F.4') { setFmRelocPhase('idle'); return; }
-        setFmRelocPhase('idle');
+        if (syncPhase !== 'results') return;
+        const t = setTimeout(pauseAware(() => nextStep()), tp34.resultsDur);
+        return () => clearTimeout(t);
+    }, [syncPhase]);
+
+    // ─── Continua Step 1.2: Reuse Assessment state ─────────────────────────
+    const [reusePhase, setReusePhase] = useState<ReusePhase>('idle')
+    const reusePhaseRef = useRef(reusePhase)
+    useEffect(() => { reusePhaseRef.current = reusePhase }, [reusePhase])
+    const [reuseAgents, setReuseAgents] = useState(REUSE_AGENTS.map(a => ({ ...a, visible: false, done: false })))
+    const [reuseProgress, setReuseProgress] = useState(0)
+
+    const tp12 = CONTINUA_STEP_TIMING['1.2'];
+    useEffect(() => {
+        if (!isContinua || stepId !== '1.2') { setReusePhase('idle'); return; }
+        setReusePhase('idle');
+        setReuseAgents(REUSE_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setFmRelocPhase('notification')), tpF4.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setReusePhase('notification')), tp12.notifDelay));
+        timers.push(setTimeout(pauseAware(() => {
+            if (reusePhaseRef.current === 'notification') setReusePhase('processing');
+        }), tp12.notifDelay + tp12.notifDuration));
         return () => timers.forEach(clearTimeout);
     }, [isContinua, stepId]);
 
-    // F.4: when notification is clicked, open modal
     useEffect(() => {
-        if (fmRelocPhase !== 'modal-open') return;
-        setIsQuickMovementsModalOpen(true);
-    }, [fmRelocPhase]);
+        if (reusePhase !== 'processing') return;
+        setReuseAgents(REUSE_AGENTS.map(a => ({ ...a, visible: false, done: false })));
+        setReuseProgress(0);
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(() => setReuseProgress(100), 50));
+        REUSE_AGENTS.forEach((_, i) => {
+            timers.push(setTimeout(pauseAware(() => setReuseAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp12.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setReuseAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp12.agentStagger + tp12.agentDone));
+        });
+        timers.push(setTimeout(pauseAware(() => setReusePhase('breathing')), REUSE_AGENTS.length * tp12.agentStagger + tp12.agentDone + 300));
+        return () => timers.forEach(clearTimeout);
+    }, [reusePhase]);
 
-    // F.4: committed → next step
     useEffect(() => {
-        if (fmRelocPhase !== 'committed') return;
-        const t = setTimeout(pauseAware(() => nextStep()), 2000);
+        if (reusePhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setReusePhase('revealed')), tp12.breathing);
         return () => clearTimeout(t);
+    }, [reusePhase]);
+
+    useEffect(() => {
+        if (reusePhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setReusePhase('results')), 1500);
+        return () => clearTimeout(t);
+    }, [reusePhase]);
+
+    // ─── Continua Step 1.5: Consignment & Vendor Returns state ───────────
+    const [consignPhase, setConsignPhase] = useState<ConsignPhase>('idle')
+    const consignPhaseRef = useRef(consignPhase)
+    useEffect(() => { consignPhaseRef.current = consignPhase }, [consignPhase])
+    const [consignAgents, setConsignAgents] = useState(CONSIGN_AGENTS.map(a => ({ ...a, visible: false, done: false })))
+    const [consignProgress, setConsignProgress] = useState(0)
+
+    const tp15 = CONTINUA_STEP_TIMING['1.5'];
+    useEffect(() => {
+        if (!isContinua || stepId !== '1.5') { setConsignPhase('idle'); return; }
+        setConsignPhase('idle');
+        setConsignAgents(CONSIGN_AGENTS.map(a => ({ ...a, visible: false, done: false })));
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(pauseAware(() => setConsignPhase('notification')), tp15.notifDelay));
+        timers.push(setTimeout(pauseAware(() => {
+            if (consignPhaseRef.current === 'notification') setConsignPhase('processing');
+        }), tp15.notifDelay + tp15.notifDuration));
+        return () => timers.forEach(clearTimeout);
+    }, [isContinua, stepId]);
+
+    useEffect(() => {
+        if (consignPhase !== 'processing') return;
+        setConsignAgents(CONSIGN_AGENTS.map(a => ({ ...a, visible: false, done: false })));
+        setConsignProgress(0);
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(() => setConsignProgress(100), 50));
+        CONSIGN_AGENTS.forEach((_, i) => {
+            timers.push(setTimeout(pauseAware(() => setConsignAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp15.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setConsignAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp15.agentStagger + tp15.agentDone));
+        });
+        timers.push(setTimeout(pauseAware(() => setConsignPhase('breathing')), CONSIGN_AGENTS.length * tp15.agentStagger + tp15.agentDone + 300));
+        return () => timers.forEach(clearTimeout);
+    }, [consignPhase]);
+
+    useEffect(() => {
+        if (consignPhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setConsignPhase('revealed')), tp15.breathing);
+        return () => clearTimeout(t);
+    }, [consignPhase]);
+
+    useEffect(() => {
+        if (consignPhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setConsignPhase('results')), 1500);
+        return () => clearTimeout(t);
+    }, [consignPhase]);
+
+    // ─── FM Step 2.4: Quick Action Relocation state ──────────────────────────
+    const [fmRelocPhase, setFmRelocPhase] = useState<FMRelocPhase>('idle')
+    const [relocAssets, setRelocAssets] = useState(FM_RELOC_ASSETS.map(a => ({ ...a, moved: false })));
+    const [relocCommitted, setRelocCommitted] = useState(false);
+
+    // 2.4 orchestration — notification after delay
+    const tp24 = CONTINUA_STEP_TIMING['2.4'];
+    useEffect(() => {
+        if (!isContinua || stepId !== '2.4') { setFmRelocPhase('idle'); return; }
+        setFmRelocPhase('idle');
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(pauseAware(() => setFmRelocPhase('notification')), tp24.notifDelay));
+        return () => timers.forEach(clearTimeout);
+    }, [isContinua, stepId]);
+
+    // 2.4: relocating → auto-animate asset moves with stagger
+    useEffect(() => {
+        if (fmRelocPhase !== 'relocating') return;
+        setRelocAssets(FM_RELOC_ASSETS.map(a => ({ ...a, moved: false })));
+        setRelocCommitted(false);
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        FM_RELOC_ASSETS.forEach((_, i) => {
+            timers.push(setTimeout(pauseAware(() =>
+                setRelocAssets(prev => prev.map((a, j) => j === i ? { ...a, moved: true } : a))
+            ), 800 + i * 600));
+        });
+        timers.push(setTimeout(pauseAware(() => setRelocCommitted(true)),
+            800 + FM_RELOC_ASSETS.length * 600 + 400));
+        return () => timers.forEach(clearTimeout);
     }, [fmRelocPhase]);
 
     // State
@@ -878,7 +1022,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
 
                 {/* ═══ Continua Step 1.4 — Warehouse Receiving & QC ═══ */}
-                {isContinua && stepId === '2.4' && rcvPhase !== 'idle' && (
+                {isContinua && stepId === '3.4' && rcvPhase !== 'idle' && (
                     <div className="space-y-4 mb-6">
                         {/* Notification */}
                         {rcvPhase === 'notification' && (
@@ -1017,7 +1161,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ═══ Continua Step 2.1 — Inventory Health & Forecasting ═══ */}
+                {/* ═══ Continua Step 3.1 — Inventory Health & Forecasting ═══ */}
                 {isContinua && stepId === '1.1' && hlthPhase !== 'idle' && (
                     <div data-demo-target="inventory-health-forecast" className="space-y-4 mb-6">
                         {/* Notification */}
@@ -1158,7 +1302,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ═══ Continua Step 2.4 — Multi-Location Sync (auto 8s) ═══ */}
+                {/* ═══ Continua Step 3.4 — Multi-Location Sync (auto 8s) ═══ */}
                 {isContinua && stepId === '1.4' && syncPhase !== 'idle' && (
                     <div data-demo-target="multi-location-sync" className="space-y-4 mb-6">
                         {/* Notification */}
@@ -1247,20 +1391,37 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
                                     {/* Location Cards */}
                                     <div className="p-4 space-y-2">
-                                        {LOCATION_STATUS.map(loc => (
-                                            <div key={loc.name} className={cn("flex items-center justify-between p-3 rounded-xl border",
+                                        {LOCATION_STATUS.map(loc => {
+                                            // Animated status after sync completes
+                                            const animatedStatus = syncCardsAnimated ? (
+                                                loc.inTransit ? 'Delivered' :
+                                                loc.pendingQC ? 'QC Cleared' :
+                                                loc.allocated ? 'Shipped' :
+                                                loc.receiving ? 'Received' :
+                                                null
+                                            ) : null;
+                                            return (
+                                            <div key={loc.name} className={cn("flex items-center justify-between p-3 rounded-xl border transition-all duration-500",
+                                                syncCardsAnimated && animatedStatus ? "border-green-300 dark:border-green-500/30 bg-green-50/30 dark:bg-green-500/5" :
                                                 loc.type === 'Job Site' ? "border-blue-200 dark:border-blue-500/20 bg-blue-50/30 dark:bg-blue-500/5" : "border-border bg-muted/20"
                                             )}>
                                                 <div className="flex items-center gap-3">
-                                                    <MapPinIcon className={cn("h-4 w-4 shrink-0", loc.type === 'Job Site' ? "text-blue-500" : "text-muted-foreground")} />
+                                                    <MapPinIcon className={cn("h-4 w-4 shrink-0 transition-colors duration-500",
+                                                        syncCardsAnimated && animatedStatus ? "text-green-500" :
+                                                        loc.type === 'Job Site' ? "text-blue-500" : "text-muted-foreground"
+                                                    )} />
                                                     <div>
                                                         <p className="text-[11px] font-medium text-foreground">{loc.name}</p>
                                                         <p className="text-[10px] text-muted-foreground">
-                                                            {loc.items} items
+                                                            {syncCardsAnimated && loc.inTransit ? <>{loc.items + loc.inTransit} items · <span className="text-green-600 dark:text-green-400 font-semibold">{loc.inTransit} delivered</span></> :
+                                                             syncCardsAnimated && loc.pendingQC ? <>{loc.items} items · <span className="text-green-600 dark:text-green-400 font-semibold">{loc.pendingQC} QC cleared</span></> :
+                                                             syncCardsAnimated && loc.allocated ? <>{loc.items} items · <span className="text-green-600 dark:text-green-400 font-semibold">{loc.allocated} shipped</span></> :
+                                                             syncCardsAnimated && loc.receiving ? <>{loc.items} items · <span className="text-green-600 dark:text-green-400 font-semibold">Delivery received</span></> :
+                                                             <>{loc.items} items
                                                             {loc.inTransit ? ` · ${loc.inTransit} in-transit` : ''}
                                                             {loc.pendingQC ? ` · ${loc.pendingQC} pending QC` : ''}
                                                             {loc.allocated ? ` · ${loc.allocated} allocated` : ''}
-                                                            {loc.receiving ? ' · Receiving active' : ''}
+                                                            {loc.receiving ? ' · Receiving active' : ''}</>}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -1273,14 +1434,21 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                             <span className="text-[10px] font-medium text-foreground">{loc.utilization}%</span>
                                                         </div>
                                                     )}
-                                                    <span className={cn("text-[9px] px-2 py-0.5 rounded-full font-bold",
-                                                        loc.status === 'Active' ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400" :
-                                                        loc.status === 'Receiving' ? "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400" :
-                                                        "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
-                                                    )}>{loc.status}</span>
+                                                    {animatedStatus ? (
+                                                        <span className="text-[9px] px-2 py-0.5 rounded-full font-bold bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 animate-in fade-in zoom-in-95 duration-500 flex items-center gap-1">
+                                                            <CheckCircleIcon className="h-3 w-3" />{animatedStatus}
+                                                        </span>
+                                                    ) : (
+                                                        <span className={cn("text-[9px] px-2 py-0.5 rounded-full font-bold",
+                                                            loc.status === 'Active' ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400" :
+                                                            loc.status === 'Receiving' ? "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400" :
+                                                            "bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
+                                                        )}>{loc.status}</span>
+                                                    )}
                                                 </div>
                                             </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
 
                                     {/* Route Optimization */}
@@ -1308,12 +1476,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     </div>
                 )}
 
-                {/* ═══ FM Step F.4 — Quick Action Office Relocation (interactive) ═══ */}
-                {isContinua && stepId === 'F.4' && fmRelocPhase !== 'idle' && (
+                {/* ═══ FM Step 2.4 — Quick Action Office Relocation (inline animation) ═══ */}
+                {isContinua && stepId === '2.4' && fmRelocPhase !== 'idle' && (
                     <div className="space-y-4 mb-6">
                         {/* Notification Banner */}
                         {fmRelocPhase === 'notification' && (
-                            <button onClick={() => setFmRelocPhase('modal-open')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
+                            <button onClick={() => setFmRelocPhase('relocating')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/10 border-2 border-blue-300 dark:border-blue-500/30 shadow-lg hover:shadow-blue-500/20 transition-shadow cursor-pointer">
                                     <div className="flex items-start gap-3">
                                         <div className="p-2 rounded-lg bg-blue-500 text-white"><ArrowPathRoundedSquareIcon className="h-4 w-4" /></div>
@@ -1322,19 +1490,104 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 <span className="text-xs font-bold text-foreground">Quick Action — Office Relocation</span>
                                                 <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500 text-white font-bold">TEMPORARY</span>
                                             </div>
-                                            <p className="text-[11px] text-muted-foreground mt-1">While Carlos's chair is being replaced, relocate his workstation assets from <span className="font-semibold text-foreground">Office 3-214 → Office 3-216</span> (vacant). Use drag-and-drop Quick Transfer.</p>
-                                            <p className="text-[10px] text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">Click to open Quick Transfer <ArrowRightIcon className="h-3 w-3" /></p>
+                                            <p className="text-[11px] text-muted-foreground mt-1">While Carlos's chair is being replaced, relocate his workstation assets from <span className="font-semibold text-foreground">Office 3-214 → Office 3-216</span> (vacant).</p>
+                                            <p className="text-[10px] text-blue-600 dark:text-blue-400 mt-2 flex items-center gap-1">Click to start relocation <ArrowRightIcon className="h-3 w-3" /></p>
                                         </div>
                                     </div>
                                 </div>
                             </button>
                         )}
 
-                        {/* Modal is open state */}
-                        {fmRelocPhase === 'modal-open' && (
-                            <div className="p-4 rounded-xl bg-blue-50/50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 animate-in fade-in duration-300 flex items-center gap-3">
-                                <ArrowPathRoundedSquareIcon className="h-5 w-5 text-blue-500 animate-pulse" />
-                                <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">Quick Transfer modal is open — drag assets from Office 3-214 to Office 3-216, then click Commit Moves</span>
+                        {/* Inline Relocation Animation */}
+                        {fmRelocPhase === 'relocating' && (
+                            <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
+                                {/* Header */}
+                                <div className="flex items-center gap-3 px-1">
+                                    <ArrowPathRoundedSquareIcon className="h-5 w-5 text-blue-500 animate-spin" />
+                                    <div className="flex-1">
+                                        <p className="text-xs font-bold text-foreground">Relocating Assets — Office 3-214 → Office 3-216</p>
+                                        <p className="text-[10px] text-muted-foreground">Temporary workspace while Aeron chair is replaced</p>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                        {relocAssets.filter(a => a.moved).length}/{relocAssets.length}
+                                    </span>
+                                </div>
+
+                                {/* Progress bar */}
+                                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                        className="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out"
+                                        style={{ width: `${(relocAssets.filter(a => a.moved).length / relocAssets.length) * 100}%` }}
+                                    />
+                                </div>
+
+                                {/* Two-column office cards */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    {/* FROM: Office 3-214 */}
+                                    <div className="rounded-xl border border-border bg-card overflow-hidden">
+                                        <div className="px-3 py-2 bg-red-50 dark:bg-red-500/10 border-b border-border flex items-center gap-2">
+                                            <MapPinIcon className="h-3.5 w-3.5 text-red-500" />
+                                            <span className="text-[10px] font-bold text-red-700 dark:text-red-300">FROM: Office 3-214</span>
+                                        </div>
+                                        <div className="p-2.5 space-y-1.5">
+                                            {relocAssets.map((asset) => (
+                                                <div
+                                                    key={asset.id}
+                                                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all duration-500 ${
+                                                        asset.moved
+                                                            ? 'border-border/50 bg-muted/30 opacity-40 scale-95'
+                                                            : 'border-border bg-card'
+                                                    }`}
+                                                >
+                                                    <CubeIcon className={`h-3.5 w-3.5 shrink-0 ${asset.moved ? 'text-muted-foreground/40' : 'text-blue-500'}`} />
+                                                    <span className={`text-[11px] font-medium ${asset.moved ? 'text-muted-foreground/40 line-through' : 'text-foreground'}`}>
+                                                        {asset.name}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* TO: Office 3-216 */}
+                                    <div className="rounded-xl border border-border bg-card overflow-hidden">
+                                        <div className="px-3 py-2 bg-green-50 dark:bg-green-500/10 border-b border-border flex items-center gap-2">
+                                            <MapPinIcon className="h-3.5 w-3.5 text-green-500" />
+                                            <span className="text-[10px] font-bold text-green-700 dark:text-green-300">TO: Office 3-216 (vacant)</span>
+                                        </div>
+                                        <div className="p-2.5 space-y-1.5">
+                                            {relocAssets.map((asset) => (
+                                                <div
+                                                    key={asset.id}
+                                                    className={`flex items-center gap-2 p-2 rounded-lg border transition-all duration-500 ${
+                                                        asset.moved
+                                                            ? 'border-green-200 dark:border-green-500/30 bg-green-50/50 dark:bg-green-500/5 animate-in fade-in slide-in-from-left-2'
+                                                            : 'border-dashed border-border/50 bg-muted/10 opacity-30'
+                                                    }`}
+                                                >
+                                                    {asset.moved ? (
+                                                        <CheckCircleIcon className="h-3.5 w-3.5 shrink-0 text-green-500" />
+                                                    ) : (
+                                                        <CubeIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" />
+                                                    )}
+                                                    <span className={`text-[11px] font-medium ${asset.moved ? 'text-green-700 dark:text-green-300' : 'text-muted-foreground/30'}`}>
+                                                        {asset.name}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Commit button — appears when all assets moved */}
+                                {relocCommitted && (
+                                    <button
+                                        onClick={() => setFmRelocPhase('committed')}
+                                        className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300"
+                                    >
+                                        <CheckCircleIcon className="h-4 w-4" />
+                                        Commit Moves
+                                    </button>
+                                )}
                             </div>
                         )}
 
@@ -1348,19 +1601,250 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                             <p className="text-xs font-bold text-green-800 dark:text-green-200">Assets Relocated Successfully</p>
                                             <p className="text-[11px] text-green-700 dark:text-green-300 mt-1">Workstation assets moved from Office 3-214 → Office 3-216. Carlos can continue working while the Aeron is replaced. Inventory updated in real-time.</p>
                                             <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                                                {['Laptop Dock', 'Monitor (2x)', 'Keyboard + Mouse', 'Desk Lamp'].map(item => (
-                                                    <span key={item} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
-                                                        <CheckCircleIcon className="h-3 w-3" />{item}
+                                                {FM_RELOC_ASSETS.map(item => (
+                                                    <span key={item.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
+                                                        <CheckCircleIcon className="h-3 w-3" />{item.name}
                                                     </span>
                                                 ))}
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground py-1">
-                                    <ArrowPathIcon className="h-3 w-3 animate-spin" />
-                                    <span>Inventory updated — advancing to resolution...</span>
+                                <button
+                                    onClick={() => nextStep()}
+                                    className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98] flex items-center justify-center gap-2"
+                                >
+                                    Next Step
+                                    <ArrowRightIcon className="h-3.5 w-3.5" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ═══ Continua Step 1.2 — Reuse Assessment & Cataloging (interactive) ═══ */}
+                {isContinua && stepId === '1.2' && reusePhase !== 'idle' && (
+                    <div className="space-y-4 mb-6">
+                        {/* Notification */}
+                        {reusePhase === 'notification' && (
+                            <button onClick={() => setReusePhase('processing')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border-2 border-emerald-300 dark:border-emerald-500/30 shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/20 transition-shadow cursor-pointer">
+                                    <div className="flex items-start gap-3">
+                                        <div className="p-2 rounded-lg bg-emerald-500 text-white"><ArchiveBoxIcon className="h-4 w-4" /></div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-foreground">Reuse Assessment — Floor 7 Teardown</span>
+                                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500 text-white font-bold">340 items</span>
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground mt-1">SustainabilityAgent: Evaluating <span className="font-semibold text-foreground">340 items</span> from floor 7 pre-renovation teardown — classifying reuse, recycle, EOL.</p>
+                                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-2 flex items-center gap-1">Click to start assessment <ArrowRightIcon className="h-3 w-3" /></p>
+                                        </div>
+                                    </div>
                                 </div>
+                            </button>
+                        )}
+
+                        {/* Processing */}
+                        {reusePhase === 'processing' && (
+                            <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <AIAgentAvatar size="sm" />
+                                    <span className="text-xs font-bold text-foreground">SustainabilityAgent Assessing...</span>
+                                </div>
+                                <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
+                                    <div className="h-full rounded-full bg-emerald-500 transition-all duration-[3500ms] ease-linear" style={{ width: `${reuseProgress}%` }} />
+                                </div>
+                                <div className="space-y-1.5">
+                                    {reuseAgents.map(agent => (
+                                        <div key={agent.name} className={cn("flex items-center gap-2 text-[10px] transition-all duration-300", agent.visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2")}>
+                                            {agent.done ? <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" /> : <ArrowPathIcon className="h-3.5 w-3.5 text-emerald-500 animate-spin shrink-0" />}
+                                            <span className={cn("font-medium", agent.done ? "text-foreground" : "text-emerald-600 dark:text-emerald-400")}>{agent.name}</span>
+                                            <span className="text-muted-foreground">{agent.detail}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Breathing */}
+                        {reusePhase === 'breathing' && (
+                            <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-xs font-semibold text-muted-foreground">Assessment complete — cataloging items...</span>
+                            </div>
+                        )}
+
+                        {/* Revealed */}
+                        {(reusePhase === 'revealed' || reusePhase === 'results') && (
+                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30 animate-in fade-in duration-300">
+                                <div className="flex items-start gap-2">
+                                    <AIAgentAvatar size="sm" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-green-800 dark:text-green-200"><span className="font-bold">SustainabilityAgent:</span> 340 items classified — <span className="font-semibold">180 reusable</span>, 95 recyclable, 65 EOL. Savings: <span className="font-semibold">$89,000</span> vs new procurement.</p>
+                                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                                            {['Condition Scanner', 'Reuse Catalog', 'Value Engine', 'Sustainability'].map(sys => (
+                                                <span key={sys} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
+                                                    <CheckCircleIcon className="h-3 w-3" />{sys}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Results */}
+                        {reusePhase === 'results' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                                    <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-foreground">Reuse Assessment — Floor 7 Teardown</h3>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">340 items evaluated · 180 reusable · $89K savings</p>
+                                        </div>
+                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold">ASSESSED</span>
+                                    </div>
+                                    <div className="p-4 space-y-2">
+                                        {REUSE_ITEMS.map(item => (
+                                            <div key={item.category} className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/20">
+                                                <div className="flex items-center gap-3">
+                                                    <CubeIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+                                                    <div>
+                                                        <p className="text-[11px] font-medium text-foreground">{item.category}</p>
+                                                        <p className="text-[10px] text-muted-foreground">Condition: {item.condition}/5 · Value: {item.value}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold">{item.reusable} reuse</span>
+                                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-medium">{item.recyclable} recycle</span>
+                                                    {item.eol > 0 && <span className="text-[9px] px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 font-medium">{item.eol} EOL</span>}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="px-4 py-3 border-t border-border/50 bg-emerald-50 dark:bg-emerald-500/5">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-[10px] text-muted-foreground">Savings vs new: <span className="font-bold text-emerald-700 dark:text-emerald-400">$89,000</span></span>
+                                                <span className="text-[10px] text-muted-foreground">Carbon offset: <span className="font-bold text-emerald-700 dark:text-emerald-400">2.4 tons</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => nextStep()} className="w-full mt-4 py-3 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors shadow-md flex items-center justify-center gap-2">
+                                    <CheckCircleIcon className="h-5 w-5" />
+                                    Catalog Reusable Items
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ═══ Continua Step 1.5 — Consignment & Vendor Returns (interactive) ═══ */}
+                {isContinua && stepId === '1.5' && consignPhase !== 'idle' && (
+                    <div className="space-y-4 mb-6">
+                        {/* Notification */}
+                        {consignPhase === 'notification' && (
+                            <button onClick={() => setConsignPhase('processing')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="p-4 rounded-xl bg-rose-50 dark:bg-rose-500/10 border-2 border-rose-300 dark:border-rose-500/30 shadow-lg shadow-rose-500/10 hover:shadow-rose-500/20 transition-shadow cursor-pointer">
+                                    <div className="flex items-start gap-3">
+                                        <div className="p-2 rounded-lg bg-rose-500 text-white"><ClockIcon className="h-4 w-4" /></div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs font-bold text-foreground">Consignment Review — 90-Day Window</span>
+                                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-rose-500 text-white font-bold">12 ITEMS</span>
+                                            </div>
+                                            <p className="text-[11px] text-muted-foreground mt-1">ConsignmentAgent: <span className="font-semibold text-foreground">12 items</span> approaching 90-day return window. 8 high-value chairs ($24K) need decision this week.</p>
+                                            <p className="text-[10px] text-rose-600 dark:text-rose-400 mt-2 flex items-center gap-1">Click to review decisions <ArrowRightIcon className="h-3 w-3" /></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </button>
+                        )}
+
+                        {/* Processing */}
+                        {consignPhase === 'processing' && (
+                            <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <AIAgentAvatar size="sm" />
+                                    <span className="text-xs font-bold text-foreground">ConsignmentAgent Analyzing...</span>
+                                </div>
+                                <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
+                                    <div className="h-full rounded-full bg-rose-500 transition-all duration-[3500ms] ease-linear" style={{ width: `${consignProgress}%` }} />
+                                </div>
+                                <div className="space-y-1.5">
+                                    {consignAgents.map(agent => (
+                                        <div key={agent.name} className={cn("flex items-center gap-2 text-[10px] transition-all duration-300", agent.visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2")}>
+                                            {agent.done ? <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" /> : <ArrowPathIcon className="h-3.5 w-3.5 text-rose-500 animate-spin shrink-0" />}
+                                            <span className={cn("font-medium", agent.done ? "text-foreground" : "text-rose-600 dark:text-rose-400")}>{agent.name}</span>
+                                            <span className="text-muted-foreground">{agent.detail}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Breathing */}
+                        {consignPhase === 'breathing' && (
+                            <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <span className="text-xs font-semibold text-muted-foreground">Analysis complete — preparing decisions...</span>
+                            </div>
+                        )}
+
+                        {/* Revealed */}
+                        {(consignPhase === 'revealed' || consignPhase === 'results') && (
+                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30 animate-in fade-in duration-300">
+                                <div className="flex items-start gap-2">
+                                    <AIAgentAvatar size="sm" />
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs text-green-800 dark:text-green-200"><span className="font-bold">ConsignmentAgent:</span> 12 items analyzed — <span className="font-semibold">4 RMA auto-generated</span> ($8,200), <span className="font-semibold">4 convert-to-purchase</span> recommended (demand +12%).</p>
+                                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                                            {['Consignment DB', 'RMA System', 'Demand Forecast', 'Manufacturer Portal'].map(sys => (
+                                                <span key={sys} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
+                                                    <CheckCircleIcon className="h-3 w-3" />{sys}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Results */}
+                        {consignPhase === 'results' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                                    <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                                        <div>
+                                            <h3 className="text-sm font-bold text-foreground">Consignment Decisions</h3>
+                                            <p className="text-[11px] text-muted-foreground mt-0.5">8 items · 4 RMA returns · 4 convert-to-purchase</p>
+                                        </div>
+                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-rose-100 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 font-bold">ACTION REQ</span>
+                                    </div>
+                                    <div className="p-4 space-y-2">
+                                        {CONSIGNMENT_ITEMS.map(item => (
+                                            <div key={item.name} className={cn("flex items-center justify-between p-3 rounded-xl border", item.action === 'RMA' ? "border-red-200 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5" : "border-blue-200 dark:border-blue-500/20 bg-blue-50/30 dark:bg-blue-500/5")}>
+                                                <div className="flex items-center gap-3">
+                                                    <CubeIcon className={cn("h-4 w-4 shrink-0", item.action === 'RMA' ? "text-red-500" : "text-blue-500")} />
+                                                    <div>
+                                                        <p className="text-[11px] font-medium text-foreground">{item.name}</p>
+                                                        <p className="text-[10px] text-muted-foreground">{item.mfr} · {item.daysLeft} days left · {item.value}</p>
+                                                    </div>
+                                                </div>
+                                                <span className={cn("text-[9px] px-2.5 py-1 rounded-full font-bold", item.action === 'RMA' ? "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400" : "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400")}>{item.action === 'RMA' ? 'Return (RMA)' : 'Convert to Purchase'}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="px-4 py-3 border-t border-border/50 bg-muted/20 flex items-center justify-between">
+                                        <span className="text-[10px] text-muted-foreground">RMA value: <span className="font-bold text-foreground">$8,200</span></span>
+                                        <span className="text-[10px] text-muted-foreground">Conversion savings: <span className="font-bold text-foreground">$3,400</span></span>
+                                    </div>
+                                </div>
+                                <button onClick={() => nextStep()} className="w-full mt-4 py-3 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-sm transition-colors shadow-md flex items-center justify-center gap-2">
+                                    <CheckCircleIcon className="h-5 w-5" />
+                                    Process Decisions
+                                </button>
                             </div>
                         )}
                     </div>
@@ -1795,7 +2279,6 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                 isOpen={isQuickMovementsModalOpen}
                 onClose={() => {
                     setIsQuickMovementsModalOpen(false);
-                    if (fmRelocPhase === 'modal-open') setFmRelocPhase('committed');
                 }}
             />
         </div >

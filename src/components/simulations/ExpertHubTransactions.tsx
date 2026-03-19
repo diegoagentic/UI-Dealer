@@ -623,7 +623,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     // ─── Continua Step 1.3: ACK Tracking orchestration ────────────────────────
     const tp13 = CONTINUA_STEP_TIMING['1.3'];
     useEffect(() => {
-        if (!isContinua || stepId !== '2.3') { setAckPhase('idle'); return }
+        if (!isContinua || stepId !== '3.3') { setAckPhase('idle'); return }
         setAckPhase('idle')
         setAckAgents(ACK_TRACKING_AGENTS.map(a => ({ ...a, visible: false, done: false })))
         setLifecycleTab('acknowledgments')
@@ -684,7 +684,7 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     const [reuseProgress, setReuseProgress] = useState(0)
 
     // Continua 2.2: orchestration
-    const tp22 = CONTINUA_STEP_TIMING['2.2'];
+    const tp22 = CONTINUA_STEP_TIMING['3.2'];
     useEffect(() => {
         if (!isContinua || stepId !== '1.2') { setReusePhase('idle'); return }
         setReusePhase('idle')
@@ -737,9 +737,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     const [fmApproved, setFmApproved] = useState(false)
 
     // F.3 orchestration
-    const tpF3 = CONTINUA_STEP_TIMING['F.3'];
+    const tpF3 = CONTINUA_STEP_TIMING['2.3'];
     useEffect(() => {
-        if (!isContinua || stepId !== 'F.3') { setFmExpertPhase('idle'); setFmApproved(false); return }
+        if (!isContinua || stepId !== '2.3') { setFmExpertPhase('idle'); setFmApproved(false); return }
         setFmExpertPhase('idle')
         setFmApproved(false)
         setFmExpertAgents(FM_EXPERT_AGENTS.map(a => ({ ...a, visible: false, done: false })))
@@ -792,9 +792,9 @@ export default function ExpertHubTransactions({ onLogout, onNavigateToDetail, on
     const [portalAgents, setPortalAgents] = useState(PORTAL_AGENTS.map(a => ({ ...a, visible: false, done: false })))
     const [portalProgress, setPortalProgress] = useState(0)
 
-    const tp32 = CONTINUA_STEP_TIMING['3.2'];
+    const tp32 = CONTINUA_STEP_TIMING['4.2'];
     useEffect(() => {
-        if (!isContinua || stepId !== '3.2') { setPortalPhase('idle'); return }
+        if (!isContinua || stepId !== '4.2') { setPortalPhase('idle'); return }
         setPortalPhase('idle')
         setPortalAgents(PORTAL_AGENTS.map(a => ({ ...a, visible: false, done: false })))
         setLifecycleTab('orders')
@@ -3395,7 +3395,7 @@ IEA*1*000002055~`}
                 )}
 
                 {/* ═══ Continua Step 1.3 — ACK Tracking & Validation (auto 12s) ═══ */}
-                {isContinua && stepId === '2.3' && ackPhase !== 'idle' && (
+                {isContinua && stepId === '3.3' && ackPhase !== 'idle' && (
                     <div data-demo-target="ack-tracking-dashboard" className="space-y-4 mb-6">
                         {/* Notification */}
                         {ackPhase === 'notification' && (
@@ -3697,7 +3697,7 @@ IEA*1*000002055~`}
                 )}
 
                 {/* ═══ Continua Step 3.2 — Client Project Portal (Dealer interactive) ═══ */}
-                {isContinua && stepId === '3.2' && portalPhase !== 'idle' && (
+                {isContinua && stepId === '4.2' && portalPhase !== 'idle' && (
                     <div data-demo-target="client-project-portal" className="space-y-4 mb-6">
                         {/* Notification */}
                         {portalPhase === 'notification' && (
@@ -3866,7 +3866,7 @@ IEA*1*000002055~`}
                 )}
 
                 {/* ═══ FM Step F.3 — Expert Review & Dispatch (interactive) ═══ */}
-                {isContinua && stepId === 'F.3' && fmExpertPhase !== 'idle' && (
+                {isContinua && stepId === '2.3' && fmExpertPhase !== 'idle' && (
                     <div data-demo-target="fm-expert-dispatch" className="space-y-4 mb-6">
                         {/* Notification */}
                         {fmExpertPhase === 'notification' && (

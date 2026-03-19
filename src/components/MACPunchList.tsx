@@ -258,7 +258,7 @@ export default function MACPunchList() {
     // ─── Continua Step 1.5: Installation orchestration ────────────────────────
     const tp15 = CONTINUA_STEP_TIMING['1.5'];
     useEffect(() => {
-        if (!isContinua || stepId !== '2.5') { setInstPhase('idle'); return; }
+        if (!isContinua || stepId !== '3.5') { setInstPhase('idle'); return; }
         setInstPhase('idle');
         setInstAgents(INSTALL_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -313,9 +313,9 @@ export default function MACPunchList() {
     const [warProgress, setWarProgress] = useState(0)
 
     // Continua 3.5: orchestration
-    const tp35 = CONTINUA_STEP_TIMING['3.5'];
+    const tp35 = CONTINUA_STEP_TIMING['4.5'];
     useEffect(() => {
-        if (!isContinua || stepId !== '3.5') { setWarPhase('idle'); return; }
+        if (!isContinua || stepId !== '4.5') { setWarPhase('idle'); return; }
         setWarPhase('idle');
         setWarAgents(WARRANTY_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -367,9 +367,9 @@ export default function MACPunchList() {
     const [fmIntakeFieldCount, setFmIntakeFieldCount] = useState(0)
 
     // F.1 orchestration — email arrives, AI extracts fields, user submits
-    const tpF1 = CONTINUA_STEP_TIMING['F.1'];
+    const tpF1 = CONTINUA_STEP_TIMING['2.1'];
     useEffect(() => {
-        if (!isContinua || stepId !== 'F.1') { setFmIntakePhase('idle'); return; }
+        if (!isContinua || stepId !== '2.1') { setFmIntakePhase('idle'); return; }
         setFmIntakePhase('idle');
         setFmIntakeFieldCount(0);
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -409,9 +409,9 @@ export default function MACPunchList() {
     const [fmTriageProgress, setFmTriageProgress] = useState(0)
 
     // F.2 orchestration
-    const tpF2 = CONTINUA_STEP_TIMING['F.2'];
+    const tpF2 = CONTINUA_STEP_TIMING['2.2'];
     useEffect(() => {
-        if (!isContinua || stepId !== 'F.2') { setFmTriagePhase('idle'); return; }
+        if (!isContinua || stepId !== '2.2') { setFmTriagePhase('idle'); return; }
         setFmTriagePhase('idle');
         setFmTriageAgents(FM_TRIAGE_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -463,9 +463,9 @@ export default function MACPunchList() {
     const [fmResProgress, setFmResProgress] = useState(0)
 
     // F.5 orchestration
-    const tpF5 = CONTINUA_STEP_TIMING['F.5'];
+    const tpF5 = CONTINUA_STEP_TIMING['2.5'];
     useEffect(() => {
-        if (!isContinua || stepId !== 'F.5') { setFmResPhase('idle'); return; }
+        if (!isContinua || stepId !== '2.5') { setFmResPhase('idle'); return; }
         setFmResPhase('idle');
         setFmResAgents(FM_RESOLUTION_AGENTS.map(a => ({ ...a, visible: false, done: false })));
         const timers: ReturnType<typeof setTimeout>[] = [];
@@ -1660,7 +1660,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* ═══ Continua Step 1.5 — Installation Schedule & Dispatch (auto 10s) ═══ */}
-                {isContinua && stepId === '2.5' && instPhase !== 'idle' && (
+                {isContinua && stepId === '3.5' && instPhase !== 'idle' && (
                     <div className="space-y-4">
                         {/* Notification */}
                         {instPhase === 'notification' && (
@@ -1786,7 +1786,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* ═══ Continua Step 3.5 — Smart Warranty & Maintenance (auto 10s) ═══ */}
-                {isContinua && stepId === '3.5' && warPhase !== 'idle' && (
+                {isContinua && stepId === '4.5' && warPhase !== 'idle' && (
                     <div className="space-y-4">
                         {/* Notification */}
                         {warPhase === 'notification' && (
@@ -1948,7 +1948,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* ═══ FM Step F.1 — Service Request Intake (interactive) ═══ */}
-                {isContinua && stepId === 'F.1' && fmIntakePhase !== 'idle' && (
+                {isContinua && stepId === '2.1' && fmIntakePhase !== 'idle' && (
                     <div className="space-y-4">
                         {/* Email notification */}
                         {fmIntakePhase === 'email' && (
@@ -2032,7 +2032,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* ═══ FM Step F.2 — AI Triage & Cross-Reference (auto 14s) ═══ */}
-                {isContinua && stepId === 'F.2' && fmTriagePhase !== 'idle' && (
+                {isContinua && stepId === '2.2' && fmTriagePhase !== 'idle' && (
                     <div className="space-y-4">
                         {/* Notification */}
                         {fmTriagePhase === 'notification' && (
@@ -2143,7 +2143,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* ═══ FM Step F.5 — Resolution & Installer Report (auto 10s) ═══ */}
-                {isContinua && stepId === 'F.5' && fmResPhase !== 'idle' && (
+                {isContinua && stepId === '2.5' && fmResPhase !== 'idle' && (
                     <div className="space-y-4">
                         {/* Notification */}
                         {fmResPhase === 'notification' && (
@@ -2290,7 +2290,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* Default: No step active — show empty state */}
-                {!['3.1', '3.2', '3.3', '3.4'].includes(currentStep?.id) && !(isContinua && stepId === '2.5' && instPhase !== 'idle') && !(isContinua && stepId === '3.5' && warPhase !== 'idle') && !(isContinua && stepId === 'F.1' && fmIntakePhase !== 'idle') && !(isContinua && stepId === 'F.2' && fmTriagePhase !== 'idle') && !(isContinua && stepId === 'F.5' && fmResPhase !== 'idle') && (
+                {!['3.1', '3.2', '3.3', '3.4'].includes(currentStep?.id) && !(isContinua && stepId === '3.5' && instPhase !== 'idle') && !(isContinua && stepId === '4.5' && warPhase !== 'idle') && !(isContinua && stepId === '2.1' && fmIntakePhase !== 'idle') && !(isContinua && stepId === '2.2' && fmTriagePhase !== 'idle') && !(isContinua && stepId === '2.5' && fmResPhase !== 'idle') && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 border-dashed rounded-xl min-h-[400px]">
                         <ExclamationTriangleIcon className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" />
                         <h4 className="text-lg font-medium text-zinc-900 dark:text-white">Select a Punch List Item</h4>

@@ -30,21 +30,22 @@ function getStepDataThread(stepId: string): string | null {
         '1.3': 'Price verified — $110K savings',
         '1.4': '4 locations synced',
         '1.5': '4 RMA, 4 convert-to-purchase',
-        '2.1': '3 manufacturers, $3.2M scope',
-        '2.2': '3 POs generated, $3.2M',
-        '2.3': '9 ACKs validated across suppliers',
-        '2.4': 'QC passed — 1,320 items received',
-        '2.5': 'Installation dispatched — 8 floors',
-        'F.1': 'REQ-FM-2026-018 — safety flag',
-        'F.2': 'Warranty + consignment + relocation plan',
-        'F.3': 'Dispatch approved — ProInstall tomorrow',
-        'F.4': 'Assets relocated to Office 3-216',
-        'F.5': 'Resolved — $0 cost, 26h total',
-        '3.1': '194 tons diverted, A- rating',
-        '3.2': 'Portal published — 82% progress',
-        '3.3': '$11,550 reconciled',
-        '3.4': '92% satisfaction, AV flagged',
-        '3.5': '3 warranty claims processed',
+        '1.6': 'Report approved — all changes confirmed',
+        '3.1': 'Project request submitted — $3.2M, 8 floors',
+        '3.2': '3 POs generated, $3.2M',
+        '3.3': '9 ACKs validated across suppliers',
+        '3.4': 'QC passed — 1,320 items received',
+        '3.5': 'Installation dispatched — 8 floors',
+        '2.1': 'REQ-FM-2026-018 — safety flag',
+        '2.2': 'Warranty + consignment + relocation plan',
+        '2.3': 'Dispatch approved — ProInstall tomorrow',
+        '2.4': 'Assets relocated to Office 3-216',
+        '2.5': 'Resolved — $0 cost, 26h total',
+        '4.1': '194 tons diverted, A- rating',
+        '4.2': 'Portal published — 82% progress',
+        '4.3': '$11,550 reconciled',
+        '4.4': '92% satisfaction, AV flagged',
+        '4.5': '3 warranty claims processed',
     };
     return threads[stepId] || null;
 }
@@ -237,7 +238,7 @@ export default function DemoSidebar() {
                                                 </span>
                                             );
                                         })()}
-                                        {(step.id.startsWith('F.') || ['3.4', '3.5'].includes(step.id)) && isContinua && (
+                                        {(step.id.startsWith('2.') || ['4.4', '4.5'].includes(step.id)) && isContinua && (
                                             <span className={`text-[9px] px-1.5 py-0.5 rounded-sm border ${isDarkSidebar ? 'border-blue-800/50 bg-blue-900/30 text-blue-400' : 'border-blue-200 bg-blue-50 text-blue-700'} font-bold`}>
                                                 + FM
                                             </span>

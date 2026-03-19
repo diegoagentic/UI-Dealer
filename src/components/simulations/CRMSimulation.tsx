@@ -2411,8 +2411,8 @@ export default function CRMSimulation({ onNavigate, activePage }: CRMSimulationP
     useMemo(() => {
         const mapped = STEP_TO_TAB[stepId]
         if (mapped) setActiveTab(mapped)
-        // Continua step 2.1 goes straight to CRM projects (no dashboard phase)
-        if (isContinua && stepId === '2.1') {
+        // Continua step 3.1 goes straight to CRM projects (no dashboard phase)
+        if (isContinua && stepId === '3.1') {
             setCrmPage('crm')
             setActiveTab('projects')
         } else {
@@ -2729,7 +2729,7 @@ export default function CRMSimulation({ onNavigate, activePage }: CRMSimulationP
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-6">
-                {activeTab === 'projects' && <ProjectsView stepId={stepId} skipNotification={notificationShown} isProjectIntake={isContinua && stepId === '2.1'} />}
+                {activeTab === 'projects' && <ProjectsView stepId={stepId} skipNotification={notificationShown} isProjectIntake={isContinua && stepId === '3.1'} />}
                 {activeTab === 'customer360' && <Customer360View stepId={stepId} />}
                 {activeTab === 'timeline' && <OrderTimelineView stepId={stepId} />}
                 {activeTab === 'invoicing' && <InvoicingView />}
