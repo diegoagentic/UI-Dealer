@@ -17,6 +17,7 @@ import { CheckCircleIcon, ArrowPathIcon, ArrowRightIcon, StarIcon } from '@heroi
 import { useDemo } from '../../context/DemoContext';
 import { useDemoProfile } from '../../context/DemoProfileContext';
 import { AIAgentAvatar } from './DemoAvatars';
+import MobileDeviceFrame from './MobileDeviceFrame';
 import { CONTINUA_STEP_TIMING } from '../../config/profiles/continua-demo';
 
 // ─── Continua Step 4.4: Post-Occupancy Intelligence Constants ───────────────
@@ -165,11 +166,25 @@ export default function ConversationalSurvey() {
     };
 
     return (
-        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0f1115] text-foreground font-sans flex items-center justify-center p-4">
-            {/* ─── Continua Step 4.4: Post-Occupancy Intelligence Overlay ─── */}
+        <div className="min-h-screen bg-zinc-950 -mt-16 pt-16 text-foreground font-sans">
+            <div className="flex items-start justify-center pt-6 pb-8 min-h-[calc(100vh-4rem)] animate-in fade-in duration-500">
+                <MobileDeviceFrame>
+                    {/* ─── Mobile navbar ─── */}
+                    <div className="flex items-center justify-between px-4 pt-10 pb-3 border-b border-border">
+                        <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                                <span className="text-[10px] font-black text-primary-foreground">S</span>
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-muted-foreground font-medium leading-none">End User Survey</p>
+                                <p className="text-xs font-bold text-foreground leading-tight">Floor 4 Occupants</p>
+                            </div>
+                        </div>
+                    </div>
+
+            {/* ─── Continua Step 4.4: Post-Occupancy Intelligence ─── */}
             {isContinua && stepId === '4.4' && survDemoPhase !== 'idle' && (
-                <div className="absolute inset-0 z-30 flex items-start justify-center overflow-y-auto pt-6 pb-8">
-                    <div className="w-full max-w-2xl space-y-4 animate-in fade-in duration-300 px-4">
+                    <div className="space-y-3 p-4 animate-in fade-in duration-300">
 
                         {/* NOTIFICATION */}
                         {survDemoPhase === 'notification' && (
@@ -323,10 +338,11 @@ export default function ConversationalSurvey() {
                             </div>
                         )}
                     </div>
-                </div>
             )}
 
-            <div className="w-full max-w-2xl h-[80vh] bg-white dark:bg-[#161b22] rounded-3xl shadow-2xl shadow-primary/5 border border-border/50 flex flex-col overflow-hidden animate-in zoom-in-95 duration-500">
+            {/* ─── Chat interface (idle state) ─── */}
+            {!(isContinua && stepId === '4.4' && survDemoPhase !== 'idle') && (
+            <div className="flex flex-col overflow-hidden">
                 {/* Chat Header */}
                 <header className="p-6 border-b border-border/50 flex items-center justify-between bg-white/50 dark:bg-muted/10 backdrop-blur-md">
                     <div className="flex items-center gap-4">
@@ -447,6 +463,10 @@ export default function ConversationalSurvey() {
                         </p>
                     </div>
                 </footer>
+            </div>
+            )}
+
+                </MobileDeviceFrame>
             </div>
         </div>
     );

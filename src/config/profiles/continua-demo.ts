@@ -255,16 +255,6 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         role: 'End User',
         highlightId: 'post-occupancy-survey',
     },
-    {
-        id: '4.5',
-        groupId: 4,
-        groupTitle: 'Flow 4: Sustainability & Client Reporting',
-        title: 'Smart Warranty & Maintenance',
-        description: 'WarrantyAgent monitors 1,200 items under active warranty. AI predictive: 15 Aeron chairs approaching 12-year warranty end — recommends extended coverage ($180/chair vs $950 replacement). 3 maintenance requests auto-triaged: 1 urgent (broken gas cylinder, safety → dispatch today), 2 routine (stain cleaning, scheduled next window). Vendor warranty claims auto-filed.',
-        app: 'mac',
-        role: 'System',
-        highlightId: 'warranty-maintenance',
-    },
 ];
 
 // ─── STEP BEHAVIOR ───────────────────────────────────────────────────────────
@@ -298,7 +288,6 @@ export const CONTINUA_DEMO_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     '4.2': { mode: 'interactive', userAction: 'Review client portal: timeline 82% complete, $2.65M/$3.2M invoiced, 3 pending deliveries, 1 warranty claim. Click "Publish Portal Update"' },
     '4.3': { mode: 'interactive', userAction: 'Review reconciliation: 47 POs, 42 invoices, 38 payments. 4 invoices >30 days — AI categorized with actions. Margin 33.2% vs 34% quoted. Click "Export Aging Report"' },
     '4.4': { mode: 'interactive', userAction: 'Review survey results: 85 responses, 92% satisfaction. Chairs 4.6/5, AV 3.8/5 (recalibrate mics). Click "Send Report to Client"' },
-    '4.5': { mode: 'auto', duration: 10, aiSummary: 'WarrantyAgent: monitoring 1,200 items — flagging 15 Aeron chairs near warranty end, triaging 3 maintenance requests, filing vendor claims' },
 };
 
 // ─── STEP MESSAGES ───────────────────────────────────────────────────────────
@@ -437,12 +426,6 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
         'Overall: 92% satisfaction | Task chairs: 4.6/5 | AV: 3.8/5',
         'Recommendation: recalibrate conference room mic arrays — report generated',
     ],
-    '4.5': [
-        'WarrantyAgent: monitoring 1,200 items under active warranty...',
-        'AI predictive: 15 Aeron chairs approaching 12-year warranty end',
-        'Extended coverage recommended: $180/chair vs $950 replacement',
-        '3 maintenance requests triaged: 1 urgent (safety), 2 routine — vendor claims filed',
-    ],
 };
 
 // ─── SELF-INDICATED STEPS ────────────────────────────────────────────────────
@@ -452,7 +435,7 @@ export const CONTINUA_DEMO_STEP_MESSAGES: Record<string, string[]> = {
 export const CONTINUA_DEMO_SELF_INDICATED: string[] = [
     '1.1', '1.2', '1.3', '1.4', '1.5', '1.6',
     '2.1', '2.2', '2.5',
-    '3.1', '3.2', '3.3', '3.4', '4.1', '4.5',
+    '3.1', '3.2', '3.3', '3.4', '4.1', '4.4',
 ];
 
 // ─── STEP TIMING PROFILES ────────────────────────────────────────────────────
@@ -490,5 +473,4 @@ export const CONTINUA_STEP_TIMING: Record<string, StepTiming> = {
     '4.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
     '4.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800,  agentDone: 500,  breathing: 1200, resultsDur: 0 },
     '4.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
-    '4.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 700,  agentDone: 500,  breathing: 1000, resultsDur: 10000 },
 };

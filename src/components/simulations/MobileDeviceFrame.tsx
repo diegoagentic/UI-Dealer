@@ -44,7 +44,7 @@ export default function MobileDeviceFrame({ children, className }: MobileDeviceF
                 </div>
 
                 {/* Content area */}
-                <div className="min-h-[400px] max-h-[calc(100vh-10rem)] overflow-y-auto scrollbar-micro bg-background">
+                <div className="min-h-[calc(100vh-12rem)] max-h-[calc(100vh-10rem)] overflow-y-auto scrollbar-micro bg-background">
                     {children}
                 </div>
 

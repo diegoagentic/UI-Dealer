@@ -24,7 +24,6 @@ import {
     UserGroupIcon,
     TruckIcon,
     ClipboardDocumentCheckIcon,
-    WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 import { useDemo } from '../context/DemoContext';
 import { useDemoProfile } from '../context/DemoProfileContext';
@@ -119,29 +118,6 @@ const FLOOR_SCHEDULE = [
 ]
 
 type InstallPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
-
-// ─── Continua Step 4.5: Smart Warranty & Maintenance Constants ───────────────
-const WARRANTY_AGENTS = [
-    { name: 'WarrantyMonitor', detail: 'Scanning 1,200 items — 15 Aeron chairs approaching warranty end...' },
-    { name: 'PredictiveAnalyzer', detail: 'Cost analysis: extend warranty $180 vs replace $950 per unit...' },
-    { name: 'MaintenanceTriager', detail: 'Processing 3 maintenance requests — 1 urgent safety flag...' },
-    { name: 'CostOptimizer', detail: 'Extending 15 warranties saves $11,550 vs replacement...' },
-    { name: 'ClaimFiler', detail: 'Auto-filing 2 proactive claims before expiration...' },
-]
-
-const WARRANTY_ITEMS = [
-    { name: 'Aeron Chairs (15)', expires: 'Apr 15, 2026', daysLeft: 28, extendCost: '$180/unit', replaceCost: '$950/unit', action: 'Extend' as const },
-    { name: 'Steelcase Desks (8)', expires: 'Jun 20, 2026', daysLeft: 94, extendCost: '$120/unit', replaceCost: '$1,200/unit', action: 'Monitor' as const },
-    { name: 'DIRTT Walls (12)', expires: 'Sep 1, 2026', daysLeft: 167, extendCost: '$200/unit', replaceCost: '$2,400/unit', action: 'Monitor' as const },
-]
-
-const MAINTENANCE_REQUESTS = [
-    { item: 'Conference Room 401 — AV System', priority: 'Urgent' as const, issue: 'Audio dropout during calls — safety/compliance', assignee: 'ProInstall LLC', eta: '24 hrs' },
-    { item: 'Floor 5 — Carpet tiles (3 sections)', priority: 'Medium' as const, issue: 'Seam separation — trip hazard flagged', assignee: 'FloorCraft Inc', eta: '3 days' },
-    { item: 'Floor 6 — Task lighting (4 units)', priority: 'Low' as const, issue: 'Flickering LEDs — bulb replacement needed', assignee: 'In-house', eta: '1 week' },
-]
-
-type WarrantyPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
 
 // ─── FM Flow: Service Request Intake (F.1) ───────────────────────────────────
 type FMIntakePhase = 'idle' | 'email' | 'extracting' | 'classified' | 'submitted'
@@ -304,63 +280,6 @@ export default function MACPunchList() {
         const t = setTimeout(pauseAware(() => nextStep()), tp15.resultsDur);
         return () => clearTimeout(t);
     }, [instPhase]);
-
-    // ─── Continua Step 4.5: Smart Warranty & Maintenance state ──────────────
-    const [warPhase, setWarPhase] = useState<WarrantyPhase>('idle')
-    const warPhaseRef = useRef(warPhase)
-    useEffect(() => { warPhaseRef.current = warPhase }, [warPhase])
-    const [warAgents, setWarAgents] = useState(WARRANTY_AGENTS.map(a => ({ ...a, visible: false, done: false })))
-    const [warProgress, setWarProgress] = useState(0)
-
-    // Continua 3.5: orchestration
-    const tp35 = CONTINUA_STEP_TIMING['4.5'];
-    useEffect(() => {
-        if (!isContinua || stepId !== '4.5') { setWarPhase('idle'); return; }
-        setWarPhase('idle');
-        setWarAgents(WARRANTY_AGENTS.map(a => ({ ...a, visible: false, done: false })));
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setWarPhase('notification')), tp35.notifDelay));
-        timers.push(setTimeout(pauseAware(() => {
-            if (warPhaseRef.current === 'notification') setWarPhase('processing');
-        }), tp35.notifDelay + tp35.notifDuration));
-        return () => timers.forEach(clearTimeout);
-    }, [isContinua, stepId]);
-
-    // Continua 3.5: processing → breathing
-    useEffect(() => {
-        if (warPhase !== 'processing') return;
-        setWarAgents(WARRANTY_AGENTS.map(a => ({ ...a, visible: false, done: false })));
-        setWarProgress(0);
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(() => setWarProgress(100), 50));
-        WARRANTY_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setWarAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * tp35.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setWarAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * tp35.agentStagger + tp35.agentDone));
-        });
-        timers.push(setTimeout(pauseAware(() => setWarPhase('breathing')), WARRANTY_AGENTS.length * tp35.agentStagger + tp35.agentDone + 300));
-        return () => timers.forEach(clearTimeout);
-    }, [warPhase]);
-
-    // Continua 3.5: breathing → revealed
-    useEffect(() => {
-        if (warPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setWarPhase('revealed')), tp35.breathing);
-        return () => clearTimeout(t);
-    }, [warPhase]);
-
-    // Continua 3.5: revealed → results
-    useEffect(() => {
-        if (warPhase !== 'revealed') return;
-        const t = setTimeout(pauseAware(() => setWarPhase('results')), 1500);
-        return () => clearTimeout(t);
-    }, [warPhase]);
-
-    // Continua 3.5: auto-advance (System role — END OF DEMO)
-    useEffect(() => {
-        if (warPhase !== 'results') return;
-        const t = setTimeout(pauseAware(() => nextStep()), tp35.resultsDur);
-        return () => clearTimeout(t);
-    }, [warPhase]);
 
     // ─── FM Step F.1: Service Request Intake state ───────────────────────────
     const [fmIntakePhase, setFmIntakePhase] = useState<FMIntakePhase>('idle')
@@ -1777,168 +1696,6 @@ export default function MACPunchList() {
                     </div>
                 )}
 
-                {/* ═══ Continua Step 4.5 — Smart Warranty & Maintenance (auto 10s) ═══ */}
-                {isContinua && stepId === '4.5' && warPhase !== 'idle' && (
-                    <div className="space-y-4">
-                        {/* Notification */}
-                        {warPhase === 'notification' && (
-                            <button onClick={() => setWarPhase('processing')} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-brand-500/20 transition-shadow cursor-pointer">
-                                    <div className="flex items-start gap-3">
-                                        <div className="p-2 rounded-lg bg-brand-500 text-white"><WrenchScrewdriverIcon className="h-4 w-4" /></div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-foreground">Smart Warranty & Maintenance</span>
-                                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-white font-bold">Final Step</span>
-                                            </div>
-                                            <p className="text-[11px] text-muted-foreground mt-1">WarrantyAgent: Scanning <span className="font-semibold text-foreground">1,200 items</span> — 15 chairs near warranty end, 3 maintenance requests queued.</p>
-                                            <p className="text-[10px] text-brand-600 dark:text-brand-400 mt-2 flex items-center gap-1">Click to analyze warranties <ArrowRightIcon className="h-3 w-3" /></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </button>
-                        )}
-
-                        {/* Processing */}
-                        {warPhase === 'processing' && (
-                            <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <AIAgentAvatar size="sm" />
-                                    <span className="text-xs font-bold text-foreground">WarrantyAgent Analyzing Coverage...</span>
-                                </div>
-                                <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
-                                    <div className="h-full rounded-full bg-brand-400 transition-all duration-[3500ms] ease-linear" style={{ width: `${warProgress}%` }} />
-                                </div>
-                                <div className="space-y-1.5">
-                                    {warAgents.map(agent => (
-                                        <div key={agent.name} className={`flex items-center gap-2 text-[10px] transition-all duration-300 ${agent.visible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-2"}`}>
-                                            {agent.done ? <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" /> : <ArrowPathIcon className="h-3.5 w-3.5 text-indigo-500 animate-spin shrink-0" />}
-                                            <span className={`font-medium ${agent.done ? "text-foreground" : "text-indigo-600 dark:text-indigo-400"}`}>{agent.name}</span>
-                                            <span className="text-muted-foreground">{agent.detail}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Breathing */}
-                        {warPhase === 'breathing' && (
-                            <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-xs font-semibold text-muted-foreground">Processing complete — syncing external systems...</span>
-                            </div>
-                        )}
-
-                        {/* Confirmed */}
-                        {(warPhase === 'revealed' || warPhase === 'results') && (
-                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30 animate-in fade-in duration-300">
-                                <div className="flex items-start gap-2">
-                                    <AIAgentAvatar size="sm" />
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs text-green-800 dark:text-green-200"><span className="font-bold">WarrantyAgent:</span> 1,200 items scanned. <span className="font-semibold">15 proactive extensions recommended</span> — saving $11,550 vs replacement.</p>
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <span className="text-[9px] font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">External Systems · Synced</span>
-                                        </div>
-                                        <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
-                                            {['Warranty DB', 'Predictive Engine', 'Maintenance Queue', 'Claims Portal'].map(sys => (
-                                                <span key={sys} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-green-100 dark:bg-green-500/10 text-green-800 dark:text-green-300 text-[10px] font-medium border border-green-200/50 dark:border-green-500/20">
-                                                    <CheckCircleIcon className="h-3 w-3" />{sys}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Results */}
-                        {warPhase === 'results' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
-                                {/* Warranty Expiry Cards */}
-                                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-                                    <div className="p-4 border-b border-border/50 flex items-center justify-between">
-                                        <div>
-                                            <h3 className="text-sm font-bold text-foreground">Warranty Expiry Monitor</h3>
-                                            <p className="text-[11px] text-muted-foreground mt-0.5">1,200 items tracked · 15 approaching expiry · 2 claims auto-filed</p>
-                                        </div>
-                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 font-bold">15 Action Items</span>
-                                    </div>
-                                    <div className="p-4 space-y-3">
-                                        {WARRANTY_ITEMS.map((w, i) => (
-                                            <div key={i} className={`p-3 rounded-xl border ${w.daysLeft <= 30 ? "border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5" : "border-border bg-muted/20"}`}>
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-xs font-bold text-foreground">{w.name}</span>
-                                                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${w.action === 'Extend' ? "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400" : "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400"}`}>{w.action}</span>
-                                                </div>
-                                                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                                                    <span>Expires: {w.expires} ({w.daysLeft} days)</span>
-                                                    <span>Extend <span className="font-semibold text-green-600 dark:text-green-400">{w.extendCost}</span> vs Replace <span className="font-semibold text-red-600 dark:text-red-400">{w.replaceCost}</span></span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Maintenance Triage */}
-                                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-                                    <div className="p-4 border-b border-border/50">
-                                        <h3 className="text-sm font-bold text-foreground">Maintenance Triage</h3>
-                                        <p className="text-[11px] text-muted-foreground mt-0.5">3 active requests · Priority-ranked by AI</p>
-                                    </div>
-                                    <div className="p-4 space-y-3">
-                                        {MAINTENANCE_REQUESTS.map((m, i) => (
-                                            <div key={i} className={`p-3 rounded-xl border ${m.priority === 'Urgent' ? "border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5" : "border-border bg-muted/20"}`}>
-                                                <div className="flex items-center justify-between mb-1">
-                                                    <span className="text-xs font-bold text-foreground">{m.item}</span>
-                                                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${m.priority === 'Urgent' ? "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400" : m.priority === 'Medium' ? "bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400" : "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400"}`}>{m.priority}</span>
-                                                </div>
-                                                <p className="text-[10px] text-muted-foreground">{m.issue}</p>
-                                                <div className="flex items-center justify-between mt-2 text-[10px]">
-                                                    <span className="text-muted-foreground">Assigned: <span className="font-semibold text-foreground">{m.assignee}</span></span>
-                                                    <span className="text-muted-foreground">ETA: <span className="font-semibold text-foreground">{m.eta}</span></span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Savings summary */}
-                                <div className="bg-green-50 dark:bg-green-500/5 border border-green-300 dark:border-green-500/30 rounded-xl p-4">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0" />
-                                        <div>
-                                            <p className="text-xs font-bold text-green-800 dark:text-green-200">Proactive Savings: $11,550</p>
-                                            <p className="text-[10px] text-green-700 dark:text-green-300 mt-0.5">15 warranty extensions at $180/unit vs $950/unit replacement · 2 claims auto-filed</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* FM Approval Card */}
-                                <div className="bg-amber-50 dark:bg-amber-500/5 border-2 border-amber-300 dark:border-amber-500/30 rounded-xl p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-xs font-bold ring-2 ring-amber-400/50">CR</div>
-                                        <div>
-                                            <span className="text-xs font-bold text-foreground">FM Approval Required</span>
-                                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-red-100 dark:bg-red-500/15 text-red-700 dark:text-red-400 font-bold ml-2">URGENT</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-[11px] text-foreground/80 mt-1">Broken gas cylinder — safety dispatch required today.</p>
-                                    <div className="flex gap-2 mt-3">
-                                        <button className="px-3 py-1.5 text-[11px] font-bold rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors">Approve Dispatch</button>
-                                        <button className="px-3 py-1.5 text-[11px] font-bold rounded-lg border border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/10 transition-colors">Request Details</button>
-                                    </div>
-                                </div>
-
-                                {/* Auto-advance footer */}
-                                <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground py-2">
-                                    <ArrowPathIcon className="h-3 w-3 animate-spin" />
-                                    <span>Demo complete — auto-advancing...</span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                )}
-
                 {/* ═══ FM Step F.1 — Service Request Intake (interactive) ═══ */}
                 {isContinua && stepId === '2.1' && fmIntakePhase !== 'idle' && (
                     <div className="space-y-4">
@@ -2372,7 +2129,7 @@ export default function MACPunchList() {
                 )}
 
                 {/* Default: No step active — show empty state */}
-                {!['3.1', '3.2', '3.3', '3.4', '3.5'].includes(currentStep?.id) && !(isContinua && stepId === '3.6' && instPhase !== 'idle') && !(isContinua && stepId === '4.5' && warPhase !== 'idle') && !(isContinua && stepId === '2.1' && fmIntakePhase !== 'idle') && !(isContinua && stepId === '2.2' && fmTriagePhase !== 'idle') && !(isContinua && stepId === '2.5' && fmResPhase !== 'idle') && (
+                {!['3.1', '3.2', '3.3', '3.4', '3.5'].includes(currentStep?.id) && !(isContinua && stepId === '3.6' && instPhase !== 'idle') && !(isContinua && stepId === '2.1' && fmIntakePhase !== 'idle') && !(isContinua && stepId === '2.2' && fmTriagePhase !== 'idle') && !(isContinua && stepId === '2.5' && fmResPhase !== 'idle') && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-zinc-50/50 dark:bg-zinc-900/20 border border-zinc-200 dark:border-zinc-800 border-dashed rounded-xl min-h-[400px]">
                         <ExclamationTriangleIcon className="w-12 h-12 text-zinc-300 dark:text-zinc-700 mb-4" />
                         <h4 className="text-lg font-medium text-zinc-900 dark:text-white">Select a Punch List Item</h4>

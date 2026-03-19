@@ -46,7 +46,6 @@ function getStepDataThread(stepId: string): string | null {
         '4.2': 'Portal published — 82% progress',
         '4.3': '$11,550 reconciled',
         '4.4': '92% satisfaction, AV flagged',
-        '4.5': '3 warranty claims processed',
     };
     return threads[stepId] || null;
 }
@@ -241,7 +240,7 @@ export default function DemoSidebar() {
                                                 </span>
                                             );
                                         })()}
-                                        {(step.id.startsWith('2.') || ['4.4', '4.5'].includes(step.id)) && isContinua && (
+                                        {(step.id.startsWith('2.') || step.id === '4.4') && isContinua && (
                                             <span className={`text-[9px] px-1.5 py-0.5 rounded-sm border ${isDarkSidebar ? 'border-blue-800/50 bg-blue-900/30 text-blue-400' : 'border-blue-200 bg-blue-50 text-blue-700'} font-bold`}>
                                                 + FM
                                             </span>
