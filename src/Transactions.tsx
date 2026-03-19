@@ -40,7 +40,21 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 // ═══════════════════════════════════════════════════
 
 
-type ProcurementPhase = 'idle' | 'notification' | 'expert-question' | 'highlight' | 'lupa-active' | 'done'
+type ProcurementPhase = 'idle' | 'notification' | 'expert-question' | 'highlight' | 'lupa-active' | 'po-review' | 'price-check' | 'ready-convert' | 'converted'
+
+// ─── PO Review Data (Step 3.2 sub-phases) ─────────────────────────────────────
+const PO_LINE_ITEMS = [
+    { manufacturer: 'MillerKnoll', items: '680 task chairs, 45 conference tables', poAmount: '$2.8M', catalogPrice: '$3.1M', contractPrice: '$2.8M', savings: '$300K', status: 'verified' as const },
+    { manufacturer: 'DIRTT Environmental', items: 'Architectural walls — Floor 5', poAmount: '$120K', catalogPrice: '$142K', contractPrice: '$120K', savings: '$22K', status: 'lead-time' as const },
+    { manufacturer: 'AV Integration Partners', items: 'AV systems, 40 conference rooms', poAmount: '$280K', catalogPrice: '$310K', contractPrice: '$280K', savings: '$30K', status: 'verified' as const },
+]
+
+const PRICE_CHECKS = [
+    { source: 'Contract Database', match: 12, mismatch: 0, status: 'pass' as const },
+    { source: 'Manufacturer List Price', match: 10, mismatch: 2, status: 'warning' as const },
+    { source: 'Volume Discount Engine', match: 11, mismatch: 1, status: 'pass' as const },
+    { source: 'Historical Purchase Data', match: 12, mismatch: 0, status: 'pass' as const },
+]
 
 // ─── Continua Step 1.5: Consignment & Vendor Returns Constants ──────────────
 const CONSIGNMENT_AGENTS = [
@@ -379,20 +393,32 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         return () => clearTimeout(t)
     }, [procPhase, setLupaStep])
 
-    // procCompleteStep signal from DemoProcessPanel → done with chip
+    // procCompleteStep signal from DemoProcessPanel → show PO review
+    const [priceChecksVisible, setPriceChecksVisible] = useState(0)
     useEffect(() => {
-        if (procCompleteStep !== '3.2' || procPhase === 'done') return
-        setProcPhase('done')
+        if (procCompleteStep !== '3.2' || procPhase === 'po-review' || procPhase === 'price-check' || procPhase === 'ready-convert' || procPhase === 'converted') return
+        setProcPhase('po-review')
+        setPriceChecksVisible(0)
     }, [procCompleteStep, procPhase])
 
-    // done → show chip 1.2s → simulate click (scale down) → navigate to order detail
-    const [clickSimActive, setClickSimActive] = useState(false)
+    // po-review → after 2s → price-check
     useEffect(() => {
-        if (procPhase !== 'done' || !isContinua || currentStep?.id !== '3.2') return
-        const t1 = setTimeout(() => setClickSimActive(true), 1200)      // flash "click"
-        const t2 = setTimeout(() => onNavigateToDetail('order-detail'), 1800) // navigate
-        return () => { clearTimeout(t1); clearTimeout(t2) }
-    }, [procPhase, isContinua, currentStep?.id, onNavigateToDetail])
+        if (procPhase !== 'po-review') return
+        const t = setTimeout(() => setProcPhase('price-check'), 2000)
+        return () => clearTimeout(t)
+    }, [procPhase])
+
+    // price-check → stagger reveal checks → ready-convert
+    useEffect(() => {
+        if (procPhase !== 'price-check') return
+        setPriceChecksVisible(0)
+        const timers: ReturnType<typeof setTimeout>[] = []
+        PRICE_CHECKS.forEach((_, i) => {
+            timers.push(setTimeout(() => setPriceChecksVisible(i + 1), (i + 1) * 600))
+        })
+        timers.push(setTimeout(() => setProcPhase('ready-convert'), PRICE_CHECKS.length * 600 + 800))
+        return () => timers.forEach(clearTimeout)
+    }, [procPhase])
 
     // ─── Continua Step 2.3: ACK Tracking & Validation ────────────────────────────
     type AckPhase = 'idle' | 'notification' | 'tab-switch' | 'validating' | 'alert' | 'click-sim' | 'navigating'
@@ -1488,6 +1514,159 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </div>
                                 )}
 
+                                {/* ═══ CONTINUA STEP 3.2 — PO Review, Price Verification & Convert to ACK ═══ */}
+                                {isContinua && stepId === '3.2' && (procPhase === 'po-review' || procPhase === 'price-check' || procPhase === 'ready-convert' || procPhase === 'converted') && (
+                                    <div className="space-y-4 mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                                            {/* Header */}
+                                            <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 rounded-lg bg-indigo-600 text-white">
+                                                        <ClipboardDocumentCheckIcon className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-foreground">PO Package Review — Corporate HQ</h3>
+                                                        <p className="text-[11px] text-muted-foreground mt-0.5">3 consolidated POs · 12 manufacturers · $3.2M total</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    {procPhase === 'converted' ? (
+                                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-bold">Converted to ACK</span>
+                                                    ) : procPhase === 'ready-convert' ? (
+                                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-brand-100 dark:bg-brand-500/10 text-brand-700 dark:text-brand-400 font-bold animate-pulse">Ready to Convert</span>
+                                                    ) : (
+                                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold">Reviewing</span>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* PO Line Items Table */}
+                                            <div className="p-4">
+                                                <h4 className="text-xs font-bold text-foreground mb-3 uppercase tracking-wider">Purchase Order Line Items</h4>
+                                                <div className="space-y-2">
+                                                    {PO_LINE_ITEMS.map((po, i) => (
+                                                        <div key={i} className={cn("p-3 rounded-xl border flex items-center justify-between gap-4",
+                                                            po.status === 'lead-time' ? "border-amber-200 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5" : "border-border bg-muted/20"
+                                                        )}>
+                                                            <div className="flex-1 min-w-0">
+                                                                <div className="flex items-center gap-2">
+                                                                    <p className="text-xs font-bold text-foreground">{po.manufacturer}</p>
+                                                                    {po.status === 'lead-time' && (
+                                                                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-200 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold">12wk Lead Time</span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-[10px] text-muted-foreground mt-0.5">{po.items}</p>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 text-right shrink-0">
+                                                                <div>
+                                                                    <p className="text-[10px] text-muted-foreground">PO Amount</p>
+                                                                    <p className="text-xs font-bold text-foreground">{po.poAmount}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] text-muted-foreground">Catalog</p>
+                                                                    <p className="text-xs font-medium text-muted-foreground line-through">{po.catalogPrice}</p>
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-[10px] text-muted-foreground">Savings</p>
+                                                                    <p className="text-xs font-bold text-green-600 dark:text-green-400">{po.savings}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            {/* Price Verification */}
+                                            {(procPhase === 'price-check' || procPhase === 'ready-convert' || procPhase === 'converted') && (
+                                                <div className="mx-4 mb-4 p-4 rounded-xl bg-indigo-50 dark:bg-indigo-500/5 border border-indigo-200 dark:border-indigo-500/20 animate-in fade-in duration-300">
+                                                    <h4 className="text-xs font-bold text-indigo-800 dark:text-indigo-300 mb-3 flex items-center gap-1.5">
+                                                        <DocumentMagnifyingGlassIcon className="h-4 w-4" />
+                                                        Price Verification — Manufacturer Catalogs
+                                                    </h4>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        {PRICE_CHECKS.map((check, i) => (
+                                                            <div key={i} className={cn(
+                                                                "p-2.5 rounded-lg border flex items-center justify-between transition-all duration-300",
+                                                                i < priceChecksVisible
+                                                                    ? check.status === 'pass'
+                                                                        ? "border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5"
+                                                                        : "border-amber-200 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5"
+                                                                    : "border-border bg-muted/20 opacity-40"
+                                                            )}>
+                                                                <div className="flex items-center gap-2">
+                                                                    {i < priceChecksVisible ? (
+                                                                        check.status === 'pass'
+                                                                            ? <CheckCircleIcon className="h-4 w-4 text-green-600 shrink-0" />
+                                                                            : <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 shrink-0" />
+                                                                    ) : (
+                                                                        <div className="h-4 w-4 rounded-full border-2 border-zinc-300 dark:border-zinc-600 shrink-0" />
+                                                                    )}
+                                                                    <span className="text-[11px] font-medium text-foreground">{check.source}</span>
+                                                                </div>
+                                                                {i < priceChecksVisible && (
+                                                                    <span className={cn("text-[10px] font-bold",
+                                                                        check.status === 'pass' ? "text-green-700 dark:text-green-400" : "text-amber-700 dark:text-amber-400"
+                                                                    )}>
+                                                                        {check.match}/{check.match + check.mismatch} matched
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    {priceChecksVisible >= PRICE_CHECKS.length && (
+                                                        <div className="mt-3 p-2 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 animate-in fade-in duration-300">
+                                                            <p className="text-[10px] text-green-700 dark:text-green-300 flex items-center gap-1.5">
+                                                                <CheckCircleIcon className="h-3.5 w-3.5" />
+                                                                <span><strong>Price verification complete.</strong> 45/46 items match contract pricing. 1 volume discount adjustment applied.</span>
+                                                            </p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Convert to ACK / Confirmation */}
+                                            <div className="px-4 py-3 border-t border-border/50 flex items-center justify-between bg-muted/20">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                                        <CurrencyDollarIcon className="h-3.5 w-3.5" />
+                                                        Total: <span className="font-bold text-foreground">$3.2M</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                                        <ClipboardDocumentListIcon className="h-3.5 w-3.5" />
+                                                        <span className="font-medium text-foreground">12 manufacturers</span>
+                                                    </div>
+                                                </div>
+
+                                                {procPhase === 'converted' ? (
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex items-center gap-1.5 text-[10px] text-green-700 dark:text-green-400 font-bold animate-in fade-in duration-300">
+                                                            <CheckCircleIcon className="h-3.5 w-3.5" />
+                                                            PO → ACK Conversion Submitted
+                                                        </div>
+                                                        <button onClick={nextStep} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]">
+                                                            Next Step
+                                                            <ArrowRightIcon className="h-3 w-3" />
+                                                        </button>
+                                                    </div>
+                                                ) : procPhase === 'ready-convert' ? (
+                                                    <button
+                                                        onClick={() => setProcPhase('converted')}
+                                                        className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-bold shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02] animate-pulse ring-2 ring-indigo-400 ring-offset-2 ring-offset-card"
+                                                    >
+                                                        <ArrowsRightLeftIcon className="h-4 w-4" />
+                                                        Convert PO → Acknowledgement
+                                                    </button>
+                                                ) : (
+                                                    <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                                        <ArrowPathIcon className="h-3.5 w-3.5 animate-spin" />
+                                                        Verifying prices...
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* ═══ Continua Step 2.3 — ACK Tracking & Validation (inline) ═══ */}
                                 {isContinua && stepId === '3.3' && ackPhase !== 'idle' && (
                                     <div data-demo-target="ack-tracking-dashboard" className="space-y-4 mb-6">
@@ -1836,9 +2015,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                             <tr
                                                                 className={cn(
                                                                     "group hover:bg-muted/50 transition-all cursor-pointer",
-                                                                    (procPhase === 'highlight' || procPhase === 'lupa-active') && order.id === '#ORD-2055' && "ring-2 ring-brand-400 ring-offset-2 ring-offset-background bg-brand-50/30 dark:bg-brand-500/5 shadow-lg animate-pulse",
-                                                                    procPhase === 'done' && order.id === '#ORD-2055' && isContinua && !clickSimActive && "ring-2 ring-brand-400 ring-offset-2 ring-offset-background bg-brand-50/30 dark:bg-brand-500/5 shadow-lg",
-                                                                    clickSimActive && order.id === '#ORD-2055' && isContinua && "scale-[0.97] ring-2 ring-brand-500 bg-brand-100 dark:bg-brand-500/20 shadow-2xl transition-transform duration-200"
+                                                                    (procPhase === 'highlight' || procPhase === 'lupa-active') && order.id === '#ORD-2055' && "ring-2 ring-brand-400 ring-offset-2 ring-offset-background bg-brand-50/30 dark:bg-brand-500/5 shadow-lg animate-pulse"
                                                                 )}
                                                                 onClick={() => toggleExpand(order.id)}
                                                             >
@@ -1854,11 +2031,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 {order.id === '#ORD-7829' && (
                                                                                     <span className="px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider">
                                                                                         New
-                                                                                    </span>
-                                                                                )}
-                                                                                {isContinua && order.id === '#ORD-2055' && procPhase === 'done' && (
-                                                                                    <span className="px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-[10px] font-bold uppercase tracking-wider animate-in fade-in duration-500">
-                                                                                        PO Generated
                                                                                     </span>
                                                                                 )}
                                                                             </div>
@@ -1976,8 +2148,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                     "group relative bg-card dark:bg-zinc-800 rounded-2xl border transition-all duration-200 overflow-hidden flex flex-col",
                                                                     expandedIds.has(order.id) ? 'border-brand-400/50 ring-1 ring-brand-400/20 shadow-lg' : 'border-border shadow-sm hover:shadow-md',
                                                                     (procPhase === 'highlight' || procPhase === 'lupa-active') && order.id === '#ORD-2055' && isContinua && "ring-2 ring-brand-400 ring-offset-2 ring-offset-background shadow-xl shadow-brand-400/20 animate-pulse scale-[1.02]",
-                                                                    procPhase === 'done' && order.id === '#ORD-2055' && isContinua && !clickSimActive && "ring-2 ring-brand-400 ring-offset-2 ring-offset-background shadow-xl",
-                                                                    clickSimActive && order.id === '#ORD-2055' && isContinua && "scale-[0.96] ring-2 ring-brand-500 bg-brand-100 dark:bg-brand-500/20 shadow-2xl transition-transform duration-200",
                                                                     // Step 1.3: Knoll ACK card highlighting
                                                                     ackPhase === 'alert' && order.id === 'Acknowledgement-8841' && isContinua && "ring-2 ring-red-500 ring-offset-2 ring-offset-background shadow-xl shadow-red-500/20 animate-pulse scale-[1.02]",
                                                                     ackClickSim && order.id === 'Acknowledgement-8841' && isContinua && "scale-[0.96] ring-2 ring-red-500 bg-red-50 dark:bg-red-500/10 shadow-2xl transition-transform duration-200"
@@ -1998,11 +2168,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     {order.id === '#ORD-7829' && (
                                                                                         <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider">
                                                                                             New
-                                                                                        </span>
-                                                                                    )}
-                                                                                    {isContinua && order.id === '#ORD-2055' && procPhase === 'done' && (
-                                                                                        <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 text-[10px] font-bold uppercase tracking-wider animate-in fade-in duration-500">
-                                                                                            PO Generated
                                                                                         </span>
                                                                                     )}
                                                                                     {/* Step 1.3: Validated badges on ACK cards */}
@@ -2074,7 +2239,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     onClick={(e) => { e.stopPropagation(); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
                                                                                     className={cn(
                                                                                         "p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-all",
-                                                                                        clickSimActive && order.id === '#ORD-2055' && isContinua && "bg-brand-300 text-zinc-900 scale-110 ring-2 ring-brand-400 shadow-lg",
                                                                                         ackClickSim && order.id === 'Acknowledgement-8841' && isContinua && "bg-red-500 text-white scale-110 ring-2 ring-red-400 shadow-lg"
                                                                                     )}
                                                                                     title="View Full Details"

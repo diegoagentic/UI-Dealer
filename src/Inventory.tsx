@@ -47,6 +47,8 @@ import {
     ArchiveBoxIcon,
     ArrowRightIcon,
     ArrowPathIcon,
+    ShieldCheckIcon,
+    CheckBadgeIcon,
 } from '@heroicons/react/24/outline';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -225,7 +227,14 @@ const QC_FLAGS = [
     { item: 'Aeron Task Chair (Graphite)', sku: 'HM-AER-GR-002', defect: 'Seat mesh discoloration', severity: 'Minor' as const },
 ]
 
-type ReceivingPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results'
+type ReceivingPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results' | 'approval-chain'
+
+// ─── Approval Chain for Step 3.4 ──────────────────────────────────────────────
+const APPROVAL_STEPS = [
+    { id: 'ai', role: 'AI Quality Agent', detail: 'Auto-validating receiving data against PO specifications...', status: 'pending' as const },
+    { id: 'expert', role: 'Expert — David Park', detail: 'Reviewing QC flags and warranty claims for final sign-off...', status: 'pending' as const },
+    { id: 'dealer', role: 'Dealer — Sara Chen', detail: 'Approve order status change: In Transit → Received & Inspected', status: 'pending' as const },
+]
 
 // ─── Continua Step 3.1: Inventory Health & Forecasting Constants ───────────
 const INVENTORY_HEALTH_AGENTS = [
@@ -332,6 +341,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
     useEffect(() => { rcvPhaseRef.current = rcvPhase; }, [rcvPhase]);
     const [rcvAgents, setRcvAgents] = useState(RECEIVING_AGENTS.map(a => ({ ...a, visible: false, done: false })));
     const [rcvProgress, setRcvProgress] = useState(0);
+    const [approvalSteps, setApprovalSteps] = useState(APPROVAL_STEPS.map(s => ({ ...s })));
 
     // Continua 1.4: orchestration
     const tp14 = CONTINUA_STEP_TIMING['1.4'];
@@ -374,6 +384,26 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
         if (rcvPhase !== 'revealed') return;
         const t = setTimeout(pauseAware(() => setRcvPhase('results')), 1500);
         return () => clearTimeout(t);
+    }, [rcvPhase]);
+
+    // Continua 3.4: approval-chain → auto-approve AI + Expert, wait for Dealer
+    useEffect(() => {
+        if (rcvPhase !== 'approval-chain') return;
+        setApprovalSteps(APPROVAL_STEPS.map(s => ({ ...s })));
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        // AI auto-approves after 1.2s
+        timers.push(setTimeout(pauseAware(() =>
+            setApprovalSteps(prev => prev.map(s => s.id === 'ai' ? { ...s, status: 'approved' as const } : s))
+        ), 1200));
+        // Expert auto-approves after 2.8s
+        timers.push(setTimeout(pauseAware(() =>
+            setApprovalSteps(prev => prev.map(s => s.id === 'expert' ? { ...s, status: 'approved' as const } : s))
+        ), 2800));
+        // Dealer becomes "pending-action" after 3.5s
+        timers.push(setTimeout(pauseAware(() =>
+            setApprovalSteps(prev => prev.map(s => s.id === 'dealer' ? { ...s, status: 'pending-action' as const } : s))
+        ), 3500));
+        return () => timers.forEach(clearTimeout);
     }, [rcvPhase]);
 
     // ─── Continua Step 3.1: Inventory Health & Forecasting ──────────────────────
@@ -1139,9 +1169,111 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                             <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><MapPinIcon className="h-3.5 w-3.5" /><span className="font-medium text-foreground">Zone B, Rack 14</span></div>
                                             <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground"><ChartBarIcon className="h-3.5 w-3.5" />Utilization: <span className="font-medium text-foreground">72%</span></div>
                                         </div>
-                                        <button onClick={nextStep} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]">
+                                        <button onClick={() => setRcvPhase('approval-chain')} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]">
                                             <ClipboardDocumentCheckIcon className="h-3.5 w-3.5" />Confirm Receiving<ArrowRightIcon className="h-3 w-3" />
                                         </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Approval Chain */}
+                        {rcvPhase === 'approval-chain' && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+                                    <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 rounded-lg bg-indigo-600 text-white">
+                                                <ShieldCheckIcon className="h-5 w-5" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-sm font-bold text-foreground">Order Approval Chain</h3>
+                                                <p className="text-[11px] text-muted-foreground mt-0.5">Sequential approval: AI → Expert → Dealer</p>
+                                            </div>
+                                        </div>
+                                        <span className={cn("text-[10px] px-2.5 py-1 rounded-full font-bold",
+                                            approvalSteps.every(s => s.status === 'approved')
+                                                ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400"
+                                                : "bg-indigo-100 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400"
+                                        )}>
+                                            {approvalSteps.filter(s => s.status === 'approved').length}/{approvalSteps.length} Approved
+                                        </span>
+                                    </div>
+
+                                    <div className="p-4 space-y-3">
+                                        {approvalSteps.map((step, i) => (
+                                            <div key={step.id} className={cn(
+                                                "p-3 rounded-xl border flex items-center gap-4 transition-all duration-500",
+                                                step.status === 'approved'
+                                                    ? "border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5"
+                                                    : step.status === 'pending-action'
+                                                        ? "border-brand-400 dark:border-brand-500/40 bg-brand-50 dark:bg-brand-500/5 ring-2 ring-brand-400/30 animate-pulse"
+                                                        : "border-border bg-muted/20 opacity-60"
+                                            )}>
+                                                {/* Status indicator */}
+                                                <div className="shrink-0">
+                                                    {step.status === 'approved' ? (
+                                                        <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center">
+                                                            <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                                                        </div>
+                                                    ) : step.status === 'pending-action' ? (
+                                                        <div className="h-8 w-8 rounded-full bg-brand-100 dark:bg-brand-500/20 flex items-center justify-center">
+                                                            <span className="text-sm font-bold text-brand-700 dark:text-brand-400">{i + 1}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                                                            <ClockIcon className="h-4 w-4 text-muted-foreground" />
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Content */}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-bold text-foreground">{step.role}</p>
+                                                    <p className="text-[10px] text-muted-foreground mt-0.5">{step.detail}</p>
+                                                </div>
+
+                                                {/* Action / Status */}
+                                                <div className="shrink-0">
+                                                    {step.status === 'approved' ? (
+                                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-bold">Approved</span>
+                                                    ) : step.status === 'pending-action' ? (
+                                                        <button
+                                                            onClick={() => {
+                                                                setApprovalSteps(prev => prev.map(s => s.id === 'dealer' ? { ...s, status: 'approved' as const } : s));
+                                                            }}
+                                                            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]"
+                                                        >
+                                                            <CheckBadgeIcon className="h-3.5 w-3.5" />
+                                                            Approve
+                                                        </button>
+                                                    ) : (
+                                                        <span className="text-[10px] px-2.5 py-1 rounded-full bg-muted text-muted-foreground font-medium">Waiting</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Footer with status change + Next Step */}
+                                    <div className="px-4 py-3 border-t border-border/50 flex items-center justify-between bg-muted/20">
+                                        {approvalSteps.every(s => s.status === 'approved') ? (
+                                            <>
+                                                <div className="flex items-center gap-2 text-[10px] text-green-700 dark:text-green-400 font-bold animate-in fade-in duration-300">
+                                                    <CheckCircleIcon className="h-4 w-4" />
+                                                    Order Status: In Transit → <span className="text-foreground">Received & Inspected</span>
+                                                </div>
+                                                <button onClick={nextStep} className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-300 hover:bg-brand-400 dark:bg-brand-400 dark:hover:bg-brand-300 text-zinc-900 text-[11px] font-bold shadow-sm transition-all hover:scale-[1.02]">
+                                                    Next Step
+                                                    <ArrowRightIcon className="h-3 w-3" />
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground w-full">
+                                                <ArrowPathIcon className="h-3.5 w-3.5 animate-spin" />
+                                                Awaiting approval chain completion to update order status...
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
