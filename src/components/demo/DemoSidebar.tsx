@@ -94,6 +94,7 @@ export default function DemoSidebar() {
         activeBorder: 'border-l-white/70',
         dealerBadge: 'border-blue-800/50 bg-blue-900/30 text-blue-400',
         expertBadge: 'border-purple-800/50 bg-purple-900/30 text-purple-400',
+        endUserBadge: 'border-rose-800/50 bg-rose-900/30 text-rose-400',
         collapsedBg: 'bg-zinc-950',
         collapsedText: 'text-zinc-400',
         collapsedBorder: 'border-zinc-800/50',
@@ -130,6 +131,7 @@ export default function DemoSidebar() {
         activeBorder: 'border-l-zinc-900',
         dealerBadge: 'border-blue-200 bg-blue-50 text-blue-700',
         expertBadge: 'border-purple-200 bg-purple-50 text-purple-700',
+        endUserBadge: 'border-rose-200 bg-rose-50 text-rose-700',
         collapsedBg: 'bg-white',
         collapsedText: 'text-zinc-500',
         collapsedBorder: 'border-zinc-200',
@@ -234,7 +236,7 @@ export default function DemoSidebar() {
                                         {(() => {
                                             const label = resolveRoleLabel(step.role, step.app);
                                             return (
-                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Dealer' ? c.dealerBadge : c.expertBadge}`}>
+                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Dealer' ? c.dealerBadge : label === 'End User' ? c.endUserBadge : c.expertBadge}`}>
                                                     {label}
                                                 </span>
                                             );
