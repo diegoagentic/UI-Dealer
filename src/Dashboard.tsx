@@ -1621,8 +1621,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 </div>
             )}
 
-            {/* Main Content — hidden during step 1.8 / 3.5 (fullscreen mobile overlay, COI only) */}
-            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${!isOps && ['1.8', '3.5'].includes(currentStep.id) ? 'hidden' : ''}`}>
+            {/* Main Content — hidden during mobile-only steps (fullscreen mobile overlay) */}
+            <div className={`pt-24 px-4 max-w-7xl mx-auto space-y-6 ${!isOps && ['1.6', '1.8', '2.1', '3.5'].includes(currentStep.id) ? 'hidden' : ''}`}>
                 {/* Page Title & Search */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
