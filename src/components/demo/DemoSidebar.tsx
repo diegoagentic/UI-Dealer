@@ -22,9 +22,10 @@ function resolveRoleLabel(role: string, app: string): string {
     return role;
 }
 
-// Data threads — mini-summaries for completed Continua steps
+// Data threads — mini-summaries for completed steps
 function getStepDataThread(stepId: string): string | null {
     const threads: Record<string, string> = {
+        // Continua
         '1.1': 'Health score 87% — 3 alerts',
         '1.2': '12 items cataloged for reuse',
         '1.3': 'Price verified — $110K savings',
@@ -46,6 +47,19 @@ function getStepDataThread(stepId: string): string | null {
         '4.2': 'Portal published — 82% progress',
         '4.3': '$11,550 reconciled',
         '4.4': '92% satisfaction, AV flagged',
+        // Dupler
+        'd1.1': '45 items extracted — 99.2% OCR accuracy',
+        'd1.2': '40 auto-mapped, 5 exceptions resolved',
+        'd1.3': '$2,140 in discrepancies caught',
+        'd1.4': 'SIFF exported — $187K, 45 items',
+        'd2.1': '35/38 matched — claim CLM-2026-047',
+        'd2.2': '3 zones, 74% capacity — 35 items placed',
+        'd2.3': 'Dock conflict resolved — 5 shipments tracked',
+        'd2.4': '28/30 staged — dispatch confirmed',
+        'd3.1': '$2.8M pipeline — 47 deals synced',
+        'd3.2': '47/47 reconciled — 3 exceptions fixed',
+        'd3.3': '4-section report assembled',
+        'd3.4': 'PDF exported — sent to 3 stakeholders',
     };
     return threads[stepId] || null;
 }
@@ -56,6 +70,8 @@ export default function DemoSidebar() {
     const { theme } = useTheme();
     const STEP_BEHAVIOR = activeProfile.stepBehavior;
     const isContinua = activeProfile.id === 'continua';
+    const isDupler = activeProfile.id === 'dupler';
+    const hasDataThreads = isContinua || isDupler;
 
     // Invert: when app is dark → sidebar is light, when app is light → sidebar is dark
     const isDarkSidebar = theme === 'light';
@@ -260,7 +276,7 @@ export default function DemoSidebar() {
                                             {step.description}
                                         </p>
                                     )}
-                                    {isCompleted && isContinua && getStepDataThread(step.id) && (
+                                    {isCompleted && hasDataThreads && getStepDataThread(step.id) && (
                                         <p className={`text-[8px] italic ${c.textDim} leading-tight`}>
                                             → {getStepDataThread(step.id)}
                                         </p>

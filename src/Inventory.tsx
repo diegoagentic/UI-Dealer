@@ -102,7 +102,7 @@ const BASE_INVENTORY_ITEMS = [
         status: 'Available',
         value: 192.00,
         carbonImpact: 'Low Impact',
-        image: undefined // Test fallback
+        image: 'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?auto=format&fit=crop&q=80&w=800'
     },
     {
         assetName: 'Glass Office Partition',
@@ -124,7 +124,7 @@ const BASE_INVENTORY_ITEMS = [
         status: 'Available',
         value: 192.00,
         carbonImpact: 'Low Impact',
-        image: undefined // Test fallback
+        image: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&q=80&w=800'
     },
     {
         assetName: 'Standing Desk (Motorized)',
@@ -135,7 +135,7 @@ const BASE_INVENTORY_ITEMS = [
         status: 'In Use',
         value: 850.00,
         carbonImpact: 'Medium Impact',
-        image: undefined
+        image: 'https://images.unsplash.com/photo-1593062096033-9a26b09da705?auto=format&fit=crop&q=80&w=800'
     },
     {
         assetName: 'Conference Table (Oak)',

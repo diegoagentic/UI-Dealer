@@ -34,6 +34,9 @@ import ServiceNowSimulation from "./components/simulations/ServiceNowSimulation"
 import SpecializedCatalog from "./components/simulations/SpecializedCatalog"
 import ConversationalSurvey from "./components/simulations/ConversationalSurvey"
 import CRMSimulation from "./components/simulations/CRMSimulation"
+import DuplerPdfProcessor from "./components/simulations/DuplerPdfProcessor"
+import DuplerWarehouse from "./components/simulations/DuplerWarehouse"
+import DuplerReporting from "./components/simulations/DuplerReporting"
 
 import {
   HomeIcon,
@@ -104,6 +107,7 @@ function App() {
 
   // --- SIMULATION CONFIGURATIONS ---
   const isContinua = demoProfile.id === 'continua';
+  const isDupler = demoProfile.id === 'dupler';
   const getSimulationConfig = () => {
     if (!isDemoActive) return { appName: undefined, companyName: undefined, customNavigation: undefined };
 
@@ -113,6 +117,9 @@ function App() {
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
       : currentStep.app === 'crm' ? 'Strata CRM'
+      : currentStep.app === 'dupler-pdf' ? 'SIFF Processor'
+      : currentStep.app === 'dupler-warehouse' ? 'Warehouse Manager'
+      : currentStep.app === 'dupler-reporting' ? 'Analytics Hub'
       : isExpert ? 'Expert Hub'
       : 'Dealer Experience';
     const resolvedCompany = isExpert ? 'Strata Services' : demoProfile.companyName;
@@ -134,8 +141,14 @@ function App() {
       { name: 'CRM', page: 'crm', icon: UserGroupIcon },
       { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
     ];
+    // Dupler profile: 3-tab nav (Dashboard, Inventory, Transactions)
+    const duplerNav = [
+      { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
+      { name: 'Inventory', page: 'inventory', icon: ArchiveBoxIcon },
+      { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
+    ];
 
-    const nav = currentStep.app === 'crm' ? crmNav : isContinua ? continuaNav : expertNav;
+    const nav = currentStep.app === 'crm' ? crmNav : isDupler ? duplerNav : isContinua ? continuaNav : expertNav;
     return { appName: resolvedAppName, companyName: resolvedCompany, customNavigation: nav };
   };
 
@@ -159,6 +172,9 @@ function App() {
       'mac': 'mac',
       'inventory': 'inventory',
       'crm': currentPage === 'dashboard' ? 'dashboard' : 'crm',
+      'dupler-pdf': 'transactions',
+      'dupler-warehouse': 'inventory',
+      'dupler-reporting': 'dashboard',
     };
     return appToTab[currentStep.app] || currentPage;
   };
@@ -213,6 +229,12 @@ function App() {
         return <Inventory onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />;
       case 'crm':
         return <CRMSimulation onNavigate={handleNavigate} activePage={currentPage} />;
+      case 'dupler-pdf':
+        return <DuplerPdfProcessor onNavigate={handleNavigate} />;
+      case 'dupler-warehouse':
+        return <DuplerWarehouse onNavigate={handleNavigate} />;
+      case 'dupler-reporting':
+        return <DuplerReporting onNavigate={handleNavigate} />;
       default:
         return (
           <ExpertHubTransactions

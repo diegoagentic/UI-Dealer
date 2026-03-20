@@ -14,7 +14,8 @@ export type SimulationApp =
     | 'quote-po' | 'dealer-kanban' | 'service-now'
     | 'catalog' | 'survey' | 'ack-detail' | 'order-detail'
     | 'quote-detail' | 'transactions' | 'mac' | 'inventory'
-    | 'crm';
+    | 'crm'
+    | 'dupler-pdf' | 'dupler-warehouse' | 'dupler-reporting';
 
 export interface DemoStep {
     id: string;
@@ -79,7 +80,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
         id: 'dupler',
         name: 'Dupler',
         companyName: 'Dupler',
-        description: 'Custom client demo',
+        description: 'PDF→SIFF, Warehouse & Transit, Unified Reporting',
         icon: '🏢',
         steps: DUPLER_STEPS,
         stepBehavior: DUPLER_STEP_BEHAVIOR,
@@ -88,8 +89,8 @@ export const DEMO_PROFILES: DemoProfile[] = [
     },
     {
         id: 'continua',
-        name: 'Continua (Demo 3)',
-        companyName: 'Continua Interiors',
+        name: 'Continua',
+        companyName: 'Continua',
         description: 'Project lifecycle, inventory intelligence & sustainability',
         icon: '🏗️',
         steps: CONTINUA_DEMO_STEPS,

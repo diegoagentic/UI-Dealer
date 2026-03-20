@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Continua Interiors — Demo Profile (Demo 3)
+// Continua — Demo Profile
 // Workplace integrator: Furniture + AV + Architectural solutions.
 // MillerKnoll Certified Dealer | 200+ manufacturers | Own fleet & installers
 // Multi-location warehousing with proprietary asset management & AI platform.

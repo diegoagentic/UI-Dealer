@@ -2737,7 +2737,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     {/* Award Narrative */}
                                     <div className="mx-4 mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20">
                                         <h4 className="text-xs font-bold text-amber-800 dark:text-amber-300 mb-1.5 flex items-center gap-1.5"><SparklesIcon className="h-3.5 w-3.5" />AI-Generated Award Narrative</h4>
-                                        <p className="text-[10px] text-amber-700 dark:text-amber-400 italic leading-relaxed">"Continua Interiors' UAL HQ project exemplifies circular economy principles in commercial interiors. Through systematic reuse, refurbishment, and material recovery, the project diverted 194 tons from landfill while achieving a 78% reduction in embodied carbon — setting a new benchmark for sustainable workplace transformation."</p>
+                                        <p className="text-[10px] text-amber-700 dark:text-amber-400 italic leading-relaxed">"Continua's UAL HQ project exemplifies circular economy principles in commercial interiors. Through systematic reuse, refurbishment, and material recovery, the project diverted 194 tons from landfill while achieving a 78% reduction in embodied carbon — setting a new benchmark for sustainable workplace transformation."</p>
                                     </div>
 
                                     {/* Auto-advance footer */}
