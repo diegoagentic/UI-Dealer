@@ -53,7 +53,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Price Verification Engine',
         description: 'PriceVerificationAgent scans 200+ manufacturer price lists (Q1 updates). Detects: 14 items in inventory with outdated cost basis (price increases). 3 consignment items from Herman Miller with 90-day review pending. AI recalculates margins: average 34% → recommends adjusting 6 items where margin <25%. Report with suggested price updates sent to expert.',
         app: 'dealer-kanban',
-        role: 'System',
+        role: 'Facility Manager',
         highlightId: 'price-verification-engine',
     },
     {
@@ -63,7 +63,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Multi-Location Sync',
         description: 'LocationSyncAgent synchronizes 3 warehouses + 2 active job sites in real-time. Tracking: 45 items in-transit (Chicago→project site), 12 pending QC (Minneapolis), 8 allocated but not shipped (Madison). AI optimizes routing: consolidate 2 deliveries to same project site — savings $1,800 in freight. Map view with status by location.',
         app: 'inventory',
-        role: 'System',
+        role: 'Facility Manager',
         highlightId: 'multi-location-sync',
     },
     {
@@ -84,7 +84,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Client Review & Approval',
         description: 'UAL project manager (Emily Chen) receives a consolidated Inventory Intelligence Report covering all changes: warehouse capacity optimized (120 items relocated, $4,200/mo savings), reuse assessment cataloged (180 items, $89K savings), prices verified (14 updated, 6 margin flags), locations synced ($1,800 freight saved), consignment decisions processed. End user reviews each section with AI confidence scores, then signs off digitally.',
         app: 'dashboard',
-        role: 'End User',
+        role: 'Facility User',
         highlightId: 'mobile-client-review',
     },
 
@@ -100,7 +100,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Service Request Intake',
         description: 'Carlos Rivera (Facilities Coordinator) reports a broken Aeron chair (gas cylinder failure — safety concern) and a flickering desk lamp in Office 3-214 via the Service Center. ServiceIntakeAgent extracts request details, identifies affected assets (AST-1847, AST-2103), cross-references warranty coverage, and classifies as Priority: HIGH with safety flag. Request REQ-FM-2026-018 created.',
         app: 'dashboard',
-        role: 'End User',
+        role: 'Facility User',
         highlightId: 'mobile-service-request',
     },
     {
@@ -130,7 +130,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Quick Action — Office Relocation',
         description: 'While the chair replacement is in progress, Carlos needs a workspace. Sara Chen (dealer) opens Quick Transfer to relocate Carlos\'s workstation assets (laptop dock, 2 monitors, keyboard, personal items) from Office 3-214 to Office 3-216 (vacant). Drag-and-drop interface with AI ergonomic arrangement suggestion. Batch move committed — inventory locations update in real-time, Carlos notified of temporary workspace.',
         app: 'inventory',
-        role: 'Dealer',
+        role: 'Facility Manager',
         highlightId: 'fm-quick-relocation',
     },
     {
@@ -156,7 +156,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Project Intake & Scope',
         description: 'Corporate client submits workspace project request through the Strata app — new HQ with 8 floors, 1,200 workstations, 40 conference rooms, 2 cafeterias, AV integration. Budget estimate $3.2M. Request triggers AI-powered project intake pipeline.',
         app: 'crm',
-        role: 'End User',
+        role: 'Facility Manager',
         highlightId: 'project-intake',
     },
     {
@@ -186,7 +186,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Approval Chain',
         description: 'Sequential approval for PO-to-ACK conversion: AI Compliance Agent auto-validates data integrity and contract terms, Expert David Park reviews manufacturer confirmations and volume discounts, Dealer Sara Chen gives final approval. 3-level chain with visual progression.',
         app: 'transactions',
-        role: 'Dealer',
+        role: 'Facility Manager',
         highlightId: 'approval-chain-progress',
     },
     {
@@ -222,7 +222,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Sustainability Dashboard',
         description: 'SustainabilityMetricsAgent compiles UAL project impact: 194 tons diverted from landfill, 78% embodied carbon reduction, 2,000 items refurbished. Dashboard charts: carbon savings by category, tonnage by material type, cost savings from reuse program. AI generates narrative for Metropolis Award submission. Auto-benchmarks against industry standards.',
         app: 'dashboard',
-        role: 'System',
+        role: 'Facility Manager',
         highlightId: 'sustainability-dashboard',
     },
     {
@@ -232,7 +232,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Client Project Portal',
         description: 'ClientPortalAgent generates view for facilities team: project timeline (82% complete), budget tracking ($2.65M of $3.2M invoiced), installation schedule by floor, open items (3 pending deliveries, 1 warranty claim). Single-pane-of-glass — "one contact, one contract, one invoice". Client change requests route to PM automatically.',
         app: 'expert-hub',
-        role: 'Dealer',
+        role: 'Facility Manager',
         highlightId: 'client-project-portal',
     },
     {
@@ -252,7 +252,7 @@ export const CONTINUA_DEMO_STEPS: DemoStep[] = [
         title: 'Post-Occupancy Intelligence',
         description: 'PostOccupancyAgent deploys conversational survey to floor 4 occupants (installed 60 days ago). Topics: workspace comfort, furniture ergonomics, AV quality, temperature, noise. AI analyzes 85 responses: 92% overall satisfaction, task chairs rated 4.6/5, conference room AV 3.8/5 (suggestion: recalibrate mic arrays). Auto-generates report for facilities team.',
         app: 'survey',
-        role: 'End User',
+        role: 'Facility User',
         highlightId: 'post-occupancy-survey',
     },
 ];
@@ -454,7 +454,7 @@ export const CONTINUA_STEP_TIMING: Record<string, StepTiming> = {
     '1.1': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800,  agentDone: 500,  breathing: 1500, resultsDur: 0 },
     '1.2': { notifDelay: 2500, notifDuration: 7000, agentStagger: 1000, agentDone: 700,  breathing: 1800, resultsDur: 0 },
     '1.3': { notifDelay: 3000, notifDuration: 7000, agentStagger: 1200, agentDone: 800,  breathing: 2000, resultsDur: 0 },
-    '1.4': { notifDelay: 1500, notifDuration: 4000, agentStagger: 600,  agentDone: 400,  breathing: 800,  resultsDur: 8000 },
+    '1.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 10000 },
     '1.5': { notifDelay: 2500, notifDuration: 7000, agentStagger: 900,  agentDone: 600,  breathing: 1500, resultsDur: 0 },
     '1.6': { notifDelay: 2000, notifDuration: 6000, agentStagger: 0,    agentDone: 0,    breathing: 0,    resultsDur: 0 },
     // Flow 2: FM & Service Center

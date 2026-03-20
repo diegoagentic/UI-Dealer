@@ -15,8 +15,10 @@ import { useDemoProfile } from '../../context/DemoProfileContext';
 // Apps belonging to Expert Hub — System steps in these show as "Expert"
 const EXPERT_HUB_APPS = ['expert-hub', 'ack-detail', 'transactions', 'mac', 'quote-detail'];
 
-function resolveRoleLabel(role: string, app: string): string {
+function resolveRoleLabel(role: string, app: string, profileId?: string): string {
     if (role === 'System') {
+        // Continua: all System steps are backend processing within Expert Hub
+        if (profileId === 'continua') return 'Expert';
         return EXPERT_HUB_APPS.includes(app) ? 'Expert' : 'Dealer';
     }
     return role;
@@ -108,6 +110,8 @@ export default function DemoSidebar() {
         connectorPending: 'bg-zinc-800',
         activeBorder: 'border-l-white/70',
         dealerBadge: 'border-blue-800/50 bg-blue-900/30 text-blue-400',
+        fmBadge: 'border-teal-800/50 bg-teal-900/30 text-teal-400',
+        fuBadge: 'border-amber-800/50 bg-amber-900/30 text-amber-400',
         expertBadge: 'border-purple-800/50 bg-purple-900/30 text-purple-400',
         endUserBadge: 'border-rose-800/50 bg-rose-900/30 text-rose-400',
         collapsedBg: 'bg-zinc-950',
@@ -145,6 +149,8 @@ export default function DemoSidebar() {
         connectorPending: 'bg-zinc-200',
         activeBorder: 'border-l-zinc-900',
         dealerBadge: 'border-blue-200 bg-blue-50 text-blue-700',
+        fmBadge: 'border-teal-200 bg-teal-50 text-teal-700',
+        fuBadge: 'border-amber-200 bg-amber-50 text-amber-700',
         expertBadge: 'border-purple-200 bg-purple-50 text-purple-700',
         endUserBadge: 'border-rose-200 bg-rose-50 text-rose-700',
         collapsedBg: 'bg-white',
@@ -249,18 +255,13 @@ export default function DemoSidebar() {
                                             STEP {step.id.replace(/^d/, '')}
                                         </span>
                                         {(() => {
-                                            const label = resolveRoleLabel(step.role, step.app);
+                                            const label = resolveRoleLabel(step.role, step.app, activeProfile.id);
                                             return (
-                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Dealer' ? c.dealerBadge : label === 'End User' ? c.endUserBadge : c.expertBadge}`}>
-                                                    {label}
+                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Facility Manager' ? c.fmBadge : label === 'Facility User' ? c.fuBadge : label === 'Dealer' ? c.dealerBadge : label === 'End User' ? c.endUserBadge : c.expertBadge}`}>
+                                                    {label === 'Facility Manager' ? 'FACILITY MANAGER' : label === 'Facility User' ? 'FACILITY USER' : label}
                                                 </span>
                                             );
                                         })()}
-                                        {(step.id.startsWith('2.') || step.id === '4.4') && isContinua && (
-                                            <span className={`text-[9px] px-1.5 py-0.5 rounded-sm border ${isDarkSidebar ? 'border-blue-800/50 bg-blue-900/30 text-blue-400' : 'border-blue-200 bg-blue-50 text-blue-700'} font-bold`}>
-                                                + FM
-                                            </span>
-                                        )}
                                         {STEP_BEHAVIOR[step.id]?.mode === 'auto' && (
                                             <span className={`text-[9px] px-1 py-0.5 rounded flex items-center gap-0.5 ${isActive ? `${c.bgBadgeActive} ${c.textBadgeActive}` : `${c.bgBadge} ${c.textBadge}`}`}>
                                                 <Loader2 size={8} className={isActive ? 'animate-spin' : ''} />

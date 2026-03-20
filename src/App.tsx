@@ -113,7 +113,17 @@ function App() {
 
     // Standardized app names and company per role
     const isExpert = ['expert-hub', 'dealer-kanban', 'ack-detail', 'transactions', 'mac', 'quote-detail'].includes(currentStep.app);
-    const resolvedAppName = currentStep.app === 'email-marketplace' ? 'Wells Fargo Mail'
+
+    // Continua: resolve appName by role (not app) for consistency
+    const continuaAppName = currentStep.role === 'Expert' || currentStep.role === 'System' ? 'Expert Hub'
+      : currentStep.role === 'Facility Manager' ? 'Facility Manager'
+      : currentStep.role === 'Facility User' ? 'Facility User'
+      : 'Expert Hub';
+    const continuaCompany = currentStep.role === 'Expert' || currentStep.role === 'System' ? 'Strata Services'
+      : demoProfile.companyName;
+
+    const resolvedAppName = isContinua ? continuaAppName
+      : currentStep.app === 'email-marketplace' ? 'Wells Fargo Mail'
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
       : currentStep.app === 'crm' ? 'Strata CRM'
@@ -122,7 +132,7 @@ function App() {
       : currentStep.app === 'dupler-reporting' ? 'Analytics Hub'
       : isExpert ? 'Expert Hub'
       : 'Dealer Experience';
-    const resolvedCompany = isExpert ? 'Strata Services' : demoProfile.companyName;
+    const resolvedCompany = isContinua ? continuaCompany : isExpert ? 'Strata Services' : demoProfile.companyName;
 
     // Continua profile: 4-tab nav including Inventory with "Connected" badge
     const continuaNav = [
