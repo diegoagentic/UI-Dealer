@@ -45,10 +45,10 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
                 </div>
             </div>
 
-            {/* Primary Metrics - Row 1 */}
+            {/* Primary Metrics - Row 1: Inventory Health (hero) + Category Donut */}
             <div className="grid grid-cols-1 xl:grid-cols-4 gap-6 animate-in fade-in zoom-in-95 duration-300">
                 <div className="xl:col-span-3">
-                    <SalesAreaChart period={period} />
+                    <InventoryHealthChart period={period} />
                 </div>
                 <div className="xl:col-span-1">
                     <CategoryDonutChart period={period} />
@@ -57,6 +57,9 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
 
             {/* Complementary Metrics - Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-300 delay-100">
+                <div className="xl:col-span-2">
+                    <SalesAreaChart period={period} />
+                </div>
                 <div className="xl:col-span-1">
                     <FunnelBarChart period={period} />
                 </div>
@@ -66,17 +69,14 @@ export default function DashboardMetricsGrid({ selectedClient }: DashboardMetric
                 <div className="xl:col-span-1">
                     <TeamWorkloadChart period={period} />
                 </div>
-                <div className="xl:col-span-2">
-                    <MarginTrendChart period={period} />
-                </div>
                 <div className="xl:col-span-1">
                     <QuotePipelineChart period={period} />
                 </div>
                 <div className="xl:col-span-2">
-                    <ClientTreemapChart period={period} />
+                    <MarginTrendChart period={period} />
                 </div>
                 <div className="xl:col-span-1">
-                    <InventoryHealthChart period={period} />
+                    <ClientTreemapChart period={period} />
                 </div>
             </div>
         </div>

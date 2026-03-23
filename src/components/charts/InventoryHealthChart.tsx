@@ -27,7 +27,7 @@ const dataByPeriod: Record<DashMetricsPeriod, { name: string; available: number;
 export function InventoryHealthChart({ period = 'Month' }: { period?: DashMetricsPeriod }) {
     const data = dataByPeriod[period];
     return (
-        <div className="h-[300px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
+        <div className="h-[350px] w-full bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col">
             <div className="flex items-center justify-between mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Inventory Health</h3>

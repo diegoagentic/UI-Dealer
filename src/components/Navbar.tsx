@@ -60,6 +60,7 @@ function resolveProfileKey(role: string | undefined, app: string | undefined): s
     if (role === 'System') {
         // System steps inherit the human profile of their parent app
         if (app === 'crm') return 'Sales Rep';
+        if (app?.startsWith('dupler-')) return 'Expert';
         return EXPERT_HUB_APPS.includes(app || '') ? 'Expert' : 'Dealer';
     }
     return 'Dealer';

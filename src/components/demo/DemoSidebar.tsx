@@ -60,10 +60,10 @@ function getStepDataThread(stepId: string): string | null {
         'd2.4': '3 warehouses synced — dock resolved, $1,200 saved',
         'd2.5': '3 claims processed — $2,770 credits',
         'd2.6': 'Sarah Chen approved — dispatch confirmed Thu 8AM',
-        'd3.1': '$2.1M pipeline — 38 deals synced',
-        'd3.2': '38/38 reconciled — 3 exceptions fixed',
-        'd3.3': '4-section report assembled',
-        'd3.4': 'PDF exported — sent to Randy and Tara',
+        'd3.1': '1,840 items synced — health score 78/100',
+        'd3.2': '97.2% stock accuracy — 3 discrepancies fixed',
+        'd3.3': 'Inventory health report assembled',
+        'd3.4': 'Report exported — sent to Randy and Tara',
     };
     return threads[stepId] || null;
 }

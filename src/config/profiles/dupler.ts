@@ -103,40 +103,40 @@ export const DUPLER_STEPS: DemoStep[] = [
         highlightId: 'mobile-client-review',
     },
 
-    // ── Flow 3: Unified Reporting & Analytics ─────────────────────────────────
+    // ── Flow 3: Inventory Intelligence & Reporting ────────────────────────────
     {
         id: 'd3.1',
         groupId: 3,
-        groupTitle: 'Flow 3: Unified Reporting & Analytics',
-        title: 'Dual-System Data Sync',
-        description: 'HubSpot sync: 38 deals, $2.1M weighted pipeline. Core (SCS) sync: 9 active projects, $890K receivables. AI projects Q2 close rate at 31% based on 14-month historical patterns.',
+        groupTitle: 'Flow 3: Inventory Intelligence & Reporting',
+        title: 'Inventory Data Sync',
+        description: 'Syncing 1,840 items across 3 warehouses. Stock availability computed by category. 9 active POs tracked ($890K). Inventory health score: 78/100.',
         app: 'dupler-reporting',
         role: 'System',
     },
     {
         id: 'd3.2',
         groupId: 3,
-        groupTitle: 'Flow 3: Unified Reporting & Analytics',
-        title: 'Reconciliation & Expert Review',
-        description: 'AI reconciles HubSpot vs Core (SCS): 35/38 deals matched (92.1%). Expert resolves 3 discrepancies: 1 duplicate deal, 1 amount mismatch ($3,800 discount applied post-close in Core), 1 invoice without linked deal. KPIs: DSO 45d, Aging 30+ $210K.',
+        groupTitle: 'Flow 3: Inventory Intelligence & Reporting',
+        title: 'Inventory Reconciliation',
+        description: 'Physical vs system count: 97.2% match. 3 discrepancies found: count mismatch (Acuity Chairs), location error (Stride Bench), missing item (Park Table relocated). 5 categories below reorder point.',
         app: 'dupler-reporting',
         role: 'Expert',
     },
     {
         id: 'd3.3',
         groupId: 3,
-        groupTitle: 'Flow 3: Unified Reporting & Analytics',
-        title: 'AI Report Assembly',
-        description: 'AI assembles executive report from reconciled data: Pipeline Health, Operations Summary, Financial Reconciliation, AI Recommendations. PDF-ready layout generated.',
+        groupTitle: 'Flow 3: Inventory Intelligence & Reporting',
+        title: 'Inventory Health Report',
+        description: 'Building inventory intelligence report: stock availability by category, warehouse capacity forecast (Columbus 72%→89%), backorder analysis, 3 AI optimization recommendations.',
         app: 'dupler-reporting',
         role: 'System',
     },
     {
         id: 'd3.4',
         groupId: 3,
-        groupTitle: 'Flow 3: Unified Reporting & Analytics',
-        title: 'Executive Report & Distribution',
-        description: 'Dealer reviews 4-section report with drill-down. 3 AI recommendations: consolidate Allsteel + Kimball deliveries ($950 freight savings), follow-up inactive Mercy Health deal, margin alert on 3 National items below 25% threshold. Export PDF to Randy and Tara.',
+        groupTitle: 'Flow 3: Inventory Intelligence & Reporting',
+        title: 'Report Review & Distribution',
+        description: 'Dealer reviews inventory intelligence report with drill-down. 3 AI recommendations: reorder Acuity Chairs, relocate 85 items ($3,600/mo savings), 5 EOL SKUs for clearance ($8,450). Export PDF to Randy and Tara.',
         app: 'dupler-reporting',
         role: 'Dealer',
     },
@@ -159,11 +159,11 @@ export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     'd2.5': { mode: 'interactive', userAction: 'Review 3 vendor claims ($2,770 credits) and 4 warranty alerts. Click "Process Claims".' },
     'd2.6': { mode: 'interactive', userAction: 'Sarah Chen (Dealer) reviews consolidated report. Verify staging checklist, then click "Approve All & Dispatch".' },
 
-    // Flow 3: Unified Reporting
-    'd3.1': { mode: 'auto', duration: 10, aiSummary: 'Syncing HubSpot pipeline (38 deals, $2.1M) + Core (SCS) operations (9 projects, $890K receivables)...' },
-    'd3.2': { mode: 'interactive', userAction: 'Review reconciliation: 35/38 matched, 3 exceptions. Resolve discrepancies, then click "Acknowledge & Continue".' },
-    'd3.3': { mode: 'auto', duration: 8, aiSummary: 'Assembling executive report — Pipeline Health, Operations, Reconciliation, AI Recommendations...' },
-    'd3.4': { mode: 'interactive', userAction: 'Review executive report sections. Click "Export PDF & Send to Team" to distribute.' },
+    // Flow 3: Inventory Intelligence & Reporting
+    'd3.1': { mode: 'auto', duration: 10, aiSummary: 'Syncing inventory data — 1,840 items across 3 warehouses, 9 active POs ($890K)...' },
+    'd3.2': { mode: 'interactive', userAction: 'Review inventory reconciliation: 97.2% match, 3 discrepancies. Resolve each, then click "Acknowledge & Continue".' },
+    'd3.3': { mode: 'auto', duration: 8, aiSummary: 'Assembling inventory health report — stock availability, capacity forecast, backorder analysis, AI recommendations...' },
+    'd3.4': { mode: 'interactive', userAction: 'Review inventory intelligence report sections. Click "Export PDF & Send to Team" to distribute.' },
 };
 
 // ─── Step Messages (AI Agent Progress) ───────────────────────────────────────
@@ -236,30 +236,30 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
         'Dispatch confirmed: Interior Installations, Thursday 8AM',
     ],
 
-    // Flow 3
+    // Flow 3: Inventory Intelligence
     'd3.1': [
-        'HubSpotSyncAgent: connecting pipeline API — authenticated...',
-        '38 active deals loaded — $2.1M weighted pipeline value',
-        'CoreSyncAgent: pulling operations data — 9 projects, $890K receivables',
-        'AIProjector: Q2 close rate 31% — based on 14-month pattern analysis',
+        'WarehouseSync: scanning 1,840 items across 3 warehouses...',
+        'POTracker: 9 active POs — $890K receivables',
+        'StockAnalyzer: computing availability by category',
+        'HealthScorer: inventory health score 78/100',
     ],
     'd3.2': [
-        'ReconciliationAgent: matching HubSpot deals to Core (SCS) invoices...',
-        '35/38 deals auto-matched — 92.1% reconciliation rate',
-        '3 discrepancies identified: duplicate, amount mismatch, missing link',
-        'KPI calculation complete: DSO 45d, Aging 30+ $210K, On-time 89%',
+        'CountVerifier: physical vs system — 97.2% match',
+        'LocationChecker: 3 items in wrong location',
+        'StockAlertEngine: 5 categories below reorder point',
+        'KPICalculator: fill rate 89%, turnover 4.8×',
     ],
     'd3.3': [
-        'ReportAssembler: building Pipeline Health section...',
-        'ChartGenerator: creating funnel, KPI cards, trend visualizations',
-        'InsightEngine: analyzing patterns — 3 actionable recommendations found',
-        'Executive report assembled — 4 sections, PDF-ready',
+        'HealthReporter: building stock availability section...',
+        'TrendAnalyzer: computing 6-month category trends',
+        'InsightEngine: 3 inventory optimization recommendations',
+        'Report assembled — 4 sections, PDF-ready',
     ],
     'd3.4': [
-        'Report ready for distribution — 4 interactive sections',
-        'AI Recommendation 1: Consolidate Allsteel + Kimball deliveries → $950 savings',
-        'AI Recommendation 2: Mercy Health Phase 3 inactive 14 days → follow-up',
-        'AI Recommendation 3: 3 National items below 25% margin threshold — review pricing',
+        'Report ready — 4 interactive sections',
+        'AI Rec 1: Reorder Acuity Chairs — stock below safety level',
+        'AI Rec 2: Relocate 85 items Columbus → Cincinnati — $3,600/mo',
+        'AI Rec 3: 5 EOL SKUs — mark for clearance ($8,450)',
     ],
 };
 

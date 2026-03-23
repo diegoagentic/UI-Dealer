@@ -62,6 +62,7 @@ import AgentPipelineStrip from './components/simulations/AgentPipelineStrip'
 import DemoAvatar, { AIAgentAvatar } from './components/simulations/DemoAvatars'
 import MobileDeviceFrame from './components/simulations/MobileDeviceFrame'
 import ConfidenceScoreBadge from './components/widgets/ConfidenceScoreBadge'
+import DuplerReporting, { DuplerReportingNotification } from './components/simulations/DuplerReporting'
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -586,6 +587,8 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 setMainTab('your_tools');
                 setIsCustomizeHighlighted(true);
                 setTimeout(() => setIsCustomizeHighlighted(false), 4000);
+            } else if (e.detail === 'dupler-switch-to-metrics') {
+                setMainTab('metrics');
             }
         };
         window.addEventListener('demo-highlight', handleHighlight as EventListener);
@@ -3332,6 +3335,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {
                     mainTab === 'follow_up' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Dupler Flow 3: Notification card → switch to Metrics */}
+                            {currentStep.id.startsWith('d3.') && (
+                                <DuplerReportingNotification onSwitchToMetrics={() => setMainTab('metrics')} />
+                            )}
                             {/* New Section: Urgent Actions & Recent Activity */}
                             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                 {/* Left Column: Urgent Actions */}
@@ -4368,6 +4375,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {
                     mainTab === 'metrics' && (
                         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            {/* Dupler Flow 3: Processing renders inside Metrics tab */}
+                            {currentStep.id.startsWith('d3.') && (
+                                <DuplerReporting onNavigate={onNavigate} />
+                            )}
                             <DashboardMetricsGrid selectedClient={selectedClient} />
                         </div>
                     )

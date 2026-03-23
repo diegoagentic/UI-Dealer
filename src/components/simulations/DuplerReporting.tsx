@@ -1,6 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Dupler — Flow 3: Unified Reporting & Analytics
-// Steps: d3.1 (Sync), d3.2 (Reconciliation), d3.3 (Report Assembly), d3.4 (Distribution)
+// Dupler — Flow 3: Inventory Intelligence & Reporting
+// Steps: d3.1 (Inventory Sync), d3.2 (Reconciliation), d3.3 (Report Assembly), d3.4 (Distribution)
+// Renders INSIDE Dashboard.tsx — notification in Follow Up, processing in Metrics tab
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useRef, useCallback } from 'react';
@@ -20,9 +21,13 @@ import {
     ChevronUpIcon,
     PaperAirplaneIcon,
     LightBulbIcon,
+    CubeIcon,
+    ArchiveBoxIcon,
+    MapPinIcon,
+    TruckIcon,
 } from '@heroicons/react/24/outline';
 import { DUPLER_STEP_TIMING, type DuplerStepTiming } from '../../config/profiles/dupler';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -33,72 +38,67 @@ type ReportPhase = 'idle' | 'notification' | 'revealed';
 
 interface AgentVis { name: string; detail: string; visible: boolean; done: boolean; }
 
-// ─── Mock Data ───────────────────────────────────────────────────────────────
+// ─── Mock Data — Inventory-Oriented ─────────────────────────────────────────
 
-const FUNNEL_DATA = [
-    { stage: 'Prospect', count: 14, value: 680000, color: '#818cf8' },
-    { stage: 'Proposal', count: 11, value: 540000, color: '#6366f1' },
-    { stage: 'Negotiation', count: 8, value: 520000, color: '#4f46e5' },
-    { stage: 'Closed Won', count: 5, value: 360000, color: '#22c55e' },
+// d3.1 — Inventory Health KPIs
+interface KPIMetric { label: string; value: string; trend: string; trendUp: boolean; }
+
+const INVENTORY_KPIS: KPIMetric[] = [
+    { label: 'Total Stock Value', value: '$1.2M', trend: '+8% vs Q1', trendUp: true },
+    { label: 'Fill Rate', value: '89%', trend: '+3% vs Q1', trendUp: true },
+    { label: 'Backorder Items', value: '42', trend: '-12 vs Q1', trendUp: true },
+    { label: 'Warehouse Utilization', value: '68%', trend: '+5% vs Q1', trendUp: false },
 ];
 
-interface KPIMetric {
-    label: string;
-    value: string;
-    trend: string;
-    trendUp: boolean;
-}
-
-const KPI_METRICS: KPIMetric[] = [
-    { label: 'Pipeline Value', value: '$2.1M', trend: '+12% vs Q1', trendUp: true },
-    { label: 'Active Deals', value: '38', trend: '+5 this month', trendUp: true },
-    { label: 'Close Rate', value: '31%', trend: '+2% vs avg', trendUp: true },
-    { label: 'Avg Deal Size', value: '$55.3K', trend: '-3% vs Q1', trendUp: false },
+const INVENTORY_BY_CATEGORY = [
+    { name: 'Seating', available: 400, reserved: 240, backordered: 100, color: '#10b981' },
+    { name: 'Desks', available: 300, reserved: 139, backordered: 50, color: '#6366f1' },
+    { name: 'Storage', available: 200, reserved: 980, backordered: 200, color: '#f59e0b' },
+    { name: 'Tables', available: 278, reserved: 390, backordered: 80, color: '#8b5cf6' },
+    { name: 'Access.', available: 189, reserved: 480, backordered: 20, color: '#ec4899' },
 ];
 
-const OPS_KPIS: KPIMetric[] = [
-    { label: 'DSO', value: '45 days', trend: '-3 days vs Q1', trendUp: true },
-    { label: 'Aging 30+', value: '$210K', trend: '-$45K vs Q1', trendUp: true },
-    { label: 'On-Time Delivery', value: '89%', trend: '+2% vs Q1', trendUp: true },
-    { label: 'Avg Margin', value: '29.8%', trend: '-0.6% vs Q1', trendUp: false },
+// d3.2 — Reconciliation
+const RECON_KPIS: KPIMetric[] = [
+    { label: 'Stock Accuracy', value: '97.2%', trend: '+0.8% vs Q1', trendUp: true },
+    { label: 'Turnover Rate', value: '4.8×', trend: '+0.3 vs Q1', trendUp: true },
+    { label: 'Fill Rate', value: '89%', trend: '+3% vs Q1', trendUp: true },
+    { label: 'Backorder Rate', value: '3.2%', trend: '-0.5% vs Q1', trendUp: true },
 ];
 
-interface CrossSystemAlert {
+interface InventoryDiscrepancy {
     id: string;
-    type: 'duplicate' | 'amount-mismatch' | 'missing-link';
-    hubspotRef: string;
-    coreRef: string;
+    type: 'count-mismatch' | 'location-error' | 'missing-item';
+    item: string;
     detail: string;
     aiSuggestion: string;
 }
 
-const CROSS_SYSTEM_ALERTS: CrossSystemAlert[] = [
+const INVENTORY_DISCREPANCIES: InventoryDiscrepancy[] = [
     {
-        id: 'csa-1',
-        type: 'duplicate',
-        hubspotRef: 'HS-DUP-0041',
-        coreRef: 'HS-DUP-0041-B',
-        detail: 'Deal "Mercy Health Phase 2" appears twice in HubSpot — created by Tara and Carolyn on same day.',
-        aiSuggestion: 'Merge into HS-DUP-0041 (higher activity). Archive duplicate.',
+        id: 'disc-1',
+        type: 'count-mismatch',
+        item: 'Allsteel Acuity Task Chairs',
+        detail: 'System count: 48 units. Physical count: 45 units. 3 unaccounted at Columbus Main warehouse.',
+        aiSuggestion: 'Adjust system to 45. Cross-check recent shipments — likely SH-003 (3 chairs delivered to Mercy Health site not yet deducted).',
     },
     {
-        id: 'csa-2',
-        type: 'amount-mismatch',
-        hubspotRef: 'HS-DUP-0039',
-        coreRef: 'CORE-PRJ-0039',
-        detail: 'HubSpot: $18,400 vs Core: $14,600. Compass discount applied in Core (SCS) after deal closed.',
-        aiSuggestion: 'Update HubSpot to $14,600 to match Core (discount $3,800 applied post-close).',
+        id: 'disc-2',
+        type: 'location-error',
+        item: 'Allsteel Stride Bench 60"',
+        detail: 'System: Bay A, Rack 3 at Columbus. Physical scan: Bay C, Rack 7. 4 units in wrong location.',
+        aiSuggestion: 'Update location to Bay C, Rack 7. Likely moved during Mercy Health Phase 2 staging.',
     },
     {
-        id: 'csa-3',
-        type: 'missing-link',
-        hubspotRef: '—',
-        coreRef: 'CORE-INV-2026-118',
-        detail: 'Invoice $6,250 in Core has no linked deal in HubSpot. Customer: Apex Business Interiors.',
-        aiSuggestion: 'Link to HS-DUP-0045 (Apex Business Interiors, matching amount, open stage).',
+        id: 'disc-3',
+        type: 'missing-item',
+        item: 'Allsteel Park Collaborative Table',
+        detail: 'Not found at Columbus Main. Last scanned 12 days ago. 1 unit, value $2,100.',
+        aiSuggestion: 'Item relocated to Cincinnati Overflow per transfer TRF-2026-018. Update location record.',
     },
 ];
 
+// d3.3 — Report Sections
 interface ReportSection {
     id: string;
     title: string;
@@ -107,12 +107,13 @@ interface ReportSection {
 }
 
 const REPORT_SECTIONS: ReportSection[] = [
-    { id: 'pipeline', title: 'Pipeline Health', subtitle: 'Funnel analysis, projections & deal velocity', icon: <ChartBarIcon className="h-4 w-4" /> },
-    { id: 'ops', title: 'Operations Summary', subtitle: 'Active projects, delivery status & inventory', icon: <DocumentChartBarIcon className="h-4 w-4" /> },
-    { id: 'finance', title: 'Financial Reconciliation', subtitle: '38/38 matched, 3 exceptions resolved', icon: <ArrowsRightLeftIcon className="h-4 w-4" /> },
-    { id: 'insights', title: 'AI Recommendations', subtitle: '3 actionable insights from cross-system analysis', icon: <LightBulbIcon className="h-4 w-4" /> },
+    { id: 'availability', title: 'Stock Availability by Category', subtitle: 'Inventory health across 5 categories — 1,840 items total', icon: <ChartBarIcon className="h-4 w-4" /> },
+    { id: 'capacity', title: 'Warehouse Capacity & Forecast', subtitle: 'Columbus 72%→89%, Cincinnati 45%, Dayton 38% — Mercy Health Phase 2 impact', icon: <ArchiveBoxIcon className="h-4 w-4" /> },
+    { id: 'backorder', title: 'Backorder & Supply Chain Status', subtitle: '42 items backordered — 3 critical (ETA > 2 weeks)', icon: <TruckIcon className="h-4 w-4" /> },
+    { id: 'recommendations', title: 'AI Recommendations', subtitle: '3 actionable insights from inventory analysis', icon: <LightBulbIcon className="h-4 w-4" /> },
 ];
 
+// d3.4 — AI Insights
 interface AIInsight {
     id: string;
     title: string;
@@ -124,47 +125,119 @@ interface AIInsight {
 const AI_INSIGHTS: AIInsight[] = [
     {
         id: 'ins-1',
-        title: 'Consolidate Allsteel + Kimball Deliveries',
-        detail: 'Next week\'s Allsteel and Kimball deliveries can share a single truck to Interior Installations. Estimated savings: $950.',
-        impact: 'Save $950',
-        confidence: 92,
+        title: 'Reorder Allsteel Acuity Chairs',
+        detail: 'Current stock: 15 units. Safety level: 20. Mercy Health Phase 2 requires 8 more. Lead time: 10 business days. Reorder now to avoid stockout.',
+        impact: 'Prevent $6,850 backorder',
+        confidence: 94,
     },
     {
         id: 'ins-2',
-        title: 'Follow Up on Mercy Health Phase 3',
-        detail: 'Deal inactive for 14 days. Last activity: proposal sent. Historical pattern: 80% of deals that go silent >10 days are lost.',
-        impact: 'At risk: $18,400',
-        confidence: 78,
+        title: 'Relocate 85 Items: Columbus → Cincinnati',
+        detail: 'Columbus at 72% (projected 89% with Mercy Health). 55 general stock + 30 archived fixtures can move to Cincinnati (45%). Saves $3,600/month in overflow storage fees.',
+        impact: '$3,600/mo savings',
+        confidence: 91,
     },
     {
         id: 'ins-3',
-        title: 'Margin Alert — 3 National Items Below Threshold',
-        detail: 'Average margin 29.8%. Three National line items in recent orders are below 25% threshold: Waveworks (22%), Solve Shelf (23%), Lobby Table (19%).',
-        impact: 'Review pricing',
-        confidence: 95,
+        title: '5 SKUs Approaching End-of-Life',
+        detail: 'Xsede Panel System, Priority Panel (2019), Triumph Conf Table (2019), Solve Shelf 36" (disc.), Narrate Desk — all discontinued or being phased out. Combined value: $8,450. Mark for clearance.',
+        impact: 'Recover $8,450 value',
+        confidence: 88,
     },
 ];
 
+// ─── Agents ─────────────────────────────────────────────────────────────────
+
 const SYNC_AGENTS: AgentVis[] = [
-    { name: 'HubSpotSync', detail: '38 deals loaded',         visible: false, done: false },
-    { name: 'CoreSync',    detail: '9 projects, $890K recv.',  visible: false, done: false },
-    { name: 'FunnelBuilder', detail: 'pipeline visualized',    visible: false, done: false },
-    { name: 'AIProjector', detail: '31% close rate projected', visible: false, done: false },
+    { name: 'WarehouseSync', detail: '1,840 items synced', visible: false, done: false },
+    { name: 'POTracker', detail: '9 active POs tracked', visible: false, done: false },
+    { name: 'StockAnalyzer', detail: 'availability computed', visible: false, done: false },
+    { name: 'HealthScorer', detail: 'score: 78/100', visible: false, done: false },
 ];
 
 const RECON_AGENTS: AgentVis[] = [
-    { name: 'DealMatcher',        detail: '35/38 auto-matched',  visible: false, done: false },
-    { name: 'DiscrepancyFinder',  detail: '3 exceptions found',  visible: false, done: false },
-    { name: 'OpsKPICalculator',   detail: 'DSO, aging computed', visible: false, done: false },
+    { name: 'CountVerifier', detail: '97.2% match rate', visible: false, done: false },
+    { name: 'LocationChecker', detail: '3 discrepancies found', visible: false, done: false },
+    { name: 'StockAlertEngine', detail: '5 below reorder', visible: false, done: false },
 ];
 
 const REPORT_AGENTS: AgentVis[] = [
-    { name: 'ReportAssembler', detail: '4 sections built',     visible: false, done: false },
-    { name: 'ChartGenerator',  detail: 'visualizations ready', visible: false, done: false },
-    { name: 'InsightEngine',   detail: '3 recommendations',    visible: false, done: false },
+    { name: 'HealthReporter', detail: '4 sections built', visible: false, done: false },
+    { name: 'TrendAnalyzer', detail: '6-month trends', visible: false, done: false },
+    { name: 'InsightEngine', detail: '3 recommendations', visible: false, done: false },
 ];
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Notification Component (rendered in Follow Up tab) ─────────────────────
+
+interface DuplerReportingNotificationProps {
+    onSwitchToMetrics: () => void;
+}
+
+export function DuplerReportingNotification({ onSwitchToMetrics }: DuplerReportingNotificationProps) {
+    const { currentStep, isPaused } = useDemo();
+    const [visible, setVisible] = useState(false);
+    const [autoSwitching, setAutoSwitching] = useState(false);
+    const isPausedRef = useRef(isPaused);
+    useEffect(() => { isPausedRef.current = isPaused; }, [isPaused]);
+
+    const pauseAware = useCallback((fn: () => void) => {
+        return () => {
+            if (!isPausedRef.current) { fn(); return; }
+            const poll = setInterval(() => {
+                if (!isPausedRef.current) { clearInterval(poll); fn(); }
+            }, 200);
+        };
+    }, []);
+
+    // Only show for d3.1 notification phase
+    useEffect(() => {
+        if (!currentStep.id.startsWith('d3.')) return;
+        const t = setTimeout(pauseAware(() => setVisible(true)), 1500);
+        return () => clearTimeout(t);
+    }, [currentStep.id, pauseAware]);
+
+    // Auto-switch to Metrics after 4 seconds
+    useEffect(() => {
+        if (!visible) return;
+        const t = setTimeout(pauseAware(() => {
+            setAutoSwitching(true);
+            setTimeout(pauseAware(() => onSwitchToMetrics()), 800);
+        }), 4000);
+        return () => clearTimeout(t);
+    }, [visible, pauseAware, onSwitchToMetrics]);
+
+    if (!visible || !currentStep.id.startsWith('d3.')) return null;
+
+    return (
+        <div className="animate-in fade-in slide-in-from-top-4 duration-500 mb-6">
+            <div
+                onClick={() => { setAutoSwitching(true); setTimeout(onSwitchToMetrics, 300); }}
+                className={`p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 cursor-pointer hover:shadow-brand-500/20 transition-all ${autoSwitching ? 'opacity-60 scale-[0.98]' : ''}`}
+            >
+                <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-brand-500 text-zinc-900">
+                        <ChartBarIcon className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-foreground">Inventory Intelligence Report</span>
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">NEW</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Analyzing <span className="font-semibold text-foreground">1,840 items</span> across 3 warehouses — stock availability, reconciliation, and AI recommendations.
+                        </p>
+                        <div className="flex items-center gap-1 mt-2 text-brand-600 dark:text-brand-400">
+                            <span className="text-xs font-semibold">View in Metrics</span>
+                            <ArrowRightIcon className="h-3.5 w-3.5" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Main Component (rendered in Metrics tab) ───────────────────────────────
 
 interface DuplerReportingProps {
     onNavigate: (page: string) => void;
@@ -186,7 +259,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
         };
     }, []);
 
-    // ── d3.1 State: Sync ──
+    // ── d3.1 State: Inventory Sync ──
     const [syncPhase, setSyncPhase] = useState<SyncPhase>('idle');
     const syncRef = useRef(syncPhase);
     useEffect(() => { syncRef.current = syncPhase; }, [syncPhase]);
@@ -211,232 +284,204 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
     const [exported, setExported] = useState(false);
 
-    // ── Timing helpers ──
-    const tp = (id: string): DuplerStepTiming => DUPLER_STEP_TIMING[id] || DUPLER_STEP_TIMING['d3.1'];
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // d3.1: Dual-System Data Sync (System, auto)
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    useEffect(() => {
-        if (stepId !== 'd3.1') { setSyncPhase('idle'); return; }
-        setSyncPhase('idle');
-        setSyncAgents(SYNC_AGENTS.map(a => ({ ...a })));
-        setSyncProgress(0);
-        const t = tp('d3.1');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setSyncPhase('notification')), t.notifDelay));
-        timers.push(setTimeout(pauseAware(() => { if (syncRef.current === 'notification') setSyncPhase('processing'); }), t.notifDelay + t.notifDuration));
-        return () => timers.forEach(clearTimeout);
-    }, [stepId]);
-
-    // Processing: stagger agents
-    useEffect(() => {
-        if (syncPhase !== 'processing') return;
-        setSyncAgents(SYNC_AGENTS.map(a => ({ ...a })));
-        setSyncProgress(0);
-        const t = tp('d3.1');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(() => setSyncProgress(100), 50));
-        SYNC_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * t.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setSyncAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * t.agentStagger + t.agentDone));
-        });
-        const total = SYNC_AGENTS.length * t.agentStagger + t.agentDone;
-        timers.push(setTimeout(pauseAware(() => setSyncPhase('breathing')), total));
-        return () => timers.forEach(clearTimeout);
-    }, [syncPhase]);
-
-    // Breathing → revealed
-    useEffect(() => {
-        if (syncPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setSyncPhase('revealed')), tp('d3.1').breathing);
-        return () => clearTimeout(t);
-    }, [syncPhase]);
-
-    // Revealed → results
-    useEffect(() => {
-        if (syncPhase !== 'revealed') return;
-        const t = setTimeout(pauseAware(() => setSyncPhase('results')), 2000);
-        return () => clearTimeout(t);
-    }, [syncPhase]);
-
-    // Results: auto-advance
-    useEffect(() => {
-        if (syncPhase !== 'results') return;
-        const t = setTimeout(pauseAware(() => nextStep()), tp('d3.1').resultsDur);
-        return () => clearTimeout(t);
-    }, [syncPhase]);
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // d3.2: Reconciliation & Expert Review (Expert, interactive)
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    useEffect(() => {
-        if (stepId !== 'd3.2') { setReconPhase('idle'); return; }
-        setReconPhase('idle');
-        setReconAgents(RECON_AGENTS.map(a => ({ ...a })));
-        setAlertsResolved({});
-        const t = tp('d3.2');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setReconPhase('notification')), t.notifDelay));
-        return () => timers.forEach(clearTimeout);
-    }, [stepId]);
-
-    const handleReconStart = () => setReconPhase('processing');
-
-    // Processing: stagger agents → revealed
-    useEffect(() => {
-        if (reconPhase !== 'processing') return;
-        setReconAgents(RECON_AGENTS.map(a => ({ ...a })));
-        const t = tp('d3.2');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        RECON_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setReconAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * t.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setReconAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * t.agentStagger + t.agentDone));
-        });
-        const total = RECON_AGENTS.length * t.agentStagger + t.agentDone;
-        timers.push(setTimeout(pauseAware(() => setReconPhase('revealed')), total + t.breathing));
-        return () => timers.forEach(clearTimeout);
-    }, [reconPhase]);
-
+    // ── Helpers ──
     const resolvedAlertCount = Object.values(alertsResolved).filter(v => v !== null).length;
-    const allAlertsResolved = resolvedAlertCount >= CROSS_SYSTEM_ALERTS.length;
+    const allAlertsResolved = resolvedAlertCount === INVENTORY_DISCREPANCIES.length;
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // d3.3: AI Report Assembly (System, auto)
-    // ═══════════════════════════════════════════════════════════════════════════
+    const toggleSection = (id: string) => setExpandedSections(prev => ({ ...prev, [id]: !prev[id] }));
 
-    useEffect(() => {
-        if (stepId !== 'd3.3') { setAssemblyPhase('idle'); return; }
-        setAssemblyPhase('idle');
-        setReportAgents(REPORT_AGENTS.map(a => ({ ...a })));
-        setReportProgress(0);
-        setSectionsRevealed(0);
-        const t = tp('d3.3');
+    const getTiming = (id: string): DuplerStepTiming => DUPLER_STEP_TIMING[id] || { notifDelay: 2000, notifDuration: 6000, agentStagger: 800, agentDone: 500, breathing: 1500, resultsDur: 0 };
+
+    // ── Agent pipeline runner ──
+    function runAgentPipeline(agents: AgentVis[], setAgents: React.Dispatch<React.SetStateAction<AgentVis[]>>, setProgress: React.Dispatch<React.SetStateAction<number>>, timing: DuplerStepTiming, onDone: () => void) {
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setAssemblyPhase('notification')), t.notifDelay));
-        timers.push(setTimeout(pauseAware(() => { if (assemblyRef.current === 'notification') setAssemblyPhase('processing'); }), t.notifDelay + t.notifDuration));
-        return () => timers.forEach(clearTimeout);
-    }, [stepId]);
-
-    // Processing: stagger agents
-    useEffect(() => {
-        if (assemblyPhase !== 'processing') return;
-        setReportAgents(REPORT_AGENTS.map(a => ({ ...a })));
-        setReportProgress(0);
-        const t = tp('d3.3');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(() => setReportProgress(100), 50));
-        REPORT_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setReportAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * t.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setReportAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * t.agentStagger + t.agentDone));
+        agents.forEach((_, i) => {
+            timers.push(setTimeout(pauseAware(() => {
+                setAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a));
+                setProgress(((i + 0.5) / agents.length) * 100);
+                timers.push(setTimeout(pauseAware(() => {
+                    setAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a));
+                    setProgress(((i + 1) / agents.length) * 100);
+                }), timing.agentDone));
+            }), i * timing.agentStagger));
         });
-        const total = REPORT_AGENTS.length * t.agentStagger + t.agentDone;
-        timers.push(setTimeout(pauseAware(() => setAssemblyPhase('breathing')), total));
-        return () => timers.forEach(clearTimeout);
-    }, [assemblyPhase]);
+        timers.push(setTimeout(pauseAware(onDone), agents.length * timing.agentStagger + timing.agentDone + 300));
+        return timers;
+    }
 
-    // Breathing → revealed
+    // ═══════════════════════════════════════════════════════════════════════════
+    // d3.1 — Inventory Data Sync (auto)
+    // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
-        if (assemblyPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setAssemblyPhase('revealed')), tp('d3.3').breathing);
+        if (stepId !== 'd3.1' || syncRef.current !== 'idle') return;
+        const timing = getTiming('d3.1');
+        // Skip notification phase (it's in Follow Up tab) — go straight to processing
+        const t = setTimeout(pauseAware(() => setSyncPhase('processing')), 1500);
         return () => clearTimeout(t);
-    }, [assemblyPhase]);
+    }, [stepId, pauseAware]);
 
-    // Revealed: stagger section reveals → results
     useEffect(() => {
-        if (assemblyPhase !== 'revealed') return;
-        setSectionsRevealed(0);
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        for (let i = 0; i < REPORT_SECTIONS.length; i++) {
-            timers.push(setTimeout(pauseAware(() => setSectionsRevealed(i + 1)), i * 400));
+        if (stepId !== 'd3.1' || syncPhase !== 'processing') return;
+        const timing = getTiming('d3.1');
+        const timers = runAgentPipeline(SYNC_AGENTS, setSyncAgents, setSyncProgress, timing, () => setSyncPhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [stepId, syncPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.1' || syncPhase !== 'breathing') return;
+        const timing = getTiming('d3.1');
+        const t = setTimeout(pauseAware(() => setSyncPhase('revealed')), timing.breathing);
+        return () => clearTimeout(t);
+    }, [stepId, syncPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.1' || syncPhase !== 'revealed') return;
+        const timing = getTiming('d3.1');
+        if (timing.resultsDur > 0) {
+            const t = setTimeout(pauseAware(() => setSyncPhase('results')), 2000);
+            return () => clearTimeout(t);
         }
-        timers.push(setTimeout(pauseAware(() => setAssemblyPhase('results')), REPORT_SECTIONS.length * 400 + 800));
-        return () => timers.forEach(clearTimeout);
-    }, [assemblyPhase]);
+    }, [stepId, syncPhase, pauseAware]);
 
-    // Results: auto-advance
     useEffect(() => {
-        if (assemblyPhase !== 'results') return;
-        const t = setTimeout(pauseAware(() => nextStep()), tp('d3.3').resultsDur);
+        if (stepId !== 'd3.1' || syncPhase !== 'results') return;
+        const timing = getTiming('d3.1');
+        const t = setTimeout(pauseAware(() => nextStep()), timing.resultsDur - 2000);
         return () => clearTimeout(t);
-    }, [assemblyPhase]);
+    }, [stepId, syncPhase, pauseAware, nextStep]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // d3.4: Executive Report & Distribution (Dealer, interactive)
+    // d3.2 — Inventory Reconciliation (interactive)
     // ═══════════════════════════════════════════════════════════════════════════
-
     useEffect(() => {
-        if (stepId !== 'd3.4') { setReportPhase('idle'); return; }
-        setReportPhase('idle');
-        setExpandedSections({});
-        setExported(false);
-        const t = tp('d3.4');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setReportPhase('notification')), t.notifDelay));
-        return () => timers.forEach(clearTimeout);
-    }, [stepId]);
+        if (stepId !== 'd3.2' || reconPhase !== 'idle') return;
+        const timing = getTiming('d3.2');
+        const t = setTimeout(pauseAware(() => setReconPhase('notification')), timing.notifDelay);
+        return () => clearTimeout(t);
+    }, [stepId, reconPhase, pauseAware]);
 
-    const handleReportStart = () => setReportPhase('revealed');
-
-    const toggleSection = (id: string) => {
-        setExpandedSections(prev => ({ ...prev, [id]: !prev[id] }));
+    const handleReconStart = () => {
+        setReconPhase('processing');
+        const timing = getTiming('d3.2');
+        const timers = runAgentPipeline(RECON_AGENTS, setReconAgents, () => { }, timing, () => setReconPhase('revealed'));
     };
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // Render Helpers
+    // d3.3 — Report Assembly (auto)
+    // ═══════════════════════════════════════════════════════════════════════════
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyRef.current !== 'idle') return;
+        const timing = getTiming('d3.3');
+        const t = setTimeout(pauseAware(() => setAssemblyPhase('notification')), timing.notifDelay);
+        return () => clearTimeout(t);
+    }, [stepId, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyPhase !== 'notification') return;
+        const timing = getTiming('d3.3');
+        const t = setTimeout(pauseAware(() => setAssemblyPhase('processing')), timing.notifDuration);
+        return () => clearTimeout(t);
+    }, [stepId, assemblyPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyPhase !== 'processing') return;
+        const timing = getTiming('d3.3');
+        const timers = runAgentPipeline(REPORT_AGENTS, setReportAgents, setReportProgress, timing, () => setAssemblyPhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [stepId, assemblyPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyPhase !== 'breathing') return;
+        const timing = getTiming('d3.3');
+        const t = setTimeout(pauseAware(() => {
+            setAssemblyPhase('revealed');
+            // Stagger section reveals
+            REPORT_SECTIONS.forEach((_, i) => {
+                setTimeout(pauseAware(() => setSectionsRevealed(i + 1)), (i + 1) * 400);
+            });
+        }), timing.breathing);
+        return () => clearTimeout(t);
+    }, [stepId, assemblyPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyPhase !== 'revealed') return;
+        const timing = getTiming('d3.3');
+        if (timing.resultsDur > 0) {
+            const t = setTimeout(pauseAware(() => setAssemblyPhase('results')), 2000);
+            return () => clearTimeout(t);
+        }
+    }, [stepId, assemblyPhase, pauseAware]);
+
+    useEffect(() => {
+        if (stepId !== 'd3.3' || assemblyPhase !== 'results') return;
+        const timing = getTiming('d3.3');
+        const t = setTimeout(pauseAware(() => nextStep()), timing.resultsDur - 2000);
+        return () => clearTimeout(t);
+    }, [stepId, assemblyPhase, pauseAware, nextStep]);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // d3.4 — Report Review & Distribution (interactive)
+    // ═══════════════════════════════════════════════════════════════════════════
+    useEffect(() => {
+        if (stepId !== 'd3.4' || reportPhase !== 'idle') return;
+        const timing = getTiming('d3.4');
+        const t = setTimeout(pauseAware(() => setReportPhase('notification')), timing.notifDelay);
+        return () => clearTimeout(t);
+    }, [stepId, reportPhase, pauseAware]);
+
+    const handleReportStart = () => setReportPhase('revealed');
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RENDER HELPERS
     // ═══════════════════════════════════════════════════════════════════════════
 
     const renderAgentPipeline = (agents: AgentVis[], progress: number, label: string) => (
-        <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
-            <div className="flex items-center gap-2 mb-3">
-                <AIAgentAvatar />
-                <span className="text-xs font-bold text-foreground">{label}</span>
+        <div className="p-4 rounded-xl bg-card border border-border shadow-sm space-y-3 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">{label}</span>
+                <span className="text-[10px] font-bold text-foreground">{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
-                <div className="h-full rounded-full bg-brand-400 transition-all duration-[3500ms] ease-linear" style={{ width: `${progress}%` }} />
+            <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                <div className="h-full rounded-full bg-brand-400 transition-all duration-500" style={{ width: `${progress}%` }} />
             </div>
             <div className="space-y-1.5">
-                {agents.map(agent => (
-                    <div key={agent.name} className={`flex items-center gap-2 text-[10px] transition-all duration-300 ${agent.visible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
-                        {agent.done ?
-                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" /> :
-                            <ArrowPathIcon className="h-3.5 w-3.5 text-indigo-500 animate-spin shrink-0" />
-                        }
-                        <span className={agent.done ? 'text-foreground' : 'text-indigo-600 dark:text-indigo-400'}>{agent.name}</span>
-                        <span className="text-muted-foreground">{agent.detail}</span>
+                {agents.map(agent => agent.visible && (
+                    <div key={agent.name} className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                        <AIAgentAvatar />
+                        <span className="text-[11px] font-semibold text-foreground">{agent.name}</span>
+                        <span className="text-[10px] text-muted-foreground">— {agent.detail}</span>
+                        {agent.done && <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 ml-auto shrink-0" />}
                     </div>
                 ))}
             </div>
         </div>
     );
 
-    const renderNotification = (icon: React.ReactNode, title: string, detail: string, onClick: () => void) => (
-        <button onClick={onClick} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
-            <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
+    const renderNotification = (icon: React.ReactNode, title: string, subtitle: string, onClick: () => void) => (
+        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+            <div
+                onClick={onClick}
+                className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 cursor-pointer hover:shadow-brand-500/20 transition-all"
+            >
                 <div className="flex items-start gap-3">
                     <div className="p-2 rounded-lg bg-brand-500 text-zinc-900">{icon}</div>
                     <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-foreground">{title}</span>
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground mt-1">{detail}</p>
-                        <p className="text-[10px] text-brand-600 dark:text-brand-400 mt-2 flex items-center gap-1">Click to start <ArrowRightIcon className="h-3 w-3" /></p>
+                        <span className="text-xs font-bold text-foreground">{title}</span>
+                        <p className="text-[11px] text-muted-foreground mt-1">{subtitle}</p>
+                        <span className="text-[10px] font-semibold text-brand-600 dark:text-brand-400 mt-1 inline-block">Click to start →</span>
                     </div>
                 </div>
             </div>
-        </button>
+        </div>
     );
 
     const renderKPIGrid = (kpis: KPIMetric[]) => (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-2">
             {kpis.map(kpi => (
-                <div key={kpi.label} className="p-3 rounded-xl bg-card border border-border">
-                    <div className="text-[10px] text-muted-foreground mb-1">{kpi.label}</div>
-                    <div className="text-lg font-bold text-foreground">{kpi.value}</div>
-                    <div className={`text-[10px] mt-1 ${kpi.trendUp ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                <div key={kpi.label} className="p-3 rounded-lg bg-muted/50 border border-border">
+                    <div className="text-[10px] text-muted-foreground">{kpi.label}</div>
+                    <div className="text-sm font-bold text-foreground mt-0.5">{kpi.value}</div>
+                    <div className={`text-[10px] font-semibold mt-0.5 ${kpi.trendUp ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}>
                         {kpi.trend}
                     </div>
                 </div>
@@ -451,31 +496,15 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     if (!stepId.startsWith('d3.')) return null;
 
     return (
-        <div className="p-6 space-y-4 max-w-5xl mx-auto">
-            {/* ── d3.1: Dual-System Data Sync ── */}
+        <div className="space-y-4 mb-6">
+            {/* ── d3.1: Inventory Data Sync ── */}
             {stepId === 'd3.1' && (
                 <>
-                    {syncPhase === 'notification' && (
-                        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                            <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 rounded-lg bg-brand-500 text-zinc-900"><ArrowsRightLeftIcon className="h-4 w-4" /></div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-foreground">Dual-System Sync Starting</span>
-                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Auto</span>
-                                        </div>
-                                        <p className="text-[11px] text-muted-foreground mt-1">HubSpotSync + CoreSync: Connecting APIs to unify pipeline + operations data.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {syncPhase === 'processing' && renderAgentPipeline(syncAgents, syncProgress, 'Data Sync Pipeline — HubSpot + Core APIs...')}
+                    {syncPhase === 'processing' && renderAgentPipeline(syncAgents, syncProgress, 'Inventory Sync — 3 warehouses + 9 POs...')}
                     {syncPhase === 'breathing' && (
                         <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-xs font-semibold text-muted-foreground">Sync complete — building unified view...</span>
+                            <span className="text-xs font-semibold text-muted-foreground">Sync complete — computing inventory health...</span>
                         </div>
                     )}
                     {(syncPhase === 'revealed' || syncPhase === 'results') && (
@@ -485,34 +514,36 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 <div className="flex items-start gap-2">
                                     <AIAgentAvatar />
                                     <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">HubSpotSync + CoreSync:</span> Connected — <span className="font-semibold">38 deals ($2.1M pipeline)</span> from HubSpot,
-                                        <span className="font-semibold"> 9 projects ($890K receivables)</span> from Core (SCS). Q2 projected close rate: <span className="font-semibold">31%</span>.
+                                        <span className="font-bold">WarehouseSync + StockAnalyzer:</span> <span className="font-semibold">1,840 items</span> across 3 warehouses synced.
+                                        Health score: <span className="font-semibold">78/100</span>. Fill rate: <span className="font-semibold">89%</span>.
+                                        <span className="font-semibold"> 42 backordered items</span>, 5 categories below reorder point.
                                     </p>
                                 </div>
                             </div>
 
-                            {/* Funnel chart */}
+                            {/* Mini inventory chart */}
                             <div className="rounded-xl border border-border overflow-hidden">
-                                <div className="bg-muted/50 px-4 py-2 border-b border-border">
-                                    <span className="text-xs font-bold text-foreground">Pipeline Funnel</span>
+                                <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
+                                    <span className="text-xs font-bold text-foreground">Stock by Category</span>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-700 dark:text-brand-400 font-bold">LIVE DATA</span>
                                 </div>
                                 <div className="p-4">
-                                    <ResponsiveContainer width="100%" height={140}>
-                                        <BarChart data={FUNNEL_DATA} layout="vertical" barSize={20}>
-                                            <XAxis type="number" hide />
-                                            <YAxis type="category" dataKey="stage" tick={{ fontSize: 11 }} width={90} />
-                                            <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                                                {FUNNEL_DATA.map((entry) => (
-                                                    <Cell key={entry.stage} fill={entry.color} />
-                                                ))}
-                                            </Bar>
+                                    <ResponsiveContainer width="100%" height={160}>
+                                        <BarChart data={INVENTORY_BY_CATEGORY} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                            <XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                                            <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                                            <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8 }} />
+                                            <Bar dataKey="available" stackId="a" fill="#10b981" name="Available" radius={[0, 0, 4, 4]} />
+                                            <Bar dataKey="reserved" stackId="a" fill="#f59e0b" name="Reserved" />
+                                            <Bar dataKey="backordered" stackId="a" fill="#ef4444" name="Backordered" radius={[4, 4, 0, 0]} />
                                         </BarChart>
                                     </ResponsiveContainer>
                                 </div>
                             </div>
 
                             {/* KPI cards */}
-                            {renderKPIGrid(KPI_METRICS)}
+                            {renderKPIGrid(INVENTORY_KPIS)}
 
                             {syncPhase === 'results' && (
                                 <div className="text-center text-[10px] text-muted-foreground animate-pulse">
@@ -524,93 +555,91 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                 </>
             )}
 
-            {/* ── d3.2: Reconciliation & Expert Review ── */}
+            {/* ── d3.2: Inventory Reconciliation ── */}
             {stepId === 'd3.2' && (
                 <>
                     {reconPhase === 'notification' && renderNotification(
                         <ArrowsRightLeftIcon className="h-4 w-4" />,
-                        'Cross-System Reconciliation Ready',
-                        'DealMatcher: 35/38 deals auto-matched (92.1%). 3 discrepancies require expert review.',
+                        'Inventory Reconciliation Ready',
+                        'CountVerifier: Physical vs system count completed — 97.2% match. 3 discrepancies require expert review.',
                         handleReconStart
                     )}
-                    {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Reconciliation Pipeline — Matching HubSpot ↔ Core...')}
+                    {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Reconciliation — Physical ↔ System...')}
                     {reconPhase === 'revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-4">
                             {/* Progress bar */}
                             <div className="p-3 rounded-lg bg-muted/50 border border-border flex items-center gap-3">
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] font-bold text-foreground">Cross-System Match</span>
+                                        <span className="text-[10px] font-bold text-foreground">Inventory Reconciliation</span>
                                         <span className="text-[10px] font-semibold text-foreground">
-                                            {35 + resolvedAlertCount}/38 reconciled
+                                            {1837 + resolvedAlertCount}/1840 verified
                                         </span>
                                     </div>
                                     <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                                         <div
                                             className="h-full rounded-full bg-green-500 transition-all duration-500"
-                                            style={{ width: `${((35 + resolvedAlertCount) / 38) * 100}%` }}
+                                            style={{ width: `${((1837 + resolvedAlertCount) / 1840) * 100}%` }}
                                         />
                                     </div>
                                 </div>
-                                <ConfidenceScoreBadge score={92.1} size="sm" label="Match Rate" />
+                                <ConfidenceScoreBadge score={97.2} size="sm" label="Accuracy" />
                             </div>
 
-                            {/* Two-column layout: KPIs + Alerts */}
+                            {/* Two-column layout */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                                {/* Left: Ops KPIs */}
+                                {/* Left: KPIs */}
                                 <div className="space-y-3">
-                                    <span className="text-xs font-bold text-foreground">Operational KPIs</span>
-                                    {renderKPIGrid(OPS_KPIS)}
+                                    <span className="text-xs font-bold text-foreground">Inventory KPIs</span>
+                                    {renderKPIGrid(RECON_KPIS)}
                                 </div>
 
                                 {/* Right: Discrepancy cards */}
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-foreground">Exceptions</span>
-                                        <span className="text-[10px] font-bold text-foreground">{resolvedAlertCount}/{CROSS_SYSTEM_ALERTS.length} Resolved</span>
+                                        <span className="text-xs font-bold text-foreground">Discrepancies</span>
+                                        <span className="text-[10px] font-bold text-foreground">{resolvedAlertCount}/{INVENTORY_DISCREPANCIES.length} Resolved</span>
                                     </div>
-                                    {CROSS_SYSTEM_ALERTS.map(alert => (
-                                        <div key={alert.id} className={`p-4 rounded-xl border-2 transition-all duration-300 ${
-                                            alertsResolved[alert.id]
-                                                ? 'border-green-300 dark:border-green-500/30 bg-green-50/50 dark:bg-green-500/5'
-                                                : alert.type === 'amount-mismatch'
-                                                    ? 'border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5'
-                                                    : alert.type === 'duplicate'
-                                                        ? 'border-red-300 dark:border-red-500/30 bg-red-50/50 dark:bg-red-500/5'
-                                                        : 'border-blue-300 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
-                                        }`}>
+                                    {INVENTORY_DISCREPANCIES.map(disc => (
+                                        <div key={disc.id} className={`p-4 rounded-xl border-2 transition-all duration-300 ${alertsResolved[disc.id]
+                                            ? 'border-green-300 dark:border-green-500/30 bg-green-50/50 dark:bg-green-500/5'
+                                            : disc.type === 'count-mismatch'
+                                                ? 'border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5'
+                                                : disc.type === 'location-error'
+                                                    ? 'border-blue-300 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
+                                                    : 'border-red-300 dark:border-red-500/30 bg-red-50/50 dark:bg-red-500/5'
+                                            }`}>
                                             <div className="flex items-center gap-2 mb-1">
-                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                                    alert.type === 'duplicate' ? 'bg-red-500/20 text-red-700 dark:text-red-400' :
-                                                    alert.type === 'amount-mismatch' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' :
-                                                    'bg-blue-500/20 text-blue-700 dark:text-blue-400'
-                                                }`}>
-                                                    {alert.type === 'duplicate' ? 'Duplicate' : alert.type === 'amount-mismatch' ? 'Amount Mismatch' : 'Missing Link'}
+                                                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${disc.type === 'count-mismatch' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' :
+                                                    disc.type === 'location-error' ? 'bg-blue-500/20 text-blue-700 dark:text-blue-400' :
+                                                        'bg-red-500/20 text-red-700 dark:text-red-400'
+                                                    }`}>
+                                                    {disc.type === 'count-mismatch' ? 'Count Mismatch' : disc.type === 'location-error' ? 'Location Error' : 'Missing Item'}
                                                 </span>
-                                                <span className="text-[10px] text-muted-foreground">{alert.hubspotRef} ↔ {alert.coreRef}</span>
+                                                <span className="text-[10px] font-semibold text-foreground">{disc.item}</span>
                                             </div>
-                                            <p className="text-[11px] text-foreground mt-1">{alert.detail}</p>
+                                            <p className="text-[11px] text-foreground mt-1">{disc.detail}</p>
                                             <div className="flex items-start gap-1 mt-1.5">
                                                 <AIAgentAvatar />
-                                                <span className="text-[10px] text-muted-foreground italic">{alert.aiSuggestion}</span>
+                                                <span className="text-[10px] text-muted-foreground italic">{disc.aiSuggestion}</span>
                                             </div>
-                                            {alertsResolved[alert.id] ? (
+                                            {alertsResolved[disc.id] ? (
                                                 <div className="flex items-center gap-1.5 mt-2">
                                                     <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
                                                     <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">
-                                                        {alertsResolved[alert.id] === 'accepted' ? 'AI fix applied' : 'Manually reviewed'}
+                                                        {alertsResolved[disc.id] === 'accepted' ? 'AI fix applied' : 'Manually reviewed'}
                                                     </span>
                                                 </div>
                                             ) : (
                                                 <div className="flex gap-2 mt-2">
                                                     <button
-                                                        onClick={() => setAlertsResolved(prev => ({ ...prev, [alert.id]: 'accepted' }))}
+                                                        onClick={() => setAlertsResolved(prev => ({ ...prev, [disc.id]: 'accepted' }))}
                                                         className="px-3 py-1.5 bg-brand-400 hover:bg-brand-500 text-zinc-900 text-[10px] font-bold rounded-lg transition-colors"
                                                     >
                                                         Accept AI Fix
                                                     </button>
                                                     <button
-                                                        onClick={() => setAlertsResolved(prev => ({ ...prev, [alert.id]: 'manual' }))}
+                                                        onClick={() => setAlertsResolved(prev => ({ ...prev, [disc.id]: 'manual' }))}
                                                         className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-[10px] font-semibold rounded-lg border border-border transition-colors"
                                                     >
                                                         Manual Review
@@ -626,15 +655,14 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                             <button
                                 onClick={() => nextStep()}
                                 disabled={!allAlertsResolved}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                                    allAlertsResolved
-                                        ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20'
-                                        : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-                                }`}
+                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${allAlertsResolved
+                                    ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20'
+                                    : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
+                                    }`}
                             >
                                 <span className="flex items-center justify-center gap-2">
                                     <CheckCircleIcon className="h-4 w-4" />
-                                    {allAlertsResolved ? 'Acknowledge & Continue — 38/38 Reconciled' : `Resolve All Exceptions (${resolvedAlertCount}/${CROSS_SYSTEM_ALERTS.length})`}
+                                    {allAlertsResolved ? 'Acknowledge & Continue — 1,840/1,840 Verified' : `Resolve All Discrepancies (${resolvedAlertCount}/${INVENTORY_DISCREPANCIES.length})`}
                                 </span>
                             </button>
                         </div>
@@ -642,7 +670,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                 </>
             )}
 
-            {/* ── d3.3: AI Report Assembly ── */}
+            {/* ── d3.3: Inventory Health Report Assembly ── */}
             {stepId === 'd3.3' && (
                 <>
                     {assemblyPhase === 'notification' && (
@@ -652,16 +680,16 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                     <div className="p-2 rounded-lg bg-brand-500 text-zinc-900"><DocumentChartBarIcon className="h-4 w-4" /></div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-foreground">Report Assembly Starting</span>
+                                            <span className="text-xs font-bold text-foreground">Inventory Health Report — Assembling</span>
                                             <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Auto</span>
                                         </div>
-                                        <p className="text-[11px] text-muted-foreground mt-1">ReportAssembler: Building executive report from reconciled data — 4 sections with AI insights.</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">HealthReporter: Building report from reconciled inventory data — stock availability, capacity forecast, backorder analysis + AI recommendations.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     )}
-                    {assemblyPhase === 'processing' && renderAgentPipeline(reportAgents, reportProgress, 'Report Assembly — Building 4 sections...')}
+                    {assemblyPhase === 'processing' && renderAgentPipeline(reportAgents, reportProgress, 'Report Assembly — 4 sections...')}
                     {assemblyPhase === 'breathing' && (
                         <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
                             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -675,9 +703,8 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 <div className="flex items-start gap-2">
                                     <AIAgentAvatar />
                                     <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">ReportAssembler:</span> Executive report ready —
-                                        <span className="font-semibold"> 4 sections</span> with charts, KPIs, and <span className="font-semibold">3 AI recommendations</span>.
-                                        PDF-ready layout generated.
+                                        <span className="font-bold">HealthReporter:</span> Inventory intelligence report ready —
+                                        <span className="font-semibold"> 4 sections</span> covering stock availability, warehouse capacity, backorder status, and <span className="font-semibold">3 AI recommendations</span>.
                                     </p>
                                 </div>
                             </div>
@@ -703,7 +730,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                     <span className="text-[10px] font-bold text-green-600 dark:text-green-400 px-3 py-1 rounded-full bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30">
                                         Report Ready
                                     </span>
-                                    <span className="text-[10px] text-muted-foreground animate-pulse">Auto-advancing to distribution...</span>
+                                    <span className="text-[10px] text-muted-foreground animate-pulse">Auto-advancing to review...</span>
                                 </div>
                             )}
                         </div>
@@ -711,13 +738,13 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                 </>
             )}
 
-            {/* ── d3.4: Executive Report & Distribution ── */}
+            {/* ── d3.4: Report Review & Distribution ── */}
             {stepId === 'd3.4' && (
                 <>
                     {reportPhase === 'notification' && renderNotification(
                         <DocumentArrowDownIcon className="h-4 w-4" />,
-                        'Executive Report Ready for Review',
-                        'ReportAgent: Complete executive report with 4 sections and 3 AI recommendations. Ready for export and distribution.',
+                        'Inventory Intelligence Report — Ready for Review',
+                        'Complete report with stock availability, capacity forecast, backorder analysis, and 3 AI recommendations. Ready for export.',
                         handleReportStart
                     )}
                     {reportPhase === 'revealed' && (
@@ -742,35 +769,69 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                         </button>
                                         {expandedSections[section.id] && (
                                             <div className="px-4 py-3 border-t border-border bg-muted/20 animate-in fade-in duration-200">
-                                                {section.id === 'pipeline' && (
+                                                {section.id === 'availability' && (
                                                     <div className="space-y-3">
-                                                        <ResponsiveContainer width="100%" height={120}>
-                                                            <BarChart data={FUNNEL_DATA} layout="vertical" barSize={16}>
-                                                                <XAxis type="number" hide />
-                                                                <YAxis type="category" dataKey="stage" tick={{ fontSize: 10 }} width={80} />
-                                                                <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                                                                    {FUNNEL_DATA.map((entry) => (
-                                                                        <Cell key={entry.stage} fill={entry.color} />
-                                                                    ))}
-                                                                </Bar>
+                                                        <ResponsiveContainer width="100%" height={140}>
+                                                            <BarChart data={INVENTORY_BY_CATEGORY} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+                                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                                <XAxis dataKey="name" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                                                                <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                                                                <Bar dataKey="available" stackId="a" fill="#10b981" name="Available" radius={[0, 0, 4, 4]} />
+                                                                <Bar dataKey="reserved" stackId="a" fill="#f59e0b" name="Reserved" />
+                                                                <Bar dataKey="backordered" stackId="a" fill="#ef4444" name="Backordered" radius={[4, 4, 0, 0]} />
                                                             </BarChart>
                                                         </ResponsiveContainer>
-                                                        {renderKPIGrid(KPI_METRICS)}
+                                                        {renderKPIGrid(INVENTORY_KPIS)}
                                                     </div>
                                                 )}
-                                                {section.id === 'ops' && renderKPIGrid(OPS_KPIS)}
-                                                {section.id === 'finance' && (
+                                                {section.id === 'capacity' && (
+                                                    <div className="space-y-2">
+                                                        {[
+                                                            { name: 'Columbus Main', current: 72, forecast: 89, alert: true },
+                                                            { name: 'Cincinnati Overflow', current: 45, forecast: 48, alert: false },
+                                                            { name: 'Dayton Storage', current: 38, forecast: 38, alert: false },
+                                                        ].map(wh => (
+                                                            <div key={wh.name} className="p-3 rounded-lg bg-card border border-border">
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <span className="text-[11px] font-bold text-foreground">{wh.name}</span>
+                                                                    {wh.alert && <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-400 font-bold">ALERT</span>}
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
+                                                                        <div className={`h-full rounded-full transition-all ${wh.current > 80 ? 'bg-red-500' : wh.current > 60 ? 'bg-amber-500' : 'bg-green-500'}`} style={{ width: `${wh.current}%` }} />
+                                                                    </div>
+                                                                    <span className="text-[10px] font-semibold text-foreground">{wh.current}%</span>
+                                                                    {wh.forecast !== wh.current && (
+                                                                        <span className="text-[10px] text-amber-600 dark:text-amber-400">→ {wh.forecast}%</span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                                {section.id === 'backorder' && (
                                                     <div className="space-y-2">
                                                         <div className="flex items-center justify-between text-[11px]">
-                                                            <span className="text-foreground font-semibold">38/38 deals reconciled</span>
-                                                            <ConfidenceScoreBadge score={100} size="sm" />
+                                                            <span className="text-foreground font-semibold">42 items backordered across 5 categories</span>
+                                                            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold">3 critical (ETA &gt; 2 weeks)</span>
                                                         </div>
-                                                        <div className="text-[10px] text-muted-foreground">
-                                                            35 auto-matched + 3 exceptions resolved (1 duplicate merged, 1 amount corrected, 1 invoice linked)
-                                                        </div>
+                                                        {[
+                                                            { cat: 'Storage', count: 200, pct: '47%', critical: true },
+                                                            { cat: 'Seating', count: 100, pct: '24%', critical: false },
+                                                            { cat: 'Tables', count: 80, pct: '19%', critical: true },
+                                                            { cat: 'Desks', count: 50, pct: '12%', critical: false },
+                                                        ].map(bo => (
+                                                            <div key={bo.cat} className="flex items-center justify-between p-2 rounded-lg bg-card border border-border">
+                                                                <span className="text-[10px] font-semibold text-foreground">{bo.cat}</span>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-[10px] text-muted-foreground">{bo.count} items ({bo.pct})</span>
+                                                                    {bo.critical && <ExclamationTriangleIcon className="h-3 w-3 text-amber-500" />}
+                                                                </div>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 )}
-                                                {section.id === 'insights' && (
+                                                {section.id === 'recommendations' && (
                                                     <div className="space-y-3">
                                                         {AI_INSIGHTS.map(insight => (
                                                             <div key={insight.id} className="p-3 rounded-lg bg-card border border-border">
@@ -798,11 +859,10 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                             <button
                                 onClick={() => setExported(true)}
                                 disabled={exported}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                                    exported
-                                        ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30'
-                                        : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30'
-                                }`}
+                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${exported
+                                    ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30'
+                                    : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30'
+                                    }`}
                             >
                                 {exported ? (
                                     <span className="flex items-center justify-center gap-2">

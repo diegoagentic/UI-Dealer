@@ -36,7 +36,7 @@ import ConversationalSurvey from "./components/simulations/ConversationalSurvey"
 import CRMSimulation from "./components/simulations/CRMSimulation"
 import DuplerPdfProcessor from "./components/simulations/DuplerPdfProcessor"
 import DuplerWarehouse from "./components/simulations/DuplerWarehouse"
-import DuplerReporting from "./components/simulations/DuplerReporting"
+// DuplerReporting now renders inside Dashboard.tsx (Follow Up notification + Metrics processing)
 
 import {
   HomeIcon,
@@ -122,17 +122,19 @@ function App() {
     const continuaCompany = currentStep.role === 'Expert' || currentStep.role === 'System' ? 'Strata Services'
       : demoProfile.companyName;
 
+    const isDuplerExpert = isDupler && (currentStep.role === 'Expert' || currentStep.role === 'System');
     const resolvedAppName = isContinua ? continuaAppName
       : currentStep.app === 'email-marketplace' ? 'Wells Fargo Mail'
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
       : currentStep.app === 'crm' ? 'Strata CRM'
+      : isDuplerExpert ? 'Expert Hub'
       : currentStep.app === 'dupler-pdf' ? 'SIF Spec Check'
       : currentStep.app === 'dupler-warehouse' ? 'Warehouse Manager'
       : currentStep.app === 'dupler-reporting' ? 'Analytics Hub'
       : isExpert ? 'Expert Hub'
       : 'Dealer Experience';
-    const resolvedCompany = isContinua ? continuaCompany : isExpert ? 'Strata Services' : demoProfile.companyName;
+    const resolvedCompany = isContinua ? continuaCompany : isExpert || isDuplerExpert ? 'Strata Services' : demoProfile.companyName;
 
     // Continua profile: 4-tab nav including Inventory with "Connected" badge
     const continuaNav = [
@@ -255,10 +257,7 @@ function App() {
         );
       case 'dupler-reporting':
         return (
-          <>
-            <DuplerReporting onNavigate={handleNavigate} />
-            <Dashboard onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-          </>
+          <Dashboard onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
         );
       default:
         return (
