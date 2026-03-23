@@ -1,12 +1,12 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Dupler — Flow 2: Warehouse & Transit Inventory
-// Steps: d2.1 (Receiving), d2.2 (Assignment), d2.3 (Transit), d2.4 (Staging)
+// Dupler — Flow 2: Warehouse & Inventory Intelligence
+// Steps: d2.1 (Health), d2.2 (Receiving), d2.3 (Price), d2.4 (Sync), d2.5 (Claims)
+// d2.6 (Dealer Review) renders in Dashboard.tsx via MobileDeviceFrame
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useDemo } from '../../context/DemoContext';
 import { AIAgentAvatar } from './DemoAvatars';
-import ConfidenceScoreBadge from '../widgets/ConfidenceScoreBadge';
 import {
     QrCodeIcon,
     ArrowRightIcon,
@@ -14,117 +14,146 @@ import {
     ArrowPathIcon,
     ExclamationTriangleIcon,
     TruckIcon,
-    CubeIcon,
+    ChartBarIcon,
+    MapPinIcon,
+    CurrencyDollarIcon,
+    ExclamationCircleIcon,
     ClipboardDocumentCheckIcon,
     XCircleIcon,
-    CheckIcon,
+    CubeIcon,
+    ShieldCheckIcon,
+    MapIcon,
 } from '@heroicons/react/24/outline';
 import { DUPLER_STEP_TIMING, type DuplerStepTiming } from '../../config/profiles/dupler';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type ReceivingPhase = 'idle' | 'notification' | 'scanning' | 'matching' | 'results';
-type AssignmentPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
-type TransitPhase = 'idle' | 'notification' | 'revealed' | 'resolving';
-type StagingPhase = 'idle' | 'notification' | 'revealed';
+type HealthPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
+type ReceivingPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
+type PricePhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
+type SyncPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
+type ClaimsPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
 
 interface AgentVis { name: string; detail: string; visible: boolean; done: boolean; }
 
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
+// d2.1 — Warehouse Health
+const WAREHOUSE_DATA = [
+    { name: 'Columbus Main', current: 72, forecast: 89, items: 1080, alert: true, alertText: 'Mercy Health Phase 2 arriving next week — projected overflow' },
+    { name: 'Cincinnati Overflow', current: 45, forecast: 48, items: 480, alert: false, alertText: '' },
+    { name: 'Dayton Storage', current: 38, forecast: 38, items: 280, alert: false, alertText: '' },
+];
+
+const RELOCATION_RECS = [
+    { from: 'Columbus — Staging Bay C', to: 'Cincinnati — Overflow Bay 2', items: 55, type: 'General Stock (non-project)', savings: '$2,200/mo' },
+    { from: 'Columbus — Rack 8-10', to: 'Dayton — Bay 4', items: 30, type: 'Archived fixtures (60+ days)', savings: '$1,400/mo' },
+];
+
+// d2.2 — Receiving
 interface ReceivingItem {
-    line: number;
-    sku: string;
-    description: string;
-    poQty: number;
-    receivedQty: number;
-    status: 'matched' | 'missing' | 'wrong';
-    poRef: string;
-    note?: string;
+    line: number; sku: string; description: string; poQty: number; receivedQty: number;
+    status: 'matched' | 'missing' | 'wrong'; condition: 'pristine' | 'inspect' | 'damaged' | null;
+    poRef: string; note?: string;
 }
 
 const RECEIVING_ITEMS: ReceivingItem[] = [
-    { line: 1,  sku: 'ST-TS-4410', description: 'Steelcase Think v2',           poQty: 18, receivedQty: 18, status: 'matched', poRef: 'PO-2026-0412' },
-    { line: 2,  sku: 'ST-LP-3400', description: 'Leap V2 Platinum',             poQty: 5,  receivedQty: 5,  status: 'matched', poRef: 'PO-2026-0412' },
-    { line: 3,  sku: 'ST-GP-2200', description: 'Gesture Shell Back',           poQty: 8,  receivedQty: 8,  status: 'matched', poRef: 'PO-2026-0412' },
-    { line: 4,  sku: 'ST-ML-1100', description: 'Migration SE Height-Adj Desk', poQty: 4,  receivedQty: 4,  status: 'matched', poRef: 'PO-2026-0412' },
-    // Missing items
-    { line: 5,  sku: 'ST-CR-6600', description: 'Coalesse Free Stand Desk',     poQty: 2,  receivedQty: 0,  status: 'missing', poRef: 'PO-2026-0412', note: 'Backorder confirmed — ETA 2 weeks' },
-    { line: 6,  sku: 'ST-BN-7800', description: 'Brody WorkLounge',             poQty: 3,  receivedQty: 0,  status: 'missing', poRef: 'PO-2026-0412', note: 'Backorder confirmed — shipping next week' },
-    // Wrong item
-    { line: 7,  sku: 'ST-TS-4410', description: 'Think v2 — Color: Fog (wrong)', poQty: 0, receivedQty: 2,  status: 'wrong',  poRef: 'PO-2026-0412', note: 'Ordered Graphite, received Fog. Claim CLM-2026-047 drafted.' },
+    { line: 1, sku: 'AS-AC-7100', description: 'Allsteel Acuity Task Chair', poQty: 8, receivedQty: 8, status: 'matched', condition: 'pristine', poRef: 'PO-2026-0389' },
+    { line: 2, sku: 'AS-ST-2200', description: 'Allsteel Stride Bench 60"', poQty: 4, receivedQty: 4, status: 'matched', condition: 'pristine', poRef: 'PO-2026-0389' },
+    { line: 3, sku: 'AS-TL-3300', description: 'Allsteel Terrace Lounge', poQty: 6, receivedQty: 6, status: 'matched', condition: 'inspect', poRef: 'PO-2026-0389', note: 'Minor packaging damage — needs QC inspection' },
+    { line: 4, sku: 'AS-BD-4400', description: 'Allsteel Beyond Open Desk', poQty: 10, receivedQty: 10, status: 'matched', condition: 'pristine', poRef: 'PO-2026-0389' },
+    { line: 5, sku: 'AS-PC-5500', description: 'Allsteel Park Collaborative Table', poQty: 2, receivedQty: 0, status: 'missing', condition: null, poRef: 'PO-2026-0389', note: 'Backorder — ETA 2 weeks' },
+    { line: 6, sku: 'AS-AC-7100-F', description: 'Acuity Chair — Fog Finish', poQty: 2, receivedQty: 2, status: 'wrong', condition: 'inspect', poRef: 'PO-2026-0389', note: 'Ordered Graphite, received Fog — Claim CLM-2026-052' },
 ];
 
 const MATCHED_RECEIVING = RECEIVING_ITEMS.filter(i => i.status === 'matched');
 const EXCEPTIONS_RECEIVING = RECEIVING_ITEMS.filter(i => i.status !== 'matched');
 
-interface WarehouseZone {
-    id: string;
-    name: string;
-    capacity: number;
-    used: number;
-    items: number;
-    type: 'project' | 'general' | 'qc';
-    color: string;
-}
-
-const WAREHOUSE_ZONES: WarehouseZone[] = [
-    { id: 'A', name: 'Zone A — UAL Project', capacity: 100, used: 64, items: 20, type: 'project', color: 'bg-blue-500' },
-    { id: 'B', name: 'Zone B — General Stock', capacity: 100, used: 78, items: 12, type: 'general', color: 'bg-emerald-500' },
-    { id: 'C', name: 'Zone C — QC Pending',    capacity: 100, used: 15, items: 3,  type: 'qc',      color: 'bg-amber-500' },
+// d2.3 — Price Verification
+const PO_PRICE_CHECKS = [
+    { item: 'Acuity Task Chair (×8)', mfr: 'Allsteel', poPrice: 685, currentPrice: 715, change: '+4.4%', margin: '29.2%', flag: false },
+    { item: 'Stride Bench 60" (×4)', mfr: 'Allsteel', poPrice: 920, currentPrice: 920, change: '0%', margin: '34.1%', flag: false },
+    { item: 'Terrace Lounge (×6)', mfr: 'Allsteel', poPrice: 1450, currentPrice: 1520, change: '+4.8%', margin: '23.8%', flag: true },
+    { item: 'Beyond Open Desk (×10)', mfr: 'Allsteel', poPrice: 780, currentPrice: 780, change: '0%', margin: '32.5%', flag: false },
+    { item: 'Park Table (×2)', mfr: 'Allsteel', poPrice: 2100, currentPrice: 2240, change: '+6.7%', margin: '21.4%', flag: true },
 ];
 
-interface Shipment {
-    id: string;
-    carrier: string;
-    manufacturer: string;
-    itemCount: number;
-    eta: string;
-    status: 'on-time' | 'delayed' | 'arriving-today';
-    dock?: string;
-    hasConflict?: boolean;
-    delayReason?: string;
-}
-
-const SHIPMENTS: Shipment[] = [
-    { id: 'SH-001', carrier: 'FedEx Freight',   manufacturer: 'Steelcase',     itemCount: 14, eta: 'Today, 10:00 AM', status: 'arriving-today', dock: 'Dock 1', hasConflict: true },
-    { id: 'SH-002', carrier: 'XPO Logistics',   manufacturer: 'Herman Miller', itemCount: 22, eta: 'Today, 10:00 AM', status: 'arriving-today', dock: 'Dock 1', hasConflict: true },
-    { id: 'SH-003', carrier: 'Old Dominion',    manufacturer: 'Knoll',         itemCount: 8,  eta: 'Tomorrow, 2 PM',  status: 'on-time' },
-    { id: 'SH-004', carrier: 'SAIA',            manufacturer: 'Haworth',       itemCount: 11, eta: 'Thu, 11 AM',      status: 'delayed', delayReason: 'Weather hold — Memphis hub (+2 days)' },
-    { id: 'SH-005', carrier: 'Estes Express',   manufacturer: 'DIRTT',         itemCount: 6,  eta: 'Fri, 9 AM',       status: 'on-time' },
+const TAX_COMPLIANCE = [
+    { region: 'Hamilton County, OH', rate: '7.8%', applies: 'Mercy Health campus delivery', status: 'verified' as const },
+    { region: 'Cook County, IL', rate: '6.7%', applies: 'Cross-dock items from National', status: 'requires-review' as const },
 ];
 
-interface StagingItem {
-    id: string;
-    name: string;
-    qty: number;
-    staged: boolean;
-    pendingDelivery: boolean;
-}
+// d2.4 — Multi-Warehouse Sync
+const LOCATION_STATUS = [
+    { name: 'Columbus Main', type: 'Warehouse' as const, items: 1080, inTransit: 22, status: 'Active', utilization: 72 },
+    { name: 'Cincinnati Overflow', type: 'Warehouse' as const, items: 480, pendingQC: 6, status: 'Active', utilization: 45 },
+    { name: 'Dayton Storage', type: 'Warehouse' as const, items: 280, status: 'Active', utilization: 38 },
+    { name: 'Mercy Health — Phase 2 Site', type: 'Job Site' as const, items: 0, receiving: true, status: 'Receiving' },
+    { name: 'Mercy Health — Phase 1 (Complete)', type: 'Job Site' as const, items: 120, status: 'Installed' },
+];
 
-const STAGING_ITEMS: StagingItem[] = [
-    { id: 'stg-01', name: 'Steelcase Think v2 Task Chair',       qty: 18, staged: true,  pendingDelivery: false },
-    { id: 'stg-02', name: 'Leap V2 Platinum Task Chair',         qty: 5,  staged: true,  pendingDelivery: false },
-    { id: 'stg-03', name: 'Gesture Shell Back Chair',            qty: 8,  staged: true,  pendingDelivery: false },
-    { id: 'stg-04', name: 'Migration SE Height-Adj Desk',        qty: 4,  staged: true,  pendingDelivery: false },
-    { id: 'stg-05', name: 'Aeron Remastered Chair',              qty: 12, staged: true,  pendingDelivery: false },
-    { id: 'stg-06', name: 'Sayl Task Chair',                     qty: 20, staged: true,  pendingDelivery: false },
-    { id: 'stg-07', name: 'Muuto Outline Sofa',                  qty: 4,  staged: true,  pendingDelivery: false },
-    // Pending delivery
-    { id: 'stg-08', name: 'Coalesse Free Stand Desk (backorder)', qty: 2, staged: false, pendingDelivery: true },
-    { id: 'stg-09', name: 'Brody WorkLounge (backorder)',         qty: 3, staged: false, pendingDelivery: true },
+const SHIPMENTS = [
+    { id: 'SH-001', carrier: 'FedEx Freight', manufacturer: 'Allsteel', itemCount: 14, eta: 'Today, 10:00 AM', status: 'arriving-today' as const, dock: 'Dock 1', hasConflict: true },
+    { id: 'SH-002', carrier: 'XPO Logistics', manufacturer: 'Kimball', itemCount: 8, eta: 'Today, 10:00 AM', status: 'arriving-today' as const, dock: 'Dock 1', hasConflict: true },
+    { id: 'SH-003', carrier: 'Old Dominion', manufacturer: 'National', itemCount: 6, eta: 'Tomorrow, 2 PM', status: 'on-time' as const },
+    { id: 'SH-004', carrier: 'SAIA', manufacturer: 'Indiana Furniture', itemCount: 9, eta: 'Thu, 11 AM', status: 'delayed' as const, delayReason: 'Weather hold — Memphis hub (+2 days)' },
+    { id: 'SH-005', carrier: 'Estes Express', manufacturer: 'HNI (Gunlocke)', itemCount: 5, eta: 'Fri, 9 AM', status: 'on-time' as const },
+];
+
+// d2.5 — Vendor Claims
+const VENDOR_CLAIMS = [
+    { id: 'CLM-2026-052', item: 'Acuity Chair — Fog (×2)', mfr: 'Allsteel', type: 'wrong-finish' as const, status: 'RMA Approved', credit: '$1,370', action: 'Return & Replace' },
+    { id: 'CLM-2026-048', item: 'Terrace Lounge (×1)', mfr: 'Allsteel', type: 'packaging-damage' as const, status: 'Under Review', credit: '$480', action: 'Inspect & Decide' },
+    { id: 'CLM-2026-045', item: 'Stride Bench (×1)', mfr: 'Allsteel', type: 'warranty-claim' as const, status: 'Warranty Valid', credit: '$920', action: 'Repair in Place' },
+];
+
+const WARRANTY_ALERTS = [
+    { item: 'Beyond Desk (×4)', mfr: 'Allsteel', daysLeft: 15, value: '$3,120', action: 'Extend' },
+    { item: 'Acuity Chair (×6)', mfr: 'Allsteel', daysLeft: 30, value: '$4,110', action: 'Review' },
+    { item: 'Park Table (×1)', mfr: 'Allsteel', daysLeft: 45, value: '$2,100', action: 'Monitor' },
+    { item: 'National Credenza (×2)', mfr: 'National', daysLeft: 60, value: '$3,360', action: 'Monitor' },
+];
+
+// ─── Agents ──────────────────────────────────────────────────────────────────
+
+const HEALTH_AGENTS: AgentVis[] = [
+    { name: 'WarehouseScanner', detail: 'Scanning 1,840 items across 3 warehouses...', visible: false, done: false },
+    { name: 'CapacityForecaster', detail: 'Columbus → 89% in 2 weeks (Mercy Health Phase 2)...', visible: false, done: false },
+    { name: 'OverflowOptimizer', detail: 'Identifying 85 items for relocation to Cincinnati...', visible: false, done: false },
+    { name: 'CostAnalyzer', detail: 'Calculating storage savings — $3,600/month...', visible: false, done: false },
+    { name: 'ReportGenerator', detail: 'Generating warehouse health report...', visible: false, done: false },
 ];
 
 const RECEIVING_AGENTS: AgentVis[] = [
-    { name: 'QRScanner',      detail: '38 items scanned',      visible: false, done: false },
-    { name: 'POMatchEngine',  detail: 'PO-2026-0412 loaded',   visible: false, done: false },
-    { name: 'ExceptionHandler', detail: '3 exceptions flagged', visible: false, done: false },
+    { name: 'QRScanner', detail: 'Scanning 30 items from PO-2026-0389...', visible: false, done: false },
+    { name: 'POMatchEngine', detail: 'Cross-referencing — 28/30 matched...', visible: false, done: false },
+    { name: 'ConditionScanner', detail: '26 pristine, 3 inspect, 1 damaged...', visible: false, done: false },
+    { name: 'ExceptionHandler', detail: '1 missing + 1 wrong finish — claims drafted...', visible: false, done: false },
+    { name: 'CatalogUpdater', detail: 'Updating warehouse catalog — 28 items logged...', visible: false, done: false },
 ];
 
-const ZONE_AGENTS: AgentVis[] = [
-    { name: 'ZoneAnalyzer',       detail: '3 zones evaluated',     visible: false, done: false },
-    { name: 'PlacementOptimizer', detail: '35 items assigned',     visible: false, done: false },
-    { name: 'CapacityMonitor',    detail: '74% capacity computed', visible: false, done: false },
+const PRICE_AGENTS: AgentVis[] = [
+    { name: 'PriceListScanner', detail: 'Scanning Allsteel, Kimball, National Q1 2026...', visible: false, done: false },
+    { name: 'CostBasisChecker', detail: '3 items with cost changes detected...', visible: false, done: false },
+    { name: 'RegionalTaxEngine', detail: 'Verifying OH 7.8%, IL 6.7% compliance...', visible: false, done: false },
+    { name: 'MarginCalculator', detail: '2 items below 25% margin — flagged...', visible: false, done: false },
+    { name: 'ComplianceReporter', detail: 'Generating price verification report...', visible: false, done: false },
+];
+
+const SYNC_AGENTS: AgentVis[] = [
+    { name: 'WarehouseSync', detail: 'Synchronizing Columbus + Cincinnati + Dayton...', visible: false, done: false },
+    { name: 'TransitTracker', detail: '5 shipments from 3 manufacturers...', visible: false, done: false },
+    { name: 'DockScheduler', detail: 'Dock 1 conflict resolved — SH-002 → Dock 3...', visible: false, done: false },
+    { name: 'RouteOptimizer', detail: '2 Allsteel deliveries consolidated — $1,200 savings...', visible: false, done: false },
+    { name: 'MapUpdater', detail: 'Updating real-time tracking for all assets...', visible: false, done: false },
+];
+
+const CLAIMS_AGENTS: AgentVis[] = [
+    { name: 'ClaimTracker', detail: '3 active claims across Allsteel, National...', visible: false, done: false },
+    { name: 'ReturnAnalyzer', detail: 'CLM-2026-052 RMA approved — replacement shipping...', visible: false, done: false },
+    { name: 'ReplacementFinder', detail: 'Graphite replacement ETA 3 days...', visible: false, done: false },
+    { name: 'CreditProcessor', detail: '$2,770 total credits processing...', visible: false, done: false },
+    { name: 'WarrantyChecker', detail: '4 items approaching warranty expiry...', visible: false, done: false },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -149,186 +178,260 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
         };
     }, []);
 
-    // ── d2.1 State: Receiving ──
+    // ── d2.1 State: Warehouse Health ──
+    const [hlthPhase, setHlthPhase] = useState<HealthPhase>('idle');
+    const hlthRef = useRef(hlthPhase);
+    useEffect(() => { hlthRef.current = hlthPhase; }, [hlthPhase]);
+    const [hlthAgents, setHlthAgents] = useState(HEALTH_AGENTS.map(a => ({ ...a })));
+    const [hlthProgress, setHlthProgress] = useState(0);
+
+    // ── d2.2 State: Receiving ──
     const [recPhase, setRecPhase] = useState<ReceivingPhase>('idle');
+    const recRef = useRef(recPhase);
+    useEffect(() => { recRef.current = recPhase; }, [recPhase]);
     const [recAgents, setRecAgents] = useState(RECEIVING_AGENTS.map(a => ({ ...a })));
-    const [scanProgress, setScanProgress] = useState(0);
-    const [itemsScanned, setItemsScanned] = useState(0);
-    const [recConfirmed, setRecConfirmed] = useState(false);
+    const [recProgress, setRecProgress] = useState(0);
 
-    // ── d2.2 State: Assignment ──
-    const [assignPhase, setAssignPhase] = useState<AssignmentPhase>('idle');
-    const assignRef = useRef(assignPhase);
-    useEffect(() => { assignRef.current = assignPhase; }, [assignPhase]);
-    const [zoneAgents, setZoneAgents] = useState(ZONE_AGENTS.map(a => ({ ...a })));
-    const [zoneProgress, setZoneProgress] = useState(0);
-    const [zoneFills, setZoneFills] = useState<number[]>([0, 0, 0]);
+    // ── d2.3 State: Price Verification ──
+    const [pricePhase, setPricePhase] = useState<PricePhase>('idle');
+    const priceRef = useRef(pricePhase);
+    useEffect(() => { priceRef.current = pricePhase; }, [pricePhase]);
+    const [priceAgents, setPriceAgents] = useState(PRICE_AGENTS.map(a => ({ ...a })));
+    const [priceProgress, setPriceProgress] = useState(0);
 
-    // ── d2.3 State: Transit ──
-    const [transitPhase, setTransitPhase] = useState<TransitPhase>('idle');
-    const [conflictResolved, setConflictResolved] = useState(false);
+    // ── d2.4 State: Multi-Warehouse Sync ──
+    const [syncPhase, setSyncPhase] = useState<SyncPhase>('idle');
+    const syncRef = useRef(syncPhase);
+    useEffect(() => { syncRef.current = syncPhase; }, [syncPhase]);
+    const [syncAgents, setSyncAgents] = useState(SYNC_AGENTS.map(a => ({ ...a })));
+    const [syncProgress, setSyncProgress] = useState(0);
+    const [syncCardsAnimated, setSyncCardsAnimated] = useState(false);
 
-    // ── d2.4 State: Staging ──
-    const [stagPhase, setStagPhase] = useState<StagingPhase>('idle');
-    const [dispatched, setDispatched] = useState(false);
+    // ── d2.5 State: Vendor Claims ──
+    const [claimsPhase, setClaimsPhase] = useState<ClaimsPhase>('idle');
+    const claimsRef = useRef(claimsPhase);
+    useEffect(() => { claimsRef.current = claimsPhase; }, [claimsPhase]);
+    const [claimsAgents, setClaimsAgents] = useState(CLAIMS_AGENTS.map(a => ({ ...a })));
+    const [claimsProgress, setClaimsProgress] = useState(0);
 
     // ── Timing helpers ──
     const tp = (id: string): DuplerStepTiming => DUPLER_STEP_TIMING[id] || DUPLER_STEP_TIMING['d2.1'];
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // d2.1: Receiving & PO Matching (Expert, interactive)
+    // Standard phase orchestration helper
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    const runAgentPipeline = (
+        agents: AgentVis[],
+        setAgents: React.Dispatch<React.SetStateAction<AgentVis[]>>,
+        setProgress: React.Dispatch<React.SetStateAction<number>>,
+        timing: DuplerStepTiming,
+        onDone: () => void,
+    ) => {
+        setAgents(agents.map(a => ({ ...a })));
+        setProgress(0);
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(() => setProgress(100), 50));
+        agents.forEach((_, i) => {
+            timers.push(setTimeout(pauseAware(() => setAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * timing.agentStagger));
+            timers.push(setTimeout(pauseAware(() => setAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * timing.agentStagger + timing.agentDone));
+        });
+        const total = agents.length * timing.agentStagger + timing.agentDone;
+        timers.push(setTimeout(pauseAware(onDone), total));
+        return timers;
+    };
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // d2.1: Warehouse Health & Capacity Forecast (Expert, interactive)
     // ═══════════════════════════════════════════════════════════════════════════
 
     useEffect(() => {
-        if (stepId !== 'd2.1') { setRecPhase('idle'); return; }
+        if (stepId !== 'd2.1') { setHlthPhase('idle'); return; }
+        setHlthPhase('idle');
+        setHlthAgents(HEALTH_AGENTS.map(a => ({ ...a })));
+        setHlthProgress(0);
+        const t = tp('d2.1');
+        const timer = setTimeout(pauseAware(() => setHlthPhase('notification')), t.notifDelay);
+        return () => clearTimeout(timer);
+    }, [stepId]);
+
+    const handleHlthStart = () => setHlthPhase('processing');
+
+    useEffect(() => {
+        if (hlthPhase !== 'processing') return;
+        const timers = runAgentPipeline(HEALTH_AGENTS, setHlthAgents, setHlthProgress, tp('d2.1'), () => setHlthPhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [hlthPhase]);
+
+    useEffect(() => {
+        if (hlthPhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setHlthPhase('revealed')), tp('d2.1').breathing);
+        return () => clearTimeout(t);
+    }, [hlthPhase]);
+
+    useEffect(() => {
+        if (hlthPhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setHlthPhase('results')), 800);
+        return () => clearTimeout(t);
+    }, [hlthPhase]);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // d2.2: Receiving & Condition Assessment (Expert, interactive)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    useEffect(() => {
+        if (stepId !== 'd2.2') { setRecPhase('idle'); return; }
         setRecPhase('idle');
         setRecAgents(RECEIVING_AGENTS.map(a => ({ ...a })));
-        setScanProgress(0);
-        setItemsScanned(0);
-        setRecConfirmed(false);
-        const t = tp('d2.1');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setRecPhase('notification')), t.notifDelay));
-        return () => timers.forEach(clearTimeout);
+        setRecProgress(0);
+        const t = tp('d2.2');
+        const timer = setTimeout(pauseAware(() => setRecPhase('notification')), t.notifDelay);
+        return () => clearTimeout(timer);
     }, [stepId]);
 
-    const handleRecStart = () => setRecPhase('scanning');
+    const handleRecStart = () => setRecPhase('processing');
 
-    // Scanning → stagger agents, animate scan
     useEffect(() => {
-        if (recPhase !== 'scanning') return;
-        setRecAgents(RECEIVING_AGENTS.map(a => ({ ...a })));
-        setScanProgress(0);
-        setItemsScanned(0);
-        const t = tp('d2.1');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(() => setScanProgress(100), 50));
-        RECEIVING_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setRecAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * t.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setRecAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * t.agentStagger + t.agentDone));
-        });
-        // Stagger item scan count
-        const totalItems = 7;
-        for (let i = 0; i < totalItems; i++) {
-            timers.push(setTimeout(pauseAware(() => setItemsScanned(i + 1)), i * 200 + 400));
-        }
-        const total = RECEIVING_AGENTS.length * t.agentStagger + t.agentDone;
-        timers.push(setTimeout(pauseAware(() => setRecPhase('matching')), total));
+        if (recPhase !== 'processing') return;
+        const timers = runAgentPipeline(RECEIVING_AGENTS, setRecAgents, setRecProgress, tp('d2.2'), () => setRecPhase('breathing'));
         return () => timers.forEach(clearTimeout);
     }, [recPhase]);
 
-    // Matching → results
     useEffect(() => {
-        if (recPhase !== 'matching') return;
-        const t = setTimeout(pauseAware(() => setRecPhase('results')), 1200);
+        if (recPhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setRecPhase('revealed')), tp('d2.2').breathing);
+        return () => clearTimeout(t);
+    }, [recPhase]);
+
+    useEffect(() => {
+        if (recPhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setRecPhase('results')), 800);
         return () => clearTimeout(t);
     }, [recPhase]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // d2.2: Warehouse Assignment & Capacity (System, auto)
+    // d2.3: PO Price Verification & Tax Compliance (Expert, interactive)
     // ═══════════════════════════════════════════════════════════════════════════
 
     useEffect(() => {
-        if (stepId !== 'd2.2') { setAssignPhase('idle'); return; }
-        setAssignPhase('idle');
-        setZoneAgents(ZONE_AGENTS.map(a => ({ ...a })));
-        setZoneProgress(0);
-        setZoneFills([0, 0, 0]);
-        const t = tp('d2.2');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setAssignPhase('notification')), t.notifDelay));
-        timers.push(setTimeout(pauseAware(() => { if (assignRef.current === 'notification') setAssignPhase('processing'); }), t.notifDelay + t.notifDuration));
-        return () => timers.forEach(clearTimeout);
-    }, [stepId]);
-
-    // Processing: stagger agents
-    useEffect(() => {
-        if (assignPhase !== 'processing') return;
-        setZoneAgents(ZONE_AGENTS.map(a => ({ ...a })));
-        setZoneProgress(0);
-        const t = tp('d2.2');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(() => setZoneProgress(100), 50));
-        ZONE_AGENTS.forEach((_, i) => {
-            timers.push(setTimeout(pauseAware(() => setZoneAgents(prev => prev.map((a, j) => j === i ? { ...a, visible: true } : a))), i * t.agentStagger));
-            timers.push(setTimeout(pauseAware(() => setZoneAgents(prev => prev.map((a, j) => j === i ? { ...a, done: true } : a))), i * t.agentStagger + t.agentDone));
-        });
-        const total = ZONE_AGENTS.length * t.agentStagger + t.agentDone;
-        timers.push(setTimeout(pauseAware(() => setAssignPhase('breathing')), total));
-        return () => timers.forEach(clearTimeout);
-    }, [assignPhase]);
-
-    // Breathing → revealed
-    useEffect(() => {
-        if (assignPhase !== 'breathing') return;
-        const t = setTimeout(pauseAware(() => setAssignPhase('revealed')), tp('d2.2').breathing);
-        return () => clearTimeout(t);
-    }, [assignPhase]);
-
-    // Revealed: animate zone fills → results
-    useEffect(() => {
-        if (assignPhase !== 'revealed') return;
-        setZoneFills([0, 0, 0]);
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        // Animate fill bars
-        timers.push(setTimeout(() => setZoneFills([64, 0, 0]), 300));
-        timers.push(setTimeout(() => setZoneFills([64, 78, 0]), 700));
-        timers.push(setTimeout(() => setZoneFills([64, 78, 15]), 1100));
-        timers.push(setTimeout(pauseAware(() => setAssignPhase('results')), 2000));
-        return () => timers.forEach(clearTimeout);
-    }, [assignPhase]);
-
-    // Results: auto-advance
-    useEffect(() => {
-        if (assignPhase !== 'results') return;
-        const t = setTimeout(pauseAware(() => nextStep()), tp('d2.2').resultsDur);
-        return () => clearTimeout(t);
-    }, [assignPhase]);
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // d2.3: Transit Tracking & Delivery Schedule (Expert, interactive)
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    useEffect(() => {
-        if (stepId !== 'd2.3') { setTransitPhase('idle'); return; }
-        setTransitPhase('idle');
-        setConflictResolved(false);
+        if (stepId !== 'd2.3') { setPricePhase('idle'); return; }
+        setPricePhase('idle');
+        setPriceAgents(PRICE_AGENTS.map(a => ({ ...a })));
+        setPriceProgress(0);
         const t = tp('d2.3');
-        const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setTransitPhase('notification')), t.notifDelay));
-        return () => timers.forEach(clearTimeout);
+        const timer = setTimeout(pauseAware(() => setPricePhase('notification')), t.notifDelay);
+        return () => clearTimeout(timer);
     }, [stepId]);
 
-    const handleTransitStart = () => setTransitPhase('revealed');
+    const handlePriceStart = () => setPricePhase('processing');
+
+    useEffect(() => {
+        if (pricePhase !== 'processing') return;
+        const timers = runAgentPipeline(PRICE_AGENTS, setPriceAgents, setPriceProgress, tp('d2.3'), () => setPricePhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [pricePhase]);
+
+    useEffect(() => {
+        if (pricePhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setPricePhase('revealed')), tp('d2.3').breathing);
+        return () => clearTimeout(t);
+    }, [pricePhase]);
+
+    useEffect(() => {
+        if (pricePhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setPricePhase('results')), 800);
+        return () => clearTimeout(t);
+    }, [pricePhase]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // d2.4: Pre-Install Staging & Dispatch (Dealer, interactive)
+    // d2.4: Multi-Warehouse Sync & Transit (System, auto 10s)
     // ═══════════════════════════════════════════════════════════════════════════
 
     useEffect(() => {
-        if (stepId !== 'd2.4') { setStagPhase('idle'); return; }
-        setStagPhase('idle');
-        setDispatched(false);
+        if (stepId !== 'd2.4') { setSyncPhase('idle'); return; }
+        setSyncPhase('idle');
+        setSyncAgents(SYNC_AGENTS.map(a => ({ ...a })));
+        setSyncProgress(0);
+        setSyncCardsAnimated(false);
         const t = tp('d2.4');
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setStagPhase('notification')), t.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setSyncPhase('notification')), t.notifDelay));
+        timers.push(setTimeout(pauseAware(() => { if (syncRef.current === 'notification') setSyncPhase('processing'); }), t.notifDelay + t.notifDuration));
         return () => timers.forEach(clearTimeout);
     }, [stepId]);
 
-    const handleStagStart = () => setStagPhase('revealed');
+    useEffect(() => {
+        if (syncPhase !== 'processing') return;
+        const timers = runAgentPipeline(SYNC_AGENTS, setSyncAgents, setSyncProgress, tp('d2.4'), () => setSyncPhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [syncPhase]);
+
+    useEffect(() => {
+        if (syncPhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setSyncPhase('revealed')), tp('d2.4').breathing);
+        return () => clearTimeout(t);
+    }, [syncPhase]);
+
+    useEffect(() => {
+        if (syncPhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setSyncPhase('results')), 2000);
+        return () => clearTimeout(t);
+    }, [syncPhase]);
+
+    // Animate location cards + auto-advance
+    useEffect(() => {
+        if (syncPhase !== 'results') return;
+        const t1 = setTimeout(pauseAware(() => setSyncCardsAnimated(true)), 2000);
+        const t2 = setTimeout(pauseAware(() => nextStep()), tp('d2.4').resultsDur);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [syncPhase]);
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // d2.5: Vendor Claims & Returns (Expert, interactive)
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    useEffect(() => {
+        if (stepId !== 'd2.5') { setClaimsPhase('idle'); return; }
+        setClaimsPhase('idle');
+        setClaimsAgents(CLAIMS_AGENTS.map(a => ({ ...a })));
+        setClaimsProgress(0);
+        const t = tp('d2.5');
+        const timer = setTimeout(pauseAware(() => setClaimsPhase('notification')), t.notifDelay);
+        return () => clearTimeout(timer);
+    }, [stepId]);
+
+    const handleClaimsStart = () => setClaimsPhase('processing');
+
+    useEffect(() => {
+        if (claimsPhase !== 'processing') return;
+        const timers = runAgentPipeline(CLAIMS_AGENTS, setClaimsAgents, setClaimsProgress, tp('d2.5'), () => setClaimsPhase('breathing'));
+        return () => timers.forEach(clearTimeout);
+    }, [claimsPhase]);
+
+    useEffect(() => {
+        if (claimsPhase !== 'breathing') return;
+        const t = setTimeout(pauseAware(() => setClaimsPhase('revealed')), tp('d2.5').breathing);
+        return () => clearTimeout(t);
+    }, [claimsPhase]);
+
+    useEffect(() => {
+        if (claimsPhase !== 'revealed') return;
+        const t = setTimeout(pauseAware(() => setClaimsPhase('results')), 800);
+        return () => clearTimeout(t);
+    }, [claimsPhase]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // Render Helpers
     // ═══════════════════════════════════════════════════════════════════════════
 
-    const renderAgentPipeline = (agents: AgentVis[], progress: number, label: string) => (
+    const renderAgentPipeline = (agents: AgentVis[], progress: number, label: string, color = 'bg-brand-400') => (
         <div className="p-4 rounded-xl bg-card border border-border shadow-sm animate-in fade-in duration-300">
             <div className="flex items-center gap-2 mb-3">
                 <AIAgentAvatar />
                 <span className="text-xs font-bold text-foreground">{label}</span>
             </div>
             <div className="h-1.5 rounded-full bg-muted overflow-hidden mb-3">
-                <div className="h-full rounded-full bg-brand-400 transition-all duration-[3500ms] ease-linear" style={{ width: `${progress}%` }} />
+                <div className={`h-full rounded-full ${color} transition-all duration-[3500ms] ease-linear`} style={{ width: `${progress}%` }} />
             </div>
             <div className="space-y-1.5">
                 {agents.map(agent => (
@@ -345,7 +448,7 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
         </div>
     );
 
-    const renderNotification = (icon: React.ReactNode, title: string, detail: string, onClick: () => void) => (
+    const renderNotification = (icon: React.ReactNode, title: string, detail: string, onClick: () => void, badge?: string) => (
         <button onClick={onClick} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
                 <div className="flex items-start gap-3">
@@ -353,7 +456,7 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                     <div className="flex-1">
                         <div className="flex items-center gap-2">
                             <span className="text-xs font-bold text-foreground">{title}</span>
-                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
+                            {badge && <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">{badge}</span>}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-1">{detail}</p>
                         <p className="text-[10px] text-brand-600 dark:text-brand-400 mt-2 flex items-center gap-1">Click to start <ArrowRightIcon className="h-3 w-3" /></p>
@@ -363,79 +466,163 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
         </button>
     );
 
+    const renderBreathing = (message: string) => (
+        <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-xs font-semibold text-muted-foreground">{message}</span>
+        </div>
+    );
+
+    const renderRevealed = (icon: React.ReactNode, summary: React.ReactNode, systems: string[]) => (
+        <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30 animate-in fade-in duration-500">
+            <div className="flex items-start gap-2 mb-3">
+                <AIAgentAvatar />
+                <p className="text-xs text-green-800 dark:text-green-200">{summary}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+                {systems.map(s => (
+                    <span key={s} className="flex items-center gap-1 text-[9px] text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-500/10 px-2 py-0.5 rounded-full">
+                        <CheckCircleIcon className="h-3 w-3" />{s}
+                    </span>
+                ))}
+            </div>
+        </div>
+    );
+
     // ═══════════════════════════════════════════════════════════════════════════
     // RENDER
     // ═══════════════════════════════════════════════════════════════════════════
 
-    if (!stepId.startsWith('d2.')) return null;
+    if (!stepId.startsWith('d2.') || stepId === 'd2.6') return null;
 
     return (
         <div className="p-6 space-y-4 max-w-5xl mx-auto">
-            {/* ── d2.1: Receiving & PO Matching ── */}
+            {/* ── d2.1: Warehouse Health & Capacity Forecast ── */}
             {stepId === 'd2.1' && (
+                <>
+                    {hlthPhase === 'notification' && renderNotification(
+                        <ChartBarIcon className="h-4 w-4" />,
+                        'Warehouse Health Analysis',
+                        'WarehouseScanner: Scanning 1,840 items across 3 warehouses. Columbus capacity forecast indicates overflow risk ahead of Mercy Health Phase 2.',
+                        handleHlthStart,
+                        '3 WAREHOUSES'
+                    )}
+                    {hlthPhase === 'processing' && renderAgentPipeline(hlthAgents, hlthProgress, 'Health Analysis Pipeline — Forecasting capacity...')}
+                    {hlthPhase === 'breathing' && renderBreathing('Analysis complete — generating recommendations...')}
+                    {(hlthPhase === 'revealed' || hlthPhase === 'results') && (
+                        <div className="animate-in fade-in duration-500 space-y-4">
+                            {renderRevealed(
+                                <ChartBarIcon className="h-4 w-4" />,
+                                <><span className="font-bold">WarehouseScanner:</span> 3 warehouses analyzed — Columbus at <span className="font-semibold">72% (forecast 89%)</span> with Mercy Health Phase 2. Recommending <span className="font-semibold">85 items</span> for relocation. Projected savings: <span className="font-semibold">$3,600/month</span>.</>,
+                                ['Capacity Planner', 'Cost Engine', 'Logistics API', 'Forecast Model']
+                            )}
+
+                            {/* Warehouse gauges */}
+                            <div className="rounded-xl border border-border overflow-hidden">
+                                <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
+                                    <span className="text-xs font-bold text-foreground">Warehouse Capacity Overview</span>
+                                    <span className="text-[10px] font-semibold text-muted-foreground">1,840 total items</span>
+                                </div>
+                                <div className="p-4 space-y-4">
+                                    {WAREHOUSE_DATA.map(wh => (
+                                        <div key={wh.name}>
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`w-2 h-2 rounded-full ${wh.alert ? 'bg-red-500' : 'bg-green-500'}`} />
+                                                    <span className="text-[11px] font-bold text-foreground">{wh.name}</span>
+                                                </div>
+                                                <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                                                    <span>{wh.items} items</span>
+                                                    <span className="font-semibold text-foreground">{wh.current}%</span>
+                                                    {wh.forecast !== wh.current && (
+                                                        <span className="text-red-600 dark:text-red-400 font-semibold">→ {wh.forecast}%</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div className="h-3 rounded-full bg-muted overflow-hidden relative">
+                                                <div className={`h-full rounded-full ${wh.current >= 70 ? 'bg-amber-500' : 'bg-green-500'} transition-all duration-700 ease-out`} style={{ width: `${wh.current}%` }} />
+                                                {wh.forecast !== wh.current && (
+                                                    <div className="absolute top-0 h-full rounded-full bg-red-300/40 dark:bg-red-500/20 transition-all duration-700" style={{ width: `${wh.forecast}%` }} />
+                                                )}
+                                            </div>
+                                            {wh.alert && <p className="text-[10px] text-red-600 dark:text-red-400 mt-1 flex items-center gap-1"><ExclamationTriangleIcon className="h-3 w-3" />{wh.alertText}</p>}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Relocation Recommendations */}
+                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <AIAgentAvatar />
+                                    <span className="text-xs font-bold text-green-800 dark:text-green-200">AI Relocation Recommendations</span>
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/20 text-green-700 dark:text-green-400 font-semibold ml-auto">$3,600/mo savings</span>
+                                </div>
+                                <div className="space-y-2">
+                                    {RELOCATION_RECS.map((rec, i) => (
+                                        <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-white/50 dark:bg-green-500/5 border border-green-200/50 dark:border-green-500/10 text-[10px]">
+                                            <ArrowRightIcon className="h-3 w-3 text-green-600 dark:text-green-400 shrink-0" />
+                                            <div className="flex-1">
+                                                <span className="font-semibold text-foreground">{rec.items} items</span>
+                                                <span className="text-muted-foreground"> — {rec.from} → {rec.to}</span>
+                                                <span className="text-muted-foreground"> ({rec.type})</span>
+                                            </div>
+                                            <span className="text-green-700 dark:text-green-400 font-bold">{rec.savings}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* CTA */}
+                            <button onClick={() => nextStep()} className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all">
+                                <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Apply Recommendations</span>
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* ── d2.2: Receiving & Condition Assessment ── */}
+            {stepId === 'd2.2' && (
                 <>
                     {recPhase === 'notification' && renderNotification(
                         <QrCodeIcon className="h-4 w-4" />,
-                        'Steelcase Shipment Arrived — PO-2026-0412',
-                        'ReceivingAgent: Incoming shipment detected at Dock 2. Ready for QR scan and PO matching.',
-                        handleRecStart
+                        'Receiving & Condition Assessment — PO-2026-0389',
+                        'QRScanner: Allsteel shipment detected at Columbus warehouse. 30 items expected. Ready for QR scan, PO matching, and condition assessment.',
+                        handleRecStart,
+                        '30 ITEMS'
                     )}
-                    {recPhase === 'scanning' && (
-                        <div className="space-y-4 animate-in fade-in duration-300">
-                            {renderAgentPipeline(recAgents, scanProgress, 'Receiving Pipeline — Scanning & Matching...')}
-                            {/* Scan animation */}
-                            <div className="p-4 rounded-xl bg-card border border-border">
-                                <div className="flex items-center gap-2 mb-3">
-                                    <QrCodeIcon className="h-4 w-4 text-indigo-500" />
-                                    <span className="text-xs font-bold text-foreground">QR Scanning</span>
-                                    <span className="text-[10px] text-muted-foreground ml-auto">{itemsScanned}/38 items</span>
-                                </div>
-                                <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                                    <div className="h-full rounded-full bg-indigo-500 transition-all duration-500 ease-out" style={{ width: `${(itemsScanned / 7) * 100}%` }} />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    {recPhase === 'matching' && (
-                        <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
-                            <span className="text-xs font-semibold text-muted-foreground">Cross-referencing against PO-2026-0412...</span>
-                        </div>
-                    )}
-                    {recPhase === 'results' && (
+                    {recPhase === 'processing' && renderAgentPipeline(recAgents, recProgress, 'Receiving Pipeline — Scanning & Assessing...', 'bg-emerald-500')}
+                    {recPhase === 'breathing' && renderBreathing('Scan complete — compiling results...')}
+                    {(recPhase === 'revealed' || recPhase === 'results') && (
                         <div className="animate-in fade-in duration-500 space-y-4">
-                            {/* Summary */}
-                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
-                                <div className="flex items-start gap-2">
-                                    <AIAgentAvatar />
-                                    <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">ReceivingAgent:</span> Scan complete — <span className="font-semibold">35/38 items matched</span>.
-                                        2 missing (backorder confirmed), 1 wrong item (claim auto-drafted). Ready for expert confirmation.
-                                    </p>
-                                </div>
-                            </div>
+                            {renderRevealed(
+                                <QrCodeIcon className="h-4 w-4" />,
+                                <><span className="font-bold">QRScanner:</span> Scan complete — <span className="font-semibold">28/30 items matched</span>. Condition: 26 pristine, 3 inspect, 1 damaged. 1 missing (backorder), 1 wrong finish (claim CLM-2026-052 drafted).</>,
+                                ['QR Scanner', 'PO Match', 'Condition DB', 'Exception Handler']
+                            )}
 
                             {/* Status badges */}
-                            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
-                                <div className="flex items-center gap-1.5 text-[10px]">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-                                    <span className="text-foreground font-semibold">35 Matched</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 text-[10px]">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-amber-500" />
-                                    <span className="text-foreground font-semibold">2 Missing</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 text-[10px]">
-                                    <span className="inline-block w-2 h-2 rounded-full bg-red-500" />
-                                    <span className="text-foreground font-semibold">1 Wrong</span>
-                                </div>
+                            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border flex-wrap">
+                                {[
+                                    { color: 'bg-green-500', label: '28 Matched' },
+                                    { color: 'bg-amber-500', label: '1 Missing' },
+                                    { color: 'bg-red-500', label: '1 Wrong' },
+                                    { color: 'bg-emerald-500', label: '26 Pristine' },
+                                    { color: 'bg-yellow-500', label: '3 Inspect' },
+                                ].map(b => (
+                                    <div key={b.label} className="flex items-center gap-1.5 text-[10px]">
+                                        <span className={`inline-block w-2 h-2 rounded-full ${b.color}`} />
+                                        <span className="text-foreground font-semibold">{b.label}</span>
+                                    </div>
+                                ))}
                             </div>
 
-                            {/* Matched items (collapsed preview) */}
+                            {/* Matched items table */}
                             <div className="rounded-xl border border-border overflow-hidden">
                                 <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
                                     <span className="text-xs font-bold text-foreground">Matched Items</span>
-                                    <span className="text-[10px] text-green-600 dark:text-green-400 font-semibold">35 items verified</span>
+                                    <span className="text-[10px] text-green-600 dark:text-green-400 font-semibold">28 items verified</span>
                                 </div>
                                 <div className="divide-y divide-border">
                                     {MATCHED_RECEIVING.map(item => (
@@ -444,11 +631,14 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                                             <span className="font-mono text-foreground w-24">{item.sku}</span>
                                             <span className="text-foreground flex-1 truncate">{item.description}</span>
                                             <span className="text-muted-foreground w-16 text-right">×{item.receivedQty}/{item.poQty}</span>
+                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                                item.condition === 'pristine' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+                                                item.condition === 'inspect' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                                'bg-red-500/10 text-red-600 dark:text-red-400'
+                                            }`}>{item.condition}</span>
                                         </div>
                                     ))}
-                                    <div className="px-4 py-2 text-[10px] text-muted-foreground bg-muted/30">
-                                        + 31 more matched items...
-                                    </div>
+                                    <div className="px-4 py-2 text-[10px] text-muted-foreground bg-muted/30">+ 24 more matched items...</div>
                                 </div>
                             </div>
 
@@ -464,12 +654,8 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                                        item.status === 'missing'
-                                                            ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400'
-                                                            : 'bg-red-500/20 text-red-700 dark:text-red-400'
-                                                    }`}>
-                                                        {item.status === 'missing' ? 'Missing' : 'Wrong Item'}
-                                                    </span>
+                                                        item.status === 'missing' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' : 'bg-red-500/20 text-red-700 dark:text-red-400'
+                                                    }`}>{item.status === 'missing' ? 'Missing' : 'Wrong Item'}</span>
                                                     <span className="text-[10px] text-muted-foreground">Line #{item.line}</span>
                                                 </div>
                                                 <div className="text-[11px] mt-1">
@@ -478,20 +664,17 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                                                 </div>
                                                 {item.note && (
                                                     <p className="text-[10px] text-muted-foreground mt-1.5 flex items-center gap-1">
-                                                        <AIAgentAvatar />
-                                                        <span className="italic">{item.note}</span>
+                                                        <AIAgentAvatar /><span className="italic">{item.note}</span>
                                                     </p>
                                                 )}
                                             </div>
                                             {item.status === 'missing' ? (
                                                 <div className="flex items-center gap-1.5 text-[10px] text-amber-600 dark:text-amber-400 shrink-0">
-                                                    <ExclamationTriangleIcon className="h-3.5 w-3.5" />
-                                                    <span className="font-semibold">Backorder tracked</span>
+                                                    <ExclamationTriangleIcon className="h-3.5 w-3.5" /><span className="font-semibold">Backorder tracked</span>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-1.5 text-[10px] text-red-600 dark:text-red-400 shrink-0">
-                                                    <XCircleIcon className="h-3.5 w-3.5" />
-                                                    <span className="font-semibold">Claim drafted</span>
+                                                    <XCircleIcon className="h-3.5 w-3.5" /><span className="font-semibold">Claim drafted</span>
                                                 </div>
                                             )}
                                         </div>
@@ -499,116 +682,196 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                                 ))}
                             </div>
 
-                            {/* Confirm button */}
-                            <button
-                                onClick={() => { setRecConfirmed(true); nextStep(); }}
-                                disabled={recConfirmed}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                                    recConfirmed
-                                        ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30'
-                                        : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30'
-                                }`}
-                            >
-                                {recConfirmed ? (
-                                    <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Receiving Confirmed</span>
-                                ) : (
-                                    <span className="flex items-center justify-center gap-2"><ClipboardDocumentCheckIcon className="h-4 w-4" /> Confirm Receiving — 35 Matched, 3 Exceptions Handled</span>
-                                )}
+                            {/* CTA */}
+                            <button onClick={() => nextStep()} className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all">
+                                <span className="flex items-center justify-center gap-2"><ClipboardDocumentCheckIcon className="h-4 w-4" /> Confirm Receiving — 28 Matched, 2 Exceptions Handled</span>
                             </button>
                         </div>
                     )}
                 </>
             )}
 
-            {/* ── d2.2: Warehouse Assignment & Capacity ── */}
-            {stepId === 'd2.2' && (
+            {/* ── d2.3: PO Price Verification & Tax Compliance ── */}
+            {stepId === 'd2.3' && (
                 <>
-                    {assignPhase === 'notification' && (
+                    {pricePhase === 'notification' && renderNotification(
+                        <CurrencyDollarIcon className="h-4 w-4" />,
+                        'PO Price Verification',
+                        'PriceListScanner: Scanning Allsteel, Kimball, National price lists against PO-2026-0389. Verifying regional tax compliance for OH and IL delivery addresses.',
+                        handlePriceStart,
+                        '5 ITEMS CHECKED'
+                    )}
+                    {pricePhase === 'processing' && renderAgentPipeline(priceAgents, priceProgress, 'Price Verification Pipeline — Checking margins...')}
+                    {pricePhase === 'breathing' && renderBreathing('Verification complete — compiling report...')}
+                    {(pricePhase === 'revealed' || pricePhase === 'results') && (
+                        <div className="animate-in fade-in duration-500 space-y-4">
+                            {renderRevealed(
+                                <CurrencyDollarIcon className="h-4 w-4" />,
+                                <><span className="font-bold">PriceListScanner:</span> 5 items verified — <span className="font-semibold">2 with margin below 25%</span> flagged. Regional tax compliance: OH 7.8% verified, IL 6.7% requires review.</>,
+                                ['Price Lists', 'Contract DB', 'Tax Engine', 'Margin Calculator']
+                            )}
+
+                            {/* Price checks table */}
+                            <div className="rounded-xl border border-border overflow-hidden">
+                                <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
+                                    <span className="text-xs font-bold text-foreground">Price Verification Results</span>
+                                    <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">2 items flagged</span>
+                                </div>
+                                <div className="overflow-x-auto">
+                                    <table className="w-full text-[11px]">
+                                        <thead>
+                                            <tr className="bg-muted/30 text-muted-foreground">
+                                                <th className="px-4 py-2 text-left font-semibold">Item</th>
+                                                <th className="px-3 py-2 text-left font-semibold">Mfr</th>
+                                                <th className="px-3 py-2 text-right font-semibold">PO Price</th>
+                                                <th className="px-3 py-2 text-right font-semibold">Current</th>
+                                                <th className="px-3 py-2 text-right font-semibold">Change</th>
+                                                <th className="px-3 py-2 text-right font-semibold">Margin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-border">
+                                            {PO_PRICE_CHECKS.map((pc, i) => (
+                                                <tr key={i} className={pc.flag ? 'bg-amber-50/50 dark:bg-amber-500/5' : ''}>
+                                                    <td className="px-4 py-2 text-foreground font-medium">{pc.item}</td>
+                                                    <td className="px-3 py-2 text-muted-foreground">{pc.mfr}</td>
+                                                    <td className="px-3 py-2 text-right text-foreground">${pc.poPrice.toLocaleString()}</td>
+                                                    <td className="px-3 py-2 text-right text-foreground">${pc.currentPrice.toLocaleString()}</td>
+                                                    <td className={`px-3 py-2 text-right font-semibold ${pc.change !== '0%' ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}`}>{pc.change}</td>
+                                                    <td className={`px-3 py-2 text-right font-semibold ${pc.flag ? 'text-amber-600 dark:text-amber-400' : 'text-foreground'}`}>
+                                                        {pc.margin}
+                                                        {pc.flag && <ExclamationTriangleIcon className="h-3 w-3 inline ml-1" />}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {/* Tax compliance */}
+                            <div className="p-4 rounded-xl bg-purple-50 dark:bg-purple-500/5 border border-purple-200 dark:border-purple-500/20">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <ShieldCheckIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                    <span className="text-xs font-bold text-purple-800 dark:text-purple-200">Regional Tax Compliance</span>
+                                </div>
+                                <div className="space-y-2">
+                                    {TAX_COMPLIANCE.map((tc, i) => (
+                                        <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-white/50 dark:bg-purple-500/5 border border-purple-200/50 dark:border-purple-500/10 text-[10px]">
+                                            <div className="flex items-center gap-2">
+                                                <MapPinIcon className="h-3 w-3 text-purple-500 shrink-0" />
+                                                <span className="font-semibold text-foreground">{tc.region}</span>
+                                                <span className="text-muted-foreground">— {tc.applies}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-purple-700 dark:text-purple-400">{tc.rate}</span>
+                                                <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-semibold ${
+                                                    tc.status === 'verified'
+                                                        ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                                                        : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                                }`}>{tc.status === 'verified' ? 'Verified' : 'Review'}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* CTA */}
+                            <button onClick={() => nextStep()} className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all">
+                                <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Approve Pricing — 2 Margin Alerts Acknowledged</span>
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+
+            {/* ── d2.4: Multi-Warehouse Sync & Transit (Auto) ── */}
+            {stepId === 'd2.4' && (
+                <>
+                    {syncPhase === 'notification' && (
                         <div className="animate-in fade-in slide-in-from-top-4 duration-500">
                             <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
                                 <div className="flex items-start gap-3">
-                                    <div className="p-2 rounded-lg bg-brand-500 text-zinc-900"><CubeIcon className="h-4 w-4" /></div>
+                                    <div className="p-2 rounded-lg bg-brand-500 text-zinc-900"><MapPinIcon className="h-4 w-4" /></div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-foreground">Warehouse Zone Assignment Starting</span>
+                                            <span className="text-xs font-bold text-foreground">Multi-Warehouse Sync</span>
                                             <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Auto</span>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold">5 LOCATIONS</span>
                                         </div>
-                                        <p className="text-[11px] text-muted-foreground mt-1">PlacementOptimizer: Auto-assigning 35 received items to optimal warehouse zones based on project schedule and capacity.</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">WarehouseSync: Synchronizing 3 warehouses + 2 job sites. Resolving dock conflicts and optimizing delivery routes.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     )}
-                    {assignPhase === 'processing' && renderAgentPipeline(zoneAgents, zoneProgress, 'Zone Assignment Pipeline — Optimizing placement...')}
-                    {assignPhase === 'breathing' && (
-                        <div className="p-4 rounded-xl bg-muted/30 border border-border/50 animate-in fade-in duration-300 flex items-center justify-center gap-3">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-xs font-semibold text-muted-foreground">Assignment complete — building zone map...</span>
-                        </div>
-                    )}
-                    {(assignPhase === 'revealed' || assignPhase === 'results') && (
+                    {syncPhase === 'processing' && renderAgentPipeline(syncAgents, syncProgress, 'Sync Pipeline — Synchronizing locations...')}
+                    {syncPhase === 'breathing' && renderBreathing('Sync complete — updating location map...')}
+                    {(syncPhase === 'revealed' || syncPhase === 'results') && (
                         <div className="animate-in fade-in duration-500 space-y-4">
-                            {/* AI Summary */}
-                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
-                                <div className="flex items-start gap-2">
-                                    <AIAgentAvatar />
-                                    <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">PlacementOptimizer:</span> All <span className="font-semibold">35 items assigned</span>.
-                                        Zone A (UAL Project): 20 items. Zone B (General Stock): 12 items. Zone C (QC Pending): 3 items.
-                                        Warehouse at <span className="font-semibold">74% capacity</span>.
-                                    </p>
-                                </div>
-                            </div>
+                            {renderRevealed(
+                                <MapPinIcon className="h-4 w-4" />,
+                                <><span className="font-bold">WarehouseSync:</span> 3 warehouses + 2 job sites synchronized. Dock conflict auto-resolved (SH-002 → Dock 3). Route optimization: <span className="font-semibold">$1,200 savings</span>.</>,
+                                ['Warehouse Sync', 'Transit Tracker', 'Dock Scheduler', 'Route Optimizer']
+                            )}
 
-                            {/* Zone visualization */}
+                            {/* Location cards */}
                             <div className="rounded-xl border border-border overflow-hidden">
                                 <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
-                                    <span className="text-xs font-bold text-foreground">Warehouse Zone Map</span>
-                                    <span className="text-[10px] font-semibold text-muted-foreground">74% Total Capacity</span>
+                                    <span className="text-xs font-bold text-foreground">Location Sync Status</span>
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 font-semibold">All Synced</span>
                                 </div>
-                                <div className="p-4 space-y-4">
-                                    {WAREHOUSE_ZONES.map((zone, idx) => (
-                                        <div key={zone.id}>
-                                            <div className="flex items-center justify-between mb-1.5">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`w-2 h-2 rounded-full ${zone.color}`} />
-                                                    <span className="text-[11px] font-bold text-foreground">{zone.name}</span>
-                                                </div>
-                                                <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                                                    <span>{zone.items} items</span>
-                                                    <span className="font-semibold text-foreground">{zoneFills[idx]}%</span>
+                                <div className="divide-y divide-border">
+                                    {LOCATION_STATUS.map((loc, i) => (
+                                        <div key={i} className="px-4 py-3 flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                {loc.type === 'Warehouse' ? (
+                                                    <CubeIcon className="h-4 w-4 text-blue-500 shrink-0" />
+                                                ) : (
+                                                    <MapIcon className="h-4 w-4 text-emerald-500 shrink-0" />
+                                                )}
+                                                <div>
+                                                    <div className="text-[11px] font-bold text-foreground">{loc.name}</div>
+                                                    <div className="text-[10px] text-muted-foreground">
+                                                        {loc.items} items
+                                                        {'inTransit' in loc && loc.inTransit && !syncCardsAnimated && <> · {loc.inTransit} in transit</>}
+                                                        {'inTransit' in loc && loc.inTransit && syncCardsAnimated && <> · <span className="text-green-600 dark:text-green-400 font-semibold">Delivered</span></>}
+                                                        {'pendingQC' in loc && loc.pendingQC && !syncCardsAnimated && <> · {loc.pendingQC} pending QC</>}
+                                                        {'pendingQC' in loc && loc.pendingQC && syncCardsAnimated && <> · <span className="text-green-600 dark:text-green-400 font-semibold">QC Cleared</span></>}
+                                                        {'receiving' in loc && loc.receiving && !syncCardsAnimated && <> · Receiving</>}
+                                                        {'receiving' in loc && loc.receiving && syncCardsAnimated && <> · <span className="text-green-600 dark:text-green-400 font-semibold">Received</span></>}
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="h-3 rounded-full bg-muted overflow-hidden">
-                                                <div
-                                                    className={`h-full rounded-full ${zone.color} transition-all duration-700 ease-out`}
-                                                    style={{ width: `${zoneFills[idx]}%` }}
-                                                />
+                                            <div className="flex items-center gap-2">
+                                                {'utilization' in loc && loc.utilization && (
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                                                            <div className={`h-full rounded-full ${(loc.utilization ?? 0) >= 70 ? 'bg-amber-500' : 'bg-green-500'}`} style={{ width: `${loc.utilization}%` }} />
+                                                        </div>
+                                                        <span className="text-[10px] font-semibold text-foreground w-8 text-right">{loc.utilization}%</span>
+                                                    </div>
+                                                )}
+                                                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${
+                                                    loc.status === 'Active' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
+                                                    loc.status === 'Receiving' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' :
+                                                    'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
+                                                }`}>{loc.status}</span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Summary cards */}
-                            <div className="grid grid-cols-3 gap-3">
-                                <div className="p-3 rounded-xl bg-card border border-border text-center">
-                                    <div className="text-lg font-bold text-foreground">35</div>
-                                    <div className="text-[10px] text-muted-foreground">Items Assigned</div>
-                                </div>
-                                <div className="p-3 rounded-xl bg-card border border-border text-center">
-                                    <div className="text-lg font-bold text-foreground">3</div>
-                                    <div className="text-[10px] text-muted-foreground">Zones Used</div>
-                                </div>
-                                <div className="p-3 rounded-xl bg-card border border-border text-center">
-                                    <div className="text-lg font-bold text-foreground">74%</div>
-                                    <div className="text-[10px] text-muted-foreground">Capacity</div>
-                                </div>
+                            {/* Route optimization */}
+                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 flex items-center gap-3">
+                                <TruckIcon className="h-4 w-4 text-green-600 dark:text-green-400 shrink-0" />
+                                <span className="text-[11px] text-green-800 dark:text-green-200 flex-1">Route Optimization: 2 Allsteel deliveries consolidated</span>
+                                <span className="text-[11px] font-bold text-green-700 dark:text-green-400">-$1,200</span>
                             </div>
 
-                            {assignPhase === 'results' && (
+                            {syncPhase === 'results' && (
                                 <div className="text-center text-[10px] text-muted-foreground animate-pulse">
-                                    Auto-advancing to transit tracking...
+                                    Auto-advancing to vendor claims...
                                 </div>
                             )}
                         </div>
@@ -616,206 +879,91 @@ export default function DuplerWarehouse({ onNavigate }: DuplerWarehouseProps) {
                 </>
             )}
 
-            {/* ── d2.3: Transit Tracking & Delivery Schedule ── */}
-            {stepId === 'd2.3' && (
+            {/* ── d2.5: Vendor Claims & Returns ── */}
+            {stepId === 'd2.5' && (
                 <>
-                    {transitPhase === 'notification' && renderNotification(
-                        <TruckIcon className="h-4 w-4" />,
-                        'Transit Dashboard — 5 Active Shipments',
-                        'TransitTracker: 5 shipments from 3 manufacturers in transit. Dock conflict detected — 2 shipments arriving at Dock 1 simultaneously.',
-                        handleTransitStart
+                    {claimsPhase === 'notification' && renderNotification(
+                        <ExclamationCircleIcon className="h-4 w-4" />,
+                        'Vendor Claims & Returns',
+                        'ClaimTracker: 3 active claims across Allsteel and National. CLM-2026-052 (wrong finish) RMA approved. 4 items approaching warranty expiry.',
+                        handleClaimsStart,
+                        '3 ACTIVE CLAIMS'
                     )}
-                    {(transitPhase === 'revealed' || transitPhase === 'resolving') && (
+                    {claimsPhase === 'processing' && renderAgentPipeline(claimsAgents, claimsProgress, 'Claims Pipeline — Processing returns...', 'bg-rose-500')}
+                    {claimsPhase === 'breathing' && renderBreathing('Claims processed — generating report...')}
+                    {(claimsPhase === 'revealed' || claimsPhase === 'results') && (
                         <div className="animate-in fade-in duration-500 space-y-4">
-                            {/* Dock conflict alert */}
-                            {!conflictResolved && (
-                                <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/5 border-2 border-red-300 dark:border-red-500/30 animate-in fade-in duration-300">
-                                    <div className="flex items-start gap-2">
-                                        <ExclamationTriangleIcon className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
-                                        <div className="flex-1">
-                                            <span className="text-xs font-bold text-red-700 dark:text-red-400">Dock Conflict Detected</span>
-                                            <p className="text-[11px] text-red-600 dark:text-red-300 mt-1">
-                                                FedEx Freight (Steelcase) and XPO Logistics (Herman Miller) both scheduled for Dock 1 at 10:00 AM.
-                                            </p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <AIAgentAvatar />
-                                                <span className="text-[10px] text-muted-foreground italic">AI Suggestion: Move Herman Miller to Dock 3 at 2:00 PM</span>
-                                            </div>
-                                            <div className="flex gap-2 mt-3">
-                                                <button
-                                                    onClick={() => setConflictResolved(true)}
-                                                    className="px-3 py-1.5 bg-brand-400 hover:bg-brand-500 text-zinc-900 text-[10px] font-bold rounded-lg transition-colors"
-                                                >
-                                                    Accept AI Suggestion
-                                                </button>
-                                                <button
-                                                    onClick={() => setConflictResolved(true)}
-                                                    className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-[10px] font-semibold rounded-lg border border-border transition-colors"
-                                                >
-                                                    Manual Reschedule
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            {conflictResolved && (
-                                <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-300 dark:border-green-500/30 flex items-center gap-2 animate-in fade-in duration-300">
-                                    <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                                    <span className="text-xs text-green-700 dark:text-green-400 font-semibold">Dock conflict resolved — Herman Miller moved to Dock 3 at 2:00 PM</span>
-                                </div>
+                            {renderRevealed(
+                                <ExclamationCircleIcon className="h-4 w-4" />,
+                                <><span className="font-bold">ClaimTracker:</span> 3 claims processed — <span className="font-semibold">$2,770 total credits</span>. CLM-2026-052 RMA approved, replacement shipping. 4 warranty alerts require attention.</>,
+                                ['Claim Tracker', 'RMA System', 'Credit Processor', 'Warranty DB']
                             )}
 
-                            {/* Shipment cards */}
-                            <div className="grid grid-cols-1 gap-3">
-                                {SHIPMENTS.map(ship => (
-                                    <div key={ship.id} className={`p-4 rounded-xl border ${
-                                        ship.hasConflict && !conflictResolved
-                                            ? 'border-red-300 dark:border-red-500/30 bg-red-50/30 dark:bg-red-500/5'
-                                            : 'border-border bg-card'
-                                    } transition-all duration-300`}>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <TruckIcon className="h-4 w-4 text-muted-foreground" />
-                                                <div>
-                                                    <div className="text-[11px] font-bold text-foreground">{ship.carrier}</div>
-                                                    <div className="text-[10px] text-muted-foreground">{ship.manufacturer} — {ship.itemCount} items</div>
+                            {/* Claim cards */}
+                            <div className="space-y-3">
+                                {VENDOR_CLAIMS.map(claim => (
+                                    <div key={claim.id} className={`p-4 rounded-xl border-2 ${
+                                        claim.type === 'wrong-finish' ? 'border-red-300 dark:border-red-500/30 bg-red-50/50 dark:bg-red-500/5' :
+                                        claim.type === 'packaging-damage' ? 'border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5' :
+                                        'border-blue-300 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
+                                    }`}>
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                                                        claim.type === 'wrong-finish' ? 'bg-red-500/20 text-red-700 dark:text-red-400' :
+                                                        claim.type === 'packaging-damage' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' :
+                                                        'bg-blue-500/20 text-blue-700 dark:text-blue-400'
+                                                    }`}>{claim.action}</span>
+                                                    <span className="text-[10px] font-mono text-muted-foreground">{claim.id}</span>
                                                 </div>
+                                                <div className="text-[11px] font-semibold text-foreground">{claim.item}</div>
+                                                <div className="text-[10px] text-muted-foreground mt-0.5">{claim.mfr} — {claim.status}</div>
                                             </div>
-                                            <div className="flex items-center gap-3">
-                                                <div className="text-right">
-                                                    <div className="text-[11px] font-semibold text-foreground">
-                                                        {conflictResolved && ship.id === 'SH-002' ? 'Today, 2:00 PM' : ship.eta}
-                                                    </div>
-                                                    {conflictResolved && ship.id === 'SH-002' && (
-                                                        <div className="text-[9px] text-green-600 dark:text-green-400">Dock 3 (rescheduled)</div>
-                                                    )}
-                                                    {ship.dock && !(conflictResolved && ship.id === 'SH-002') && (
-                                                        <div className="text-[9px] text-muted-foreground">{ship.dock}</div>
-                                                    )}
-                                                </div>
-                                                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                                                    ship.status === 'on-time' ? 'bg-green-500/10 text-green-600 dark:text-green-400' :
-                                                    ship.status === 'delayed' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
-                                                    'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                                                }`}>
-                                                    {ship.status === 'arriving-today' ? 'Today' : ship.status}
-                                                </span>
-                                            </div>
+                                            <span className="text-sm font-bold text-foreground">{claim.credit}</span>
                                         </div>
-                                        {ship.delayReason && (
-                                            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-red-600 dark:text-red-400">
-                                                <ExclamationTriangleIcon className="h-3 w-3" />
-                                                {ship.delayReason}
-                                            </div>
-                                        )}
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Update button */}
-                            <button
-                                onClick={() => nextStep()}
-                                disabled={!conflictResolved}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                                    conflictResolved
-                                        ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20'
-                                        : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-                                }`}
-                            >
-                                <span className="flex items-center justify-center gap-2">
-                                    <TruckIcon className="h-4 w-4" />
-                                    {conflictResolved ? 'Update Schedule — All Conflicts Resolved' : 'Resolve Dock Conflict to Continue'}
-                                </span>
-                            </button>
-                        </div>
-                    )}
-                </>
-            )}
-
-            {/* ── d2.4: Pre-Install Staging & Dispatch ── */}
-            {stepId === 'd2.4' && (
-                <>
-                    {stagPhase === 'notification' && renderNotification(
-                        <ClipboardDocumentCheckIcon className="h-4 w-4" />,
-                        'Staging Checklist Ready — UAL Project Install',
-                        'StagingAgent: Pre-install checklist generated. 28/30 items staged and ready. 2 items arriving today at 2 PM.',
-                        handleStagStart
-                    )}
-                    {stagPhase === 'revealed' && (
-                        <div className="animate-in fade-in duration-500 space-y-4">
-                            {/* Installer info */}
-                            <div className="p-4 rounded-xl bg-card border border-border">
-                                <div className="flex items-center gap-3 mb-3">
-                                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                                        <TruckIcon className="h-4 w-4" />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs font-bold text-foreground">ProInstall LLC — Thursday 8:00 AM</div>
-                                        <div className="text-[10px] text-muted-foreground">4 crew members • Lead: Luis Mendez</div>
-                                    </div>
-                                </div>
-                                <div className="flex gap-3">
-                                    <div className="flex-1 p-2 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 text-center">
-                                        <div className="text-sm font-bold text-green-700 dark:text-green-400">28</div>
-                                        <div className="text-[9px] text-green-600 dark:text-green-400">Ready</div>
-                                    </div>
-                                    <div className="flex-1 p-2 rounded-lg bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 text-center">
-                                        <div className="text-sm font-bold text-amber-700 dark:text-amber-400">2</div>
-                                        <div className="text-[9px] text-amber-600 dark:text-amber-400">Pending</div>
-                                    </div>
-                                    <div className="flex-1 p-2 rounded-lg bg-muted border border-border text-center">
-                                        <div className="text-sm font-bold text-foreground">30</div>
-                                        <div className="text-[9px] text-muted-foreground">Total</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Staging checklist */}
+                            {/* Warranty alerts */}
                             <div className="rounded-xl border border-border overflow-hidden">
                                 <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
-                                    <span className="text-xs font-bold text-foreground">Staging Checklist</span>
-                                    <span className="text-[10px] text-muted-foreground">28/30 staged</span>
+                                    <span className="text-xs font-bold text-foreground">Warranty Alerts</span>
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-semibold">4 items</span>
                                 </div>
                                 <div className="divide-y divide-border">
-                                    {STAGING_ITEMS.map(item => (
-                                        <div key={item.id} className={`px-4 py-2.5 flex items-center gap-3 text-[11px] ${
-                                            item.pendingDelivery ? 'bg-amber-50/50 dark:bg-amber-500/5' : ''
-                                        }`}>
-                                            {item.staged ? (
-                                                <CheckCircleIcon className="h-4 w-4 text-green-500 shrink-0" />
-                                            ) : (
-                                                <div className="h-4 w-4 rounded-full border-2 border-amber-400 shrink-0" />
-                                            )}
-                                            <span className={`flex-1 ${item.pendingDelivery ? 'text-muted-foreground' : 'text-foreground'}`}>
-                                                {item.name}
-                                            </span>
-                                            <span className="text-muted-foreground w-10 text-right">×{item.qty}</span>
-                                            {item.pendingDelivery && (
-                                                <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400">
-                                                    Arriving 2 PM
+                                    {WARRANTY_ALERTS.map((wa, i) => (
+                                        <div key={i} className="px-4 py-2.5 flex items-center justify-between text-[11px]">
+                                            <div>
+                                                <span className="font-semibold text-foreground">{wa.item}</span>
+                                                <span className="text-muted-foreground ml-2">({wa.mfr})</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-muted-foreground">{wa.value}</span>
+                                                <span className={`text-[10px] font-semibold ${wa.daysLeft <= 15 ? 'text-red-600 dark:text-red-400' : wa.daysLeft <= 30 ? 'text-amber-600 dark:text-amber-400' : 'text-muted-foreground'}`}>
+                                                    {wa.daysLeft}d left
                                                 </span>
-                                            )}
+                                                <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                                    wa.action === 'Extend' ? 'bg-red-500/10 text-red-600 dark:text-red-400' :
+                                                    wa.action === 'Review' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                                    'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400'
+                                                }`}>{wa.action}</span>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Dispatch button */}
-                            <button
-                                onClick={() => { setDispatched(true); nextStep(); }}
-                                disabled={dispatched}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${
-                                    dispatched
-                                        ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30'
-                                        : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30'
-                                }`}
-                            >
-                                {dispatched ? (
-                                    <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Dispatch Confirmed</span>
-                                ) : (
-                                    <span className="flex items-center justify-center gap-2"><TruckIcon className="h-4 w-4" /> Confirm Dispatch — 28 Items Staged, 2 Arriving Today</span>
-                                )}
+                            {/* Footer */}
+                            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border text-[10px]">
+                                <span className="text-muted-foreground">Total credits: <span className="font-bold text-foreground">$2,770</span></span>
+                                <span className="text-muted-foreground">Warranty alerts: <span className="font-bold text-foreground">4</span></span>
+                            </div>
+
+                            {/* CTA */}
+                            <button onClick={() => nextStep()} className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all">
+                                <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Process Claims — $2,770 Credits Approved</span>
                             </button>
                         </div>
                     )}

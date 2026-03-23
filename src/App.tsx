@@ -127,7 +127,7 @@ function App() {
       : currentStep.app === 'catalog' ? 'Marketplace'
       : currentStep.app === 'service-now' ? 'ServiceNow'
       : currentStep.app === 'crm' ? 'Strata CRM'
-      : currentStep.app === 'dupler-pdf' ? 'SIFF Processor'
+      : currentStep.app === 'dupler-pdf' ? 'SIF Spec Check'
       : currentStep.app === 'dupler-warehouse' ? 'Warehouse Manager'
       : currentStep.app === 'dupler-reporting' ? 'Analytics Hub'
       : isExpert ? 'Expert Hub'
@@ -315,7 +315,7 @@ function App() {
 
       {/* FIXED NAVBAR (Unified) — hidden for email simulation & workspace/detail */}
       {(isDemoActive
-        ? currentStep.app !== 'email-marketplace' && !['1.8', '1.6', '2.1', '4.4'].includes(currentStep.id) && !(currentStep.id === '3.5' && !isContinua)
+        ? currentStep.app !== 'email-marketplace' && !['1.8', '1.6', '2.1', '4.4', 'd2.6'].includes(currentStep.id) && !(currentStep.id === '3.5' && !isContinua)
         : currentPage !== 'detail' && currentPage !== 'workspace'
       ) && (
         <div className="fixed top-0 left-0 right-0 z-[100]">

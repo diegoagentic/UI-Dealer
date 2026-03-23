@@ -375,6 +375,24 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const isContinua = activeProfile.id === 'continua'
     const stepId = currentStep?.id || ''
 
+    // ── Dupler d1.1: Simulate hover + auto-click on "Convert to SIF" ──
+    const [sifHoverSim, setSifHoverSim] = useState(false);
+    const [sifClicked, setSifClicked] = useState(false);
+    const sifBtnRef = useRef<HTMLButtonElement>(null);
+    useEffect(() => {
+        if (stepId !== 'd1.1') { setSifHoverSim(false); setSifClicked(false); return; }
+        setSifHoverSim(false);
+        setSifClicked(false);
+        // Phase 1: simulate hover after 1.5s
+        const t1 = setTimeout(() => setSifHoverSim(true), 1500);
+        // Phase 2: simulate click after 3s
+        const t2 = setTimeout(() => {
+            setSifClicked(true);
+            window.dispatchEvent(new CustomEvent('dupler-sif-convert'));
+        }, 3000);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
+    }, [stepId]);
+
     // ── Continua Step 2.2 Procurement state ──
     const [procPhase, setProcPhase] = useState<ProcurementPhase>('idle')
     const [expertAnswer, setExpertAnswer] = useState<string | null>(null)
@@ -1407,6 +1425,32 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         </button>
                                                     </>)}
                                                     {lifecycleTab === 'orders' && (<>
+                                                        {/* Convert to SIF — Dupler d1.1: simulated hover + auto-click */}
+                                                        {currentStep.id === 'd1.1' && (
+                                                            <div className="relative">
+                                                                <button
+                                                                    ref={sifBtnRef}
+                                                                    onClick={() => { setSifClicked(true); window.dispatchEvent(new CustomEvent('dupler-sif-convert')); }}
+                                                                    className={cn(
+                                                                        "p-2 rounded-lg transition-all relative",
+                                                                        sifHoverSim && !sifClicked
+                                                                            ? "bg-brand-300 text-zinc-900 scale-110 shadow-lg shadow-brand-400/30"
+                                                                            : sifClicked
+                                                                                ? "bg-brand-400 text-zinc-900 scale-95"
+                                                                                : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
+                                                                    )}
+                                                                    title="Convert to SIF"
+                                                                >
+                                                                    <CloudArrowUpIcon className="w-5 h-5" />
+                                                                </button>
+                                                                {/* Simulated tooltip on hover */}
+                                                                {sifHoverSim && !sifClicked && (
+                                                                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-zinc-900 text-white text-[10px] font-medium rounded whitespace-nowrap animate-in fade-in duration-200 z-50">
+                                                                        Convert to SIF
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
                                                         <button onClick={() => triggerToast('Duplicate Order', 'Select an order to duplicate from the list.', 'info')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors" title="Duplicate">
                                                             <DocumentDuplicateIcon className="w-5 h-5" />
                                                         </button>

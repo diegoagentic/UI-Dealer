@@ -36,10 +36,10 @@ interface AgentVis { name: string; detail: string; visible: boolean; done: boole
 // ─── Mock Data ───────────────────────────────────────────────────────────────
 
 const FUNNEL_DATA = [
-    { stage: 'Prospect', count: 18, value: 890000, color: '#818cf8' },
-    { stage: 'Proposal', count: 14, value: 720000, color: '#6366f1' },
-    { stage: 'Negotiation', count: 10, value: 680000, color: '#4f46e5' },
-    { stage: 'Closed Won', count: 5, value: 510000, color: '#22c55e' },
+    { stage: 'Prospect', count: 14, value: 680000, color: '#818cf8' },
+    { stage: 'Proposal', count: 11, value: 540000, color: '#6366f1' },
+    { stage: 'Negotiation', count: 8, value: 520000, color: '#4f46e5' },
+    { stage: 'Closed Won', count: 5, value: 360000, color: '#22c55e' },
 ];
 
 interface KPIMetric {
@@ -50,17 +50,17 @@ interface KPIMetric {
 }
 
 const KPI_METRICS: KPIMetric[] = [
-    { label: 'Pipeline Value', value: '$2.8M', trend: '+12% vs Q1', trendUp: true },
-    { label: 'Active Deals', value: '47', trend: '+5 this month', trendUp: true },
-    { label: 'Close Rate', value: '34%', trend: '+2% vs avg', trendUp: true },
-    { label: 'Avg Deal Size', value: '$59.6K', trend: '-3% vs Q1', trendUp: false },
+    { label: 'Pipeline Value', value: '$2.1M', trend: '+12% vs Q1', trendUp: true },
+    { label: 'Active Deals', value: '38', trend: '+5 this month', trendUp: true },
+    { label: 'Close Rate', value: '31%', trend: '+2% vs avg', trendUp: true },
+    { label: 'Avg Deal Size', value: '$55.3K', trend: '-3% vs Q1', trendUp: false },
 ];
 
 const OPS_KPIS: KPIMetric[] = [
-    { label: 'DSO', value: '42 days', trend: '-3 days vs Q1', trendUp: true },
-    { label: 'Aging 30+', value: '$280K', trend: '-$45K vs Q1', trendUp: true },
-    { label: 'On-Time Delivery', value: '91%', trend: '+2% vs Q1', trendUp: true },
-    { label: 'Avg Margin', value: '31.4%', trend: '-0.6% vs Q1', trendUp: false },
+    { label: 'DSO', value: '45 days', trend: '-3 days vs Q1', trendUp: true },
+    { label: 'Aging 30+', value: '$210K', trend: '-$45K vs Q1', trendUp: true },
+    { label: 'On-Time Delivery', value: '89%', trend: '+2% vs Q1', trendUp: true },
+    { label: 'Avg Margin', value: '29.8%', trend: '-0.6% vs Q1', trendUp: false },
 ];
 
 interface CrossSystemAlert {
@@ -78,7 +78,7 @@ const CROSS_SYSTEM_ALERTS: CrossSystemAlert[] = [
         type: 'duplicate',
         hubspotRef: 'HS-DUP-0041',
         coreRef: 'HS-DUP-0041-B',
-        detail: 'Deal "UAL Phase 3" appears twice in HubSpot — created by different reps on same day.',
+        detail: 'Deal "Mercy Health Phase 2" appears twice in HubSpot — created by Tara and Carolyn on same day.',
         aiSuggestion: 'Merge into HS-DUP-0041 (higher activity). Archive duplicate.',
     },
     {
@@ -86,16 +86,16 @@ const CROSS_SYSTEM_ALERTS: CrossSystemAlert[] = [
         type: 'amount-mismatch',
         hubspotRef: 'HS-DUP-0039',
         coreRef: 'CORE-PRJ-0039',
-        detail: 'HubSpot: $23,400 vs Core: $19,200. Discount applied in Core after deal closed.',
-        aiSuggestion: 'Update HubSpot to $19,200 to match Core (discount $4,200 applied post-close).',
+        detail: 'HubSpot: $18,400 vs Core: $14,600. Compass discount applied in Core (SCS) after deal closed.',
+        aiSuggestion: 'Update HubSpot to $14,600 to match Core (discount $3,800 applied post-close).',
     },
     {
         id: 'csa-3',
         type: 'missing-link',
         hubspotRef: '—',
         coreRef: 'CORE-INV-2026-118',
-        detail: 'Invoice $8,750 in Core has no linked deal in HubSpot. Customer: Apex Furniture.',
-        aiSuggestion: 'Link to HS-DUP-0045 (Apex Furniture, matching amount, open stage).',
+        detail: 'Invoice $6,250 in Core has no linked deal in HubSpot. Customer: Apex Business Interiors.',
+        aiSuggestion: 'Link to HS-DUP-0045 (Apex Business Interiors, matching amount, open stage).',
     },
 ];
 
@@ -109,7 +109,7 @@ interface ReportSection {
 const REPORT_SECTIONS: ReportSection[] = [
     { id: 'pipeline', title: 'Pipeline Health', subtitle: 'Funnel analysis, projections & deal velocity', icon: <ChartBarIcon className="h-4 w-4" /> },
     { id: 'ops', title: 'Operations Summary', subtitle: 'Active projects, delivery status & inventory', icon: <DocumentChartBarIcon className="h-4 w-4" /> },
-    { id: 'finance', title: 'Financial Reconciliation', subtitle: '47/47 matched, 3 exceptions resolved', icon: <ArrowsRightLeftIcon className="h-4 w-4" /> },
+    { id: 'finance', title: 'Financial Reconciliation', subtitle: '38/38 matched, 3 exceptions resolved', icon: <ArrowsRightLeftIcon className="h-4 w-4" /> },
     { id: 'insights', title: 'AI Recommendations', subtitle: '3 actionable insights from cross-system analysis', icon: <LightBulbIcon className="h-4 w-4" /> },
 ];
 
@@ -124,36 +124,36 @@ interface AIInsight {
 const AI_INSIGHTS: AIInsight[] = [
     {
         id: 'ins-1',
-        title: 'Consolidate Zone A + B Shipments',
-        detail: 'Next week\'s deliveries to Zone A and Zone B can share a single truck. Estimated savings: $1,200.',
-        impact: 'Save $1,200',
+        title: 'Consolidate Allsteel + Kimball Deliveries',
+        detail: 'Next week\'s Allsteel and Kimball deliveries can share a single truck to Interior Installations. Estimated savings: $950.',
+        impact: 'Save $950',
         confidence: 92,
     },
     {
         id: 'ins-2',
-        title: 'Follow Up on Deal DUP-HP-0039',
+        title: 'Follow Up on Mercy Health Phase 3',
         detail: 'Deal inactive for 14 days. Last activity: proposal sent. Historical pattern: 80% of deals that go silent >10 days are lost.',
-        impact: 'At risk: $23,400',
+        impact: 'At risk: $18,400',
         confidence: 78,
     },
     {
         id: 'ins-3',
-        title: 'Margin Alert — 3 Items Below Threshold',
-        detail: 'Average margin 31.4%. Three line items in recent orders are below 25% threshold: Think v2 (22%), Sayl (23%), Very (19%).',
+        title: 'Margin Alert — 3 National Items Below Threshold',
+        detail: 'Average margin 29.8%. Three National line items in recent orders are below 25% threshold: Waveworks (22%), Solve Shelf (23%), Lobby Table (19%).',
         impact: 'Review pricing',
         confidence: 95,
     },
 ];
 
 const SYNC_AGENTS: AgentVis[] = [
-    { name: 'HubSpotSync', detail: '47 deals loaded',         visible: false, done: false },
-    { name: 'CoreSync',    detail: '12 projects, $1.4M recv.', visible: false, done: false },
+    { name: 'HubSpotSync', detail: '38 deals loaded',         visible: false, done: false },
+    { name: 'CoreSync',    detail: '9 projects, $890K recv.',  visible: false, done: false },
     { name: 'FunnelBuilder', detail: 'pipeline visualized',    visible: false, done: false },
-    { name: 'AIProjector', detail: '34% close rate projected', visible: false, done: false },
+    { name: 'AIProjector', detail: '31% close rate projected', visible: false, done: false },
 ];
 
 const RECON_AGENTS: AgentVis[] = [
-    { name: 'DealMatcher',        detail: '44/47 auto-matched',  visible: false, done: false },
+    { name: 'DealMatcher',        detail: '35/38 auto-matched',  visible: false, done: false },
     { name: 'DiscrepancyFinder',  detail: '3 exceptions found',  visible: false, done: false },
     { name: 'OpsKPICalculator',   detail: 'DSO, aging computed', visible: false, done: false },
 ];
@@ -485,8 +485,8 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 <div className="flex items-start gap-2">
                                     <AIAgentAvatar />
                                     <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">HubSpotSync + CoreSync:</span> Connected — <span className="font-semibold">47 deals ($2.8M pipeline)</span> from HubSpot,
-                                        <span className="font-semibold"> 12 projects ($1.4M receivables)</span> from Core. Q2 projected close rate: <span className="font-semibold">34%</span>.
+                                        <span className="font-bold">HubSpotSync + CoreSync:</span> Connected — <span className="font-semibold">38 deals ($2.1M pipeline)</span> from HubSpot,
+                                        <span className="font-semibold"> 9 projects ($890K receivables)</span> from Core (SCS). Q2 projected close rate: <span className="font-semibold">31%</span>.
                                     </p>
                                 </div>
                             </div>
@@ -530,7 +530,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                     {reconPhase === 'notification' && renderNotification(
                         <ArrowsRightLeftIcon className="h-4 w-4" />,
                         'Cross-System Reconciliation Ready',
-                        'DealMatcher: 44/47 deals auto-matched (93.6%). 3 discrepancies require expert review.',
+                        'DealMatcher: 35/38 deals auto-matched (92.1%). 3 discrepancies require expert review.',
                         handleReconStart
                     )}
                     {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Reconciliation Pipeline — Matching HubSpot ↔ Core...')}
@@ -542,17 +542,17 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                     <div className="flex items-center justify-between mb-1">
                                         <span className="text-[10px] font-bold text-foreground">Cross-System Match</span>
                                         <span className="text-[10px] font-semibold text-foreground">
-                                            {44 + resolvedAlertCount}/47 reconciled
+                                            {35 + resolvedAlertCount}/38 reconciled
                                         </span>
                                     </div>
                                     <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                                         <div
                                             className="h-full rounded-full bg-green-500 transition-all duration-500"
-                                            style={{ width: `${((44 + resolvedAlertCount) / 47) * 100}%` }}
+                                            style={{ width: `${((35 + resolvedAlertCount) / 38) * 100}%` }}
                                         />
                                     </div>
                                 </div>
-                                <ConfidenceScoreBadge score={93.6} size="sm" label="Match Rate" />
+                                <ConfidenceScoreBadge score={92.1} size="sm" label="Match Rate" />
                             </div>
 
                             {/* Two-column layout: KPIs + Alerts */}
@@ -634,7 +634,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                             >
                                 <span className="flex items-center justify-center gap-2">
                                     <CheckCircleIcon className="h-4 w-4" />
-                                    {allAlertsResolved ? 'Acknowledge & Continue — 47/47 Reconciled' : `Resolve All Exceptions (${resolvedAlertCount}/${CROSS_SYSTEM_ALERTS.length})`}
+                                    {allAlertsResolved ? 'Acknowledge & Continue — 38/38 Reconciled' : `Resolve All Exceptions (${resolvedAlertCount}/${CROSS_SYSTEM_ALERTS.length})`}
                                 </span>
                             </button>
                         </div>
@@ -762,11 +762,11 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                                 {section.id === 'finance' && (
                                                     <div className="space-y-2">
                                                         <div className="flex items-center justify-between text-[11px]">
-                                                            <span className="text-foreground font-semibold">47/47 deals reconciled</span>
+                                                            <span className="text-foreground font-semibold">38/38 deals reconciled</span>
                                                             <ConfidenceScoreBadge score={100} size="sm" />
                                                         </div>
                                                         <div className="text-[10px] text-muted-foreground">
-                                                            44 auto-matched + 3 exceptions resolved (1 duplicate merged, 1 amount corrected, 1 invoice linked)
+                                                            35 auto-matched + 3 exceptions resolved (1 duplicate merged, 1 amount corrected, 1 invoice linked)
                                                         </div>
                                                     </div>
                                                 )}
@@ -806,7 +806,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                             >
                                 {exported ? (
                                     <span className="flex items-center justify-center gap-2">
-                                        <CheckCircleIcon className="h-4 w-4" /> Report Sent to 3 Stakeholders
+                                        <CheckCircleIcon className="h-4 w-4" /> Report Sent to Randy and Tara
                                     </span>
                                 ) : (
                                     <span className="flex items-center justify-center gap-2">

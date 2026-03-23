@@ -17,8 +17,8 @@ const EXPERT_HUB_APPS = ['expert-hub', 'ack-detail', 'transactions', 'mac', 'quo
 
 function resolveRoleLabel(role: string, app: string, profileId?: string): string {
     if (role === 'System') {
-        // Continua: all System steps are backend processing within Expert Hub
-        if (profileId === 'continua') return 'Expert';
+        // Continua & Dupler: all System steps are AI processing within Expert context
+        if (profileId === 'continua' || profileId === 'dupler') return 'Expert';
         return EXPERT_HUB_APPS.includes(app) ? 'Expert' : 'Dealer';
     }
     return role;
@@ -50,18 +50,20 @@ function getStepDataThread(stepId: string): string | null {
         '4.3': '$11,550 reconciled',
         '4.4': '92% satisfaction, AV flagged',
         // Dupler
-        'd1.1': '45 items extracted — 99.2% OCR accuracy',
-        'd1.2': '40 auto-mapped, 5 exceptions resolved',
-        'd1.3': '$2,140 in discrepancies caught',
-        'd1.4': 'SIFF exported — $187K, 45 items',
-        'd2.1': '35/38 matched — claim CLM-2026-047',
-        'd2.2': '3 zones, 74% capacity — 35 items placed',
-        'd2.3': 'Dock conflict resolved — 5 shipments tracked',
-        'd2.4': '28/30 staged — dispatch confirmed',
-        'd3.1': '$2.8M pipeline — 47 deals synced',
-        'd3.2': '47/47 reconciled — 3 exceptions fixed',
+        'd1.1': '32 items extracted — 99.2% OCR accuracy',
+        'd1.2': '27 auto-mapped, 5 exceptions resolved',
+        'd1.3': '$1,788 in discrepancies caught (incl. regional tax)',
+        'd1.4': 'Dealer approved — SIF exported to Core (SCS)',
+        'd2.1': 'Columbus 72% → 89% forecast — 85 items relocated',
+        'd2.2': '28/30 matched — 26 pristine, 2 exceptions',
+        'd2.3': '5 items verified — 2 margin alerts, tax compliant',
+        'd2.4': '3 warehouses synced — dock resolved, $1,200 saved',
+        'd2.5': '3 claims processed — $2,770 credits',
+        'd2.6': 'Sarah Chen approved — dispatch confirmed Thu 8AM',
+        'd3.1': '$2.1M pipeline — 38 deals synced',
+        'd3.2': '38/38 reconciled — 3 exceptions fixed',
         'd3.3': '4-section report assembled',
-        'd3.4': 'PDF exported — sent to 3 stakeholders',
+        'd3.4': 'PDF exported — sent to Randy and Tara',
     };
     return threads[stepId] || null;
 }

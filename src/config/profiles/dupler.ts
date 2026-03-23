@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Dupler Demo Profile — PDF→SIFF, Warehouse & Transit, Unified Reporting
+// Dupler Demo Profile — PDF→SIF, Warehouse & Transit, Unified Reporting
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import type { DemoStep } from '../demoProfiles';
@@ -8,80 +8,99 @@ import type { StepBehavior } from '../../components/demo/DemoStepBanner';
 // ─── Step Definitions ────────────────────────────────────────────────────────
 
 export const DUPLER_STEPS: DemoStep[] = [
-    // ── Flow 1: PDF to SIFF Intelligence ──────────────────────────────────────
+    // ── Flow 1: PDF to SIF Spec Check ───────────────────────────────────────
     {
         id: 'd1.1',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIFF Intelligence',
+        groupTitle: 'Flow 1: PDF to SIF Spec Check',
         title: 'Document Intake & OCR',
-        description: 'PDF arrives from manufacturer. OCR engine extracts 45 line items with part numbers, quantities, and pricing — 99.2% accuracy across 12 pages.',
+        description: 'National Furniture quote PDF received — 8 pages. OCR engine extracts 32 line items with part numbers, quantities, and list pricing — 99.2% accuracy.',
         app: 'dupler-pdf',
         role: 'System',
     },
     {
         id: 'd1.2',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIFF Intelligence',
-        title: 'Smart Normalization & SIFF Mapping',
-        description: 'AI maps manufacturer codes to SIFF catalog. Expert reviews 5 exceptions: 3 obsolete SKUs with substitution suggestions, 2 description mismatches. 40 items auto-mapped at 95%+ confidence.',
+        groupTitle: 'Flow 1: PDF to SIF Spec Check',
+        title: 'Smart Normalization & SIF Mapping',
+        description: 'AI maps National part numbers to SIF catalog entries. Expert reviews 5 exceptions: 3 discontinued models with substitution suggestions, 2 description mismatches vs PMX catalog. 27 items auto-mapped at 95%+ confidence.',
         app: 'dupler-pdf',
         role: 'Expert',
     },
     {
         id: 'd1.3',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIFF Intelligence',
+        groupTitle: 'Flow 1: PDF to SIF Spec Check',
         title: 'Price & Contract Validation',
-        description: 'AI cross-checks prices vs active contracts and manufacturer price lists. 4 discrepancies flagged ($2,140 total): 2 outdated prices (+3%), 1 quantity mismatch, 1 unit-of-measure error.',
+        description: 'AI cross-checks PDF list prices vs Compass discount tiers and vendor contracts in Core (SCS). 4 discrepancies flagged ($1,788 total): 2 regional tax adjustments (Cook County IL 6.7%, NYC 8.0%), 1 outdated list price (+3% vs current), 1 quantity mismatch vs PO.',
         app: 'dupler-pdf',
         role: 'Expert',
     },
     {
         id: 'd1.4',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIFF Intelligence',
-        title: 'Approval, SIFF Generation & Export',
-        description: 'Two-level approval chain completes automatically. SIFF file generated: 45 items normalized, $187,450 total, 5 exceptions resolved. Dealer confirms export to Core.',
+        groupTitle: 'Flow 1: PDF to SIF Spec Check',
+        title: 'Dealer Review, Approval & Export',
+        description: 'Dealer receives SIF from Expert, reviews document with regional tax adjustments, adds comments. After approval, 2-level compliance chain runs and SIF exports to Core (SCS).',
         app: 'dupler-pdf',
         role: 'Dealer',
     },
 
-    // ── Flow 2: Warehouse & Transit Inventory ─────────────────────────────────
+    // ── Flow 2: Warehouse & Inventory Intelligence ─────────────────────────────
     {
         id: 'd2.1',
         groupId: 2,
-        groupTitle: 'Flow 2: Warehouse & Transit Inventory',
-        title: 'Receiving & PO Matching',
-        description: 'Steelcase shipment scanned: 35/38 items auto-matched to PO. 2 missing (backorder confirmed, ETA 2 weeks). 1 wrong item (Fog vs Graphite) — manufacturer claim auto-drafted.',
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'Warehouse Health & Capacity Forecast',
+        description: '3 Dupler warehouses scanned — Columbus at 72% with Mercy Health Phase 2 arriving. AI recommends relocating 85 items to Cincinnati for $3,600/mo savings.',
         app: 'dupler-warehouse',
         role: 'Expert',
     },
     {
         id: 'd2.2',
         groupId: 2,
-        groupTitle: 'Flow 2: Warehouse & Transit Inventory',
-        title: 'Warehouse Assignment & Capacity',
-        description: 'AI assigns 35 items to warehouse zones: Zone A (project-specific, 20 items), Zone B (general stock, 12 items), Zone C (QC pending, 3 items). Warehouse at 74% capacity.',
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'Receiving & Condition Assessment',
+        description: 'QR scan 30 items from PO-2026-0389. 28 auto-matched, 1 missing (backorder), 1 wrong finish. Condition assessment: 26 pristine, 3 inspect, 1 damaged.',
         app: 'dupler-warehouse',
-        role: 'System',
+        role: 'Expert',
     },
     {
         id: 'd2.3',
         groupId: 2,
-        groupTitle: 'Flow 2: Warehouse & Transit Inventory',
-        title: 'Transit Tracking & Delivery Schedule',
-        description: '5 shipments in transit from 3 manufacturers. 1 delayed (+2 days, weather). Dock conflict detected: Steelcase + Herman Miller at Dock 2, 10AM. AI suggests resolution.',
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'PO Price Verification & Tax Compliance',
+        description: 'Scanning Allsteel, Kimball, National price lists. 2 items with margin below 25% flagged. Regional tax compliance verified for OH and IL deliveries.',
         app: 'dupler-warehouse',
         role: 'Expert',
     },
     {
         id: 'd2.4',
         groupId: 2,
-        groupTitle: 'Flow 2: Warehouse & Transit Inventory',
-        title: 'Pre-Install Staging & Dispatch',
-        description: 'Staging checklist for tomorrow\'s installation: 28/30 items verified, 2 pending (arriving today 2PM). Installer ProInstall LLC confirmed, Thursday 8AM.',
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'Multi-Warehouse Sync & Transit',
+        description: 'Synchronizing 3 warehouses + 2 job sites. 5 shipments tracked, dock conflict auto-resolved. Route optimization saves $1,200.',
         app: 'dupler-warehouse',
+        role: 'System',
+    },
+    {
+        id: 'd2.5',
+        groupId: 2,
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'Vendor Claims & Returns',
+        description: '3 active claims: wrong finish RMA, packaging damage inspection, warranty repair. $2,770 in credits processing. 4 warranty alerts.',
+        app: 'dupler-warehouse',
+        role: 'Expert',
+    },
+    {
+        id: 'd2.6',
+        groupId: 2,
+        groupTitle: 'Flow 2: Warehouse & Inventory Intelligence',
+        title: 'Dealer Review & Dispatch Approval',
+        description: 'Sarah Chen (Dealer) reviews consolidated warehouse intelligence report. Staging checklist: 24/26 items ready. Approves dispatch for Interior Installations Thursday 8AM.',
+        app: 'dashboard',
         role: 'Dealer',
+        highlightId: 'mobile-client-review',
     },
 
     // ── Flow 3: Unified Reporting & Analytics ─────────────────────────────────
@@ -90,7 +109,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 3,
         groupTitle: 'Flow 3: Unified Reporting & Analytics',
         title: 'Dual-System Data Sync',
-        description: 'HubSpot sync: 47 deals, $2.8M weighted pipeline. Core sync: 12 active projects, $1.4M receivables. AI projects Q2 close rate at 34% based on 18-month historical patterns.',
+        description: 'HubSpot sync: 38 deals, $2.1M weighted pipeline. Core (SCS) sync: 9 active projects, $890K receivables. AI projects Q2 close rate at 31% based on 14-month historical patterns.',
         app: 'dupler-reporting',
         role: 'System',
     },
@@ -99,7 +118,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 3,
         groupTitle: 'Flow 3: Unified Reporting & Analytics',
         title: 'Reconciliation & Expert Review',
-        description: 'AI reconciles HubSpot vs Core: 44/47 deals matched (93.6%). Expert resolves 3 discrepancies: 1 duplicate, 1 amount mismatch ($4,200), 1 missing invoice link. KPIs: DSO 42d, Aging $280K.',
+        description: 'AI reconciles HubSpot vs Core (SCS): 35/38 deals matched (92.1%). Expert resolves 3 discrepancies: 1 duplicate deal, 1 amount mismatch ($3,800 discount applied post-close in Core), 1 invoice without linked deal. KPIs: DSO 45d, Aging 30+ $210K.',
         app: 'dupler-reporting',
         role: 'Expert',
     },
@@ -117,7 +136,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 3,
         groupTitle: 'Flow 3: Unified Reporting & Analytics',
         title: 'Executive Report & Distribution',
-        description: 'Dealer reviews 4-section report with drill-down. 3 AI recommendations: consolidate shipments ($1,200 savings), follow-up inactive deal, margin alert on 3 items. Export PDF to stakeholders.',
+        description: 'Dealer reviews 4-section report with drill-down. 3 AI recommendations: consolidate Allsteel + Kimball deliveries ($950 freight savings), follow-up inactive Mercy Health deal, margin alert on 3 National items below 25% threshold. Export PDF to Randy and Tara.',
         app: 'dupler-reporting',
         role: 'Dealer',
     },
@@ -126,21 +145,23 @@ export const DUPLER_STEPS: DemoStep[] = [
 // ─── Step Behavior ───────────────────────────────────────────────────────────
 
 export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
-    // Flow 1: PDF to SIFF Intelligence
-    'd1.1': { mode: 'auto', duration: 8, aiSummary: 'OCR engine extracting 45 line items from supplier PDF — 99.2% accuracy...' },
-    'd1.2': { mode: 'interactive', userAction: 'Review SIFF mapping: 3 obsolete SKUs, 2 description mismatches. Approve when all 5 exceptions reviewed.' },
-    'd1.3': { mode: 'interactive', userAction: 'Review price discrepancies: $2,140 across 4 lines. Resolve each flag, then click "Validate & Continue".' },
-    'd1.4': { mode: 'interactive', userAction: 'Review approval chain and SIFF summary. Click "Export to Core" to confirm $187,450 SIFF file.' },
+    // Flow 1: PDF to SIF Spec Check
+    'd1.1': { mode: 'interactive', userAction: 'Click "Convert to SIF" in Quick Actions to upload a manufacturer PDF quote. OCR extraction runs automatically after upload.' },
+    'd1.2': { mode: 'interactive', userAction: 'Review SIF mapping: 3 discontinued models, 2 description mismatches. Approve when all 5 exceptions reviewed.' },
+    'd1.3': { mode: 'interactive', userAction: 'Review price discrepancies: $1,788 across 4 lines (incl. 2 regional tax adjustments). Resolve each flag, then click "Validate & Continue".' },
+    'd1.4': { mode: 'interactive', userAction: 'Dealer receives SIF from Expert. Review document, add comments if needed, then click "Approve SIF" to trigger compliance chain and export.' },
 
-    // Flow 2: Warehouse & Transit
-    'd2.1': { mode: 'interactive', userAction: 'Review receiving scan: 35/38 matched, 2 missing, 1 wrong item. Click "Confirm Receiving".' },
-    'd2.2': { mode: 'auto', duration: 8, aiSummary: 'Auto-assigning 35 items to warehouse zones — optimizing by project schedule and pick frequency...' },
-    'd2.3': { mode: 'interactive', userAction: 'Review transit: 5 shipments, dock conflict detected. Resolve conflict, then click "Update Schedule".' },
-    'd2.4': { mode: 'interactive', userAction: 'Verify staging checklist: 28/30 items ready. Confirm installer dispatch for Thursday 8AM.' },
+    // Flow 2: Warehouse & Inventory Intelligence
+    'd2.1': { mode: 'interactive', userAction: 'Review warehouse health: Columbus 72% (89% forecast). Click "Apply Recommendations" to optimize.' },
+    'd2.2': { mode: 'interactive', userAction: 'Review receiving: 28/30 matched, 26 pristine, 3 inspect, 1 damaged. Click "Confirm Receiving".' },
+    'd2.3': { mode: 'interactive', userAction: 'Review price verification: 2 margin alerts, tax compliance for OH/IL. Click "Approve Pricing".' },
+    'd2.4': { mode: 'auto', duration: 10, aiSummary: 'Synchronizing 3 warehouses + 2 job sites. Resolving dock conflict, optimizing routes...' },
+    'd2.5': { mode: 'interactive', userAction: 'Review 3 vendor claims ($2,770 credits) and 4 warranty alerts. Click "Process Claims".' },
+    'd2.6': { mode: 'interactive', userAction: 'Sarah Chen (Dealer) reviews consolidated report. Verify staging checklist, then click "Approve All & Dispatch".' },
 
     // Flow 3: Unified Reporting
-    'd3.1': { mode: 'auto', duration: 10, aiSummary: 'Syncing HubSpot pipeline (47 deals, $2.8M) + Core operations (12 projects, $1.4M receivables)...' },
-    'd3.2': { mode: 'interactive', userAction: 'Review reconciliation: 44/47 matched, 3 exceptions. Resolve discrepancies, then click "Acknowledge & Continue".' },
+    'd3.1': { mode: 'auto', duration: 10, aiSummary: 'Syncing HubSpot pipeline (38 deals, $2.1M) + Core (SCS) operations (9 projects, $890K receivables)...' },
+    'd3.2': { mode: 'interactive', userAction: 'Review reconciliation: 35/38 matched, 3 exceptions. Resolve discrepancies, then click "Acknowledge & Continue".' },
     'd3.3': { mode: 'auto', duration: 8, aiSummary: 'Assembling executive report — Pipeline Health, Operations, Reconciliation, AI Recommendations...' },
     'd3.4': { mode: 'interactive', userAction: 'Review executive report sections. Click "Export PDF & Send to Team" to distribute.' },
 };
@@ -150,68 +171,83 @@ export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
 export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
     // Flow 1
     'd1.1': [
-        'OCRAgent: ingesting supplier PDF — 12 pages detected...',
-        'TextExtractAgent: parsing line items — 45 items identified',
-        'LineParserAgent: extracting part numbers, quantities, pricing',
-        'CatalogMapper: pre-mapping manufacturer codes to SIFF catalog',
+        'UploadAgent: receiving National Furniture quote PDF — 2.4 MB, 8 pages...',
+        'OCRAgent: ingesting National Furniture quote PDF — 8 pages detected...',
+        'TextExtractAgent: parsing line items — 32 items identified',
+        'LineParserAgent: extracting part numbers, quantities, list pricing',
+        'CatalogMapper: pre-mapping National codes to SIF catalog entries',
     ],
     'd1.2': [
-        'SIFFMappingAgent: cross-referencing 45 items against SIFF catalog...',
-        '40 items auto-mapped with 95%+ confidence',
-        '3 obsolete SKUs detected — substitution suggestions generated',
+        'SIFMappingAgent: cross-referencing 32 items against SIF catalog...',
+        '27 items auto-mapped with 95%+ confidence',
+        '3 discontinued models detected — substitution suggestions generated',
         '2 description mismatches flagged for expert review',
     ],
     'd1.3': [
-        'PriceValidationAgent: cross-checking against active contracts...',
-        'Contract DB: 41 items match current pricing',
-        'Discrepancy found: 4 lines with $2,140 total variance',
-        'Flags: 2 outdated prices, 1 qty mismatch, 1 UOM error',
+        'PriceValidationAgent: cross-checking against Compass discounts + vendor contracts...',
+        'RegionalTaxEngine: loading tax rates for ship-to addresses (IL, NY)...',
+        'Compass + Contract DB: 28 items match current pricing',
+        'Discrepancy found: 4 lines with $1,788 total variance',
+        'Flags: 2 regional tax adjustments (IL 6.7%, NYC 8.0%), 1 outdated list, 1 qty mismatch',
     ],
     'd1.4': [
-        'ComplianceAgent: validating data integrity and contract terms...',
-        'Approval chain: AI Compliance ✓ → Expert ✓',
-        'SIFFGeneratorAgent: building compliant file — 45 items, $187,450',
-        'Export ready — Core system sync initiated',
+        'SIF DUP-0412 sent to Sarah Chen (Dealer) — awaiting review...',
+        'Sarah Chen reviewing: 32 items, $94,200, regional tax adjustments (IL, NY)',
+        'Sarah Chen approved — triggering compliance chain...',
+        'ComplianceAgent: AI Compliance ✓ → Expert ✓',
+        'SIFGeneratorAgent: exporting to Core (SCS) — PMX/SPEC import confirmed',
     ],
 
     // Flow 2
     'd2.1': [
-        'ReceivingAgent: scanning packing list — 38 items expected...',
-        'QR scan matching: 35/38 auto-matched to PO lines',
-        '2 items missing from shipment — backorder flag raised',
-        '1 wrong item detected (Fog vs Graphite) — claim CLM-2026-047 drafted',
+        'WarehouseScanner: scanning 1,840 items across 3 warehouses...',
+        'CapacityForecaster: Columbus → 89% in 2 weeks (Mercy Health Phase 2)',
+        'OverflowOptimizer: 85 items flagged for relocation to Cincinnati',
+        'CostAnalyzer: $3,600/month savings projected',
     ],
     'd2.2': [
-        'ZoneAnalyzer: evaluating capacity across 3 warehouse zones...',
-        'Zone A (Project): 60% → assigning 20 items for Thursday install',
-        'Zone B (General): 45% → 12 items for stock replenishment',
-        'PlacementOptimizer: 3 items routed to QC — warehouse at 74%',
+        'QRScanner: scanning 30 items from PO-2026-0389...',
+        'POMatchEngine: 28/30 auto-matched',
+        'ConditionScanner: 26 pristine, 3 inspect, 1 damaged',
+        'ExceptionHandler: 1 missing + 1 wrong finish — claims drafted',
     ],
     'd2.3': [
-        'TransitAgent: tracking 5 active shipments from 3 manufacturers...',
-        '2 arriving today: Steelcase (14 items) + Herman Miller (8 items)',
-        'Delayed: Knoll shipment — weather hold, ETA +2 days',
-        'Conflict detected: Dock 2 double-booked at 10AM — resolution needed',
+        'PriceListScanner: scanning Allsteel, Kimball, National Q1 2026...',
+        'CostBasisChecker: 3 items with cost changes detected',
+        'RegionalTaxEngine: verifying OH 7.8%, IL 6.7% compliance',
+        'MarginCalculator: 2 items below 25% margin — flagged',
     ],
     'd2.4': [
-        'StagingAgent: preparing checklist for Project DUP-2026-04...',
-        '28 of 30 items staged and verified — 2 pending delivery (2PM)',
-        'Installer confirmed: ProInstall LLC, Thursday 8AM-4PM, 4 crew',
-        'Dispatch preparation complete — verification photos pending',
+        'WarehouseSync: synchronizing Columbus + Cincinnati + Dayton...',
+        'TransitTracker: 5 shipments from 3 manufacturers',
+        'DockScheduler: Dock 1 conflict resolved — SH-002 moved to Dock 3',
+        'RouteOptimizer: 2 Allsteel deliveries consolidated — $1,200 savings',
+    ],
+    'd2.5': [
+        'ClaimTracker: 3 active claims across Allsteel, National...',
+        'ReturnAnalyzer: CLM-2026-052 RMA approved — replacement shipping',
+        'CreditProcessor: $2,770 total credits processing',
+        'WarrantyChecker: 4 items approaching warranty expiry',
+    ],
+    'd2.6': [
+        'StagingAgent: preparing Mercy Health Phase 2 checklist...',
+        '24/26 items staged — 2 pending (Park Table backorder)',
+        'Sarah Chen reviewing consolidated warehouse report',
+        'Dispatch confirmed: Interior Installations, Thursday 8AM',
     ],
 
     // Flow 3
     'd3.1': [
         'HubSpotSyncAgent: connecting pipeline API — authenticated...',
-        '47 active deals loaded — $2.8M weighted pipeline value',
-        'CoreSyncAgent: pulling operations data — 12 projects, $1.4M receivables',
-        'AIProjector: Q2 close rate 34% — based on 18-month pattern analysis',
+        '38 active deals loaded — $2.1M weighted pipeline value',
+        'CoreSyncAgent: pulling operations data — 9 projects, $890K receivables',
+        'AIProjector: Q2 close rate 31% — based on 14-month pattern analysis',
     ],
     'd3.2': [
-        'ReconciliationAgent: matching HubSpot deals to Core invoices...',
-        '44/47 deals auto-matched — 93.6% reconciliation rate',
+        'ReconciliationAgent: matching HubSpot deals to Core (SCS) invoices...',
+        '35/38 deals auto-matched — 92.1% reconciliation rate',
         '3 discrepancies identified: duplicate, amount mismatch, missing link',
-        'KPI calculation complete: DSO 42d, Aging 30+ $280K, On-time 91%',
+        'KPI calculation complete: DSO 45d, Aging 30+ $210K, On-time 89%',
     ],
     'd3.3': [
         'ReportAssembler: building Pipeline Health section...',
@@ -221,9 +257,9 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
     ],
     'd3.4': [
         'Report ready for distribution — 4 interactive sections',
-        'AI Recommendation 1: Consolidate shipments → $1,200 savings',
-        'AI Recommendation 2: Deal DUP-HP-0039 inactive 14 days → follow-up',
-        'AI Recommendation 3: 3 items below 25% margin threshold — review pricing',
+        'AI Recommendation 1: Consolidate Allsteel + Kimball deliveries → $950 savings',
+        'AI Recommendation 2: Mercy Health Phase 3 inactive 14 days → follow-up',
+        'AI Recommendation 3: 3 National items below 25% margin threshold — review pricing',
     ],
 };
 
@@ -231,7 +267,7 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
 
 export const DUPLER_SELF_INDICATED: string[] = [
     'd1.1', 'd1.2', 'd1.3', 'd1.4',   // Flow 1: all steps (pipeline processing visible)
-    'd2.1', 'd2.2',                     // Flow 2: receiving + warehouse assignment
+    'd2.1', 'd2.2', 'd2.3', 'd2.4', 'd2.5', // Flow 2: all processing steps
     'd3.1', 'd3.2', 'd3.3',            // Flow 3: sync, recon, report assembly
 ];
 
@@ -247,17 +283,19 @@ export interface DuplerStepTiming {
 }
 
 export const DUPLER_STEP_TIMING: Record<string, DuplerStepTiming> = {
-    // Flow 1: PDF to SIFF
+    // Flow 1: PDF to SIF
     'd1.1': { notifDelay: 1500, notifDuration: 5000, agentStagger: 700, agentDone: 500, breathing: 1200, resultsDur: 8000 },
     'd1.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900, agentDone: 600, breathing: 1500, resultsDur: 0 },
     'd1.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800, agentDone: 500, breathing: 1200, resultsDur: 0 },
     'd1.4': { notifDelay: 2000, notifDuration: 4000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
 
-    // Flow 2: Warehouse & Transit
-    'd2.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 800, agentDone: 500, breathing: 1500, resultsDur: 0 },
-    'd2.2': { notifDelay: 1500, notifDuration: 5000, agentStagger: 700, agentDone: 500, breathing: 1000, resultsDur: 8000 },
-    'd2.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
-    'd2.4': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    // Flow 2: Warehouse & Inventory Intelligence
+    'd2.1': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800, agentDone: 500, breathing: 1500, resultsDur: 0 },
+    'd2.2': { notifDelay: 2500, notifDuration: 7000, agentStagger: 1000, agentDone: 700, breathing: 1800, resultsDur: 0 },
+    'd2.3': { notifDelay: 3000, notifDuration: 7000, agentStagger: 1200, agentDone: 800, breathing: 2000, resultsDur: 0 },
+    'd2.4': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900, agentDone: 600, breathing: 1500, resultsDur: 10000 },
+    'd2.5': { notifDelay: 2500, notifDuration: 7000, agentStagger: 900, agentDone: 600, breathing: 1500, resultsDur: 0 },
+    'd2.6': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
 
     // Flow 3: Unified Reporting
     'd3.1': { notifDelay: 2000, notifDuration: 6000, agentStagger: 900, agentDone: 600, breathing: 1500, resultsDur: 10000 },

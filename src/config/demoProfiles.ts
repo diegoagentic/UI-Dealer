@@ -80,7 +80,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
         id: 'dupler',
         name: 'Dupler',
         companyName: 'Dupler',
-        description: 'PDF→SIFF, Warehouse & Transit, Unified Reporting',
+        description: 'PDF→SIF, Warehouse & Transit, Unified Reporting',
         icon: '🏢',
         steps: DUPLER_STEPS,
         stepBehavior: DUPLER_STEP_BEHAVIOR,
