@@ -1458,12 +1458,15 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
     }, []);
 
     const [phase, setPhase] = useState<ScReviewPhase>('idle');
-    const [discountsApplied, setDiscountsApplied] = useState<Record<string, boolean>>({});
+    const [discountsApplied, setDiscountsApplied] = useState<Record<string, 'ai' | 'adjusted' | 'escalated'>>({});
     const [genProgress, setGenProgress] = useState(0);
     const [exported, setExported] = useState(false);
     const [viewSourceLine, setViewSourceLine] = useState<number | null>(null);
+    const [adjustingTier, setAdjustingTier] = useState<string | null>(null);
+    const [adjustedRates, setAdjustedRates] = useState<Record<string, number>>({});
+    const [discountNotes, setDiscountNotes] = useState<Record<string, string>>({});
 
-    const allDiscountsApplied = Object.values(discountsApplied).filter(Boolean).length >= DISCOUNT_TIERS.length;
+    const allDiscountsApplied = Object.keys(discountsApplied).length >= DISCOUNT_TIERS.length;
 
     useEffect(() => {
         if (currentStep.id !== 'd1.5') return;
@@ -1471,6 +1474,9 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
         setDiscountsApplied({});
         setGenProgress(0);
         setExported(false);
+        setAdjustingTier(null);
+        setAdjustedRates({});
+        setDiscountNotes({});
         const t = setTimeout(pauseAware(() => setPhase('notification')), 1500);
         return () => clearTimeout(t);
     }, [currentStep.id]);
@@ -1491,7 +1497,8 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
 
     if (currentStep.id !== 'd1.5') return null;
 
-    const discountedTotal = DISCOUNT_TIERS.reduce((sum, dt) => sum + dt.listTotal * (1 - dt.rate / 100), 0);
+    const getEffectiveRate = (dt: typeof DISCOUNT_TIERS[0]) => adjustedRates[dt.id] ?? dt.rate;
+    const discountedTotal = DISCOUNT_TIERS.reduce((sum, dt) => sum + dt.listTotal * (1 - getEffectiveRate(dt) / 100), 0);
 
     return (
         <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
