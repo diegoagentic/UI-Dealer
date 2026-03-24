@@ -18,6 +18,7 @@ import {
     ArrowDownTrayIcon,
 
     ChatBubbleLeftRightIcon,
+    ChatBubbleLeftEllipsisIcon,
     CloudArrowUpIcon,
     LinkIcon,
     BuildingStorefrontIcon,
@@ -536,8 +537,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
     // Step d2.7: Dealer Review & Dispatch Approval (Dupler — Dealer mobile)
     const [dealerDispatchApproved, setDealerDispatchApproved] = useState(false)
+    const [dealerReviewPhase, setDealerReviewPhase] = useState<'notification' | 'review'>('notification')
     useEffect(() => {
-        if (currentStep.id !== 'd2.7') { setDealerDispatchApproved(false); }
+        if (currentStep.id !== 'd2.7') { setDealerDispatchApproved(false); setDealerReviewPhase('notification'); }
     }, [currentStep.id])
 
     // Step 2.1: Service Request (Continua — End User mobile)
@@ -3235,8 +3237,51 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             )}
 
                             {/* Dupler d2.7: Dealer Review & Dispatch Approval */}
-                            {currentStep.id === 'd2.7' && (
-                                <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+                            {currentStep.id === 'd2.7' && dealerReviewPhase === 'notification' && (
+                                <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+                                    <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
+                                        <div className="flex items-start gap-3">
+                                            <div className="p-2 rounded-lg bg-brand-500 text-zinc-900 shrink-0">
+                                                <ClipboardDocumentCheckIcon className="h-4 w-4" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="text-xs font-bold text-foreground">Warehouse Intelligence Report Ready</span>
+                                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold">PENDING REVIEW</span>
+                                                </div>
+                                                <p className="text-[11px] text-muted-foreground">
+                                                    Mercy Health Phase 2 — 5 agents completed 6 checkpoints. 24/26 items staged, 2 pending (Park Table backorder). $2,770 vendor credits processed. Dispatch scheduled: Interior Installations, Thursday 8AM.
+                                                </p>
+                                                <div className="flex items-center gap-3 mt-2">
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                                                        <span className="text-[10px] text-muted-foreground">28/30 received</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                                        <span className="text-[10px] text-muted-foreground">5 shipments tracked</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                                        <span className="text-[10px] text-muted-foreground">3 claims resolved</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setDealerReviewPhase('review')}
+                                            className="w-full mt-3 py-2.5 rounded-lg text-[11px] font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-md shadow-brand-500/20 transition-all"
+                                        >
+                                            <span className="flex items-center justify-center gap-2">
+                                                <ClipboardDocumentCheckIcon className="h-3.5 w-3.5" /> Open Report & Review
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            {currentStep.id === 'd2.7' && dealerReviewPhase === 'review' && (
+                                <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
                                     {/* Header */}
                                     <div className="px-6 py-4 border-b border-border">
                                         <div className="flex items-center gap-3">
@@ -3245,18 +3290,22 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 <h3 className="text-base font-bold text-foreground">Warehouse Intelligence Report</h3>
                                                 <p className="text-xs text-muted-foreground mt-0.5">Mercy Health Phase 2 — Columbus Warehouse</p>
                                             </div>
-                                            <span className="ml-auto px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-[10px] font-bold">PENDING REVIEW</span>
+                                            <span className={`ml-auto px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                                dealerDispatchApproved
+                                                    ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400'
+                                                    : 'bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400'
+                                            }`}>{dealerDispatchApproved ? 'APPROVED' : 'PENDING REVIEW'}</span>
                                         </div>
                                     </div>
 
                                     {/* Summary Grid */}
                                     <div className="grid grid-cols-1 sm:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-border">
                                         {[
-                                            { label: 'Warehouse Health', value: '3 warehouses', detail: 'Columbus 72%→89% forecast', color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-500/10' },
-                                            { label: 'Receiving', value: '28/30 matched', detail: '26 pristine, 2 exceptions', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-emerald-500/10' },
-                                            { label: 'Price Verified', value: '5 items', detail: '2 margin alerts, tax compliant', color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-50 dark:bg-purple-500/10' },
-                                            { label: 'Transit Synced', value: '5 shipments', detail: 'Dock resolved, -$1,200', color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-50 dark:bg-indigo-500/10' },
-                                            { label: 'Claims', value: '3 processed', detail: '$2,770 credits approved', color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-rose-500/10' },
+                                            { label: 'Warehouse Health', value: '3 warehouses', detail: 'Columbus 72%→89% forecast', color: 'text-blue-600 dark:text-blue-400' },
+                                            { label: 'Receiving', value: '28/30 matched', detail: '26 pristine, 2 exceptions', color: 'text-emerald-600 dark:text-emerald-400' },
+                                            { label: 'Price Verified', value: '15 items', detail: '2 margin alerts resolved', color: 'text-purple-600 dark:text-purple-400' },
+                                            { label: 'Transit Synced', value: '5 shipments', detail: 'Dock resolved, -$1,200', color: 'text-indigo-600 dark:text-indigo-400' },
+                                            { label: 'Claims', value: '3 processed', detail: '$2,770 credits approved', color: 'text-rose-600 dark:text-rose-400' },
                                         ].map(section => (
                                             <div key={section.label} className="px-4 py-3 flex sm:flex-col items-center sm:items-start justify-between sm:justify-start gap-1">
                                                 <div>
@@ -3268,10 +3317,21 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         ))}
                                     </div>
 
-                                    {/* Staging Checklist + AI Verified + Action */}
+                                    {/* Expert Notes from d2.6 */}
+                                    <div className="border-t border-border px-6 py-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <SparklesIcon className="h-3.5 w-3.5 text-brand-500" />
+                                            <span className="text-xs font-bold text-foreground">Expert Notes</span>
+                                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground">from Warehouse Team</span>
+                                        </div>
+                                        <div className="p-3 rounded-lg bg-muted/30 border border-border text-[11px] text-muted-foreground italic">
+                                            CLM-052: Acuity chairs RMA pickup scheduled for Mar 28. CLM-048: cosmetic damage — recommend accepting credit + keeping unit on floor. Warranty on Beyond Desk expires in 15d — extend before Phase 2 install.
+                                        </div>
+                                    </div>
+
+                                    {/* Staging Checklist + AI Verified */}
                                     <div className="border-t border-border px-6 py-4">
                                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                            {/* Staging */}
                                             <div className="flex items-center gap-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-bold text-foreground">Staging Checklist</span>
@@ -3289,44 +3349,63 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 </div>
                                             </div>
 
-                                            {/* AI Verified */}
                                             <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20">
                                                 <SparklesIcon className="h-3.5 w-3.5 text-indigo-500" />
                                                 <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300">AI Verified</span>
                                                 <span className="text-[9px] text-indigo-600/70 dark:text-indigo-400/70">5 agents · 6 checkpoints</span>
                                             </div>
 
-                                            {/* Dispatch info */}
                                             <p className="text-xs text-muted-foreground sm:ml-auto">Interior Installations — Thursday 8AM, 3 crew</p>
                                         </div>
+                                    </div>
 
-                                        {/* Action */}
-                                        <div className="mt-4 flex justify-end">
-                                            {!dealerDispatchApproved ? (
+                                    {/* Dealer Comment */}
+                                    <div className="border-t border-border px-6 py-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <ChatBubbleLeftEllipsisIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                            <span className="text-xs font-bold text-foreground">Dealer Comments</span>
+                                        </div>
+                                        <textarea
+                                            className="w-full text-[11px] p-2.5 rounded-lg bg-card border border-border text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-1 focus:ring-brand-400"
+                                            rows={2}
+                                            placeholder="Add comments for the dispatch team — e.g., 'Confirm loading dock access with Mercy Health facilities by Wed 5PM.'"
+                                        />
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="border-t border-border px-6 py-4">
+                                        {!dealerDispatchApproved ? (
+                                            <div className="flex items-center gap-3">
                                                 <button
                                                     onClick={() => setDealerDispatchApproved(true)}
-                                                    className="px-6 py-2.5 bg-brand-400 hover:bg-brand-500 text-zinc-900 text-sm font-bold rounded-xl shadow-sm transition-all hover:shadow-md active:scale-[0.98] animate-pulse"
+                                                    className="flex-1 py-2.5 bg-brand-400 hover:bg-brand-500 text-zinc-900 text-xs font-bold rounded-xl shadow-sm transition-all hover:shadow-md active:scale-[0.98]"
                                                 >
-                                                    Approve All & Dispatch
+                                                    <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Approve All & Dispatch</span>
                                                 </button>
-                                            ) : (
-                                                <div className="flex items-center gap-4 animate-in fade-in duration-300">
-                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
-                                                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
-                                                        <div>
-                                                            <p className="text-sm font-bold text-green-700 dark:text-green-300">Dispatch Approved</p>
-                                                            <p className="text-[10px] text-green-600/80 dark:text-green-400/70">Sarah Chen · Interior Installations Thu 8AM confirmed</p>
-                                                        </div>
+                                                <button className="px-4 py-2.5 border border-amber-300 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-bold rounded-xl hover:bg-amber-100 dark:hover:bg-amber-500/10 transition-all">
+                                                    Request Changes
+                                                </button>
+                                                <button className="px-4 py-2.5 border border-border text-muted-foreground text-xs font-bold rounded-xl hover:bg-muted transition-all">
+                                                    Hold for Review
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-4 animate-in fade-in duration-300">
+                                                <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 flex-1">
+                                                    <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                                                    <div>
+                                                        <p className="text-sm font-bold text-green-700 dark:text-green-300">Dispatch Approved</p>
+                                                        <p className="text-[10px] text-green-600/80 dark:text-green-400/70">Sarah Chen · Interior Installations Thu 8AM confirmed</p>
                                                     </div>
-                                                    <button
-                                                        onClick={() => nextStep()}
-                                                        className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
-                                                    >
-                                                        Continue
-                                                    </button>
                                                 </div>
-                                            )}
-                                        </div>
+                                                <button
+                                                    onClick={() => nextStep()}
+                                                    className="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-xl transition-colors shadow-sm active:scale-[0.98]"
+                                                >
+                                                    Continue to Flow 3
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
