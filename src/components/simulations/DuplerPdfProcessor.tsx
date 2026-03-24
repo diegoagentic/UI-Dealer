@@ -33,8 +33,8 @@ import { DUPLER_STEP_TIMING, type DuplerStepTiming } from '../../config/profiles
 
 type UploadPhase = 'idle' | 'upload-zone' | 'extracting' | 'processing' | 'breathing' | 'revealed' | 'results';
 type MappingPhase = 'idle' | 'notification' | 'processing' | 'revealed';
-type ValidationPhase = 'idle' | 'notification' | 'processing' | 'revealed';
-type AuditPhase = 'idle' | 'notification' | 'processing' | 'revealed' | 'converting' | 'preview';
+type ValidationPhase = 'idle' | 'syncing' | 'notification' | 'processing' | 'revealed';
+type AuditPhase = 'idle' | 'syncing' | 'notification' | 'processing' | 'revealed' | 'converting' | 'preview';
 type ScReviewPhase = 'idle' | 'notification' | 'sc-review' | 'generating' | 'revealed';
 
 interface AgentVis { name: string; detail: string; visible: boolean; done: boolean; }
@@ -55,9 +55,9 @@ interface PdfExtractedItem {
 
 const PDF_EXTRACTED_ITEMS: PdfExtractedItem[] = [
     { line: 1, sku: 'NAT-WW-3060', product: 'Waveworks Desk 60"', finish: 'White + Orange', material: 'HPL', options: 'Standing base, storage pedestal', qty: 8, listPrice: 2180, overallConfidence: 72 },
-    { line: 2, sku: 'NAT-EC-4200', product: 'Exhibit Collab Table 48"', finish: 'White', material: 'Laminate', options: 'Power hub', qty: 4, listPrice: 1240, overallConfidence: 98 },
+    { line: 2, sku: 'NAT-EC-4200', product: 'Exhibit Collab Table 48"', finish: 'White', material: 'Laminate', options: 'Power hub', qty: 4, listPrice: 1240, overallConfidence: 88 },
     { line: 3, sku: 'NAT-SW-3100', product: 'Solve Wall Shelf 36"', finish: 'White', material: 'Steel', options: null, qty: 6, listPrice: 385, overallConfidence: 99 },
-    { line: 4, sku: 'NAT-LT-6600', product: 'Lobby Lounge Table', finish: 'Walnut', material: 'Veneer', options: null, qty: 3, listPrice: 890, overallConfidence: 97 },
+    { line: 4, sku: 'NAT-LT-6600', product: 'Lobby Lounge Table', finish: 'Walnut', material: 'Veneer', options: null, qty: 3, listPrice: 890, overallConfidence: 84 },
     { line: 5, sku: 'NAT-TC-2025', product: 'Triumph II Conf Table', finish: 'White', material: 'Quartz', options: 'Data ports', qty: 2, listPrice: 2100, overallConfidence: 98 },
     { line: 6, sku: 'NAT-DK-4200', product: 'Realize Desk 60"', finish: 'White + Gray', material: 'HPL', options: 'Standing base, stor...', qty: 4, listPrice: 1580, overallConfidence: 81 },
     { line: 7, sku: 'NAT-FL-2200', product: 'Filing Cabinet 4-Drawer', finish: 'White', material: 'Steel', options: null, qty: 6, listPrice: 425, overallConfidence: 97 },
@@ -73,8 +73,11 @@ interface ExtractionFlag {
 const EXTRACTION_FLAGS: ExtractionFlag[] = [
     { id: 'ef1', itemLine: 1, product: 'Waveworks Desk 60"', sku: 'NAT-WW-3060', field: 'Quantity', extractedValue: '8', issue: 'PDF shows "8-10 units" — AI defaulted to 8', confidence: 72,
       pdfContext: 'NAT-WW-3060  Waveworks Desk 60"\nFinish: White + Orange Accent\nQty: 8-10 units*     $2,180.00/ea\n*Confirm final qty w/ designer' },
-    { id: 'ef2', itemLine: 6, product: 'Realize Desk 60"', sku: 'NAT-DK-4200', field: 'Options', extractedValue: 'Standing base, stor...', issue: 'Option string truncated in PDF margin note', confidence: 81,
-      pdfContext: 'NAT-DK-4200  Realize Desk 60"\nFinish: White + Gray\nOpts: Standing base, storage ped*\nQty: 4     $1,580.00/ea\n* see margin note pg 3' },
+
+    { id: 'ef3', itemLine: 2, product: 'Exhibit Collab Table 48"', sku: 'NAT-EC-4200', field: 'Finish / Color', extractedValue: 'White', issue: 'Finish code missing — PDF lists "White (CL-WH-200)" but no matte/gloss spec', confidence: 88,
+      pdfContext: 'NAT-EC-4200  Exhibit Collab Table 48"\nFinish: White (CL-WH-200)*\nMaterial: Laminate\nQty: 4     $1,240.00/ea\n*Matte/gloss finish TBD — confirm w/ designer\nColor swatch ref: pg 12' },
+    { id: 'ef4', itemLine: 4, product: 'Lobby Lounge Table', sku: 'NAT-LT-6600', field: 'Material / Grade', extractedValue: 'Veneer', issue: 'Premium material grade not captured — PDF specifies "Select Grade A" with upcharge note', confidence: 84,
+      pdfContext: 'NAT-LT-6600  Lobby Lounge Table\nFinish: Natural Walnut\nMaterial: Select Walnut Veneer - Grade A*\nQty: 3     $890.00/ea\n*Premium grade — $65/unit upcharge\nConfirm veneer match w/ designer' },
 ];
 
 const FLAGGED_LINES = new Set(EXTRACTION_FLAGS.map(f => f.itemLine));
@@ -111,14 +114,14 @@ const DRAWING_AUDIT: DrawingAuditItem[] = [
 
 // PMX preview items (representative sample — CET + non-CET)
 const PMX_PREVIEW_ITEMS = [
-    { line: 1, mfg: 'Allsteel', product: 'Involve Workstation 66"', qty: 12, listPrice: 2525, source: 'CET' as const },
-    { line: 2, mfg: 'Allsteel', product: 'Acuity Task Chair', qty: 24, listPrice: 895, source: 'CET' as const },
-    { line: 3, mfg: 'Allsteel', product: 'Stride Bench 60"', qty: 6, listPrice: 1890, source: 'CET' as const },
-    { line: 4, mfg: 'Gunlock', product: 'Executive Credenza 72"', qty: 4, listPrice: 3200, source: 'CET' as const },
-    { line: 5, mfg: 'Gunlock', product: 'Conference Table 96"', qty: 2, listPrice: 4500, source: 'CET' as const },
-    { line: 10, mfg: 'National', product: 'Waveworks Desk 60"', qty: 10, listPrice: 2180, source: 'Vendor PDF' as const },
-    { line: 11, mfg: 'National', product: 'Exhibit Collab Table 48"', qty: 4, listPrice: 1240, source: 'Vendor PDF' as const },
-    { line: 12, mfg: 'National', product: 'Realize Desk 60"', qty: 4, listPrice: 1580, source: 'Vendor PDF' as const },
+    { line: 1, mfg: 'Allsteel', product: 'Involve Workstation 66"', finish: 'Graphite', material: 'Steel', qty: 12, listPrice: 2525, source: 'CET' as const },
+    { line: 2, mfg: 'Allsteel', product: 'Acuity Task Chair', finish: 'Black', material: 'Fabric Gr.3', qty: 24, listPrice: 895, source: 'CET' as const },
+    { line: 3, mfg: 'Allsteel', product: 'Stride Bench 60"', finish: 'White', material: 'Laminate', qty: 6, listPrice: 1890, source: 'CET' as const },
+    { line: 4, mfg: 'Gunlock', product: 'Executive Credenza 72"', finish: 'Walnut', material: 'Veneer', qty: 4, listPrice: 3200, source: 'CET' as const },
+    { line: 5, mfg: 'Gunlock', product: 'Conference Table 96"', finish: 'Walnut', material: 'Veneer', qty: 2, listPrice: 4500, source: 'CET' as const },
+    { line: 10, mfg: 'National', product: 'Waveworks Desk 60"', finish: 'White + Orange', material: 'HPL', qty: 10, listPrice: 2180, source: 'Vendor PDF' as const },
+    { line: 11, mfg: 'National', product: 'Exhibit Collab Table 48"', finish: 'White', material: 'Laminate', qty: 4, listPrice: 1240, source: 'Vendor PDF' as const },
+    { line: 12, mfg: 'National', product: 'Realize Desk 60"', finish: 'White + Gray', material: 'HPL', qty: 4, listPrice: 1580, source: 'Vendor PDF' as const },
 ];
 
 // ─── Agent Arrays ────────────────────────────────────────────────────────────
@@ -133,7 +136,7 @@ const EXTRACTION_AGENTS: AgentVis[] = [
 const MAPPING_AGENTS: AgentVis[] = [
     { name: 'ExtractionMapper', detail: 'Mapping extracted fields to SPEC/PMX model', visible: false, done: false },
     { name: 'FormatAdapter', detail: 'Adapting column structure for 8 National items', visible: false, done: false },
-    { name: 'ConfidenceScorer', detail: 'Scoring field confidence — 6 high, 2 flagged', visible: false, done: false },
+    { name: 'ConfidenceScorer', detail: 'Scoring field confidence — 5 high, 3 flagged', visible: false, done: false },
 ];
 
 const VALIDATION_AGENTS: AgentVis[] = [
@@ -189,8 +192,10 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
     // ── d1.3 State: Validation ──
     const [valPhase, setValPhase] = useState<ValidationPhase>('idle');
     const [valAgents, setValAgents] = useState(VALIDATION_AGENTS.map(a => ({ ...a })));
-    const [upchargesAcked, setUpchargesAcked] = useState<Record<string, boolean>>({});
-    const [compassResolved, setCompassResolved] = useState<Record<string, 'accepted' | 'kept' | null>>({});
+    const [upchargesAcked, setUpchargesAcked] = useState<Record<string, 'acknowledged' | 'flagged' | null>>({});
+    const [compassResolved, setCompassResolved] = useState<Record<string, string | null>>({});
+    const [editingCompass, setEditingCompass] = useState<string | null>(null);
+    const [compassEditValue, setCompassEditValue] = useState('');
 
     // ── d1.4 State: Audit & PMX Gen ──
     const [auditPhase, setAuditPhase] = useState<AuditPhase>('idle');
@@ -329,9 +334,17 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         setCompassResolved({});
         const t = tp('d1.3');
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setValPhase('notification')), t.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setValPhase('syncing')), 300));
         return () => timers.forEach(clearTimeout);
     }, [stepId]);
+
+    // Transition from syncing to notification
+    useEffect(() => {
+        if (valPhase !== 'syncing') return;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(pauseAware(() => setValPhase('notification')), 3500)); // Show syncing animation for 3.5 seconds
+        return () => timers.forEach(clearTimeout);
+    }, [valPhase]);
 
     const handleValStart = () => setValPhase('processing');
 
@@ -368,9 +381,17 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         setPmxPreviewPage(1);
         const t = tp('d1.4');
         const timers: ReturnType<typeof setTimeout>[] = [];
-        timers.push(setTimeout(pauseAware(() => setAuditPhase('notification')), t.notifDelay));
+        timers.push(setTimeout(pauseAware(() => setAuditPhase('syncing')), 300));
         return () => timers.forEach(clearTimeout);
     }, [stepId]);
+
+    // Transition from syncing to notification
+    useEffect(() => {
+        if (auditPhase !== 'syncing') return;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        timers.push(setTimeout(pauseAware(() => setAuditPhase('notification')), 3500));
+        return () => timers.forEach(clearTimeout);
+    }, [auditPhase]);
 
     const handleAuditStart = () => setAuditPhase('processing');
 
@@ -430,7 +451,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         </div>
     );
 
-    const renderNotification = (icon: React.ReactNode, title: string, detail: string, onClick: () => void) => (
+    const renderNotification = (icon: React.ReactNode, title: string, detail: React.ReactNode, onClick: () => void) => (
         <button onClick={onClick} className="w-full text-left animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
                 <div className="flex items-start gap-3">
@@ -440,7 +461,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                             <span className="text-xs font-bold text-foreground">{title}</span>
                             <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Just now</span>
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-1">{detail}</p>
+                        <div className="text-[11px] text-muted-foreground mt-1">{detail}</div>
                         <p className="text-[10px] text-brand-600 dark:text-brand-400 mt-2 flex items-center gap-1">Click to start <ArrowRightIcon className="h-3 w-3" /></p>
                     </div>
                 </div>
@@ -624,6 +645,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                 <th className="text-left py-1.5 px-2 font-medium">Product</th>
                                                 <th className="text-left py-1.5 px-2 font-medium">Finish</th>
                                                 <th className="text-left py-1.5 px-2 font-medium">Material</th>
+                                                <th className="text-left py-1.5 px-2 font-medium">Options</th>
                                                 <th className="text-right py-1.5 px-2 font-medium">Qty</th>
                                                 <th className="text-right py-1.5 px-2 font-medium">List $</th>
                                                 <th className="text-center py-1.5 px-2 font-medium">Confidence</th>
@@ -653,6 +675,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                             }`}>{item.material}</span>
                                                         )}
                                                     </td>
+                                                    <td className="py-1.5 px-2 text-foreground text-[9px]">{item.options ?? <span className="text-muted-foreground">—</span>}</td>
                                                     <td className="py-1.5 px-2 text-right text-foreground">{item.qty}</td>
                                                     <td className="py-1.5 px-2 text-right font-medium text-foreground">${item.listPrice.toLocaleString()}</td>
                                                     <td className="py-1.5 px-2 text-center"><ConfidenceScoreBadge score={item.overallConfidence} /></td>
@@ -693,25 +716,57 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                 <>
                     {mapPhase === 'notification' && renderNotification(
                         <MapIcon className="h-4 w-4" />,
-                        'Mapping Complete — 2 Items Need Review',
-                        `ExtractionMapper: 8 items mapped to SPEC/PMX format. ConfidenceScorer: 6 auto-mapped at 97%+ confidence. 2 items flagged for designer review — quantity ambiguity and truncated option string.`,
+                        'Mapping Complete — 3 Items Need Review',
+                        <div className="space-y-2.5">
+                            {/* System connection chips */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 flex items-center gap-1">
+                                    <DocumentTextIcon className="h-3 w-3" /> VENDOR PDF
+                                </span>
+                                <span className="text-muted-foreground text-[10px]">→</span>
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center gap-1 ring-2 ring-blue-300 dark:ring-blue-500/30 shadow-sm shadow-blue-200 dark:shadow-blue-500/10">
+                                    <LinkIcon className="h-3 w-3" /> SPEC/PMX
+                                </span>
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-semibold">CONNECTED</span>
+                            </div>
+                            <p>ExtractionMapper: 8 items mapped to SPEC/PMX format. 5 auto-mapped at 97%+. 3 items flagged for designer review:</p>
+                            {/* Flag type breakdown */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20">QTY AMBIGUITY</span>
+
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20">FINISH / COLOR</span>
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20">MATERIAL / GRADE</span>
+                            </div>
+                        </div>,
                         handleMapStart
                     )}
                     {mapPhase === 'processing' && renderAgentPipeline(mapAgents, 100, 'AI Mapping Engine — Structuring extracted data...')}
                     {mapPhase === 'revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-4">
-                            {/* Summary bar */}
-                            <div className="flex items-center gap-4 p-3 rounded-xl bg-card border border-border">
-                                <div className="flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                                    <span className="text-[10px] font-bold text-foreground">6 Auto-Mapped (97%+)</span>
+                            {/* Summary bar with System Connection */}
+                            <div className="flex flex-col gap-3 p-3 rounded-xl bg-card border border-border">
+                                <div className="flex items-center gap-2 flex-wrap pb-3 border-b border-border/50">
+                                    <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 flex items-center gap-1">
+                                        <DocumentTextIcon className="h-3 w-3" /> VENDOR PDF
+                                    </span>
+                                    <span className="text-muted-foreground text-[10px]">→</span>
+                                    <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center gap-1 ring-2 ring-blue-300 dark:ring-blue-500/30 shadow-sm shadow-blue-200 dark:shadow-blue-500/10">
+                                        <LinkIcon className="h-3 w-3" /> SPEC/PMX
+                                    </span>
+                                    <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-semibold">CONNECTED</span>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <div className="w-2 h-2 rounded-full bg-amber-500" />
-                                    <span className="text-[10px] font-bold text-foreground">2 Flagged for Review</span>
-                                </div>
-                                <div className="ml-auto text-[10px] text-muted-foreground">
-                                    {flagsReviewedCount}/{EXTRACTION_FLAGS.length} Reviewed
+                                <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-green-500" />
+                                        <span className="text-[10px] font-bold text-foreground">5 Auto-Mapped (97%+)</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-2 h-2 rounded-full bg-amber-500" />
+                                        <span className="text-[10px] font-bold text-foreground">3 Flagged for Review</span>
+                                    </div>
+                                    <div className="ml-auto text-[10px] text-muted-foreground">
+                                        {flagsReviewedCount}/{EXTRACTION_FLAGS.length} Reviewed
+                                    </div>
                                 </div>
                             </div>
 
@@ -719,7 +774,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                             <div className="p-3 rounded-xl bg-green-50/50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
                                 <div className="flex items-center gap-2 mb-2">
                                     <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                                    <span className="text-xs font-bold text-green-700 dark:text-green-300">6 items auto-mapped at 97%+ confidence</span>
+                                    <span className="text-xs font-bold text-green-700 dark:text-green-300">5 items auto-mapped at 97%+ confidence</span>
                                     <SourceBadge label="AI MAPPED" color="green" />
                                 </div>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-1.5">
@@ -824,6 +879,26 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
             {/* ── d1.3: Validation — Options, Upcharges & Pricing ── */}
             {stepId === 'd1.3' && (
                 <>
+                    {valPhase === 'syncing' && (
+                        <div className="animate-in fade-in duration-300 space-y-4">
+                            <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-500/10">
+                                        <ArrowPathIcon className="h-5 w-5 text-indigo-500 animate-spin" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-foreground">Validating & Synchronizing...</p>
+                                        <p className="text-[10px] text-muted-foreground">Cross-referencing extracted fields with COMPASS and Source PDF databases</p>
+                                    </div>
+                                    <SourceBadge label="SYNCING" color="purple" />
+                                </div>
+                                <div className="h-1.5 rounded-full bg-muted overflow-hidden relative">
+                                    <div className="absolute top-0 bottom-0 left-0 bg-indigo-400 rounded-full animate-[pulse_1.5s_ease-in-out_infinite] w-full" />
+                                </div>
+                                <p className="text-[10px] italic text-muted-foreground mt-3 text-center">Contacting manufacturer servers and analyzing option rules for {TOTAL_ITEMS} items...</p>
+                            </div>
+                        </div>
+                    )}
                     {valPhase === 'notification' && renderNotification(
                         <ExclamationTriangleIcon className="h-4 w-4" />,
                         'Validation Complete — Upcharges & Price Discrepancies',
@@ -856,13 +931,27 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                 {uc.finishOrOption} = <span className="font-bold text-purple-600 dark:text-purple-400">${uc.perUnit}/unit</span> × {uc.qty} units = <span className="font-bold">${uc.total.toLocaleString()}</span>
                                             </p>
                                             {!upchargesAcked[uc.id] ? (
-                                                <button onClick={() => setUpchargesAcked(p => ({ ...p, [uc.id]: true }))}
-                                                    className="px-3 py-1.5 rounded-lg border border-purple-300 dark:border-purple-500/30 hover:bg-purple-100 dark:hover:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-[10px] font-bold transition-colors flex items-center gap-1">
-                                                    <CheckIcon className="h-3 w-3" /> Acknowledge Upcharge
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    <button onClick={() => setUpchargesAcked(p => ({ ...p, [uc.id]: 'acknowledged' }))}
+                                                        className="px-3 py-1.5 rounded-lg bg-purple-500 hover:bg-purple-600 text-white text-[10px] font-bold transition-colors flex items-center gap-1">
+                                                        <CheckIcon className="h-3 w-3" /> Acknowledge Upcharge
+                                                    </button>
+                                                    <button onClick={() => setUpchargesAcked(p => ({ ...p, [uc.id]: 'flagged' }))}
+                                                        className="px-3 py-1.5 rounded-lg border border-purple-300 dark:border-purple-500/30 hover:bg-purple-100 dark:hover:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-[10px] font-bold transition-colors flex items-center gap-1">
+                                                        <ExclamationTriangleIcon className="h-3 w-3" /> Flag for SC Review
+                                                    </button>
+                                                </div>
                                             ) : (
-                                                <div className="flex items-center gap-2 text-[10px] text-green-600 dark:text-green-400">
-                                                    <CheckCircleIcon className="h-4 w-4" /><span className="font-bold">Upcharge Captured</span>
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex items-center gap-2 text-[10px] text-green-600 dark:text-green-400">
+                                                        <CheckCircleIcon className="h-4 w-4" />
+                                                        <span className="font-bold">{upchargesAcked[uc.id] === 'acknowledged' ? 'Upcharge Captured' : 'Flagged for SC Review'}</span>
+                                                    </div>
+                                                    {upchargesAcked[uc.id] === 'flagged' && (
+                                                        <div className="p-2 rounded bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-[9px] text-amber-800 dark:text-amber-300 italic">
+                                                            "Note to SC: The {uc.finishOrOption.toLowerCase()} on Line {uc.itemLine} likely generates an upcharge; please confirm list price before final pricing."
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -912,16 +1001,36 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                             </div>
                                             <p className="text-[10px] italic text-muted-foreground mb-3">{cr.reason}</p>
                                             {!compassResolved[cr.id] ? (
-                                                <div className="flex items-center gap-2">
-                                                    <button onClick={() => setCompassResolved(p => ({ ...p, [cr.id]: 'accepted' }))}
-                                                        className="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-[10px] font-bold transition-colors">Accept Compass Price</button>
-                                                    <button onClick={() => setCompassResolved(p => ({ ...p, [cr.id]: 'kept' }))}
-                                                        className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50 text-foreground text-[10px] font-medium transition-colors">Keep SPEC Price</button>
-                                                </div>
+                                                editingCompass === cr.id ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-[10px] font-bold text-teal-700 dark:text-teal-400">$</span>
+                                                        <input value={compassEditValue} onChange={e => setCompassEditValue(e.target.value)} placeholder={cr.compassPrice.toString()}
+                                                            className="w-24 px-2 py-1.5 text-[10px] rounded border border-border bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-teal-400" />
+                                                        <button onClick={() => { setCompassResolved(p => ({ ...p, [cr.id]: `manual-${compassEditValue}` })); setEditingCompass(null); }}
+                                                            className="px-2 py-1.5 rounded bg-teal-500 hover:bg-teal-600 text-white text-[10px] font-bold"><CheckIcon className="h-3 w-3" /></button>
+                                                        <button onClick={() => setEditingCompass(null)}
+                                                            className="px-2 py-1.5 rounded border border-border hover:bg-muted/50 text-foreground text-[10px]"><XMarkIcon className="h-3 w-3" /></button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-2">
+                                                        <button onClick={() => setCompassResolved(p => ({ ...p, [cr.id]: 'accepted' }))}
+                                                            className="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-600 text-white text-[10px] font-bold transition-colors">Accept Compass Price</button>
+                                                        <button onClick={() => setCompassResolved(p => ({ ...p, [cr.id]: 'kept' }))}
+                                                            className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50 text-foreground text-[10px] font-medium transition-colors">Keep SPEC Price</button>
+                                                        <button onClick={() => { setEditingCompass(cr.id); setCompassEditValue(cr.compassPrice.toString()); }}
+                                                            className="px-3 py-1.5 rounded-lg border border-border hover:bg-muted/50 text-foreground text-[10px] font-medium transition-colors flex items-center gap-1">
+                                                            <PencilSquareIcon className="h-3 w-3" /> Manual Edit
+                                                        </button>
+                                                    </div>
+                                                )
                                             ) : (
                                                 <div className="flex items-center gap-2 text-[10px] text-green-600 dark:text-green-400">
                                                     <CheckCircleIcon className="h-4 w-4" />
-                                                    <span className="font-bold">{compassResolved[cr.id] === 'accepted' ? 'Compass Price Applied' : 'SPEC Price Kept'}</span>
+                                                    <span className="font-bold">
+                                                        {compassResolved[cr.id] === 'accepted' ? 'Compass Price Applied' : 
+                                                         compassResolved[cr.id] === 'kept' ? 'SPEC Price Kept' : 
+                                                         `Custom Price Applied ($${compassResolved[cr.id]?.replace('manual-', '') || ''})`}
+                                                    </span>
                                                 </div>
                                             )}
                                         </div>
@@ -973,15 +1082,61 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
             {/* ── d1.4: Audit vs Drawings & PMX Generation ── */}
             {stepId === 'd1.4' && (
                 <>
+                    {auditPhase === 'syncing' && (
+                        <div className="animate-in fade-in duration-300 space-y-4">
+                            <div className="p-4 rounded-xl bg-card border border-border shadow-sm">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="p-2 rounded-lg bg-teal-100 dark:bg-teal-500/10">
+                                        <ArrowPathIcon className="h-5 w-5 text-teal-500 animate-spin" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-bold text-foreground">Auditing & Connecting...</p>
+                                        <p className="text-[10px] text-muted-foreground">Cross-referencing PMX dataset with AutoCAD/CET drawing files</p>
+                                    </div>
+                                    <SourceBadge label="SYNCING" color="teal" />
+                                </div>
+                                <div className="h-1.5 rounded-full bg-muted overflow-hidden relative">
+                                    <div className="absolute top-0 bottom-0 left-0 bg-teal-400 rounded-full animate-[pulse_1.5s_ease-in-out_infinite] w-full" />
+                                </div>
+                                <p className="text-[10px] italic text-muted-foreground mt-3 text-center">Comparing {TOTAL_ITEMS} specified items against floor plan coordinates and quantities...</p>
+                            </div>
+                        </div>
+                    )}
                     {auditPhase === 'notification' && renderNotification(
                         <MagnifyingGlassIcon className="h-4 w-4" />,
                         'Audit Complete — 1 Quantity Discrepancy',
-                        `DrawingAuditor: Cross-referenced ${TOTAL_ITEMS} spec items against floor plan drawings. 31/32 match. 1 discrepancy: Waveworks Desk (spec: 8, drawing: 10). SourceArchiver: Vendor PDF auto-saved to project record.`,
+                        <div className="space-y-2.5">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center gap-1 ring-2 ring-blue-300 dark:ring-blue-500/30 shadow-sm shadow-blue-200 dark:shadow-blue-500/10">
+                                    <LinkIcon className="h-3 w-3" /> SPEC/PMX
+                                </span>
+                                <span className="text-muted-foreground text-[10px]">↔</span>
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-teal-100 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1">
+                                    <MapIcon className="h-3 w-3" /> FLOOR PLAN (CET/AUTO-CAD)
+                                </span>
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-semibold">CROSS-REFERENCED</span>
+                            </div>
+                            <p>DrawingAuditor: Cross-referenced {TOTAL_ITEMS} spec items against floor plan drawings. 31/32 match. 1 discrepancy: Waveworks Desk (spec: 8, drawing: 10). SourceArchiver: Vendor PDF auto-saved to project record.</p>
+                        </div>,
                         handleAuditStart
                     )}
                     {auditPhase === 'processing' && renderAgentPipeline(auditAgents, 100, 'Drawing Audit & Source Archiving — Verifying quantities...')}
                     {auditPhase === 'revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-4">
+                            {/* Visual Connection Bar */}
+                            <div className="flex flex-col gap-3 p-3 rounded-xl bg-card border border-border">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center gap-1 ring-2 ring-blue-300 dark:ring-blue-500/30 shadow-sm shadow-blue-200 dark:shadow-blue-500/10">
+                                        <LinkIcon className="h-3 w-3" /> SPEC/PMX
+                                    </span>
+                                    <span className="text-muted-foreground text-[10px]">↔</span>
+                                    <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-teal-100 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20 flex items-center gap-1">
+                                        <MapIcon className="h-3 w-3" /> FLOOR PLAN (CET/AUTO-CAD)
+                                    </span>
+                                    <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 font-semibold">CROSS-REFERENCED</span>
+                                </div>
+                            </div>
+
                             {/* Section A: Audit vs Drawings */}
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
@@ -1138,6 +1293,8 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                     <th className="text-left py-1 font-medium">#</th>
                                                     <th className="text-left py-1 font-medium">Mfg</th>
                                                     <th className="text-left py-1 font-medium">Product</th>
+                                                    <th className="text-left py-1 font-medium">Finish</th>
+                                                    <th className="text-left py-1 font-medium">Material</th>
                                                     <th className="text-right py-1 font-medium">Qty</th>
                                                     <th className="text-right py-1 font-medium">List $</th>
                                                     <th className="text-center py-1 font-medium">Source</th>
@@ -1149,6 +1306,8 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                         <td className="py-1 text-muted-foreground">{item.line}</td>
                                                         <td className="py-1 font-medium text-foreground">{item.mfg}</td>
                                                         <td className="py-1 text-foreground">{item.product}</td>
+                                                        <td className="py-1 text-foreground text-[9px]">{item.finish}</td>
+                                                        <td className="py-1 text-foreground text-[9px]">{item.material}</td>
                                                         <td className="py-1 text-right text-foreground">{item.qty}</td>
                                                         <td className="py-1 text-right font-medium text-foreground">${item.listPrice.toLocaleString()}</td>
                                                         <td className="py-1 text-center">
@@ -1236,14 +1395,14 @@ const DISCOUNT_TIERS = [
 ];
 
 const SC_PMX_ITEMS = [
-    { line: 1, mfg: 'Allsteel', product: 'Involve Workstation 66"', qty: 12, listPrice: 2525, source: 'CET' as const, flagged: false },
-    { line: 2, mfg: 'Allsteel', product: 'Acuity Task Chair', qty: 24, listPrice: 895, source: 'CET' as const, flagged: false },
-    { line: 3, mfg: 'Allsteel', product: 'Stride Bench 60"', qty: 6, listPrice: 1890, source: 'CET' as const, flagged: false },
-    { line: 4, mfg: 'Gunlock', product: 'Executive Credenza 72"', qty: 4, listPrice: 3200, source: 'CET' as const, flagged: false },
-    { line: 5, mfg: 'Gunlock', product: 'Conference Table 96"', qty: 2, listPrice: 4500, source: 'CET' as const, flagged: false },
-    { line: 10, mfg: 'National', product: 'Waveworks Desk 60"', qty: 10, listPrice: 2180, source: 'Vendor PDF' as const, flagged: true, flagNote: 'Qty ambiguity resolved — designer confirmed 10' },
-    { line: 11, mfg: 'National', product: 'Exhibit Collab Table 48"', qty: 4, listPrice: 1240, source: 'Vendor PDF' as const, flagged: false },
-    { line: 12, mfg: 'National', product: 'Realize Desk 60"', qty: 4, listPrice: 1580, source: 'Vendor PDF' as const, flagged: true, flagNote: 'Truncated option corrected — designer confirmed' },
+    { line: 1, mfg: 'Allsteel', product: 'Involve Workstation 66"', finish: 'Graphite', material: 'Steel', qty: 12, listPrice: 2525, source: 'CET' as const, flagged: false },
+    { line: 2, mfg: 'Allsteel', product: 'Acuity Task Chair', finish: 'Black', material: 'Fabric Gr.3', qty: 24, listPrice: 895, source: 'CET' as const, flagged: false },
+    { line: 3, mfg: 'Allsteel', product: 'Stride Bench 60"', finish: 'White', material: 'Laminate', qty: 6, listPrice: 1890, source: 'CET' as const, flagged: false },
+    { line: 4, mfg: 'Gunlock', product: 'Executive Credenza 72"', finish: 'Walnut', material: 'Veneer', qty: 4, listPrice: 3200, source: 'CET' as const, flagged: false },
+    { line: 5, mfg: 'Gunlock', product: 'Conference Table 96"', finish: 'Walnut', material: 'Veneer', qty: 2, listPrice: 4500, source: 'CET' as const, flagged: false },
+    { line: 10, mfg: 'National', product: 'Waveworks Desk 60"', finish: 'White + Orange', material: 'HPL', qty: 10, listPrice: 2180, source: 'Vendor PDF' as const, flagged: true, flagNote: 'Qty ambiguity resolved — designer confirmed 10' },
+    { line: 11, mfg: 'National', product: 'Exhibit Collab Table 48"', finish: 'White', material: 'Laminate', qty: 4, listPrice: 1240, source: 'Vendor PDF' as const, flagged: false },
+    { line: 12, mfg: 'National', product: 'Realize Desk 60"', finish: 'White + Gray', material: 'HPL', qty: 4, listPrice: 1580, source: 'Vendor PDF' as const, flagged: true, flagNote: 'Truncated option corrected — designer confirmed' },
 ] as const;
 
 // PDF context excerpts for "View Source" modal in d1.5
@@ -1352,6 +1511,8 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
                                         <th className="text-left py-1.5 px-3 font-medium">#</th>
                                         <th className="text-left py-1.5 px-2 font-medium">Mfg</th>
                                         <th className="text-left py-1.5 px-2 font-medium">Product</th>
+                                        <th className="text-left py-1.5 px-2 font-medium">Finish</th>
+                                        <th className="text-left py-1.5 px-2 font-medium">Material</th>
                                         <th className="text-right py-1.5 px-2 font-medium">Qty</th>
                                         <th className="text-right py-1.5 px-2 font-medium">List $</th>
                                         <th className="text-center py-1.5 px-2 font-medium">Source</th>
@@ -1378,6 +1539,8 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
                                                     )}
                                                 </span>
                                             </td>
+                                            <td className="py-1.5 px-2 text-foreground text-[9px]">{item.finish}</td>
+                                            <td className="py-1.5 px-2 text-foreground text-[9px]">{item.material}</td>
                                             <td className="py-1.5 px-2 text-right text-foreground">{item.qty}</td>
                                             <td className="py-1.5 px-2 text-right font-medium text-foreground">${item.listPrice.toLocaleString()}</td>
                                             <td className="py-1.5 px-2 text-center">
