@@ -388,7 +388,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         // Phase 2: simulate click after 3s
         const t2 = setTimeout(() => {
             setSifClicked(true);
-            window.dispatchEvent(new CustomEvent('dupler-sif-convert'));
+            window.dispatchEvent(new CustomEvent('dupler-vendor-upload'));
         }, 3000);
         return () => { clearTimeout(t1); clearTimeout(t2); };
     }, [stepId]);
@@ -1425,12 +1425,12 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         </button>
                                                     </>)}
                                                     {lifecycleTab === 'orders' && (<>
-                                                        {/* Convert to SIF — Dupler d1.1: simulated hover + auto-click */}
+                                                        {/* Upload Vendor Data — Dupler d1.1: simulated hover + auto-click */}
                                                         {currentStep.id === 'd1.1' && (
                                                             <div className="relative">
                                                                 <button
                                                                     ref={sifBtnRef}
-                                                                    onClick={() => { setSifClicked(true); window.dispatchEvent(new CustomEvent('dupler-sif-convert')); }}
+                                                                    onClick={() => { setSifClicked(true); window.dispatchEvent(new CustomEvent('dupler-vendor-upload')); }}
                                                                     className={cn(
                                                                         "p-2 rounded-lg transition-all relative",
                                                                         sifHoverSim && !sifClicked
@@ -1439,14 +1439,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 ? "bg-brand-400 text-zinc-900 scale-95"
                                                                                 : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                                                                     )}
-                                                                    title="Convert to SIF"
+                                                                    title="Upload Vendor Data"
                                                                 >
-                                                                    <CloudArrowUpIcon className="w-5 h-5" />
+                                                                    <DocumentPlusIcon className="w-5 h-5" />
                                                                 </button>
                                                                 {/* Simulated tooltip on hover */}
                                                                 {sifHoverSim && !sifClicked && (
                                                                     <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-zinc-900 text-white text-[10px] font-medium rounded whitespace-nowrap animate-in fade-in duration-200 z-50">
-                                                                        Convert to SIF
+                                                                        Upload Vendor Data
                                                                     </div>
                                                                 )}
                                                             </div>

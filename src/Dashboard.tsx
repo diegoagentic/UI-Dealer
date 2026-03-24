@@ -63,7 +63,7 @@ import DemoAvatar, { AIAgentAvatar } from './components/simulations/DemoAvatars'
 import MobileDeviceFrame from './components/simulations/MobileDeviceFrame'
 import ConfidenceScoreBadge from './components/widgets/ConfidenceScoreBadge'
 import DuplerReporting, { DuplerReportingNotification } from './components/simulations/DuplerReporting'
-import { DuplerDealerSifReview } from './components/simulations/DuplerPdfProcessor'
+import { DuplerScReview } from './components/simulations/DuplerPdfProcessor'
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -3224,9 +3224,9 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                 {
                     mainTab === 'follow_up' && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {/* Dupler d1.4: Dealer SIF Review, Approval & Export */}
-                            {currentStep.id === 'd1.4' && (
-                                <DuplerDealerSifReview onNavigate={onNavigate} />
+                            {/* Dupler d1.5: SC Review & Pricing Application */}
+                            {currentStep.id === 'd1.5' && (
+                                <DuplerScReview onNavigate={onNavigate} />
                             )}
 
                             {/* Dupler Flow 3: Notification card → switch to Metrics */}

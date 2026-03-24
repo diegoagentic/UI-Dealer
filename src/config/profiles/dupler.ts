@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// Dupler Demo Profile — PDF→SIF, Warehouse & Transit, Unified Reporting
+// Dupler Demo Profile — Vendor Data Extraction, Warehouse & Transit, Reporting
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import type { DemoStep } from '../demoProfiles';
@@ -8,42 +8,51 @@ import type { StepBehavior } from '../../components/demo/DemoStepBanner';
 // ─── Step Definitions ────────────────────────────────────────────────────────
 
 export const DUPLER_STEPS: DemoStep[] = [
-    // ── Flow 1: PDF to SIF Spec Check ───────────────────────────────────────
+    // ── Flow 1: Vendor Data Extraction & Specification Building ──────────────
     {
         id: 'd1.1',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIF Spec Check',
-        title: 'PDF Extraction',
-        description: 'National Furniture quote PDF received — 8 pages. OCR engine extracts 32 line items with part numbers, quantities, and list pricing — 99.2% accuracy.',
+        groupTitle: 'Flow 1: Vendor Data Extraction',
+        title: 'Vendor Data Upload & AI Extraction',
+        description: 'Designer uploads a vendor quote PDF (or pastes a manufacturer URL) into Strata. AI Extraction Agent reads the document using OCR and semantic parsing — identifies 8 National items with part numbers, quantities, finishes, options, and list prices.',
         app: 'dupler-pdf',
-        role: 'System',
+        role: 'Designer',
     },
     {
         id: 'd1.2',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIF Spec Check',
-        title: 'Smart Normalization & SIF Mapping',
-        description: 'AI maps National part numbers to SIF catalog entries. Expert reviews 5 exceptions: 3 discontinued models with substitution suggestions, 2 description mismatches vs SIF catalog. 27 items auto-mapped at 95%+ confidence.',
+        groupTitle: 'Flow 1: Vendor Data Extraction',
+        title: 'AI Mapping & Confidence Review',
+        description: 'AI Mapping Agent structures extracted data into SPEC/PMX format. 6 of 8 items auto-mapped at 97%+ confidence. 2 items flagged for designer review — quantity ambiguity and truncated option string.',
         app: 'dupler-pdf',
-        role: 'Expert',
+        role: 'Designer',
     },
     {
         id: 'd1.3',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIF Spec Check',
-        title: 'Price & Contract Validation',
-        description: 'AI cross-checks PDF list prices vs Compass discount tiers and vendor contracts in Core (SCS). 4 discrepancies flagged ($1,788 total): 2 regional tax adjustments (Cook County IL 6.7%, NYC 8.0%), 1 outdated list price (+3% vs current), 1 quantity mismatch vs PO.',
+        groupTitle: 'Flow 1: Vendor Data Extraction',
+        title: 'Validation: Options, Upcharges & Pricing',
+        description: 'AI Validation Agent checks options and upcharges ($1,380 total). For HNI items (24 from CET): Compass price verification — 2 updates detected. For non-CET items (8 National): prices verified against source PDF.',
         app: 'dupler-pdf',
-        role: 'Expert',
+        role: 'Designer',
     },
     {
         id: 'd1.4',
         groupId: 1,
-        groupTitle: 'Flow 1: PDF to SIF Spec Check',
-        title: 'Dealer Review, Approval & Export',
-        description: 'Dealer receives SIF from Expert, reviews document with regional tax adjustments, adds comments. After approval, 2-level compliance chain runs and SIF exports to Core (SCS).',
+        groupTitle: 'Flow 1: Vendor Data Extraction',
+        title: 'Audit vs Drawings & PMX Generation',
+        description: 'AI Audit Agent cross-references spec quantities against floor plan drawings — 1 discrepancy found (Waveworks Desk: spec 8, drawing 10). Source PDF auto-archived to project record. Validated PMX generated and sent to Sales Coordinator.',
+        app: 'dupler-pdf',
+        role: 'Designer',
+    },
+    {
+        id: 'd1.5',
+        groupId: 1,
+        groupTitle: 'Flow 1: Vendor Data Extraction',
+        title: 'SC Review & Pricing Application',
+        description: 'Sales Coordinator Randy Martinez receives validated PMX with full source traceability. Applies discounts (Strata-assisted), margins, and freight. Generates SIF and exports to CORE.',
         app: 'dashboard',
-        role: 'Dealer',
+        role: 'SC',
     },
 
     // ── Flow 2: Warehouse & Inventory Intelligence ─────────────────────────────
@@ -144,11 +153,12 @@ export const DUPLER_STEPS: DemoStep[] = [
 // ─── Step Behavior ───────────────────────────────────────────────────────────
 
 export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
-    // Flow 1: PDF to SIF Spec Check
-    'd1.1': { mode: 'interactive', userAction: 'Click "Convert to SIF" in Quick Actions to upload a manufacturer PDF quote. OCR extraction runs automatically after upload.' },
-    'd1.2': { mode: 'interactive', userAction: 'Review SIF mapping: 3 discontinued models, 2 description mismatches. Approve when all 5 exceptions reviewed.' },
-    'd1.3': { mode: 'interactive', userAction: 'Review price discrepancies: $1,788 across 4 lines (incl. 2 regional tax adjustments). Resolve each flag, then click "Validate & Generate SIF".' },
-    'd1.4': { mode: 'interactive', userAction: 'Dealer receives SIF from Expert. Review document, add comments if needed, then click "Approve SIF" to trigger compliance chain and export.' },
+    // Flow 1: Vendor Data Extraction
+    'd1.1': { mode: 'interactive', userAction: 'Click "Upload Vendor Data" in Quick Actions. Designer uploads a vendor PDF quote. AI extracts 8 items using OCR and semantic parsing.' },
+    'd1.2': { mode: 'interactive', userAction: 'Review AI mapping results. 6 items auto-mapped (97%+). Resolve 2 flagged exceptions (quantity ambiguity, truncated option). Click "Approve Mapping".' },
+    'd1.3': { mode: 'interactive', userAction: 'Acknowledge 2 upcharges ($1,380). Review Compass verification (HNI) and source PDF verification (non-CET). Click "Approve Validation".' },
+    'd1.4': { mode: 'interactive', userAction: 'Review drawing audit (1 discrepancy). Verify source traceability. Generate PMX and send to Sales Coordinator.' },
+    'd1.5': { mode: 'interactive', userAction: 'SC reviews validated PMX with source badges. Applies discounts (AI-assisted). Generates SIF and exports to CORE.' },
 
     // Flow 2: Warehouse & Inventory Intelligence
     'd2.1': { mode: 'interactive', userAction: 'Review warehouse health: Columbus 72% (89% forecast). Click "Apply Recommendations" to optimize.' },
@@ -168,33 +178,34 @@ export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
 // ─── Step Messages (AI Agent Progress) ───────────────────────────────────────
 
 export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
-    // Flow 1
+    // Flow 1: Vendor Data Extraction
     'd1.1': [
-        'UploadAgent: receiving National Furniture quote PDF — 2.4 MB, 8 pages...',
-        'OCRAgent: ingesting National Furniture quote PDF — 8 pages detected...',
-        'TextExtractAgent: parsing line items — 32 items identified',
-        'LineParserAgent: extracting part numbers, quantities, list pricing',
-        'CatalogMapper: pre-mapping National codes to SIF catalog entries',
+        'PdfOcrAgent: reading vendor quote PDF — National Furniture #NF-2026-0412...',
+        'SemanticParser: identifying structured fields — tables, footnotes, margin notes',
+        'LineItemDetector: 8 line items found across 2 product categories',
+        'FieldClassifier: extracting SKUs, quantities, finishes, options, list prices',
     ],
     'd1.2': [
-        'SIFMappingAgent: cross-referencing 32 items against SIF catalog...',
-        '27 items auto-mapped with 95%+ confidence',
-        '3 discontinued models detected — substitution suggestions generated',
-        '2 description mismatches flagged for expert review',
+        'ExtractionMapper: structuring 8 items into SPEC/PMX format...',
+        'FormatAdapter: mapping field types to SPEC schema',
+        'ConfidenceScorer: 6 items at 97%+ confidence — 2 flagged for review',
     ],
     'd1.3': [
-        'PriceValidationAgent: cross-checking against Compass discounts + vendor contracts...',
-        'RegionalTaxEngine: loading tax rates for ship-to addresses (IL, NY)...',
-        'Compass + Contract DB: 28 items match current pricing',
-        'Discrepancy found: 4 lines with $1,788 total variance',
-        'Flags: 2 regional tax adjustments (IL 6.7%, NYC 8.0%), 1 outdated list, 1 qty mismatch',
+        'OptionValidator: checking finish/option configurations against catalog rules',
+        'UpchargeDetector: 2 finish selections trigger upcharges — $1,380 total',
+        'PriceVerifier: HNI items → Compass (22/24 ✓), non-CET → source PDF match',
     ],
     'd1.4': [
-        'SIF DUP-0412 sent to Sarah Chen (Dealer) — awaiting review...',
-        'Sarah Chen reviewing: 32 items, $94,200, regional tax adjustments (IL, NY)',
-        'Sarah Chen approved — triggering compliance chain...',
-        'ComplianceAgent: AI Compliance ✓ → Expert ✓',
-        'SIFGeneratorAgent: exporting to Core (SCS) — PMX/SPEC import confirmed',
+        'DrawingAuditor: cross-referencing spec quantities against floor plan drawings...',
+        'QuantityReconciler: 31/32 items match — 1 discrepancy (Waveworks Desk)',
+        'SourceArchiver: vendor PDF archived to project record — tagged to line items',
+        'PmxGenerator: generating validated PMX-MH-0412...',
+    ],
+    'd1.5': [
+        'PMX-MH-0412 sent to Randy Martinez (SC) — specification package ready',
+        'DiscountAdvisor: suggesting applicable discount tiers per manufacturer...',
+        'MarginCalculator: computing margins after discounts and upcharges',
+        'SifGenerator: generating SIF for CORE export — 32 items, $95,580',
     ],
 
     // Flow 2
@@ -265,7 +276,7 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
 // ─── Self-Indicated Steps (handle own AI indicator) ──────────────────────────
 
 export const DUPLER_SELF_INDICATED: string[] = [
-    'd1.1', 'd1.2', 'd1.3', 'd1.4',   // Flow 1: all steps (pipeline processing visible)
+    'd1.1', 'd1.2', 'd1.3', 'd1.4', 'd1.5', // Flow 1: all steps
     'd2.1', 'd2.2', 'd2.3', 'd2.4', 'd2.5', // Flow 2: all processing steps
     'd3.1', 'd3.2', 'd3.3',            // Flow 3: sync, recon, report assembly
 ];
@@ -282,11 +293,12 @@ export interface DuplerStepTiming {
 }
 
 export const DUPLER_STEP_TIMING: Record<string, DuplerStepTiming> = {
-    // Flow 1: PDF to SIF
-    'd1.1': { notifDelay: 1500, notifDuration: 5000, agentStagger: 700, agentDone: 500, breathing: 1200, resultsDur: 8000 },
+    // Flow 1: Vendor Data Extraction
+    'd1.1': { notifDelay: 1500, notifDuration: 5000, agentStagger: 700, agentDone: 500, breathing: 1200, resultsDur: 0 },
     'd1.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 900, agentDone: 600, breathing: 1500, resultsDur: 0 },
     'd1.3': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800, agentDone: 500, breathing: 1200, resultsDur: 0 },
-    'd1.4': { notifDelay: 2000, notifDuration: 4000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    'd1.4': { notifDelay: 2000, notifDuration: 5000, agentStagger: 800, agentDone: 500, breathing: 1200, resultsDur: 0 },
+    'd1.5': { notifDelay: 2000, notifDuration: 4000, agentStagger: 0,   agentDone: 0,   breathing: 0,    resultsDur: 0 },
 
     // Flow 2: Warehouse & Inventory Intelligence
     'd2.1': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800, agentDone: 500, breathing: 1500, resultsDur: 0 },
