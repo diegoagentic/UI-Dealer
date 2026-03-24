@@ -306,9 +306,9 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
 // ─── Self-Indicated Steps (handle own AI indicator) ──────────────────────────
 
 export const DUPLER_SELF_INDICATED: string[] = [
-    'd1.1', 'd1.2', 'd1.3', 'd1.4', 'd1.5',       // Flow 1: all steps
-    'd2.1', 'd2.2', 'd2.3', 'd2.4', 'd2.5', 'd2.6', // Flow 2: all processing steps
-    'd3.1', 'd3.2', 'd3.3',                          // Flow 3: sync, recon, report assembly
+    'd1.1', 'd1.2', 'd1.3', 'd1.4', 'd1.5',                 // Flow 1: all steps
+    'd2.1', 'd2.2', 'd2.3', 'd2.4', 'd2.5', 'd2.6', 'd2.7', // Flow 2: all steps
+    'd3.1', 'd3.2', 'd3.3', 'd3.4', 'd3.5',                  // Flow 3: all steps
 ];
 
 // ─── Step Timing ─────────────────────────────────────────────────────────────

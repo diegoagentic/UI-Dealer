@@ -27,6 +27,8 @@ import {
     MapPinIcon,
     TruckIcon,
     LinkIcon,
+    UserCircleIcon,
+    XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { DUPLER_STEP_TIMING, type DuplerStepTiming } from '../../config/profiles/dupler';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, CartesianGrid, Tooltip, Legend } from 'recharts';
@@ -293,6 +295,9 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const [reportPhase, setReportPhase] = useState<ReportPhase>('idle');
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
     const [exported, setExported] = useState(false);
+    const [showSendPopover, setShowSendPopover] = useState(false);
+    const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]);
+    const [sendToast, setSendToast] = useState(false);
 
     // ── d3.5 State: Client Portal ──
     const [portalPhase, setPortalPhase] = useState<PortalPhase>('idle');
@@ -969,25 +974,119 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 ))}
                             </div>
 
-                            {/* Export button */}
-                            <button
-                                onClick={() => setExported(true)}
-                                disabled={exported}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${exported
-                                    ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30'
-                                    : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30'
-                                    }`}
-                            >
-                                {exported ? (
-                                    <span className="flex items-center justify-center gap-2">
-                                        <CheckCircleIcon className="h-4 w-4" /> Report Sent to Randy and Tara
-                                    </span>
-                                ) : (
-                                    <span className="flex items-center justify-center gap-2">
+                            {/* Export & Send */}
+                            {!exported ? (
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setShowSendPopover(!showSendPopover)}
+                                        className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-xs shadow-lg shadow-brand-500/20 hover:shadow-brand-500/30 flex items-center justify-center gap-2 transition-colors"
+                                    >
                                         <PaperAirplaneIcon className="h-4 w-4" /> Export PDF & Send to Team
-                                    </span>
-                                )}
-                            </button>
+                                    </button>
+
+                                    {/* Recipient Popover */}
+                                    {showSendPopover && (
+                                        <div className="absolute bottom-full mb-2 right-0 left-0 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 overflow-hidden">
+                                            <div className="px-4 py-2.5 border-b border-border bg-muted/50 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-xs font-bold text-foreground">Send Report To...</p>
+                                                    <p className="text-[9px] text-muted-foreground">Select recipients for the inventory report</p>
+                                                </div>
+                                                <button onClick={() => setShowSendPopover(false)} className="p-1 rounded-lg hover:bg-muted transition-colors">
+                                                    <XMarkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                                </button>
+                                            </div>
+                                            <div className="p-2 space-y-0.5">
+                                                {[
+                                                    { id: 'randy', name: 'Randy Martinez', role: 'Sales Coordinator', initials: 'RM', recommended: true },
+                                                    { id: 'tara', name: 'Tara Collins', role: 'Project Manager', initials: 'TC', recommended: true },
+                                                    { id: 'james', name: 'James Mitchell', role: 'Account Executive', initials: 'JM', recommended: false },
+                                                    { id: 'sarah', name: 'Sarah Chen', role: 'Dealer Principal', initials: 'SC', recommended: false },
+                                                ].map(user => {
+                                                    const isSelected = selectedRecipients.includes(user.id);
+                                                    return (
+                                                        <button key={user.id}
+                                                            onClick={() => setSelectedRecipients(prev =>
+                                                                prev.includes(user.id) ? prev.filter(r => r !== user.id) : [...prev, user.id]
+                                                            )}
+                                                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
+                                                                isSelected
+                                                                    ? 'bg-brand-100 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30'
+                                                                    : 'hover:bg-muted/50'
+                                                            }`}>
+                                                            {/* Checkbox */}
+                                                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                                                isSelected
+                                                                    ? 'bg-brand-400 border-brand-400'
+                                                                    : 'border-zinc-300 dark:border-zinc-600'
+                                                            }`}>
+                                                                {isSelected && <CheckCircleIcon className="h-3 w-3 text-zinc-900" />}
+                                                            </div>
+                                                            {/* Avatar */}
+                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${
+                                                                isSelected ? 'bg-brand-300 text-zinc-900' : 'bg-muted text-muted-foreground'
+                                                            }`}>{user.initials}</div>
+                                                            {/* Info */}
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-[11px] font-bold text-foreground">{user.name}</p>
+                                                                <p className="text-[9px] text-muted-foreground">{user.role}</p>
+                                                            </div>
+                                                            {user.recommended && (
+                                                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-brand-300/50 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 font-bold shrink-0">REC</span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {/* Send Button */}
+                                            <div className="px-3 pb-3 pt-1">
+                                                <button
+                                                    onClick={() => {
+                                                        if (selectedRecipients.length === 0) return;
+                                                        setShowSendPopover(false);
+                                                        setExported(true);
+                                                        setSendToast(true);
+                                                        setTimeout(() => setSendToast(false), 4000);
+                                                    }}
+                                                    disabled={selectedRecipients.length === 0}
+                                                    className={`w-full py-2 rounded-lg text-[11px] font-bold transition-all ${
+                                                        selectedRecipients.length > 0
+                                                            ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-md'
+                                                            : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                                    }`}
+                                                >
+                                                    {selectedRecipients.length > 0
+                                                        ? `Send Report to ${selectedRecipients.length} Recipient${selectedRecipients.length > 1 ? 's' : ''}`
+                                                        : 'Select at least one recipient'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="w-full py-3 rounded-xl bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-2 border-green-300 dark:border-green-500/30 font-bold text-xs text-center flex items-center justify-center gap-2">
+                                    <CheckCircleIcon className="h-4 w-4" />
+                                    Report Sent to {selectedRecipients.length} Team Member{selectedRecipients.length !== 1 ? 's' : ''}
+                                </div>
+                            )}
+
+                            {/* Toast Notification */}
+                            {sendToast && (
+                                <div className="fixed bottom-6 right-6 z-[100] animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-green-600 dark:bg-green-500 text-white shadow-2xl shadow-green-500/30">
+                                        <CheckCircleIcon className="h-5 w-5 shrink-0" />
+                                        <div>
+                                            <p className="text-xs font-bold">Report Sent Successfully</p>
+                                            <p className="text-[10px] text-green-100">
+                                                PDF exported and delivered to {selectedRecipients.length} recipient{selectedRecipients.length !== 1 ? 's' : ''}
+                                            </p>
+                                        </div>
+                                        <button onClick={() => setSendToast(false)} className="p-1 rounded-lg hover:bg-green-700 dark:hover:bg-green-600 transition-colors ml-2">
+                                            <XMarkIcon className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     )}
                 </>
