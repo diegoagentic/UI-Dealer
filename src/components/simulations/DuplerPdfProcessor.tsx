@@ -1811,9 +1811,10 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
                 </div>
             )}
 
-            {/* Revealed — SIF generated */}
+            {/* Revealed — SIF Preview & Actions */}
             {phase === 'revealed' && (
                 <div className="p-5 space-y-4 animate-in fade-in duration-500">
+                    {/* Success header */}
                     <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
                         <div className="flex items-start gap-2">
                             <AIAgentAvatar />
@@ -1832,7 +1833,7 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
                             <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20 flex items-center gap-1 ring-2 ring-blue-300 dark:ring-blue-500/30 shadow-sm shadow-blue-200 dark:shadow-blue-500/10">
                                 <LinkIcon className="h-3 w-3" /> VALIDATED PMX
                             </span>
-                            <span className="text-muted-foreground text-[10px]">↔</span>
+                            <span className="text-muted-foreground text-[10px]">→</span>
                             <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-500/20 flex items-center gap-1">
                                 <ShieldCheckIcon className="h-3 w-3" /> STRATA PRICING
                             </span>
@@ -1844,21 +1845,192 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="text-center p-3 rounded-lg bg-muted/30 border border-border">
-                            <div className="text-lg font-bold text-foreground">{TOTAL_ITEMS}</div>
-                            <div className="text-[9px] text-muted-foreground">Items Exported</div>
+                    {/* ═══ SIF Document Preview ═══ */}
+                    <div className="rounded-xl border border-border overflow-hidden shadow-sm">
+                        {/* Document header bar */}
+                        <div className="bg-zinc-100 dark:bg-zinc-800 px-4 py-2.5 border-b border-border flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <DocumentTextIcon className="h-4 w-4 text-teal-500" />
+                                <span className="text-[10px] font-bold text-foreground font-mono">SIF-MH-0412.sif</span>
+                                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-500/20">FINAL</span>
+                            </div>
+                            <span className="text-[9px] text-muted-foreground">Generated {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                         </div>
-                        <div className="text-center p-3 rounded-lg bg-muted/30 border border-border">
-                            <div className="text-lg font-bold text-green-600 dark:text-green-400">${Math.round(discountedTotal).toLocaleString()}</div>
-                            <div className="text-[9px] text-muted-foreground">Net Total</div>
-                        </div>
-                        <div className="text-center p-3 rounded-lg bg-muted/30 border border-border">
-                            <div className="text-lg font-bold text-teal-600 dark:text-teal-400">SIF-MH-0412</div>
-                            <div className="text-[9px] text-muted-foreground">CORE Export ID</div>
+
+                        {/* Document body */}
+                        <div className="p-5 bg-white dark:bg-zinc-900/50 space-y-4">
+                            {/* SIF Header */}
+                            <div className="flex justify-between items-start pb-3 border-b border-border">
+                                <div>
+                                    <h3 className="text-sm font-black text-foreground uppercase tracking-wide">Specification Information File</h3>
+                                    <p className="text-[10px] text-muted-foreground mt-0.5">Mercy Health — Phase 2 Furniture Package</p>
+                                </div>
+                                <div className="text-right">
+                                    <div className="font-mono text-xs font-bold text-teal-600 dark:text-teal-400">SIF-MH-0412</div>
+                                    <p className="text-[9px] text-muted-foreground">From PMX-MH-0412</p>
+                                </div>
+                            </div>
+
+                            {/* SIF metadata grid */}
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[10px]">
+                                <div className="flex justify-between"><span className="text-muted-foreground">Dealer:</span><span className="font-bold text-foreground">Dupler Office</span></div>
+                                <div className="flex justify-between"><span className="text-muted-foreground">Sales Coordinator:</span><span className="font-bold text-foreground">Randy Martinez</span></div>
+                                <div className="flex justify-between"><span className="text-muted-foreground">Designer:</span><span className="text-foreground">Alex Rivera</span></div>
+                                <div className="flex justify-between"><span className="text-muted-foreground">Client:</span><span className="text-foreground">Mercy Health</span></div>
+                                <div className="flex justify-between"><span className="text-muted-foreground">Total Line Items:</span><span className="font-bold text-foreground">{TOTAL_ITEMS}</span></div>
+                                <div className="flex justify-between"><span className="text-muted-foreground">CORE Export:</span><span className="font-mono text-teal-600 dark:text-teal-400 font-bold">SIF-MH-0412</span></div>
+                            </div>
+
+                            {/* Pricing breakdown by manufacturer */}
+                            <div className="border-t border-border pt-3">
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Pricing Summary by Manufacturer</p>
+                                <table className="w-full text-[10px]">
+                                    <thead>
+                                        <tr className="text-muted-foreground border-b border-border">
+                                            <th className="text-left py-1.5 font-medium">Manufacturer</th>
+                                            <th className="text-center py-1.5 font-medium">Items</th>
+                                            <th className="text-right py-1.5 font-medium">List</th>
+                                            <th className="text-center py-1.5 font-medium">Discount</th>
+                                            <th className="text-right py-1.5 font-medium">Net</th>
+                                            <th className="text-center py-1.5 font-medium">Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {DISCOUNT_TIERS.map(dt => {
+                                            const rate = getEffectiveRate(dt);
+                                            const net = Math.round(dt.listTotal * (1 - rate / 100));
+                                            const mode = discountsApplied[dt.id];
+                                            return (
+                                                <tr key={dt.id} className="border-b border-border/50">
+                                                    <td className="py-1.5 font-bold text-foreground">{dt.manufacturer}</td>
+                                                    <td className="py-1.5 text-center text-foreground">{dt.items}</td>
+                                                    <td className="py-1.5 text-right text-muted-foreground">${dt.listTotal.toLocaleString()}</td>
+                                                    <td className="py-1.5 text-center">
+                                                        <span className={`font-bold ${mode === 'adjusted' ? 'text-indigo-600 dark:text-indigo-400' : 'text-foreground'}`}>{rate}%</span>
+                                                    </td>
+                                                    <td className="py-1.5 text-right font-bold text-foreground">${net.toLocaleString()}</td>
+                                                    <td className="py-1.5 text-center">
+                                                        <span className={`text-[8px] font-bold px-1 py-0.5 rounded border ${
+                                                            mode === 'ai' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-500/20' :
+                                                            mode === 'adjusted' ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' :
+                                                            'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20'
+                                                        }`}>{mode === 'ai' ? 'AI' : mode === 'adjusted' ? 'SC' : 'PENDING'}</span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr className="border-t-2 border-border">
+                                            <td className="py-2 font-bold text-foreground">Total</td>
+                                            <td className="py-2 text-center font-bold text-foreground">{TOTAL_ITEMS}</td>
+                                            <td className="py-2 text-right text-muted-foreground">${PROJECT_TOTAL.toLocaleString()}</td>
+                                            <td className="py-2 text-center font-bold text-foreground">{Math.round((1 - discountedTotal / PROJECT_TOTAL) * 100)}% avg</td>
+                                            <td className="py-2 text-right font-bold text-green-600 dark:text-green-400 text-xs">${Math.round(discountedTotal).toLocaleString()}</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            {/* Additional line items */}
+                            <div className="border-t border-border pt-3">
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Additional Charges</p>
+                                <div className="space-y-1 text-[10px]">
+                                    <div className="flex justify-between py-1 border-b border-border/30">
+                                        <span className="text-foreground">Upcharges (finish & option impact)</span>
+                                        <span className="font-bold text-foreground">+${UPCHARGE_TOTAL.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1 border-b border-border/30">
+                                        <span className="text-foreground">Estimated Freight <span className="text-[8px] text-muted-foreground">(3 manufacturers, FOB destination)</span></span>
+                                        <span className="font-bold text-foreground">+$3,240</span>
+                                    </div>
+                                    <div className="flex justify-between py-1 border-b border-border/30">
+                                        <span className="text-foreground">Installation <span className="text-[8px] text-muted-foreground">(Mercy Health Phase 2 — est. 3 days)</span></span>
+                                        <span className="font-bold text-foreground">+$4,800</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-t border-border font-bold text-xs">
+                                        <span className="text-foreground">Grand Total (Net + Charges)</span>
+                                        <span className="text-green-600 dark:text-green-400">${(Math.round(discountedTotal) + UPCHARGE_TOTAL + 3240 + 4800).toLocaleString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Audit trail footer */}
+                            <div className="border-t border-border pt-3">
+                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Audit Trail</p>
+                                <div className="grid grid-cols-1 gap-1 text-[9px] text-muted-foreground">
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                        <span>Vendor Data Extracted — AI OCR from NF-2026-0412.pdf</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
+                                        <span>Mapping & Confidence Review — Designer Alex Rivera confirmed 4 flags</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0" />
+                                        <span>Validation — Compass verified (24 HNI), Source PDF verified (8 National)</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0" />
+                                        <span>Drawing Audit — 31/32 match, 1 discrepancy resolved</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-green-400 shrink-0" />
+                                        <span>SC Pricing — Randy Martinez applied discounts, SIF exported to CORE</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    {/* ═══ Actions Panel ═══ */}
+                    <div className="rounded-xl border border-border overflow-hidden">
+                        <div className="bg-muted/50 px-4 py-2 border-b border-border">
+                            <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">Quick Actions</span>
+                        </div>
+                        <div className="p-3 grid grid-cols-2 gap-2">
+                            <button className="flex items-center gap-2 p-2.5 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left group">
+                                <div className="p-1.5 rounded-lg bg-teal-100 dark:bg-teal-500/10 group-hover:bg-teal-200 dark:group-hover:bg-teal-500/20 transition-colors">
+                                    <ArrowDownTrayIcon className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-foreground">Download SIF</p>
+                                    <p className="text-[8px] text-muted-foreground">Export as PDF for records</p>
+                                </div>
+                            </button>
+                            <button className="flex items-center gap-2 p-2.5 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left group">
+                                <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-500/10 group-hover:bg-blue-200 dark:group-hover:bg-blue-500/20 transition-colors">
+                                    <PaperAirplaneIcon className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-foreground">Send to Client</p>
+                                    <p className="text-[8px] text-muted-foreground">Share for approval before PO</p>
+                                </div>
+                            </button>
+                            <button className="flex items-center gap-2 p-2.5 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left group">
+                                <div className="p-1.5 rounded-lg bg-purple-100 dark:bg-purple-500/10 group-hover:bg-purple-200 dark:group-hover:bg-purple-500/20 transition-colors">
+                                    <DocumentTextIcon className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-foreground">Generate POs</p>
+                                    <p className="text-[8px] text-muted-foreground">Create purchase orders by mfg</p>
+                                </div>
+                            </button>
+                            <button className="flex items-center gap-2 p-2.5 rounded-lg border border-border hover:bg-muted/50 transition-colors text-left group">
+                                <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-500/10 group-hover:bg-amber-200 dark:group-hover:bg-amber-500/20 transition-colors">
+                                    <LinkIcon className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-foreground">Archive to Project</p>
+                                    <p className="text-[8px] text-muted-foreground">Save to Mercy Health record</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Complete Flow CTA */}
                     {!exported ? (
                         <button onClick={() => { setExported(true); setTimeout(pauseAware(() => nextStep()), 2000); }}
                             className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors">
