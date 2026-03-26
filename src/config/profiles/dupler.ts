@@ -134,10 +134,10 @@ export const DUPLER_STEPS: DemoStep[] = [
         id: 'd3.2',
         groupId: 3,
         groupTitle: 'Flow 3: Observability & Client Reporting',
-        title: 'Inventory Reconciliation',
-        description: 'A physical inventory count is compared against system records — 97.2% match. 3 discrepancies need expert review: a quantity mismatch on chairs, a bench in the wrong location, and a table that can\'t be located. Each gets a specific review form to investigate and resolve.',
+        title: 'Cross-System Data Update & Sync',
+        description: '3 updates from warehouse operations (Flow 2) — a count adjustment, a location correction, and a tracked transfer — are verified and synchronized across all 5 systems. No manual resolution needed; the updates are confirmed and propagated automatically.',
         app: 'dupler-reporting',
-        role: 'Expert',
+        role: 'System',
     },
     {
         id: 'd3.3',
@@ -152,17 +152,8 @@ export const DUPLER_STEPS: DemoStep[] = [
         id: 'd3.4',
         groupId: 3,
         groupTitle: 'Flow 3: Observability & Client Reporting',
-        title: 'Report Review & Distribution',
-        description: 'The dealer reviews the complete inventory report with stock availability, warehouse capacity, backorder analysis, and AI recommendations. Three actions available: preview as PDF, download the report, or send it directly to team members.',
-        app: 'dupler-reporting',
-        role: 'Dealer',
-    },
-    {
-        id: 'd3.5',
-        groupId: 3,
-        groupTitle: 'Flow 3: Observability & Client Reporting',
-        title: 'Client Portal Preview',
-        description: 'A preview of what the client sees: Mercy Health Phase 2 at 68% complete, with a delivery timeline showing 5 milestones from procurement through final walkthrough. This read-only portal keeps the client informed without needing calls or emails.',
+        title: 'Report Review, Distribution & Client Portal',
+        description: 'The dealer reviews the complete inventory report with stock availability, warehouse capacity, backorder analysis, and AI recommendations. Preview, download, or send the report. A live client portal shows Mercy Health Phase 2 at 68% complete with delivery milestones.',
         app: 'dupler-reporting',
         role: 'Dealer',
     },
@@ -188,11 +179,10 @@ export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     'd2.7': { mode: 'interactive', userAction: 'Sarah Chen (Dealer) reviews consolidated report. Verify staging checklist, then click "Approve All & Dispatch".' },
 
     // Flow 3: Observability & Client Reporting
-    'd3.1': { mode: 'interactive', userAction: 'Review cross-system data bridge: 5 systems connected, 1,840 items, health score 78/100. Click "Continue to Reconciliation".' },
-    'd3.2': { mode: 'interactive', userAction: 'Review inventory reconciliation: 97.2% match, 3 discrepancies. Resolve each, then click "Acknowledge & Continue".' },
-    'd3.3': { mode: 'auto', duration: 8, aiSummary: 'Assembling inventory health report with proactive alerts — Teams, Email, SMS notifications...' },
-    'd3.4': { mode: 'interactive', userAction: 'Review inventory intelligence report sections. Click "Export PDF & Send to Team" to distribute.' },
-    'd3.5': { mode: 'interactive', userAction: 'Preview client portal: Mercy Health Phase 2 — 68% complete. Click "Complete Demo" to finish.' },
+    'd3.1': { mode: 'interactive', userAction: 'Review cross-system data bridge: 5 systems connected, 1,840 items, health score 78/100. Click "Continue to Data Sync".' },
+    'd3.2': { mode: 'interactive', userAction: 'Review 3 updates from warehouse operations (already resolved). Click "Synchronize Across All Systems" to propagate changes.' },
+    'd3.3': { mode: 'interactive', userAction: 'Report assembles automatically. Preview as PDF, download, or send to SC team to advance.' },
+    'd3.4': { mode: 'interactive', userAction: 'Review inventory report sections. Preview, download, or send to team. Check client portal status. Click "Complete Demo".' },
 };
 
 // ─── Step Messages (AI Agent Progress) ───────────────────────────────────────
@@ -277,10 +267,10 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
         'HealthScorer: inventory health score 78/100',
     ],
     'd3.2': [
-        'CountVerifier: physical vs system — 97.2% match',
-        'LocationChecker: 3 items in wrong location',
-        'StockAlertEngine: 5 categories below reorder point',
-        'KPICalculator: fill rate 89%, turnover 4.8×',
+        'UpdateVerifier: 3 updates from warehouse ops confirmed',
+        'CrossSystemSync: propagating to CET · SPEC · Compass · WMS · Carrier',
+        'ConsistencyCheck: 1,840 records verified — 100% consistent',
+        'SyncComplete: all 5 systems in sync — ready for reporting',
     ],
     'd3.3': [
         'HealthReporter: building stock availability section...',
@@ -294,11 +284,6 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
         'AI Rec 2: Relocate 85 items Columbus → Cincinnati — $3,600/mo',
         'AI Rec 3: 5 EOL SKUs — mark for clearance ($8,450)',
     ],
-    'd3.5': [
-        'ClientPortal: building Mercy Health Phase 2 dashboard...',
-        'Timeline: 68% complete — 8 milestones tracked',
-        'DeliveryTracker: next delivery scheduled Mar 28',
-    ],
 };
 
 // ─── Self-Indicated Steps (handle own AI indicator) ──────────────────────────
@@ -306,7 +291,7 @@ export const DUPLER_STEP_MESSAGES: Record<string, string[]> = {
 export const DUPLER_SELF_INDICATED: string[] = [
     'd1.1', 'd1.2', 'd1.3', 'd1.4', 'd1.5',                 // Flow 1: all steps
     'd2.1', 'd2.2', 'd2.3', 'd2.4', 'd2.5', 'd2.6', 'd2.7', // Flow 2: all steps
-    'd3.1', 'd3.2', 'd3.3', 'd3.4', 'd3.5',                  // Flow 3: all steps
+    'd3.1', 'd3.2', 'd3.3', 'd3.4',                            // Flow 3: all steps
 ];
 
 // ─── Step Timing ─────────────────────────────────────────────────────────────
@@ -342,5 +327,4 @@ export const DUPLER_STEP_TIMING: Record<string, DuplerStepTiming> = {
     'd3.2': { notifDelay: 2500, notifDuration: 6000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 0 },
     'd3.3': { notifDelay: 1500, notifDuration: 5000, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 8000 },
     'd3.4': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
-    'd3.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
 };

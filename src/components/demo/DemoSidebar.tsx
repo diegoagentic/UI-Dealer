@@ -63,10 +63,9 @@ function getStepDataThread(stepId: string): string | null {
         'd2.6': '3 claims processed — $2,770 in credits',
         'd2.7': 'Sarah Chen approved — dispatch Thu 8AM',
         'd3.1': '5 systems connected — 1,840 items, health 78/100',
-        'd3.2': '97.2% accuracy — 3 discrepancies resolved',
+        'd3.2': '3 updates synced across 5 systems — 1,840 verified',
         'd3.3': 'Report assembled — 3 alerts sent (Teams, Email, SMS)',
-        'd3.4': 'Report reviewed — sent to team',
-        'd3.5': 'Client portal live — Mercy Health 68% complete',
+        'd3.4': 'Report reviewed — portal live, Mercy Health 68%',
     };
     return threads[stepId] || null;
 }

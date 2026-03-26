@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // Dupler — Flow 3: Observability & Client Reporting
-// Steps: d3.1 (Data Bridge), d3.2 (Reconciliation), d3.3 (Report & Alerts),
-//        d3.4 (Distribution), d3.5 (Client Portal)
+// Steps: d3.1 (Data Bridge), d3.2 (Reconciliation + Data Sync),
+//        d3.3 (Report & Alerts), d3.4 (Distribution + Client Portal)
 // Renders INSIDE Dashboard.tsx — notification in Follow Up, processing in Metrics tab
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -27,7 +27,6 @@ import {
     MapPinIcon,
     TruckIcon,
     LinkIcon,
-    UserCircleIcon,
     XMarkIcon,
     EyeIcon,
 } from '@heroicons/react/24/outline';
@@ -40,7 +39,6 @@ type SyncPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'reveale
 type ReconPhase = 'idle' | 'notification' | 'processing' | 'revealed';
 type AssemblyPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
 type ReportPhase = 'idle' | 'notification' | 'revealed';
-type PortalPhase = 'idle' | 'notification' | 'revealed';
 
 interface AgentVis { name: string; detail: string; visible: boolean; done: boolean; }
 
@@ -64,44 +62,19 @@ const INVENTORY_BY_CATEGORY = [
     { name: 'Access.', available: 189, reserved: 480, backordered: 20, color: '#ec4899' },
 ];
 
-// d3.2 — Reconciliation
-const RECON_KPIS: KPIMetric[] = [
+// d3.2 — Cross-System Data Update & Sync
+const SYNC_UPDATE_KPIS: KPIMetric[] = [
     { label: 'Stock Accuracy', value: '97.2%', trend: '+0.8% vs Q1', trendUp: true },
     { label: 'Turnover Rate', value: '4.8×', trend: '+0.3 vs Q1', trendUp: true },
     { label: 'Fill Rate', value: '89%', trend: '+3% vs Q1', trendUp: true },
     { label: 'Backorder Rate', value: '3.2%', trend: '-0.5% vs Q1', trendUp: true },
 ];
 
-interface InventoryDiscrepancy {
-    id: string;
-    type: 'count-mismatch' | 'location-error' | 'missing-item';
-    item: string;
-    detail: string;
-    aiSuggestion: string;
-}
-
-const INVENTORY_DISCREPANCIES: InventoryDiscrepancy[] = [
-    {
-        id: 'disc-1',
-        type: 'count-mismatch',
-        item: 'Allsteel Acuity Task Chairs',
-        detail: 'System count: 48 units. Physical count: 45 units. 3 unaccounted at Columbus Main warehouse.',
-        aiSuggestion: 'Adjust system to 45. Cross-check recent shipments — likely SH-003 (3 chairs delivered to Mercy Health site not yet deducted).',
-    },
-    {
-        id: 'disc-2',
-        type: 'location-error',
-        item: 'Allsteel Stride Bench 60"',
-        detail: 'System: Bay A, Rack 3 at Columbus. Physical scan: Bay C, Rack 7. 4 units in wrong location.',
-        aiSuggestion: 'Update location to Bay C, Rack 7. Likely moved during Mercy Health Phase 2 staging.',
-    },
-    {
-        id: 'disc-3',
-        type: 'missing-item',
-        item: 'Allsteel Park Collaborative Table',
-        detail: 'Not found at Columbus Main. Last scanned 12 days ago. 1 unit, value $2,100.',
-        aiSuggestion: 'Item relocated to Cincinnati Overflow per transfer TRF-2026-018. Update location record.',
-    },
+// Updates already resolved in Flow 2 — shown as read-only summary
+const RESOLVED_UPDATES = [
+    { id: 'upd-1', label: 'Count Adjusted', item: 'Acuity Task Chairs', detail: '48 → 45 units (SH-003 deducted)', source: 'Flow 2 — Receiving' },
+    { id: 'upd-2', label: 'Location Corrected', item: 'Stride Bench 60"', detail: 'Bay A, Rack 3 → Bay C, Rack 7', source: 'Flow 2 — Warehouse Sync' },
+    { id: 'upd-3', label: 'Item Tracked', item: 'Park Collaborative Table', detail: 'Located at Cincinnati Overflow (TRF-2026-018)', source: 'Flow 2 — Transit Intelligence' },
 ];
 
 // d3.3 — Report Sections
@@ -161,10 +134,10 @@ const SYNC_AGENTS: AgentVis[] = [
     { name: 'HealthScorer', detail: 'score: 78/100', visible: false, done: false },
 ];
 
-const RECON_AGENTS: AgentVis[] = [
-    { name: 'CountVerifier', detail: '97.2% match rate', visible: false, done: false },
-    { name: 'LocationChecker', detail: '3 discrepancies found', visible: false, done: false },
-    { name: 'StockAlertEngine', detail: '5 below reorder', visible: false, done: false },
+const SYNC_UPDATE_AGENTS: AgentVis[] = [
+    { name: 'UpdateVerifier', detail: '3 updates from warehouse ops confirmed', visible: false, done: false },
+    { name: 'CrossSystemSync', detail: 'Propagating to CET · SPEC · Compass', visible: false, done: false },
+    { name: 'ConsistencyCheck', detail: '1,840 records — 100% consistent', visible: false, done: false },
 ];
 
 const REPORT_AGENTS: AgentVis[] = [
@@ -174,10 +147,26 @@ const REPORT_AGENTS: AgentVis[] = [
     { name: 'InsightEngine', detail: '3 recommendations', visible: false, done: false },
 ];
 
-const PORTAL_AGENTS: AgentVis[] = [
-    { name: 'ClientPortal', detail: 'Building Mercy Health client view', visible: false, done: false },
-    { name: 'Timeline', detail: 'Project timeline — 68% complete', visible: false, done: false },
-    { name: 'DeliveryTracker', detail: 'Mapping delivery milestones', visible: false, done: false },
+
+// ─── Dashboard Metrics (available for report inclusion) ─────────────────────
+
+interface DashboardMetric {
+    id: string;
+    label: string;
+    description: string;
+    source: string;
+    default: boolean;
+}
+
+const DASHBOARD_METRICS: DashboardMetric[] = [
+    { id: 'stock-availability', label: 'Stock Availability by Category', description: '1,840 items across 5 categories', source: 'Inventory', default: true },
+    { id: 'warehouse-capacity', label: 'Warehouse Capacity & Forecast', description: '3 warehouses — Columbus 72%→89%', source: 'Warehouse', default: true },
+    { id: 'backorder-status', label: 'Backorder & Supply Chain', description: '42 items backordered, 3 critical', source: 'Supply Chain', default: true },
+    { id: 'ai-recommendations', label: 'AI Recommendations', description: '3 actionable insights', source: 'AI Engine', default: true },
+    { id: 'financial-summary', label: 'Financial Summary', description: 'Stock value $1.2M, margins, cost trends', source: 'Finance', default: false },
+    { id: 'vendor-performance', label: 'Vendor Performance', description: 'Lead times, claim rates, fill accuracy', source: 'Procurement', default: false },
+    { id: 'project-timeline', label: 'Project Timeline — Mercy Health', description: 'Phase 2 at 68%, 5 delivery milestones', source: 'Projects', default: false },
+    { id: 'consignment-aging', label: 'Consignment Aging', description: 'Wall of Shame — 12 items > 90 days at site', source: 'Warehouse', default: false },
 ];
 
 // ─── Notification Component (rendered in Follow Up tab) ─────────────────────
@@ -279,12 +268,16 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const [syncAgents, setSyncAgents] = useState(SYNC_AGENTS.map(a => ({ ...a })));
     const [syncProgress, setSyncProgress] = useState(0);
 
-    // ── d3.2 State: Reconciliation ──
+    // ── d3.2 State: Cross-System Data Update & Sync ──
     const [reconPhase, setReconPhase] = useState<ReconPhase>('idle');
-    const [reconAgents, setReconAgents] = useState(RECON_AGENTS.map(a => ({ ...a })));
-    const [alertsResolved, setAlertsResolved] = useState<Record<string, string | null>>({});
-    const [manualReviewId, setManualReviewId] = useState<string | null>(null);
-    const [manualReviewSelections, setManualReviewSelections] = useState<Record<string, string>>({});
+    const [reconAgents, setReconAgents] = useState(SYNC_UPDATE_AGENTS.map(a => ({ ...a })));
+    const [dataSyncPhase, setDataSyncPhase] = useState<'idle' | 'syncing' | 'done'>('idle');
+    const [dataSyncProgress, setDataSyncProgress] = useState(0);
+    const [dataSyncChecks, setDataSyncChecks] = useState(0);
+    const [showMetricSelector, setShowMetricSelector] = useState(false);
+    const [selectedMetrics, setSelectedMetrics] = useState<string[]>(
+        DASHBOARD_METRICS.filter(m => m.default).map(m => m.id)
+    );
 
     // ── d3.3 State: Report Assembly ──
     const [assemblyPhase, setAssemblyPhase] = useState<AssemblyPhase>('idle');
@@ -293,6 +286,12 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const [reportAgents, setReportAgents] = useState(REPORT_AGENTS.map(a => ({ ...a })));
     const [reportProgress, setReportProgress] = useState(0);
     const [sectionsRevealed, setSectionsRevealed] = useState(0);
+    const [showReportPreview, setShowReportPreview] = useState(false);
+    const [reportDownloaded, setReportDownloaded] = useState(false);
+    const [reportActionToast, setReportActionToast] = useState<string | null>(null);
+    const [showReportSendPopover, setShowReportSendPopover] = useState(false);
+    const [reportSendRecipients, setReportSendRecipients] = useState<string[]>(['randy']);
+    const [reportSent, setReportSent] = useState(false);
 
     // ── d3.4 State: Distribution ──
     const [reportPhase, setReportPhase] = useState<ReportPhase>('idle');
@@ -304,13 +303,10 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const [downloaded, setDownloaded] = useState(false);
     const [showPdfPreview, setShowPdfPreview] = useState(false);
 
-    // ── d3.5 State: Client Portal ──
-    const [portalPhase, setPortalPhase] = useState<PortalPhase>('idle');
+    // ── d3.5 merged into d3.4 — portal shown inline ──
+    const [showClientPortal, setShowClientPortal] = useState(false);
 
     // ── Helpers ──
-    const resolvedAlertCount = Object.values(alertsResolved).filter(v => v !== null).length;
-    const allAlertsResolved = resolvedAlertCount === INVENTORY_DISCREPANCIES.length;
-
     const toggleSection = (id: string) => setExpandedSections(prev => ({ ...prev, [id]: !prev[id] }));
 
     const getTiming = (id: string): DuplerStepTiming => DUPLER_STEP_TIMING[id] || { notifDelay: 2000, notifDuration: 6000, agentStagger: 800, agentDone: 500, breathing: 1500, resultsDur: 0 };
@@ -373,7 +369,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     }, [stepId, syncPhase, pauseAware, nextStep]);
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // d3.2 — Inventory Reconciliation (interactive)
+    // d3.2 — Cross-System Data Update & Sync (interactive)
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         if (stepId !== 'd3.2' || reconPhase !== 'idle') return;
@@ -385,8 +381,31 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     const handleReconStart = () => {
         setReconPhase('processing');
         const timing = getTiming('d3.2');
-        const timers = runAgentPipeline(RECON_AGENTS, setReconAgents, () => { }, timing, () => setReconPhase('revealed'));
+        const timers = runAgentPipeline(SYNC_UPDATE_AGENTS, setReconAgents, () => { }, timing, () => setReconPhase('revealed'));
     };
+
+    // Data Sync effect — triggered after all discrepancies resolved
+    useEffect(() => {
+        if (dataSyncPhase !== 'syncing') return;
+        setDataSyncProgress(0);
+        setDataSyncChecks(0);
+        const duration = 2000;
+        const steps = 20;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        for (let i = 1; i <= steps; i++) {
+            timers.push(setTimeout(
+                pauseAware(() => setDataSyncProgress(Math.min(100, Math.round((i / steps) * 100)))),
+                (duration / steps) * i
+            ));
+        }
+        // Stagger checklist items
+        const checkItems = 4;
+        for (let i = 1; i <= checkItems; i++) {
+            timers.push(setTimeout(pauseAware(() => setDataSyncChecks(i)), (duration / checkItems) * i));
+        }
+        timers.push(setTimeout(pauseAware(() => setDataSyncPhase('done')), duration + 300));
+        return () => timers.forEach(clearTimeout);
+    }, [dataSyncPhase, pauseAware]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // d3.3 — Report Assembly (auto)
@@ -425,21 +444,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
         return () => clearTimeout(t);
     }, [stepId, assemblyPhase, pauseAware]);
 
-    useEffect(() => {
-        if (stepId !== 'd3.3' || assemblyPhase !== 'revealed') return;
-        const timing = getTiming('d3.3');
-        if (timing.resultsDur > 0) {
-            const t = setTimeout(pauseAware(() => setAssemblyPhase('results')), 2000);
-            return () => clearTimeout(t);
-        }
-    }, [stepId, assemblyPhase, pauseAware]);
-
-    useEffect(() => {
-        if (stepId !== 'd3.3' || assemblyPhase !== 'results') return;
-        const timing = getTiming('d3.3');
-        const t = setTimeout(pauseAware(() => nextStep()), timing.resultsDur - 2000);
-        return () => clearTimeout(t);
-    }, [stepId, assemblyPhase, pauseAware, nextStep]);
+    // d3.3 revealed: no auto-advance — user previews PDF and clicks Continue
 
     // ═══════════════════════════════════════════════════════════════════════════
     // d3.4 — Report Review & Distribution (interactive)
@@ -452,18 +457,6 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     }, [stepId, reportPhase, pauseAware]);
 
     const handleReportStart = () => setReportPhase('revealed');
-
-    // ═══════════════════════════════════════════════════════════════════════════
-    // d3.5 — Client Portal Preview (interactive)
-    // ═══════════════════════════════════════════════════════════════════════════
-    useEffect(() => {
-        if (stepId !== 'd3.5' || portalPhase !== 'idle') return;
-        const timing = getTiming('d3.5');
-        const t = setTimeout(pauseAware(() => setPortalPhase('notification')), timing.notifDelay);
-        return () => clearTimeout(t);
-    }, [stepId, portalPhase, pauseAware]);
-
-    const handlePortalStart = () => setPortalPhase('revealed');
 
     // ═══════════════════════════════════════════════════════════════════════════
     // RENDER HELPERS
@@ -636,7 +629,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 onClick={() => nextStep()}
                                 className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors"
                             >
-                                Continue to Reconciliation
+                                Continue to Data Sync
                                 <ArrowRightIcon className="h-4 w-4" />
                             </button>
                         </div>
@@ -644,277 +637,228 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                 </>
             )}
 
-            {/* ── d3.2: Inventory Reconciliation ── */}
+            {/* ── d3.2: Cross-System Data Update & Sync ── */}
             {stepId === 'd3.2' && (
                 <>
                     {reconPhase === 'notification' && renderNotification(
-                        <ArrowsRightLeftIcon className="h-4 w-4" />,
-                        'Inventory Reconciliation Ready',
+                        <ArrowPathIcon className="h-4 w-4" />,
+                        'Cross-System Data Update',
                         <div className="space-y-2">
-                            <SystemChips systems={[{ label: 'PHYSICAL COUNT', color: 'teal' }, { label: 'SYSTEM DB', color: 'blue' }, { label: 'RECONCILER', color: 'purple' }]} />
-                            <p>CountVerifier: Physical vs system count completed — 97.2% match. 3 discrepancies require expert review.</p>
+                            <SystemChips systems={[{ label: 'WAREHOUSE OPS', color: 'teal' }, { label: 'ALL SYSTEMS', color: 'blue' }, { label: 'SYNC ENGINE', color: 'purple' }]} />
+                            <p>3 updates from warehouse operations ready to propagate across all 5 systems. Verifying consistency before report generation.</p>
                         </div>,
                         handleReconStart
                     )}
-                    {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Reconciliation — Physical ↔ System...')}
+                    {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Verifying updates across systems...')}
                     {reconPhase === 'revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-4">
-                            <div className="p-2 rounded-lg bg-muted/30 border border-border/50">
-                                <SystemChips systems={[{ label: 'PHYSICAL COUNT', color: 'teal' }, { label: 'SYSTEM DB', color: 'blue' }, { label: 'RECONCILER', color: 'purple' }]} />
-                            </div>
-                            {/* Progress bar */}
-                            <div className="p-3 rounded-lg bg-muted/50 border border-border flex items-center gap-3">
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] font-bold text-foreground">Inventory Reconciliation</span>
-                                        <span className="text-[10px] font-semibold text-foreground">
-                                            {1837 + resolvedAlertCount}/1840 verified
-                                        </span>
-                                    </div>
-                                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                                        <div
-                                            className="h-full rounded-full bg-green-500 transition-all duration-500"
-                                            style={{ width: `${((1837 + resolvedAlertCount) / 1840) * 100}%` }}
-                                        />
-                                    </div>
+                            {/* AI Summary */}
+                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
+                                <div className="flex items-start gap-2">
+                                    <AIAgentAvatar />
+                                    <p className="text-xs text-green-800 dark:text-green-200">
+                                        <span className="font-bold">UpdateVerifier:</span> <span className="font-semibold">3 updates</span> from warehouse operations confirmed —
+                                        all corrections already applied in Flow 2. Ready to synchronize across <span className="font-semibold">5 systems</span>.
+                                    </p>
                                 </div>
-                                <ConfidenceScoreBadge score={97.2} size="sm" label="Accuracy" />
                             </div>
 
-                            {/* Two-column layout */}
+                            <div className="p-2 rounded-lg bg-muted/30 border border-border/50">
+                                <SystemChips systems={[{ label: 'WAREHOUSE OPS', color: 'teal' }, { label: 'ALL SYSTEMS', color: 'blue' }, { label: 'SYNC ENGINE', color: 'purple' }]} />
+                            </div>
+
+                            {/* Two-column layout: KPIs + Resolved Updates */}
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                 {/* Left: KPIs */}
                                 <div className="space-y-3">
                                     <span className="text-xs font-bold text-foreground">Inventory KPIs</span>
-                                    {renderKPIGrid(RECON_KPIS)}
+                                    {renderKPIGrid(SYNC_UPDATE_KPIS)}
                                 </div>
 
-                                {/* Right: Discrepancy cards */}
+                                {/* Right: Resolved updates from Flow 2 (read-only) */}
                                 <div className="space-y-3">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xs font-bold text-foreground">Discrepancies</span>
-                                        <span className="text-[10px] font-bold text-foreground">{resolvedAlertCount}/{INVENTORY_DISCREPANCIES.length} Resolved</span>
+                                        <span className="text-xs font-bold text-foreground">Updates from Warehouse Ops</span>
+                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 font-bold">3/3 RESOLVED</span>
                                     </div>
-                                    {INVENTORY_DISCREPANCIES.map(disc => {
-                                        const isReviewing = manualReviewId === disc.id;
-                                        const resolved = alertsResolved[disc.id];
-                                        return (
-                                        <div key={disc.id} className={`rounded-xl border-2 transition-all duration-300 overflow-hidden ${resolved
-                                            ? 'border-green-300 dark:border-green-500/30 bg-green-50/50 dark:bg-green-500/5'
-                                            : disc.type === 'count-mismatch'
-                                                ? 'border-amber-300 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5'
-                                                : disc.type === 'location-error'
-                                                    ? 'border-blue-300 dark:border-blue-500/30 bg-blue-50/50 dark:bg-blue-500/5'
-                                                    : 'border-red-300 dark:border-red-500/30 bg-red-50/50 dark:bg-red-500/5'
-                                            }`}>
-                                            <div className="p-4">
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${disc.type === 'count-mismatch' ? 'bg-amber-500/20 text-amber-700 dark:text-amber-400' :
-                                                        disc.type === 'location-error' ? 'bg-blue-500/20 text-blue-700 dark:text-blue-400' :
-                                                            'bg-red-500/20 text-red-700 dark:text-red-400'
-                                                        }`}>
-                                                        {disc.type === 'count-mismatch' ? 'Count Mismatch' : disc.type === 'location-error' ? 'Location Error' : 'Missing Item'}
-                                                    </span>
-                                                    <span className="text-[10px] font-semibold text-foreground">{disc.item}</span>
-                                                </div>
-                                                <p className="text-[11px] text-foreground mt-1">{disc.detail}</p>
-                                                <div className="flex items-start gap-1 mt-1.5">
-                                                    <AIAgentAvatar />
-                                                    <span className="text-[10px] text-muted-foreground italic">{disc.aiSuggestion}</span>
-                                                </div>
-                                                {resolved ? (
-                                                    <div className="flex items-center gap-1.5 mt-2">
-                                                        <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />
-                                                        <span className="text-[10px] font-semibold text-green-600 dark:text-green-400">{resolved}</span>
-                                                    </div>
-                                                ) : !isReviewing ? (
-                                                    <div className="flex gap-2 mt-2">
-                                                        <button
-                                                            onClick={() => setAlertsResolved(prev => ({ ...prev, [disc.id]: 'AI fix applied' }))}
-                                                            className="px-3 py-1.5 bg-brand-400 hover:bg-brand-500 text-zinc-900 text-[10px] font-bold rounded-lg transition-colors"
-                                                        >
-                                                            Accept AI Fix
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setManualReviewId(disc.id)}
-                                                            className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-[10px] font-semibold rounded-lg border border-border transition-colors"
-                                                        >
-                                                            Manual Review
-                                                        </button>
-                                                    </div>
-                                                ) : null}
+                                    {RESOLVED_UPDATES.map(upd => (
+                                        <div key={upd.id} className="p-3 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                                <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-green-500/20 text-green-700 dark:text-green-400">{upd.label}</span>
+                                                <span className="text-[10px] font-semibold text-foreground">{upd.item}</span>
                                             </div>
-
-                                            {/* ── Manual Review Expanded Form ── */}
-                                            {isReviewing && (
-                                                <div className="border-t border-border bg-card p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                                                    <div className="flex items-center justify-between">
-                                                        <span className="text-[10px] font-bold text-foreground uppercase tracking-wider">Expert Review</span>
-                                                        <button onClick={() => setManualReviewId(null)} className="text-[9px] text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
-                                                    </div>
-
-                                                    {disc.type === 'count-mismatch' && (
-                                                        <>
-                                                            {/* Side-by-side comparison */}
-                                                            <div className="grid grid-cols-2 gap-2">
-                                                                <div className="p-2 rounded-lg bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20 text-center">
-                                                                    <p className="text-[9px] text-red-600 dark:text-red-400 font-semibold">System Count</p>
-                                                                    <p className="text-lg font-bold text-red-700 dark:text-red-300">48</p>
-                                                                </div>
-                                                                <div className="p-2 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 text-center">
-                                                                    <p className="text-[9px] text-green-600 dark:text-green-400 font-semibold">Physical Count</p>
-                                                                    <p className="text-lg font-bold text-green-700 dark:text-green-300">45</p>
-                                                                </div>
-                                                            </div>
-                                                            {/* Corrected value */}
-                                                            <div>
-                                                                <label className="text-[9px] font-semibold text-muted-foreground block mb-1">Corrected Count</label>
-                                                                <input type="number" defaultValue={45} className="w-full px-3 py-1.5 rounded-lg border border-border bg-background text-xs font-semibold text-foreground" readOnly />
-                                                            </div>
-                                                            {/* Reason */}
-                                                            <div>
-                                                                <label className="text-[9px] font-semibold text-muted-foreground block mb-1">Variance Reason</label>
-                                                                <div className="flex flex-wrap gap-1.5">
-                                                                    {['Shipment not deducted', 'Staging transfer', 'Counting error', 'Damage/write-off'].map(reason => (
-                                                                        <button key={reason}
-                                                                            onClick={() => setManualReviewSelections(prev => ({ ...prev, [disc.id]: reason }))}
-                                                                            className={`px-2.5 py-1 rounded-lg text-[9px] font-semibold transition-colors ${
-                                                                                manualReviewSelections[disc.id] === reason
-                                                                                    ? 'bg-brand-400 text-zinc-900'
-                                                                                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
-                                                                            }`}
-                                                                        >{reason}</button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )}
-
-                                                    {disc.type === 'location-error' && (
-                                                        <>
-                                                            {/* Location comparison */}
-                                                            <div className="grid grid-cols-2 gap-2">
-                                                                <div className="p-2 rounded-lg bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20 text-center">
-                                                                    <p className="text-[9px] text-red-600 dark:text-red-400 font-semibold">System Location</p>
-                                                                    <p className="text-xs font-bold text-red-700 dark:text-red-300">Bay A, Rack 3</p>
-                                                                </div>
-                                                                <div className="p-2 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 text-center">
-                                                                    <p className="text-[9px] text-green-600 dark:text-green-400 font-semibold">Physical Location</p>
-                                                                    <p className="text-xs font-bold text-green-700 dark:text-green-300">Bay C, Rack 7</p>
-                                                                </div>
-                                                            </div>
-                                                            {/* Correct location */}
-                                                            <div>
-                                                                <label className="text-[9px] font-semibold text-muted-foreground block mb-1">Update Location To</label>
-                                                                <div className="flex flex-wrap gap-1.5">
-                                                                    {['Bay C, Rack 7 (physical)', 'Bay A, Rack 3 (system)', 'Other location'].map(loc => (
-                                                                        <button key={loc}
-                                                                            onClick={() => setManualReviewSelections(prev => ({ ...prev, [disc.id]: loc }))}
-                                                                            className={`px-2.5 py-1 rounded-lg text-[9px] font-semibold transition-colors ${
-                                                                                manualReviewSelections[disc.id] === loc
-                                                                                    ? 'bg-brand-400 text-zinc-900'
-                                                                                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
-                                                                            }`}
-                                                                        >{loc}</button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                            {/* Reason */}
-                                                            <div>
-                                                                <label className="text-[9px] font-semibold text-muted-foreground block mb-1">Move Reason</label>
-                                                                <div className="flex flex-wrap gap-1.5">
-                                                                    {['Project staging', 'Warehouse reorganization', 'Incorrect scan', 'Inter-warehouse transfer'].map(reason => (
-                                                                        <button key={reason}
-                                                                            onClick={() => setManualReviewSelections(prev => ({ ...prev, [`${disc.id}-reason`]: reason }))}
-                                                                            className={`px-2.5 py-1 rounded-lg text-[9px] font-semibold transition-colors ${
-                                                                                manualReviewSelections[`${disc.id}-reason`] === reason
-                                                                                    ? 'bg-brand-400 text-zinc-900'
-                                                                                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
-                                                                            }`}
-                                                                        >{reason}</button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )}
-
-                                                    {disc.type === 'missing-item' && (
-                                                        <>
-                                                            {/* Item details */}
-                                                            <div className="grid grid-cols-3 gap-2">
-                                                                <div className="p-2 rounded-lg bg-muted/50 border border-border text-center">
-                                                                    <p className="text-[9px] text-muted-foreground">Last Scanned</p>
-                                                                    <p className="text-[11px] font-bold text-foreground">12 days ago</p>
-                                                                </div>
-                                                                <div className="p-2 rounded-lg bg-muted/50 border border-border text-center">
-                                                                    <p className="text-[9px] text-muted-foreground">Quantity</p>
-                                                                    <p className="text-[11px] font-bold text-foreground">1 unit</p>
-                                                                </div>
-                                                                <div className="p-2 rounded-lg bg-muted/50 border border-border text-center">
-                                                                    <p className="text-[9px] text-muted-foreground">Value</p>
-                                                                    <p className="text-[11px] font-bold text-red-600 dark:text-red-400">$2,100</p>
-                                                                </div>
-                                                            </div>
-                                                            {/* Resolution */}
-                                                            <div>
-                                                                <label className="text-[9px] font-semibold text-muted-foreground block mb-1">Resolution</label>
-                                                                <div className="flex flex-wrap gap-1.5">
-                                                                    {['Confirm transfer TRF-2026-018', 'Search other warehouses', 'Mark as lost — file claim', 'Found at job site'].map(res => (
-                                                                        <button key={res}
-                                                                            onClick={() => setManualReviewSelections(prev => ({ ...prev, [disc.id]: res }))}
-                                                                            className={`px-2.5 py-1 rounded-lg text-[9px] font-semibold transition-colors ${
-                                                                                manualReviewSelections[disc.id] === res
-                                                                                    ? 'bg-brand-400 text-zinc-900'
-                                                                                    : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border'
-                                                                            }`}
-                                                                        >{res}</button>
-                                                                    ))}
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                    )}
-
-                                                    {/* Confirm button */}
-                                                    <button
-                                                        onClick={() => {
-                                                            const selection = manualReviewSelections[disc.id];
-                                                            const label = selection
-                                                                ? `Manually resolved — ${selection}`
-                                                                : 'Manually reviewed';
-                                                            setAlertsResolved(prev => ({ ...prev, [disc.id]: label }));
-                                                            setManualReviewId(null);
-                                                        }}
-                                                        disabled={!manualReviewSelections[disc.id]}
-                                                        className={`w-full py-2 rounded-lg text-[10px] font-bold transition-all ${
-                                                            manualReviewSelections[disc.id]
-                                                                ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-md'
-                                                                : 'bg-muted text-muted-foreground cursor-not-allowed'
-                                                        }`}
-                                                    >
-                                                        {manualReviewSelections[disc.id] ? 'Confirm Resolution' : 'Select an option above'}
-                                                    </button>
-                                                </div>
-                                            )}
+                                            <p className="text-[10px] text-foreground ml-5">{upd.detail}</p>
+                                            <p className="text-[9px] text-muted-foreground ml-5 mt-0.5">Source: {upd.source}</p>
                                         </div>
-                                        );
-                                    })}
+                                    ))}
                                 </div>
                             </div>
 
-                            {/* Acknowledge button */}
-                            <button
-                                onClick={() => nextStep()}
-                                disabled={!allAlertsResolved}
-                                className={`w-full py-3 rounded-xl text-xs font-bold transition-all duration-300 ${allAlertsResolved
-                                    ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20'
-                                    : 'bg-muted text-muted-foreground cursor-not-allowed border border-border'
-                                    }`}
-                            >
-                                <span className="flex items-center justify-center gap-2">
-                                    <CheckCircleIcon className="h-4 w-4" />
-                                    {allAlertsResolved ? 'Acknowledge & Continue — 1,840/1,840 Verified' : `Resolve All Discrepancies (${resolvedAlertCount}/${INVENTORY_DISCREPANCIES.length})`}
-                                </span>
-                            </button>
+                            {/* Sync trigger button */}
+                            {dataSyncPhase === 'idle' && (
+                                <button
+                                    onClick={() => setDataSyncPhase('syncing')}
+                                    className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 animate-pulse transition-all duration-300 flex items-center justify-center gap-2"
+                                >
+                                    <ArrowPathIcon className="h-4 w-4" />
+                                    Synchronize Across All Systems
+                                </button>
+                            )}
+
+                            {/* Data Sync Animation */}
+                            {dataSyncPhase !== 'idle' && (
+                                <div className="space-y-3 animate-in fade-in duration-500">
+                                    <div className="p-4 rounded-xl bg-card border border-border shadow-sm space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <ArrowPathIcon className={`h-4 w-4 text-brand-600 dark:text-brand-400 ${dataSyncPhase === 'syncing' ? 'animate-spin' : ''}`} />
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                    {dataSyncPhase === 'syncing' ? 'Synchronizing across 5 systems...' : 'Data Synchronized'}
+                                                </span>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-foreground">{dataSyncProgress}%</span>
+                                        </div>
+                                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                                            <div className={`h-full rounded-full transition-all duration-300 ${dataSyncPhase === 'done' ? 'bg-green-500' : 'bg-brand-400'}`} style={{ width: `${dataSyncProgress}%` }} />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            {[
+                                                { label: 'Count adjustments propagated', detail: 'Acuity Chairs 48 → 45 across all systems' },
+                                                { label: 'Location records updated', detail: 'Stride Bench → Bay C, Rack 7' },
+                                                { label: 'Transfer confirmed', detail: 'Park Table at Cincinnati (TRF-2026-018)' },
+                                                { label: 'All 5 systems in sync', detail: 'CET · SPEC · Compass · WMS · Carrier' },
+                                            ].map((check, i) => i < dataSyncChecks && (
+                                                <div key={check.label} className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-300">
+                                                    <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                                    <span className="text-[11px] font-semibold text-foreground">{check.label}</span>
+                                                    <span className="text-[10px] text-muted-foreground">— {check.detail}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {dataSyncPhase === 'done' && (
+                                        <div className="space-y-3 animate-in fade-in duration-300">
+                                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
+                                                <div className="flex items-center gap-2">
+                                                    <CheckCircleIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                                    <span className="text-xs font-bold text-green-800 dark:text-green-200">DATA SYNCHRONIZED — 1,840/1,840 verified</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Metric Selector CTA */}
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setShowMetricSelector(!showMetricSelector)}
+                                                    className="w-full py-3 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 animate-pulse transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <DocumentChartBarIcon className="h-4 w-4" />
+                                                    Configure & Generate Report
+                                                    <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-zinc-900/20 font-bold">{selectedMetrics.length} metrics</span>
+                                                </button>
+
+                                                {/* Metric Selector Popover */}
+                                                {showMetricSelector && (
+                                                    <div className="absolute bottom-full mb-2 left-0 right-0 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 overflow-hidden">
+                                                        <div className="px-4 py-2.5 border-b border-border bg-muted/50">
+                                                            <div className="flex items-center justify-between">
+                                                                <div>
+                                                                    <p className="text-xs font-bold text-foreground">Report Metrics</p>
+                                                                    <p className="text-[9px] text-muted-foreground">Select which dashboard metrics to include in the report</p>
+                                                                </div>
+                                                                <button onClick={() => setShowMetricSelector(false)} className="p-1 rounded-lg hover:bg-muted transition-colors">
+                                                                    <XMarkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="p-2 space-y-0.5 max-h-[280px] overflow-y-auto">
+                                                            {/* Default metrics header */}
+                                                            <div className="px-2 pt-1 pb-1.5">
+                                                                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Included by Default</span>
+                                                            </div>
+                                                            {DASHBOARD_METRICS.filter(m => m.default).map(metric => {
+                                                                const isSelected = selectedMetrics.includes(metric.id);
+                                                                return (
+                                                                    <button key={metric.id}
+                                                                        onClick={() => setSelectedMetrics(prev =>
+                                                                            prev.includes(metric.id) ? prev.filter(id => id !== metric.id) : [...prev, metric.id]
+                                                                        )}
+                                                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
+                                                                            isSelected
+                                                                                ? 'bg-brand-100 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30'
+                                                                                : 'hover:bg-muted/50'
+                                                                        }`}>
+                                                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                                                            isSelected ? 'bg-brand-400 border-brand-400' : 'border-zinc-300 dark:border-zinc-600'
+                                                                        }`}>
+                                                                            {isSelected && <CheckCircleIcon className="h-3 w-3 text-zinc-900" />}
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="text-[11px] font-bold text-foreground">{metric.label}</p>
+                                                                            <p className="text-[9px] text-muted-foreground">{metric.description}</p>
+                                                                        </div>
+                                                                        <span className="text-[8px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold shrink-0">{metric.source}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+
+                                                            {/* Additional metrics header */}
+                                                            <div className="px-2 pt-3 pb-1.5 border-t border-border mt-1">
+                                                                <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Additional Dashboard Metrics</span>
+                                                            </div>
+                                                            {DASHBOARD_METRICS.filter(m => !m.default).map(metric => {
+                                                                const isSelected = selectedMetrics.includes(metric.id);
+                                                                return (
+                                                                    <button key={metric.id}
+                                                                        onClick={() => setSelectedMetrics(prev =>
+                                                                            prev.includes(metric.id) ? prev.filter(id => id !== metric.id) : [...prev, metric.id]
+                                                                        )}
+                                                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
+                                                                            isSelected
+                                                                                ? 'bg-brand-100 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30'
+                                                                                : 'hover:bg-muted/50'
+                                                                        }`}>
+                                                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                                                            isSelected ? 'bg-brand-400 border-brand-400' : 'border-zinc-300 dark:border-zinc-600'
+                                                                        }`}>
+                                                                            {isSelected && <CheckCircleIcon className="h-3 w-3 text-zinc-900" />}
+                                                                        </div>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <p className="text-[11px] font-bold text-foreground">{metric.label}</p>
+                                                                            <p className="text-[9px] text-muted-foreground">{metric.description}</p>
+                                                                        </div>
+                                                                        <span className="text-[8px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-semibold shrink-0">{metric.source}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+
+                                                        <div className="px-3 pb-3 pt-1 border-t border-border">
+                                                            <button
+                                                                onClick={() => {
+                                                                    setShowMetricSelector(false);
+                                                                    nextStep();
+                                                                }}
+                                                                disabled={selectedMetrics.length === 0}
+                                                                className={`w-full py-2.5 rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-2 ${
+                                                                    selectedMetrics.length > 0
+                                                                        ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-md'
+                                                                        : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                                                }`}
+                                                            >
+                                                                <DocumentChartBarIcon className="h-3.5 w-3.5" />
+                                                                Generate Report with {selectedMetrics.length} Metric{selectedMetrics.length !== 1 ? 's' : ''}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </>
@@ -936,7 +880,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                         <div className="mt-1.5">
                                             <SystemChips systems={[{ label: 'REPORT ENGINE', color: 'blue' }, { label: 'TEAMS / EMAIL / SMS', color: 'purple' }, { label: 'INSIGHT AI', color: 'teal' }]} />
                                         </div>
-                                        <p className="text-[11px] text-muted-foreground mt-1">HealthReporter: Building report from reconciled inventory data — stock availability, capacity forecast, backorder analysis + AI recommendations.</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">HealthReporter: Building report from <span className="font-semibold text-foreground">synchronized</span> inventory data — <span className="font-semibold text-green-600 dark:text-green-400">3 updates propagated</span> across 5 systems. Stock availability, capacity forecast, backorder analysis + AI recommendations.</p>
                                     </div>
                                 </div>
                             </div>
@@ -956,7 +900,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 <div className="flex items-start gap-2">
                                     <AIAgentAvatar />
                                     <p className="text-xs text-green-800 dark:text-green-200">
-                                        <span className="font-bold">HealthReporter:</span> Inventory intelligence report ready —
+                                        <span className="font-bold">HealthReporter:</span> Report built from synchronized data (<span className="font-semibold">3 updates propagated</span>) —
                                         <span className="font-semibold"> 4 sections</span> covering stock availability, warehouse capacity, backorder status, and <span className="font-semibold">3 AI recommendations</span>.
                                     </p>
                                 </div>
@@ -1002,12 +946,126 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                 ))}
                             </div>
 
-                            {assemblyPhase === 'results' && (
-                                <div className="flex items-center justify-center gap-2 animate-in fade-in duration-300">
-                                    <span className="text-[10px] font-bold text-green-600 dark:text-green-400 px-3 py-1 rounded-full bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30">
-                                        Report Ready
-                                    </span>
-                                    <span className="text-[10px] text-muted-foreground animate-pulse">Auto-advancing to review...</span>
+                            {assemblyPhase === 'revealed' && sectionsRevealed >= REPORT_SECTIONS.length && (
+                                <div className="relative animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-2">
+                                    {/* Action buttons */}
+                                    <div className="flex items-center gap-2">
+                                        {/* Preview PDF */}
+                                        <button
+                                            onClick={() => setShowReportPreview(true)}
+                                            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground border border-border transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <DocumentChartBarIcon className="h-4 w-4 text-red-500" /> Preview
+                                        </button>
+
+                                        {/* Download */}
+                                        <button
+                                            onClick={() => {
+                                                if (!reportDownloaded) {
+                                                    setReportDownloaded(true);
+                                                    setReportActionToast('PDF downloaded — Inventory_Report_MercyHealth_Mar2026.pdf');
+                                                    setTimeout(() => setReportActionToast(null), 4000);
+                                                }
+                                            }}
+                                            disabled={reportDownloaded}
+                                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                                                reportDownloaded
+                                                    ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30'
+                                                    : 'bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-foreground border border-border'
+                                            }`}
+                                        >
+                                            {reportDownloaded ? <CheckCircleIcon className="h-4 w-4" /> : <DocumentArrowDownIcon className="h-4 w-4" />}
+                                            {reportDownloaded ? 'Downloaded' : 'Download'}
+                                        </button>
+
+                                        {/* Send */}
+                                        <button
+                                            onClick={() => setShowReportSendPopover(!showReportSendPopover)}
+                                            disabled={reportSent}
+                                            className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${
+                                                reportSent
+                                                    ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-300 dark:border-green-500/30'
+                                                    : 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 animate-pulse'
+                                            }`}
+                                        >
+                                            {reportSent ? <CheckCircleIcon className="h-4 w-4" /> : <PaperAirplaneIcon className="h-4 w-4" />}
+                                            {reportSent ? `Sent (${reportSendRecipients.length})` : 'Send'}
+                                        </button>
+                                    </div>
+
+                                    {/* Send Popover */}
+                                    {showReportSendPopover && (
+                                        <div className="absolute bottom-full mb-2 right-0 left-0 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 overflow-hidden">
+                                            <div className="px-4 py-2.5 border-b border-border bg-muted/50 flex items-center justify-between">
+                                                <div>
+                                                    <p className="text-xs font-bold text-foreground">Send Report to SC Team</p>
+                                                    <p className="text-[9px] text-muted-foreground">Select recipients for the intelligence report</p>
+                                                </div>
+                                                <button onClick={() => setShowReportSendPopover(false)} className="p-1 rounded-lg hover:bg-muted transition-colors">
+                                                    <XMarkIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                                                </button>
+                                            </div>
+                                            <div className="p-2 space-y-0.5">
+                                                {[
+                                                    { id: 'randy', name: 'Randy Martinez', role: 'Sales Coordinator', initials: 'RM', recommended: true },
+                                                    { id: 'tara', name: 'Tara Collins', role: 'Project Manager', initials: 'TC', recommended: true },
+                                                    { id: 'james', name: 'James Mitchell', role: 'Account Executive', initials: 'JM', recommended: false },
+                                                    { id: 'sarah', name: 'Sarah Chen', role: 'Dealer Principal', initials: 'SC', recommended: false },
+                                                ].map(user => {
+                                                    const isSelected = reportSendRecipients.includes(user.id);
+                                                    return (
+                                                        <button key={user.id}
+                                                            onClick={() => setReportSendRecipients(prev =>
+                                                                prev.includes(user.id) ? prev.filter(r => r !== user.id) : [...prev, user.id]
+                                                            )}
+                                                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
+                                                                isSelected
+                                                                    ? 'bg-brand-100 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30'
+                                                                    : 'hover:bg-muted/50'
+                                                            }`}>
+                                                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                                                                isSelected ? 'bg-brand-400 border-brand-400' : 'border-zinc-300 dark:border-zinc-600'
+                                                            }`}>
+                                                                {isSelected && <CheckCircleIcon className="h-3 w-3 text-zinc-900" />}
+                                                            </div>
+                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${
+                                                                isSelected ? 'bg-brand-300 text-zinc-900' : 'bg-muted text-muted-foreground'
+                                                            }`}>{user.initials}</div>
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-[11px] font-bold text-foreground">{user.name}</p>
+                                                                <p className="text-[9px] text-muted-foreground">{user.role}</p>
+                                                            </div>
+                                                            {user.recommended && (
+                                                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-brand-300/50 dark:bg-brand-500/20 text-brand-700 dark:text-brand-400 font-bold shrink-0">REC</span>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            <div className="px-3 pb-3 pt-1">
+                                                <button
+                                                    onClick={() => {
+                                                        if (reportSendRecipients.length === 0) return;
+                                                        setShowReportSendPopover(false);
+                                                        setReportSent(true);
+                                                        setReportActionToast(`Report sent to ${reportSendRecipients.length} team member${reportSendRecipients.length !== 1 ? 's' : ''}`);
+                                                        setTimeout(() => setReportActionToast(null), 4000);
+                                                        setTimeout(() => nextStep(), 2500);
+                                                    }}
+                                                    disabled={reportSendRecipients.length === 0}
+                                                    className={`w-full py-2 rounded-lg text-[11px] font-bold transition-all ${
+                                                        reportSendRecipients.length > 0
+                                                            ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-md'
+                                                            : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                                    }`}
+                                                >
+                                                    {reportSendRecipients.length > 0
+                                                        ? `Send to ${reportSendRecipients.length} Recipient${reportSendRecipients.length > 1 ? 's' : ''}`
+                                                        : 'Select at least one recipient'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -1270,109 +1328,283 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
                                     </div>
                                 </div>
                             )}
+
+                            {/* Client Portal — inline */}
+                            <div className="space-y-3">
+                                <button
+                                    onClick={() => setShowClientPortal(!showClientPortal)}
+                                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-card border border-border hover:bg-muted/50 transition-colors"
+                                >
+                                    <div className="p-1.5 rounded-lg bg-brand-500/10 text-brand-600 dark:text-brand-400"><MapPinIcon className="h-4 w-4" /></div>
+                                    <div className="flex-1 text-left">
+                                        <span className="text-xs font-bold text-foreground">Client Portal — Mercy Health</span>
+                                        <p className="text-[10px] text-muted-foreground">Real-time project status & delivery timeline</p>
+                                    </div>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold shrink-0">LIVE</span>
+                                    {showClientPortal
+                                        ? <ChevronUpIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+                                        : <ChevronDownIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+                                    }
+                                </button>
+
+                                {showClientPortal && (
+                                    <div className="rounded-xl border-2 border-brand-300 dark:border-brand-500/30 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="bg-brand-50 dark:bg-brand-500/10 px-4 py-3 border-b border-brand-200 dark:border-brand-500/20 flex items-center justify-between">
+                                            <div>
+                                                <span className="text-xs font-bold text-foreground">Mercy Health Phase 2</span>
+                                                <span className="text-[10px] text-muted-foreground ml-2">Client Portal View</span>
+                                            </div>
+                                        </div>
+                                        <div className="p-4 space-y-4">
+                                            {/* Progress */}
+                                            <div>
+                                                <div className="flex items-center justify-between mb-1.5">
+                                                    <span className="text-[11px] font-bold text-foreground">Overall Progress</span>
+                                                    <span className="text-sm font-bold text-brand-700 dark:text-brand-400">68%</span>
+                                                </div>
+                                                <div className="h-3 rounded-full bg-muted overflow-hidden">
+                                                    <div className="h-full rounded-full bg-brand-400 transition-all duration-700" style={{ width: '68%' }} />
+                                                </div>
+                                            </div>
+
+                                            {/* Milestones */}
+                                            <div className="space-y-2">
+                                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Delivery Timeline</span>
+                                                {[
+                                                    { milestone: 'Procurement Complete', date: 'Mar 15', status: 'done' as const },
+                                                    { milestone: 'Warehouse Staging', date: 'Mar 20', status: 'done' as const },
+                                                    { milestone: 'Quality Inspection', date: 'Mar 24', status: 'active' as const },
+                                                    { milestone: 'Delivery & Install', date: 'Apr 2', status: 'pending' as const },
+                                                    { milestone: 'Final Walkthrough', date: 'Apr 5', status: 'pending' as const },
+                                                ].map(ms => (
+                                                    <div key={ms.milestone} className="flex items-center gap-3 text-[11px]">
+                                                        <div className={`w-3 h-3 rounded-full shrink-0 ${
+                                                            ms.status === 'done' ? 'bg-green-500' :
+                                                            ms.status === 'active' ? 'bg-brand-400 animate-pulse' :
+                                                            'bg-muted border border-border'
+                                                        }`} />
+                                                        <span className={`flex-1 ${ms.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground font-semibold'}`}>{ms.milestone}</span>
+                                                        <span className="text-[10px] text-muted-foreground">{ms.date}</span>
+                                                        {ms.status === 'done' && <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />}
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Stats */}
+                                            <div className="grid grid-cols-3 gap-2">
+                                                {[
+                                                    { label: 'Items Staged', value: '22/32' },
+                                                    { label: 'On Schedule', value: 'Yes' },
+                                                    { label: 'Est. Completion', value: 'Apr 5' },
+                                                ].map(stat => (
+                                                    <div key={stat.label} className="p-2 rounded-lg bg-muted/50 border border-border text-center">
+                                                        <div className="text-[10px] text-muted-foreground">{stat.label}</div>
+                                                        <div className="text-[11px] font-bold text-foreground">{stat.value}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="px-4 py-2.5 border-t border-brand-200 dark:border-brand-500/20 bg-brand-50/50 dark:bg-brand-500/5">
+                                            <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
+                                                <CubeIcon className="h-3.5 w-3.5 shrink-0" />
+                                                Client's read-only portal view — track progress without calls or emails.
+                                            </p>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </>
             )}
 
-            {/* ── d3.5: Client Portal Preview ── */}
-            {stepId === 'd3.5' && (
-                <>
-                    {portalPhase === 'notification' && renderNotification(
-                        <MapPinIcon className="h-4 w-4" />,
-                        'Client Portal Updated',
-                        <div className="space-y-2">
-                            <SystemChips systems={[{ label: 'PORTAL SERVICE', color: 'blue' }, { label: 'MILESTONE TRACKER', color: 'teal' }, { label: 'CLIENT VIEW', color: 'green' }]} />
-                            <p>Client portal updated — Mercy Health has access to real-time project status, delivery timeline, and milestone tracking.</p>
-                        </div>,
-                        handlePortalStart
-                    )}
-                    {portalPhase === 'revealed' && (
-                        <div className="animate-in fade-in duration-500 space-y-4">
-                            <div className="p-2 rounded-lg bg-muted/30 border border-border/50">
-                                <SystemChips systems={[{ label: 'PORTAL SERVICE', color: 'blue' }, { label: 'MILESTONE TRACKER', color: 'teal' }, { label: 'CLIENT VIEW', color: 'green' }]} />
-                            </div>
-                            {/* Client Portal Mock */}
-                            <div className="rounded-xl border-2 border-brand-300 dark:border-brand-500/30 overflow-hidden">
-                                <div className="bg-brand-50 dark:bg-brand-500/10 px-4 py-3 border-b border-brand-200 dark:border-brand-500/20 flex items-center justify-between">
-                                    <div>
-                                        <span className="text-xs font-bold text-foreground">Mercy Health Phase 2</span>
-                                        <span className="text-[10px] text-muted-foreground ml-2">Client Portal View</span>
-                                    </div>
-                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">LIVE</span>
+            {/* ── d3.3 Report Preview Modal ── */}
+            {showReportPreview && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200" onClick={() => setShowReportPreview(false)}>
+                    <div className="w-full max-w-lg max-h-[85vh] bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col" onClick={e => e.stopPropagation()}>
+                        {/* Header */}
+                        <div className="px-5 py-3 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-3">
+                                <div className="p-1.5 rounded-lg bg-red-500/10">
+                                    <DocumentChartBarIcon className="h-4 w-4 text-red-500" />
                                 </div>
-                                <div className="p-4 space-y-4">
-                                    {/* Progress */}
-                                    <div>
-                                        <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-[11px] font-bold text-foreground">Overall Progress</span>
-                                            <span className="text-sm font-bold text-brand-700 dark:text-brand-400">68%</span>
-                                        </div>
-                                        <div className="h-3 rounded-full bg-muted overflow-hidden">
-                                            <div className="h-full rounded-full bg-brand-400 transition-all duration-700" style={{ width: '68%' }} />
-                                        </div>
-                                    </div>
+                                <div>
+                                    <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Inventory_Report_MercyHealth_Mar2026.pdf</p>
+                                    <p className="text-[9px] text-zinc-500">Generated Mar 25, 2026 — 4 pages — 2.3 MB</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setShowReportPreview(false)} className="p-1.5 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                                <XMarkIcon className="h-4 w-4 text-zinc-500" />
+                            </button>
+                        </div>
 
-                                    {/* Milestones */}
-                                    <div className="space-y-2">
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Delivery Timeline</span>
+                        {/* PDF Pages */}
+                        <div className="overflow-y-auto flex-1 p-6 bg-white dark:bg-zinc-900 space-y-5">
+                            {/* Page 1 — Cover */}
+                            <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-6 space-y-4 bg-white dark:bg-zinc-800/30">
+                                <div className="text-center space-y-1 pb-4 border-b border-zinc-100 dark:border-zinc-700">
+                                    <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest">Strata Experience</p>
+                                    <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Inventory Intelligence Report</p>
+                                    <p className="text-[11px] text-zinc-500">Mercy Health Phase 2 — Q1 2026</p>
+                                    <p className="text-[10px] text-zinc-400">Prepared by Dupler Office Furniture — March 25, 2026</p>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-2">Executive Summary</p>
+                                    <div className="grid grid-cols-2 gap-2">
                                         {[
-                                            { milestone: 'Procurement Complete', date: 'Mar 15', status: 'done' as const },
-                                            { milestone: 'Warehouse Staging', date: 'Mar 20', status: 'done' as const },
-                                            { milestone: 'Quality Inspection', date: 'Mar 24', status: 'active' as const },
-                                            { milestone: 'Delivery & Install', date: 'Apr 2', status: 'pending' as const },
-                                            { milestone: 'Final Walkthrough', date: 'Apr 5', status: 'pending' as const },
-                                        ].map(ms => (
-                                            <div key={ms.milestone} className="flex items-center gap-3 text-[11px]">
-                                                <div className={`w-3 h-3 rounded-full shrink-0 ${
-                                                    ms.status === 'done' ? 'bg-green-500' :
-                                                    ms.status === 'active' ? 'bg-brand-400 animate-pulse' :
-                                                    'bg-muted border border-border'
-                                                }`} />
-                                                <span className={`flex-1 ${ms.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground font-semibold'}`}>{ms.milestone}</span>
-                                                <span className="text-[10px] text-muted-foreground">{ms.date}</span>
-                                                {ms.status === 'done' && <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Stats */}
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {[
-                                            { label: 'Items Staged', value: '22/32' },
-                                            { label: 'On Schedule', value: 'Yes' },
-                                            { label: 'Est. Completion', value: 'Apr 5' },
-                                        ].map(stat => (
-                                            <div key={stat.label} className="p-2 rounded-lg bg-muted/50 border border-border text-center">
-                                                <div className="text-[10px] text-muted-foreground">{stat.label}</div>
-                                                <div className="text-[11px] font-bold text-foreground">{stat.value}</div>
+                                            { label: 'Total Stock Value', value: '$1.2M' },
+                                            { label: 'Fill Rate', value: '89%' },
+                                            { label: 'Backorder Items', value: '42' },
+                                            { label: 'Warehouse Util.', value: '68%' },
+                                            { label: 'Stock Accuracy', value: '97.2%' },
+                                            { label: 'Health Score', value: '78/100' },
+                                        ].map(kpi => (
+                                            <div key={kpi.label} className="p-2 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700">
+                                                <p className="text-[9px] text-zinc-400">{kpi.label}</p>
+                                                <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100">{kpi.value}</p>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
+                                <p className="text-[8px] text-zinc-300 dark:text-zinc-600 text-right">Page 1 of 4</p>
                             </div>
 
-                            {/* Read-only note */}
-                            <div className="p-3 rounded-xl bg-muted/30 border border-border flex items-center gap-3">
-                                <CubeIcon className="h-4 w-4 text-muted-foreground shrink-0" />
-                                <span className="text-[10px] text-muted-foreground">This is the client's read-only portal view. They can track progress without needing to contact Dupler directly.</span>
+                            {/* Page 2 — Warehouse Breakdown */}
+                            <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-6 space-y-4 bg-white dark:bg-zinc-800/30">
+                                <p className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Warehouse Capacity & Forecast</p>
+                                <div className="space-y-2">
+                                    {[
+                                        { name: 'Columbus Main', current: 72, forecast: 89 },
+                                        { name: 'Cincinnati Overflow', current: 45, forecast: 48 },
+                                        { name: 'Dayton Storage', current: 38, forecast: 38 },
+                                    ].map(wh => (
+                                        <div key={wh.name} className="flex items-center gap-3">
+                                            <span className="text-[10px] text-zinc-600 dark:text-zinc-400 w-28 shrink-0">{wh.name}</span>
+                                            <div className="flex-1 h-2 rounded-full bg-zinc-100 dark:bg-zinc-700 overflow-hidden">
+                                                <div className={`h-full rounded-full ${wh.current > 60 ? 'bg-amber-500' : 'bg-green-500'}`} style={{ width: `${wh.current}%` }} />
+                                            </div>
+                                            <span className="text-[10px] font-semibold text-zinc-700 dark:text-zinc-300 w-8 text-right">{wh.current}%</span>
+                                            <span className="text-[9px] text-zinc-400">→ {wh.forecast}%</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider pt-2">Stock by Category</p>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { cat: 'Seating', available: 400, reserved: 240, backordered: 100 },
+                                        { cat: 'Desks', available: 300, reserved: 139, backordered: 50 },
+                                        { cat: 'Storage', available: 200, reserved: 980, backordered: 200 },
+                                        { cat: 'Tables', available: 278, reserved: 390, backordered: 80 },
+                                        { cat: 'Accessories', available: 189, reserved: 480, backordered: 20 },
+                                    ].map(c => (
+                                        <div key={c.cat} className="flex items-center justify-between text-[10px] py-1 border-b border-zinc-50 dark:border-zinc-800">
+                                            <span className="text-zinc-600 dark:text-zinc-400 w-20">{c.cat}</span>
+                                            <span className="text-green-600 dark:text-green-400">{c.available} avail</span>
+                                            <span className="text-amber-600 dark:text-amber-400">{c.reserved} resv</span>
+                                            <span className="text-red-600 dark:text-red-400">{c.backordered} bo</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <p className="text-[8px] text-zinc-300 dark:text-zinc-600 text-right">Page 2 of 4</p>
                             </div>
 
-                            {/* Actions */}
+                            {/* Page 3 — AI Recommendations */}
+                            <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-6 space-y-4 bg-white dark:bg-zinc-800/30">
+                                <p className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">AI Recommendations</p>
+                                {AI_INSIGHTS.map((insight, i) => (
+                                    <div key={insight.id} className="p-3 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] font-bold text-zinc-800 dark:text-zinc-200">{i + 1}. {insight.title}</span>
+                                            <span className="text-[9px] font-bold text-zinc-500">{insight.confidence}%</span>
+                                        </div>
+                                        <p className="text-[9px] text-zinc-500">{insight.detail}</p>
+                                        <p className="text-[9px] font-semibold text-green-600 dark:text-green-400 mt-1">{insight.impact}</p>
+                                    </div>
+                                ))}
+                                <p className="text-[8px] text-zinc-300 dark:text-zinc-600 text-right">Page 3 of 4</p>
+                            </div>
+
+                            {/* Page 4 — Project Status */}
+                            <div className="border border-zinc-200 dark:border-zinc-700 rounded-lg p-6 space-y-4 bg-white dark:bg-zinc-800/30">
+                                <p className="text-[10px] font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Project Status — Mercy Health Phase 2</p>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { label: 'Items Staged', value: '22/32' },
+                                        { label: 'On Schedule', value: 'Yes' },
+                                        { label: 'Est. Completion', value: 'Apr 5' },
+                                    ].map(stat => (
+                                        <div key={stat.label} className="p-2 rounded bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-700 text-center">
+                                            <p className="text-[9px] text-zinc-400">{stat.label}</p>
+                                            <p className="text-[12px] font-bold text-zinc-900 dark:text-zinc-100">{stat.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="space-y-1.5">
+                                    {[
+                                        { milestone: 'Procurement Complete', date: 'Mar 15', status: 'done' as const },
+                                        { milestone: 'Warehouse Staging', date: 'Mar 20', status: 'done' as const },
+                                        { milestone: 'Quality Inspection', date: 'Mar 24', status: 'active' as const },
+                                        { milestone: 'Delivery & Install', date: 'Apr 2', status: 'pending' as const },
+                                        { milestone: 'Final Walkthrough', date: 'Apr 5', status: 'pending' as const },
+                                    ].map(ms => (
+                                        <div key={ms.milestone} className="flex items-center gap-3 text-[10px]">
+                                            <div className={`w-3 h-3 rounded-full shrink-0 ${
+                                                ms.status === 'done' ? 'bg-green-500' :
+                                                ms.status === 'active' ? 'bg-brand-400 animate-pulse' :
+                                                'bg-muted border border-border'
+                                            }`} />
+                                            <span className={`flex-1 ${ms.status === 'done' ? 'text-muted-foreground line-through' : 'text-foreground font-semibold'}`}>{ms.milestone}</span>
+                                            <span className="text-[10px] text-muted-foreground">{ms.date}</span>
+                                            {ms.status === 'done' && <CheckCircleIcon className="h-3.5 w-3.5 text-green-500" />}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="pt-3 border-t border-zinc-100 dark:border-zinc-700 text-center">
+                                    <p className="text-[8px] text-zinc-400">Confidential — Dupler Office Furniture © 2026</p>
+                                    <p className="text-[8px] text-zinc-400">Generated by Strata Experience Platform</p>
+                                </div>
+                                <p className="text-[8px] text-zinc-300 dark:text-zinc-600 text-right">Page 4 of 4</p>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="px-5 py-3 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-between shrink-0">
+                            <span className="text-[10px] text-zinc-400">4 pages</span>
                             <div className="flex items-center gap-2">
                                 <button
-                                    onClick={() => setShowPdfPreview(true)}
-                                    className="flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all bg-muted hover:bg-muted/80 text-foreground border border-border hover:border-zinc-400 dark:hover:border-zinc-500"
+                                    onClick={() => {
+                                        if (!reportDownloaded) {
+                                            setReportDownloaded(true);
+                                            setReportActionToast('PDF downloaded — Inventory_Report_MercyHealth_Mar2026.pdf');
+                                            setTimeout(() => setReportActionToast(null), 4000);
+                                        }
+                                    }}
+                                    className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-colors flex items-center gap-1.5 ${
+                                        reportDownloaded
+                                            ? 'bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30'
+                                            : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600'
+                                    }`}
                                 >
-                                    <EyeIcon className="h-4 w-4" /> Preview Report
+                                    {reportDownloaded ? <CheckCircleIcon className="h-3.5 w-3.5" /> : <DocumentArrowDownIcon className="h-3.5 w-3.5" />}
+                                    {reportDownloaded ? 'Downloaded' : 'Download PDF'}
                                 </button>
-                                <button onClick={() => nextStep()} className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all">
-                                    <span className="flex items-center justify-center gap-2"><CheckCircleIcon className="h-4 w-4" /> Complete Demo</span>
+                                <button onClick={() => setShowReportPreview(false)} className="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 transition-colors">
+                                    Close
                                 </button>
                             </div>
                         </div>
-                    )}
-                </>
+                    </div>
+                </div>
+            )}
+
+            {/* ── d3.3 Action Toast ── */}
+            {reportActionToast && (
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[210] animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="px-4 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold shadow-lg flex items-center gap-2">
+                        <CheckCircleIcon className="h-4 w-4" />
+                        {reportActionToast}
+                    </div>
+                </div>
             )}
 
             {/* ── PDF Preview Modal ── */}
