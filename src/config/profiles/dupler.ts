@@ -14,7 +14,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 1,
         groupTitle: 'Flow 1: Catalog to SIF Conversion',
         title: 'Catalog Import & Product Extraction',
-        description: 'The designer pastes a manufacturer catalog URL and Strata reads the entire page — identifying products with their part numbers, options, and pricing. Most items are mapped automatically; a few with incomplete options are flagged for review.',
+        description: 'Strata detects a non-CET manufacturer in the project and alerts the designer that product data is missing from the catalog. The designer imports from the manufacturer URL and Strata reads the entire page — identifying products with part numbers, options, and pricing. Most items map automatically; a few with incomplete options are flagged for review.',
         app: 'dupler-pdf',
         role: 'Designer',
     },
@@ -41,7 +41,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 1,
         groupTitle: 'Flow 1: Catalog to SIF Conversion',
         title: 'Specification Package & SIF Conversion',
-        description: 'Strata packages the validated items into a specification document with full traceability — every item links back to its source (catalog, AI, or specialist). The specification is converted to SIF format and sent to the Sales Coordinator for pricing.',
+        description: 'Strata packages the validated items into a specification document with full traceability — every item links back to its source (catalog, AI, or specialist). The specification is converted to SIF format and sent to the Sales Coordinator for pricing. After sending, the missing manufacturer data is synchronized into the project catalog, resolving the gap detected in the first step.',
         app: 'dupler-pdf',
         role: 'Designer',
     },
@@ -135,7 +135,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 3,
         groupTitle: 'Flow 3: Observability & Client Reporting',
         title: 'Data Update & Sync',
-        description: 'Updates from warehouse operations are verified and synchronized across all connected systems. Changes are confirmed and propagated automatically — no manual intervention needed.',
+        description: 'Starting from the connected systems view, Strata detects pending updates from warehouse operations. The user verifies and propagates changes across all 5 systems. Each update is confirmed with a checklist before configuring report metrics.',
         app: 'dupler-reporting',
         role: 'System',
     },
@@ -144,7 +144,7 @@ export const DUPLER_STEPS: DemoStep[] = [
         groupId: 3,
         groupTitle: 'Flow 3: Observability & Client Reporting',
         title: 'Report Assembly & Distribution',
-        description: 'Strata assembles an intelligence report from synchronized data and sends proactive alerts via Teams, email, and SMS. The report can be previewed, downloaded, and sent to the team.',
+        description: 'Starting from the synchronized data and configured metrics, Strata assembles an intelligence report covering stock, capacity, backorders, and AI recommendations. Proactive alerts are queued via Teams, email, and SMS. The report can be previewed, downloaded, and sent to the team.',
         app: 'dupler-reporting',
         role: 'System',
     },
@@ -163,10 +163,10 @@ export const DUPLER_STEPS: DemoStep[] = [
 
 export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
     // Flow 1: Catalog to SIF Conversion
-    'd1.1': { mode: 'interactive', userAction: 'Paste catalog URL. AI extracts products with pricing and options. Click "Continue to Review".' },
+    'd1.1': { mode: 'interactive', userAction: 'Gap alert shows missing manufacturer. Click "Import from Manufacturer Catalog". URL is pasted, AI extracts products.' },
     'd1.2': { mode: 'interactive', userAction: 'Review AI suggestions and specialist resolutions. Accept or edit each. Click "Approve All".' },
     'd1.3': { mode: 'interactive', userAction: 'Review price verification and acknowledge upcharges. Click "Continue to Specification".' },
-    'd1.4': { mode: 'interactive', userAction: 'Review source traceability. Convert to SIF and send to Sales Coordinator.' },
+    'd1.4': { mode: 'interactive', userAction: 'Review source traceability. Convert to SIF and send to SC. Catalog syncs automatically — gap resolved.' },
     'd1.5': { mode: 'interactive', userAction: 'Review specification. Apply discount, convert to priced SIF, and send for approval.' },
 
     // Flow 2: Warehouse & Inventory Intelligence
@@ -180,8 +180,8 @@ export const DUPLER_STEP_BEHAVIOR: Record<string, StepBehavior> = {
 
     // Flow 3: Observability & Client Reporting
     'd3.1': { mode: 'interactive', userAction: 'Review cross-system connections and health score. Click "Continue to Data Sync".' },
-    'd3.2': { mode: 'interactive', userAction: 'Review updates from warehouse operations. Click "Synchronize" to propagate across all systems.' },
-    'd3.3': { mode: 'interactive', userAction: 'Report assembles automatically. Preview, download, or send to team.' },
+    'd3.2': { mode: 'interactive', userAction: 'Review connected systems from previous step. Click "Verify & Propagate Updates", then "Synchronize" and configure report metrics.' },
+    'd3.3': { mode: 'interactive', userAction: 'Review sync results and configured metrics. Click "Assemble Report". Preview, download, or send.' },
     'd3.4': { mode: 'interactive', userAction: 'Review report sections. Preview, download, or send. Check client portal.' },
 };
 

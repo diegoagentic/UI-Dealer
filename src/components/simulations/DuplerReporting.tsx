@@ -36,8 +36,8 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, CartesianGrid, 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type SyncPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
-type ReconPhase = 'idle' | 'notification' | 'processing' | 'revealed';
-type AssemblyPhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
+type ReconPhase = 'idle' | 'continuity' | 'notification' | 'processing' | 'revealed';
+type AssemblyPhase = 'idle' | 'continuity' | 'notification' | 'processing' | 'breathing' | 'revealed' | 'results';
 type ReportPhase = 'idle' | 'notification' | 'revealed';
 
 interface AgentVis { name: string; detail: string; visible: boolean; done: boolean; }
@@ -373,8 +373,7 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         if (stepId !== 'd3.2' || reconPhase !== 'idle') return;
-        const timing = getTiming('d3.2');
-        const t = setTimeout(pauseAware(() => setReconPhase('notification')), timing.notifDelay);
+        const t = setTimeout(pauseAware(() => setReconPhase('continuity')), 300);
         return () => clearTimeout(t);
     }, [stepId, reconPhase, pauseAware]);
 
@@ -412,17 +411,9 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
     // ═══════════════════════════════════════════════════════════════════════════
     useEffect(() => {
         if (stepId !== 'd3.3' || assemblyRef.current !== 'idle') return;
-        const timing = getTiming('d3.3');
-        const t = setTimeout(pauseAware(() => setAssemblyPhase('notification')), timing.notifDelay);
+        const t = setTimeout(pauseAware(() => setAssemblyPhase('continuity')), 300);
         return () => clearTimeout(t);
     }, [stepId, pauseAware]);
-
-    useEffect(() => {
-        if (stepId !== 'd3.3' || assemblyPhase !== 'notification') return;
-        const timing = getTiming('d3.3');
-        const t = setTimeout(pauseAware(() => setAssemblyPhase('processing')), timing.notifDuration);
-        return () => clearTimeout(t);
-    }, [stepId, assemblyPhase, pauseAware]);
 
     useEffect(() => {
         if (stepId !== 'd3.3' || assemblyPhase !== 'processing') return;
@@ -640,14 +631,58 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
             {/* ── d3.2: Cross-System Data Update & Sync ── */}
             {stepId === 'd3.2' && (
                 <>
-                    {reconPhase === 'notification' && renderNotification(
-                        <ArrowPathIcon className="h-4 w-4" />,
-                        'Cross-System Data Update',
-                        <div className="space-y-2">
-                            <SystemChips systems={[{ label: 'WAREHOUSE OPS', color: 'teal' }, { label: 'ALL SYSTEMS', color: 'blue' }, { label: 'SYNC ENGINE', color: 'purple' }]} />
-                            <p>3 updates from warehouse operations ready to propagate across all 5 systems. Verifying consistency before report generation.</p>
-                        </div>,
-                        handleReconStart
+                    {reconPhase === 'continuity' && (
+                        <div className="animate-in fade-in duration-500 space-y-4">
+                            {/* d3.1 end state: AI Summary */}
+                            <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
+                                <div className="flex items-start gap-2">
+                                    <AIAgentAvatar />
+                                    <p className="text-xs text-green-800 dark:text-green-200">
+                                        <span className="font-bold">DataBridge + StockAnalyzer:</span> <span className="font-semibold">5 systems</span> connected — <span className="font-semibold">1,840 items</span> synced.
+                                        Health score: <span className="font-semibold">78/100</span>. Fill rate: <span className="font-semibold">89%</span>.
+                                    </p>
+                                </div>
+                            </div>
+                            {/* Bridge Diagram */}
+                            <div className="rounded-xl border border-border overflow-hidden">
+                                <div className="bg-muted/50 px-4 py-2 border-b border-border flex items-center justify-between">
+                                    <span className="text-xs font-bold text-foreground">Cross-System Data Bridge</span>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 font-bold">ALL CONNECTED</span>
+                                </div>
+                                <div className="p-4">
+                                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                                        {[
+                                            { name: 'CET', color: 'bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-200 dark:border-teal-500/20' },
+                                            { name: 'SPEC', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20' },
+                                            { name: 'Compass', color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-500/20' },
+                                            { name: 'Warehouse', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' },
+                                            { name: 'Carrier', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20' },
+                                        ].map((sys, i, arr) => (
+                                            <div key={sys.name} className="flex items-center gap-2">
+                                                <div className={`px-3 py-2 rounded-lg border text-[11px] font-bold ${sys.color}`}>{sys.name}</div>
+                                                {i < arr.length - 1 && <ArrowsRightLeftIcon className="h-4 w-4 text-muted-foreground shrink-0" />}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            {/* KPIs */}
+                            {renderKPIGrid(INVENTORY_KPIS)}
+                            {/* Transition info + CTA */}
+                            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-300 dark:border-amber-500/30 flex items-center gap-3">
+                                <ExclamationTriangleIcon className="h-4 w-4 text-amber-500 shrink-0" />
+                                <p className="text-[11px] text-amber-800 dark:text-amber-300 flex-1">
+                                    <span className="font-bold">3 warehouse updates</span> detected — need to verify and propagate across all connected systems before reporting.
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleReconStart}
+                                className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <ArrowPathIcon className="h-4 w-4" />
+                                Verify & Propagate Updates
+                            </button>
+                        </div>
                     )}
                     {reconPhase === 'processing' && renderAgentPipeline(reconAgents, 100, 'Verifying updates across systems...')}
                     {reconPhase === 'revealed' && (
@@ -867,23 +902,49 @@ export default function DuplerReporting({ onNavigate }: DuplerReportingProps) {
             {/* ── d3.3: Inventory Health Report Assembly ── */}
             {stepId === 'd3.3' && (
                 <>
-                    {assemblyPhase === 'notification' && (
-                        <div className="animate-in fade-in slide-in-from-top-4 duration-500">
-                            <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2 rounded-lg bg-brand-500 text-zinc-900"><DocumentChartBarIcon className="h-4 w-4" /></div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-foreground">Inventory Health Report — Assembling</span>
-                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500 text-zinc-900 font-bold">Auto</span>
-                                        </div>
-                                        <div className="mt-1.5">
-                                            <SystemChips systems={[{ label: 'REPORT ENGINE', color: 'blue' }, { label: 'TEAMS / EMAIL / SMS', color: 'purple' }, { label: 'INSIGHT AI', color: 'teal' }]} />
-                                        </div>
-                                        <p className="text-[11px] text-muted-foreground mt-1">HealthReporter: Building report from <span className="font-semibold text-foreground">synchronized</span> inventory data — <span className="font-semibold text-green-600 dark:text-green-400">3 updates propagated</span> across 5 systems. Stock availability, capacity forecast, backorder analysis + AI recommendations.</p>
-                                    </div>
+                    {assemblyPhase === 'continuity' && (
+                        <div className="animate-in fade-in duration-500 space-y-4">
+                            {/* d3.2 end state: Sync complete banner */}
+                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border-2 border-green-300 dark:border-green-500/30">
+                                <div className="flex items-center gap-2">
+                                    <CheckCircleIcon className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    <span className="text-xs font-bold text-green-800 dark:text-green-200">DATA SYNCHRONIZED — 1,840/1,840 verified</span>
                                 </div>
                             </div>
+
+                            {/* Resolved updates summary */}
+                            <div className="space-y-2">
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Updates Propagated Across 5 Systems</span>
+                                {RESOLVED_UPDATES.map(upd => (
+                                    <div key={upd.id} className="p-2.5 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-2">
+                                        <CheckCircleIcon className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                        <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-green-500/20 text-green-700 dark:text-green-400">{upd.label}</span>
+                                        <span className="text-[10px] font-semibold text-foreground">{upd.item}</span>
+                                        <span className="text-[9px] text-muted-foreground ml-auto">— {upd.detail}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Metrics configured */}
+                            <div className="p-3 rounded-xl bg-muted/30 border border-border flex items-center gap-3">
+                                <DocumentChartBarIcon className="h-4 w-4 text-brand-600 dark:text-brand-400 shrink-0" />
+                                <div className="flex-1">
+                                    <p className="text-[11px] font-bold text-foreground">{selectedMetrics.length} metrics configured</p>
+                                    <p className="text-[9px] text-muted-foreground">
+                                        {DASHBOARD_METRICS.filter(m => selectedMetrics.includes(m.id)).map(m => m.label).join(' · ')}
+                                    </p>
+                                </div>
+                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-700 dark:text-brand-400 font-bold">READY</span>
+                            </div>
+
+                            {/* CTA */}
+                            <button
+                                onClick={() => setAssemblyPhase('processing')}
+                                className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors"
+                            >
+                                <DocumentChartBarIcon className="h-4 w-4" />
+                                Assemble Report
+                            </button>
                         </div>
                     )}
                     {assemblyPhase === 'processing' && renderAgentPipeline(reportAgents, reportProgress, 'Report Assembly — 4 sections...')}

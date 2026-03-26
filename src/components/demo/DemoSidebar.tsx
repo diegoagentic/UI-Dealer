@@ -50,10 +50,10 @@ function getStepDataThread(stepId: string): string | null {
         '4.3': '$11,550 reconciled',
         '4.4': '92% satisfaction, AV flagged',
         // Dupler
-        'd1.1': 'Products extracted from catalog — most mapped, few flagged',
+        'd1.1': 'Gap detected — catalog imported, products extracted and mapped',
         'd1.2': 'Flagged items resolved — AI suggestions and specialist review',
         'd1.3': 'Prices verified — upcharges reviewed and acknowledged',
-        'd1.4': 'Specification packaged — converted to SIF and sent to SC',
+        'd1.4': 'SIF sent to SC — catalog synchronized, gap resolved',
         'd1.5': 'Discount applied — priced SIF approved and sent',
         'd2.1': 'Warehouse scanned — aging items flagged, moves recommended',
         'd2.2': 'Items received — exceptions flagged and assessed',
@@ -62,8 +62,8 @@ function getStepDataThread(stepId: string): string | null {
         'd2.5': 'Shipments tracked — delays predicted, freight audited',
         'd2.6': 'Claims processed — credits and warranties reviewed',
         'd2.7': 'Dealer approved — dispatch scheduled',
-        'd3.1': 'All systems connected — unified view ready',
-        'd3.2': 'Updates synced across all systems',
+        'd3.1': 'All systems connected — inventory health scored',
+        'd3.2': 'Updates verified and propagated — metrics configured',
         'd3.3': 'Report assembled — previewed and sent to team',
         'd3.4': 'Report reviewed — client portal live',
     };

@@ -39,7 +39,7 @@ const MANAGER_PHOTO = 'https://images.unsplash.com/photo-1500648767791-00dcc994a
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-type ScrapePhase = 'idle' | 'upload-zone' | 'scraping' | 'processing' | 'breathing' | 'revealed' | 'results';
+type ScrapePhase = 'idle' | 'notification' | 'upload-zone' | 'scraping' | 'processing' | 'breathing' | 'revealed' | 'results';
 type MappingPhase = 'idle' | 'notification' | 'processing' | 'revealed';
 type ValidationPhase = 'idle' | 'processing' | 'revealed';
 type PackagePhase = 'idle' | 'processing' | 'revealed';
@@ -353,6 +353,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
 
     // ── d1.1 State: Web Catalog Scrape ──
     const [scrapePhase, setScrapePhase] = useState<ScrapePhase>('idle');
+    const [urlPasted, setUrlPasted] = useState(false);
     const [extractAgents, setExtractAgents] = useState(EXTRACTION_AGENTS.map(a => ({ ...a })));
     const [extractProgress, setExtractProgress] = useState(0);
     const [itemsRevealed, setItemsRevealed] = useState(0);
@@ -386,6 +387,8 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
     const [specSent, setSpecSent] = useState(false);
     const [showSendPopover, setShowSendPopover] = useState(false);
     const [sendToast, setSendToast] = useState(false);
+    const [catalogSyncPhase, setCatalogSyncPhase] = useState<'idle' | 'syncing' | 'done'>('idle');
+    const [catalogSyncProgress, setCatalogSyncProgress] = useState(0);
 
     // ── Timing helpers ──
     const tp = (id: string): DuplerStepTiming => DUPLER_STEP_TIMING[id] || DUPLER_STEP_TIMING['d1.1'];
@@ -419,16 +422,19 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         setCatalogFilter('all');
         setFilterAutoSwitched(false);
         setExpandedCatalogItem(null);
-        const handler = () => setScrapePhase('upload-zone');
+        setUrlPasted(false);
+        const handler = () => setScrapePhase('notification');
         window.addEventListener('dupler-vendor-upload', handler);
         return () => window.removeEventListener('dupler-vendor-upload', handler);
     }, [stepId]);
 
-    // Upload zone: stay on URL tab → auto-advance to scraping
+    // Upload zone: empty input → paste URL → auto-advance to scraping
     useEffect(() => {
         if (scrapePhase !== 'upload-zone') return;
-        const t = setTimeout(pauseAware(() => setScrapePhase('scraping')), 2500);
-        return () => clearTimeout(t);
+        setUrlPasted(false);
+        const t1 = setTimeout(pauseAware(() => setUrlPasted(true)), 1000);
+        const t2 = setTimeout(pauseAware(() => setScrapePhase('scraping')), 3000);
+        return () => { clearTimeout(t1); clearTimeout(t2); };
     }, [scrapePhase]);
 
     // Scraping: scan progress ~2s → processing
@@ -584,6 +590,8 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         setSpecSent(false);
         setShowSendPopover(false);
         setSendToast(false);
+        setCatalogSyncPhase('idle');
+        setCatalogSyncProgress(0);
         setExpandedCatalogItem(null);
         const timers: ReturnType<typeof setTimeout>[] = [];
         timers.push(setTimeout(pauseAware(() => setPkgPhase('processing')), 300));
@@ -622,6 +630,24 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         timers.push(setTimeout(pauseAware(() => setSifPhase('ready')), duration + 400));
         return () => timers.forEach(clearTimeout);
     }, [sifPhase]);
+
+    // Catalog sync effect (d1.4 post-send)
+    useEffect(() => {
+        if (catalogSyncPhase !== 'syncing') return;
+        setCatalogSyncProgress(0);
+        const duration = 2200;
+        const steps = 20;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        for (let i = 1; i <= steps; i++) {
+            timers.push(setTimeout(
+                pauseAware(() => setCatalogSyncProgress(Math.min(100, Math.round((i / steps) * 100)))),
+                (duration / steps) * i
+            ));
+        }
+        timers.push(setTimeout(pauseAware(() => setCatalogSyncPhase('done')), duration + 400));
+        timers.push(setTimeout(pauseAware(() => nextStep()), duration + 2500));
+        return () => timers.forEach(clearTimeout);
+    }, [catalogSyncPhase]);
 
     // ═══════════════════════════════════════════════════════════════════════════
     // Render Helpers
@@ -681,7 +707,37 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
             {/* ── d1.1: Web Catalog Scrape & AI Extraction ── */}
             {stepId === 'd1.1' && (
                 <>
-                    {/* Upload zone — URL tab selected */}
+                    {/* Gap notification — non-CET manufacturer detected */}
+                    {scrapePhase === 'notification' && (
+                        <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
+                            <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-300 dark:border-amber-500/30 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-500/10 shrink-0">
+                                        <ExclamationTriangleIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="text-xs font-bold text-foreground">Non-CET Manufacturer Detected</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">
+                                            <span className="font-semibold text-foreground">{MANUFACTURER}</span> is not available in the CET catalog.
+                                            Product data for this manufacturer — part numbers, options, and pricing — needs to be imported from an external source.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-2 ml-11">
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-amber-200 dark:bg-amber-500/20 text-amber-800 dark:text-amber-300 font-bold">MISSING IN CET</span>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400 font-bold">NO SIF AVAILABLE</span>
+                                </div>
+                                <button
+                                    onClick={() => setScrapePhase('upload-zone')}
+                                    className="w-full py-2.5 rounded-xl text-xs font-bold bg-brand-400 hover:bg-brand-500 text-zinc-900 shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2 animate-pulse"
+                                >
+                                    <LinkIcon className="h-4 w-4" /> Import from Manufacturer Catalog
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Upload zone — URL input with paste animation */}
                     {scrapePhase === 'upload-zone' && (
                         <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-4">
                             <div className="rounded-xl bg-card border-2 border-dashed border-purple-300 dark:border-purple-500/40 overflow-hidden">
@@ -695,13 +751,28 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                             <p className="text-xs text-muted-foreground mt-1">Manufacturer catalog pages, product listings, or price sheets</p>
                                         </div>
                                     </div>
-                                    {/* Pre-filled URL card */}
-                                    <div className="flex items-center gap-2 p-3 bg-purple-100 dark:bg-purple-500/10 rounded-lg border border-purple-300 dark:border-purple-500/30 mt-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                                        <div className="p-1.5 rounded bg-purple-200 dark:bg-purple-500/20">
-                                            <LinkIcon className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                                    {/* URL input with paste animation */}
+                                    <div className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg border transition-all duration-300 mt-2 ${
+                                        urlPasted
+                                            ? 'bg-purple-50 dark:bg-purple-500/5 border-purple-400 dark:border-purple-500/40 ring-2 ring-purple-200 dark:ring-purple-500/20'
+                                            : 'bg-muted/30 border-border'
+                                    }`}>
+                                        <div className={`p-1 rounded transition-colors duration-300 ${urlPasted ? 'bg-purple-200 dark:bg-purple-500/20' : 'bg-muted'}`}>
+                                            <LinkIcon className={`h-3.5 w-3.5 transition-colors duration-300 ${urlPasted ? 'text-purple-600 dark:text-purple-400' : 'text-muted-foreground'}`} />
                                         </div>
-                                        <span className="text-xs text-purple-800 dark:text-purple-300 font-mono font-semibold flex-1 truncate">{CATALOG_URL}</span>
-                                        <SourceBadge label="MFR WEBSITE" color="purple" />
+                                        {urlPasted ? (
+                                            <span className="text-xs text-purple-800 dark:text-purple-300 font-mono font-semibold flex-1 truncate animate-in fade-in slide-in-from-left-4 duration-300">
+                                                {CATALOG_URL}
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs text-muted-foreground/50 font-mono flex-1 flex items-center">
+                                                https://
+                                                <span className="inline-block w-[1px] h-3.5 bg-muted-foreground/40 ml-0.5 animate-pulse" />
+                                            </span>
+                                        )}
+                                        {urlPasted && (
+                                            <SourceBadge label="MFR WEBSITE" color="purple" />
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -1463,11 +1534,13 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
             {/* ── d1.4: Specification Package & SC Handoff (seamless table continuation) ── */}
             {stepId === 'd1.4' && (pkgPhase === 'processing' || pkgPhase === 'revealed') && (
                 <div className="animate-in fade-in duration-300 space-y-4">
-                    {/* Toast notification — fixed at top */}
+                    {/* Toast notification — fixed floating */}
                     {sendToast && (
-                        <div className="p-3 rounded-xl bg-green-500 text-white text-xs font-bold flex items-center gap-2 animate-in fade-in slide-in-from-top-2 duration-300 shadow-lg">
-                            <CheckCircleIcon className="h-4 w-4 shrink-0" />
-                            {SPEC_ID}.sif sent to Randy Martinez (SC)
+                        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[210] animate-in fade-in slide-in-from-top-2 duration-300">
+                            <div className="px-4 py-2.5 rounded-xl bg-green-600 text-white text-xs font-bold shadow-lg shadow-green-500/30 flex items-center gap-2">
+                                <CheckCircleIcon className="h-4 w-4 shrink-0" />
+                                {SPEC_ID}.sif sent to Randy Martinez (SC) — pricing handoff complete
+                            </div>
                         </div>
                     )}
 
@@ -1908,7 +1981,7 @@ Checksum        = sha256:a4f8c2...e71b
                                                                 setSpecSent(true);
                                                                 setSendToast(true);
                                                                 setTimeout(pauseAware(() => setSendToast(false)), 3000);
-                                                                setTimeout(pauseAware(() => nextStep()), 2500);
+                                                                setTimeout(pauseAware(() => setCatalogSyncPhase('syncing')), 2000);
                                                             }
                                                         }}
                                                         className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
@@ -1930,10 +2003,98 @@ Checksum        = sha256:a4f8c2...e71b
                                 </div>
                             )}
 
-                            {specSent && !sendToast && (
-                                <div className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-sm text-center flex items-center justify-center gap-2">
-                                    <CheckCircleIcon className="h-4 w-4" />
-                                    {SPEC_ID}.sif sent to Randy Martinez (SC) — pricing handoff complete
+                            {/* Catalog Sync Animation — post-send */}
+                            {specSent && catalogSyncPhase === 'syncing' && (
+                                <div className="p-5 rounded-xl bg-gradient-to-br from-purple-50 via-brand-50 to-blue-50 dark:from-purple-500/10 dark:via-brand-500/5 dark:to-blue-500/10 border-2 border-purple-300 dark:border-purple-500/40 shadow-lg shadow-purple-200/30 dark:shadow-purple-500/10 animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="relative">
+                                            <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-500/20">
+                                                <ArrowPathIcon className="h-5 w-5 text-purple-600 dark:text-purple-400 animate-spin" />
+                                            </div>
+                                            <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-purple-500 rounded-full animate-pulse" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-bold text-foreground">Synchronizing Catalog Data</p>
+                                            <p className="text-[10px] text-muted-foreground">Updating project catalog with non-CET manufacturer data</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Progress bar */}
+                                    <div className="space-y-2">
+                                        <div className="h-2.5 rounded-full bg-purple-100 dark:bg-purple-500/20 overflow-hidden">
+                                            <div className="h-full rounded-full bg-gradient-to-r from-purple-500 via-brand-400 to-purple-500 transition-all duration-300 ease-out"
+                                                style={{ width: `${catalogSyncProgress}%` }} />
+                                        </div>
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-[10px] font-medium text-purple-600 dark:text-purple-400">
+                                                {catalogSyncProgress < 30 && `Importing ${MANUFACTURER} product catalog...`}
+                                                {catalogSyncProgress >= 30 && catalogSyncProgress < 60 && `Mapping ${CATALOG_ITEMS_TOTAL} items to CET format...`}
+                                                {catalogSyncProgress >= 60 && catalogSyncProgress < 85 && 'Binding pricing, options & SIF traceability...'}
+                                                {catalogSyncProgress >= 85 && 'Finalizing catalog synchronization...'}
+                                            </p>
+                                            <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400">{catalogSyncProgress}%</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Sync details */}
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${catalogSyncProgress >= 20 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                            <p className="text-[9px] text-muted-foreground">Products</p>
+                                            <p className="text-xs font-bold text-foreground">{catalogSyncProgress >= 20 ? `${CATALOG_ITEMS_TOTAL} synced` : 'Pending...'}</p>
+                                        </div>
+                                        <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${catalogSyncProgress >= 50 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                            <p className="text-[9px] text-muted-foreground">SIF Records</p>
+                                            <p className="text-xs font-bold text-foreground">{catalogSyncProgress >= 50 ? `${CATALOG_ITEMS_TOTAL} generated` : 'Pending...'}</p>
+                                        </div>
+                                        <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${catalogSyncProgress >= 70 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                            <p className="text-[9px] text-muted-foreground">Pricing</p>
+                                            <p className="text-xs font-bold text-foreground">{catalogSyncProgress >= 70 ? 'Verified' : 'Pending...'}</p>
+                                        </div>
+                                        <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${catalogSyncProgress >= 90 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                            <p className="text-[9px] text-muted-foreground">Traceability</p>
+                                            <p className="text-xs font-bold text-foreground">{catalogSyncProgress >= 90 ? 'Complete' : 'Pending...'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Sync Complete — success + SC pending */}
+                            {specSent && catalogSyncPhase === 'done' && (
+                                <div className="space-y-3 animate-in fade-in slide-in-from-bottom-3 duration-500">
+                                    {/* Success banner */}
+                                    <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border-2 border-green-400 dark:border-green-500/40 shadow-lg shadow-green-200/30 dark:shadow-green-500/10 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <div className="p-2.5 rounded-xl bg-green-100 dark:bg-green-500/20 shrink-0">
+                                                <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-bold text-green-800 dark:text-green-300">Catalog Synchronized Successfully</p>
+                                                <p className="text-[11px] text-muted-foreground mt-1">
+                                                    <span className="font-semibold text-foreground">{MANUFACTURER}</span> product data has been added to the project catalog.
+                                                    All {CATALOG_ITEMS_TOTAL} items are now available in CET with verified pricing, options, and full source traceability.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2 ml-12">
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-200 dark:bg-green-500/20 text-green-800 dark:text-green-300 font-bold">CATALOG SYNCED</span>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold">SIF GENERATED</span>
+                                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold">GAP RESOLVED</span>
+                                        </div>
+                                    </div>
+
+                                    {/* SC Review pending */}
+                                    <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-500/5 border border-amber-300 dark:border-amber-500/30 flex items-center gap-3 animate-in fade-in duration-300" style={{ animationDelay: '400ms' }}>
+                                        <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-500/10 shrink-0">
+                                            <ExclamationTriangleIcon className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[11px] font-bold text-amber-800 dark:text-amber-300">Pending SC Review</p>
+                                            <p className="text-[10px] text-amber-700/80 dark:text-amber-400/70">
+                                                Randy Martinez (SC) will review pricing and apply dealer discounts in the SC application.
+                                            </p>
+                                        </div>
+                                        <ArrowRightIcon className="h-4 w-4 text-amber-500 dark:text-amber-400 shrink-0 animate-pulse" />
+                                    </div>
                                 </div>
                             )}
                         </div>
