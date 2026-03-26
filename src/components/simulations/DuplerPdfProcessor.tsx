@@ -363,6 +363,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
     const [catalogFilter, setCatalogFilter] = useState<'all' | 'mapped' | 'review'>('all');
     const [filterAutoSwitched, setFilterAutoSwitched] = useState(false);
     const [expandedCatalogItem, setExpandedCatalogItem] = useState<number | null>(null);
+    const [editModalItem, setEditModalItem] = useState<WebExtractedItem | null>(null);
 
     // ── d1.2 State: AI Suggestions & Expert Hub ──
     const [mapPhase, setMapPhase] = useState<MappingPhase>('idle');
@@ -428,13 +429,12 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
         return () => window.removeEventListener('dupler-vendor-upload', handler);
     }, [stepId]);
 
-    // Upload zone: empty input → paste URL → auto-advance to scraping
+    // Upload zone: empty input → paste URL → wait for Extract click
     useEffect(() => {
         if (scrapePhase !== 'upload-zone') return;
         setUrlPasted(false);
         const t1 = setTimeout(pauseAware(() => setUrlPasted(true)), 1000);
-        const t2 = setTimeout(pauseAware(() => setScrapePhase('scraping')), 3000);
-        return () => { clearTimeout(t1); clearTimeout(t2); };
+        return () => { clearTimeout(t1); };
     }, [scrapePhase]);
 
     // Scraping: scan progress ~2s → processing
@@ -774,6 +774,16 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                             <SourceBadge label="MFR WEBSITE" color="purple" />
                                         )}
                                     </div>
+                                    {/* Extract button — appears after URL is pasted */}
+                                    {urlPasted && (
+                                        <button
+                                            onClick={() => setScrapePhase('scraping')}
+                                            className="w-full mt-3 py-2.5 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors animate-in fade-in slide-in-from-bottom-2 duration-300"
+                                        >
+                                            <MagnifyingGlassIcon className="h-4 w-4" />
+                                            Extract Data
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -896,6 +906,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                 <th className="text-left py-1.5 px-1 font-medium">Tag</th>
                                                 <th className="text-right py-1.5 px-2 font-medium">Unit $</th>
                                                 <th className="text-center py-1.5 px-2 font-medium">Status</th>
+                                                <th className="w-8 py-1.5 px-1" />
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -932,11 +943,18 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                                 {item.status === 'ai-suggested' && <SourceBadge label="AI SUGGESTED" color="green" />}
                                                                 {item.status === 'expert-hub' && <SourceBadge label="EXPERT HUB" color="blue" />}
                                                             </td>
+                                                            <td className="py-1.5 px-1 text-center">
+                                                                <button onClick={(e) => { e.stopPropagation(); setEditModalItem(item); }}
+                                                                    className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                                                                    title="Edit item">
+                                                                    <PencilSquareIcon className="h-3.5 w-3.5" />
+                                                                </button>
+                                                            </td>
                                                         </tr>
                                                         {/* Expanded detail panel */}
                                                         {isExpanded && (
                                                             <tr className="border-b border-border/50">
-                                                                <td colSpan={10} className="p-0">
+                                                                <td colSpan={11} className="p-0">
                                                                     <div className="px-4 py-3 bg-muted/20 dark:bg-muted/10 animate-in fade-in slide-in-from-top-1 duration-200">
                                                                         <div className="grid grid-cols-2 gap-4">
                                                                             {/* Left: SPEC Pricing Grid */}
@@ -1063,6 +1081,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                         <th className="text-left py-1.5 px-1 font-medium">Tag</th>
                                         <th className="text-right py-1.5 px-2 font-medium">Unit $</th>
                                         <th className="text-center py-1.5 px-2 font-medium">Status</th>
+                                        <th className="w-8 py-1.5 px-1" />
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1112,11 +1131,18 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                                 ? <SourceBadge label="AI SUGGESTED" color="green" />
                                                                 : <SourceBadge label="EXPERT HUB" color="blue" />}
                                                     </td>
+                                                    <td className="py-1.5 px-1 text-center">
+                                                        <button onClick={(e) => { e.stopPropagation(); setEditModalItem(item); }}
+                                                            className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                                                            title="Edit item">
+                                                            <PencilSquareIcon className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                                 {/* Expanded review panel — AI suggestion or Expert Hub resolution */}
                                                 {isExpanded && !isResolved && (
                                                     <tr className="border-b border-border/50">
-                                                        <td colSpan={10} className="p-0">
+                                                        <td colSpan={11} className="p-0">
                                                             <div className="px-4 py-3 bg-muted/20 dark:bg-muted/10 animate-in fade-in slide-in-from-top-1 duration-200">
                                                                 {/* AI Suggestion content */}
                                                                 {sug && (
@@ -1352,6 +1378,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                         <th className="text-left py-1.5 px-1 font-medium">Tag</th>
                                         <th className="text-right py-1.5 px-2 font-medium">Unit $</th>
                                         <th className="text-center py-1.5 px-2 font-medium">Status</th>
+                                        <th className="w-8 py-1.5 px-1" />
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1405,11 +1432,18 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                                     : <SourceBadge label="UPCHARGE" color="amber" />
                                                                 : <SourceBadge label="PRICE OK" color="green" />}
                                                     </td>
+                                                    <td className="py-1.5 px-1 text-center">
+                                                        <button onClick={(e) => { e.stopPropagation(); setEditModalItem(item); }}
+                                                            className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                                                            title="Edit item">
+                                                            <PencilSquareIcon className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                                 {/* Expanded panel — only in revealed phase */}
                                                 {isExpanded && (
                                                     <tr className="border-b border-border/50">
-                                                        <td colSpan={10} className="p-0">
+                                                        <td colSpan={11} className="p-0">
                                                             <div className="px-4 py-3 bg-muted/20 dark:bg-muted/10 animate-in fade-in slide-in-from-top-1 duration-200">
                                                                 {/* Upcharge detail panel */}
                                                                 {isUpcharge && upcharge && !isAcked && (
@@ -1670,6 +1704,7 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                         <th className="text-left py-1.5 px-1 font-medium">Tag</th>
                                         <th className="text-right py-1.5 px-2 font-medium">Unit $</th>
                                         <th className="text-center py-1.5 px-2 font-medium">Source</th>
+                                        <th className="w-8 py-1.5 px-1" />
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1717,11 +1752,18 @@ export default function DuplerPdfProcessor({ onNavigate }: DuplerPdfProcessorPro
                                                             )}
                                                         </span>
                                                     </td>
+                                                    <td className="py-1.5 px-1 text-center">
+                                                        <button onClick={(e) => { e.stopPropagation(); setEditModalItem(item); }}
+                                                            className="p-1 rounded-md hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
+                                                            title="Edit item">
+                                                            <PencilSquareIcon className="h-3.5 w-3.5" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                                 {/* Expanded panel — source traceability detail */}
                                                 {isExpanded && (
                                                     <tr className="border-b border-border/50">
-                                                        <td colSpan={10} className="p-0">
+                                                        <td colSpan={11} className="p-0">
                                                             <div className="px-4 py-3 bg-muted/20 dark:bg-muted/10 animate-in fade-in slide-in-from-top-1 duration-200">
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     {/* Left: SPEC Pricing Grid */}
@@ -2099,6 +2141,72 @@ Checksum        = sha256:a4f8c2...e71b
                             )}
                         </div>
                     )}
+                </div>
+            )}
+
+            {/* Edit Item Modal */}
+            {editModalItem && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-[2px] animate-in fade-in duration-200" onClick={() => setEditModalItem(null)}>
+                    <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200" onClick={e => e.stopPropagation()}>
+                        <div className="px-5 py-4 border-b border-border bg-muted/50 flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-brand-100 dark:bg-brand-500/10">
+                                <PencilSquareIcon className="h-4 w-4 text-brand-600 dark:text-brand-400" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-bold text-foreground">Edit Item — Line {editModalItem.line}</p>
+                                <p className="text-[10px] text-muted-foreground">{editModalItem.partNumber} · {editModalItem.partDescription}</p>
+                            </div>
+                        </div>
+                        <div className="p-5 space-y-3 max-h-[60vh] overflow-y-auto">
+                            <div className="grid grid-cols-2 gap-3">
+                                {([
+                                    { label: 'Part Number', value: editModalItem.partNumber, mono: true },
+                                    { label: 'Source Co', value: editModalItem.sourceCo, mono: true },
+                                    { label: 'Part Description', value: editModalItem.partDescription, mono: false },
+                                    { label: 'Tag', value: editModalItem.tag, mono: true },
+                                    { label: 'Option Code', value: editModalItem.optionCode ?? '—', mono: true },
+                                    { label: 'Qty', value: String(editModalItem.qty), mono: true },
+                                    { label: 'Option Description', value: editModalItem.optionDescription, mono: false },
+                                    { label: 'Unit Price', value: `$${editModalItem.unitPrice.toLocaleString()}`, mono: true },
+                                ] as { label: string; value: string; mono: boolean }[]).map(field => (
+                                    <div key={field.label} className={field.label === 'Part Description' || field.label === 'Option Description' ? 'col-span-2' : ''}>
+                                        <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide mb-1 block">{field.label}</label>
+                                        <input
+                                            type="text"
+                                            defaultValue={field.value}
+                                            className={`w-full px-3 py-2 rounded-lg bg-muted/30 border border-border text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-brand-400/40 focus:border-brand-400 transition-colors ${field.mono ? 'font-mono' : ''}`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            {editModalItem.optionBreakdown && editModalItem.optionBreakdown.length > 0 && (
+                                <div>
+                                    <label className="text-[9px] font-bold text-muted-foreground uppercase tracking-wide mb-1.5 block">Option Breakdown</label>
+                                    <div className="space-y-1.5">
+                                        {editModalItem.optionBreakdown.map((ob, oi) => (
+                                            <div key={oi} className="flex items-center gap-2">
+                                                <input type="text" defaultValue={ob.code}
+                                                    className="w-20 px-2 py-1.5 rounded-lg bg-muted/30 border border-border text-[10px] font-mono text-foreground focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                                                <span className="text-muted-foreground text-[10px]">→</span>
+                                                <input type="text" defaultValue={ob.description}
+                                                    className="flex-1 px-2 py-1.5 rounded-lg bg-muted/30 border border-border text-[10px] text-foreground focus:outline-none focus:ring-2 focus:ring-brand-400/40" />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="px-5 py-3 border-t border-border bg-muted/30 flex items-center gap-2">
+                            <button onClick={() => setEditModalItem(null)}
+                                className="flex-1 py-2 rounded-lg bg-brand-400 hover:bg-brand-500 text-zinc-900 text-[11px] font-bold transition-colors">
+                                Save Changes
+                            </button>
+                            <button onClick={() => setEditModalItem(null)}
+                                className="px-4 py-2 rounded-lg border border-border hover:bg-muted/50 text-foreground text-[11px] font-medium transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

@@ -9,15 +9,15 @@
 
 ## La historia que cuenta el demo
 
-> *"Los diseñadores de Dupler encuentran fabricantes que no están en CET y pierden horas transcribiendo datos manualmente desde catálogos web hacia su sistema de especificaciones — sin registro de dónde salió cada dato, y donde cualquier error pasa desapercibido. Strata elimina esa transcripción: el diseñador pega la URL del catálogo, la IA extrae todos los productos automáticamente, sugiere las opciones que puede resolver y escala las complejas al Expert Hub — un especialista de producto que responde en minutos. El resultado: en minutos lo que antes tomaba horas, con trazabilidad completa de cada dato."*
+> *"Los diseñadores de Dupler encuentran fabricantes que no están en CET y pierden horas transcribiendo datos manualmente desde catálogos web hacia su sistema de especificaciones — sin registro de dónde salió cada dato, y donde cualquier error pasa desapercibido. Strata elimina esa transcripción: detecta automáticamente que falta un fabricante en el catálogo, el diseñador importa desde la URL del fabricante, la IA extrae todos los productos, sugiere las opciones que puede resolver y escala las complejas al Expert Hub — un especialista de producto que responde en minutos. Después de enviar la especificación al coordinador, los datos se sincronizan de vuelta al catálogo del proyecto, cerrando el vacío que originó todo. El resultado: en minutos lo que antes tomaba horas, con trazabilidad completa de cada dato."*
 
 ---
 
 ## Flow 1: Del catálogo web a la especificación con precio
 *5 pasos — Diseñador + Coordinador de Ventas*
 
-**d1.1 — Lectura del catálogo web con IA**
-El diseñador pega la URL del catálogo de Meridian Workspace (un fabricante que no está en CET) en Strata. La IA navega la página, extrae los 7 productos del catálogo Healthcare Office con todos sus datos: número de parte, descripción, opciones, cantidad y precio unitario. 3 items se mapean automáticamente con confianza alta (96%+), 2 quedan marcados como "AI Suggested" (la IA puede inferir la opción correcta), y 2 se escalan al Expert Hub (necesitan un especialista). Un resumen muestra la distribución: "4 items fully mapped, 1 AI-suggested, 2 need Expert Hub".
+**d1.1 — Detección del vacío y lectura del catálogo con IA**
+Al iniciar, Strata detecta que el proyecto usa un fabricante (Meridian Workspace) que no está disponible en CET. Aparece una alerta indicando que faltan datos de producto y que no existe un archivo SIF para ese fabricante. El diseñador hace clic en "Import from Manufacturer Catalog", pega la URL del catálogo de Meridian, y la IA navega la página. Extrae los 7 productos del catálogo Healthcare Office con todos sus datos: número de parte, descripción, opciones, cantidad y precio unitario. 3 items se mapean automáticamente con confianza alta (96%+), 2 quedan como "AI Suggested" (la IA puede inferir la opción), y 2 se escalan al Expert Hub.
 
 **d1.2 — Sugerencias de IA y resolución del Expert Hub**
 Strata presenta los resultados en 3 secciones. Sección A (colapsada, verde): 3 items auto-mapeados sin intervención. Sección B (interactiva): 2 items donde la IA sugiere la opción más probable con su razonamiento — por ejemplo, "C-Clamp mount porque el proyecto usa superficies laminadas" (85% confianza). El diseñador puede aceptar, editar o escalar. Sección C (interactiva): 2 items resueltos por Marcus Chen (Product Specialist, Meridian) — por ejemplo, "Tamper-resistant outlets requeridos por código en instalaciones médicas". El diseñador acepta o modifica cada recomendación. Un contador muestra "X/4 Resolved".
@@ -25,11 +25,11 @@ Strata presenta los resultados en 3 secciones. Sección A (colapsada, verde): 3 
 **d1.3 — Validación de opciones y detección de cargos adicionales**
 Strata valida los 7 items contra las reglas del catálogo del fabricante y detecta $1,470 en cargos adicionales: $1,110 por tapicería Grade 3 en las sillas Apex y $360 por cerradura Digilock en los SecureBin. Cada upcharge muestra un detalle y el diseñador lo reconoce o lo marca para revisión del SC. Una card verde confirma que los 7 items coinciden con los precios del catálogo web. Una nota azul indica que los items validados pasarán al Coordinador de Ventas para aplicar descuentos.
 
-**d1.4 — Paquete de especificación y envío al SC**
-Strata ensambla el paquete de especificación con trazabilidad completa. Cada item muestra su cadena de origen: los 3 auto-mapeados llevan badge "MFR CATALOG" (purple), los 2 de IA llevan "MFR CATALOG" + "AI SUGGESTED" (green), y los 2 del Expert Hub llevan "MFR CATALOG" + "EXPERT HUB" (blue). Las fuentes quedan archivadas: la URL del catálogo de Meridian y las resoluciones del Expert Hub. El diseñador genera el documento SPEC-MH-0412 y lo envía al Coordinador de Ventas seleccionándolo de una lista de contactos.
+**d1.4 — Paquete de especificación, envío y sincronización del catálogo**
+Strata ensambla el paquete de especificación con trazabilidad completa. Cada item muestra su cadena de origen: los 3 auto-mapeados llevan badge "MFR CATALOG", los 2 de IA llevan "MFR CATALOG" + "AI SUGGESTED", y los 2 del Expert Hub llevan "MFR CATALOG" + "EXPERT HUB". El diseñador genera la vista previa del SIF, revisa el contenido y envía la especificación SPEC-MH-0412 al Coordinador de Ventas. Después de enviar, Strata ejecuta automáticamente una sincronización del catálogo: importa los datos del fabricante que faltaban en el paso 1, los mapea al formato CET, vincula precios y trazabilidad, y confirma que el vacío ha sido resuelto. Un aviso indica que la revisión del Coordinador de Ventas queda pendiente.
 
 **d1.5 — Revisión del Coordinador y aplicación de descuento**
-Randy Martinez (Coordinador de Ventas) recibe la especificación con indicadores visuales que muestran el origen de cada item — MFR CATALOG, AI SUGGESTED o EXPERT HUB. Los items resueltos por el Expert Hub (líneas 3 y 6) llevan un badge adicional "EXPERT CONFIRMED". Puede hacer clic en "View Source" para consultar el extracto del catálogo web. Aplica el descuento Dealer Standard de Meridian (38%) y el total se actualiza en tiempo real. Al terminar, genera el documento final de precios con trail de auditoría completo (Web Scrape → AI + Expert → Validation → Spec Package → SC Pricing).
+Randy Martinez (Coordinador de Ventas) recibe la especificación con indicadores visuales que muestran el origen de cada item — MFR CATALOG, AI SUGGESTED o EXPERT HUB. Los items resueltos por el Expert Hub llevan un badge adicional "EXPERT CONFIRMED". Puede hacer clic en "View Source" para consultar el extracto del catálogo web. Aplica el descuento Dealer Standard de Meridian (38%) y el total se actualiza en tiempo real. Al terminar, genera el documento final de precios con trail de auditoría completo (Web Scrape → AI + Expert → Validation → Spec Package → SC Pricing).
 
 ---
 
@@ -60,22 +60,19 @@ Sarah Chen (Dealer Principal) recibe una notificación con métricas clave: item
 ---
 
 ## Flow 3: Visibilidad completa y reportes al cliente
-*5 pasos — Sistema + Experto + Dealer*
+*4 pasos — Sistema + Dealer*
 
 **d3.1 — Conexión de todos los sistemas**
 Strata conecta los 5 sistemas que Dupler usa a diario: software de diseño, especificaciones, portal de precios, almacén y transportistas. El resultado es un mapa visual de todas las conexiones, un desglose de inventario por categoría (asientos, escritorios, almacenamiento, mesas, accesorios), y 4 indicadores clave: $1.2M en inventario total, 89% de tasa de cumplimiento, 42 items en backorder y 68% de utilización. Puntaje de salud: 78 de 100.
 
-**d3.2 — Conciliación de inventario**
-Se compara el conteo físico contra lo que dice el sistema — coincidencia del 97.2% (1,837 de 1,840 verificados). Las 3 diferencias requieren revisión experta: las sillas Acuity muestran 48 en sistema pero 45 en piso (el experto ingresa la cantidad correcta y selecciona la razón), un banco aparece en una ubicación diferente a la registrada, y una mesa no se puede localizar (opciones: confirmar transferencia, buscar en otros almacenes, marcar como perdida o reportar como encontrada en sitio de instalación).
+**d3.2 — Verificación y propagación de actualizaciones**
+El paso comienza mostrando los resultados del paso anterior: el mapa de sistemas conectados y los indicadores de inventario. Una alerta indica que hay 3 actualizaciones pendientes de las operaciones de almacén que necesitan propagarse. El usuario hace clic en "Verify & Propagate Updates" y Strata verifica las 3 actualizaciones del Flow 2: un ajuste de conteo (sillas Acuity de 48 a 45), una corrección de ubicación (Stride Bench movido a Bay C, Rack 7), y un rastreo de transferencia (Park Table en Cincinnati). Una vez verificadas, el usuario hace clic en "Synchronize Across All Systems" y las actualizaciones se propagan a los 5 sistemas con una checklist que confirma cada cambio. Al completar la sincronización (1,840 de 1,840 registros verificados), el usuario configura las métricas que incluirá el reporte y lo genera.
 
-**d3.3 — Generación del reporte y alertas proactivas**
-El sistema ensambla automáticamente un reporte de inteligencia y envía 3 notificaciones proactivas al equipo: un mensaje de Teams avisando que las sillas Acuity están por debajo del mínimo, un email informando que Mercy Health tiene el 68% de su inventario en staging, y un SMS urgente sobre un backorder con fecha estimada de llegada. El reporte queda listo para revisión.
+**d3.3 — Generación del reporte y distribución**
+El paso comienza mostrando los resultados del paso anterior: los datos sincronizados con las 3 actualizaciones propagadas y las métricas configuradas. El usuario hace clic en "Assemble Report" y Strata ensambla automáticamente un reporte de inteligencia con 4 secciones: disponibilidad de stock, capacidad de almacenes, análisis de backorders y recomendaciones de IA. Además, se envían 3 alertas proactivas al equipo: un mensaje de Teams avisando que las sillas Acuity están por debajo del mínimo, un email informando que Mercy Health tiene el 68% de su inventario en staging, y un SMS urgente sobre un backorder. El reporte se puede previsualizar, descargar como PDF, o enviar directamente al equipo seleccionando los destinatarios de una lista.
 
-**d3.4 — Revisión y distribución del reporte**
-El dealer revisa el reporte completo con 4 secciones desplegables: disponibilidad de stock, capacidad de almacenes, análisis de backorders y 3 recomendaciones de la IA (con niveles de confianza e impacto estimado). Tres acciones disponibles: previsualizar como PDF (un documento de 4 páginas con portada, detalle de almacenes, recomendaciones de IA y estado del proyecto), descargar el PDF, o enviarlo directamente a miembros del equipo seleccionándolos de una lista.
-
-**d3.5 — Vista previa del portal del cliente**
-Así ve el cliente final su proyecto: Mercy Health Phase 2 al 68% de avance. Una línea de tiempo muestra 5 hitos: adquisición completada, staging completado, inspección en curso, entrega pendiente y recorrido final pendiente. Un panel con estadísticas (22 de 32 items en staging, proyecto en tiempo, fecha estimada de completación: abril 5). Este portal es solo lectura — el cliente puede consultar su avance sin necesidad de llamadas ni correos.
+**d3.4 — Revisión del reporte y portal del cliente**
+El dealer revisa el reporte completo con 4 secciones desplegables: disponibilidad de stock por categoría con gráfica, capacidad de almacenes con pronóstico (Columbus de 72% a 89%), análisis de backorders (42 items, 3 críticos), y 3 recomendaciones de la IA con niveles de confianza e impacto estimado. Tres acciones disponibles: previsualizar como PDF, descargar el PDF, o enviarlo a miembros del equipo. En la misma vista, un panel desplegable muestra el portal del cliente: Mercy Health Phase 2 al 68% de avance, con una línea de tiempo de 5 hitos (adquisición completada, staging completado, inspección en curso, entrega pendiente, recorrido final pendiente) y estadísticas del proyecto. Este portal es solo lectura — el cliente puede consultar su avance sin necesidad de llamadas ni correos.
 
 ---
 
@@ -85,8 +82,8 @@ Así ve el cliente final su proyecto: Mercy Health Phase 2 al 68% de avance. Una
 |------|--------|-------|-------|
 | **1** | Del catálogo web a la especificación | 5 (d1.1–d1.5) | Diseñador, Coordinador de Ventas |
 | **2** | Inteligencia de almacén | 7 (d2.1–d2.7) | Experto en producto, Dealer |
-| **3** | Visibilidad y reportes | 5 (d3.1–d3.5) | Sistema, Experto, Dealer |
-| | **Total** | **17 pasos** | **4 roles** |
+| **3** | Visibilidad y reportes | 4 (d3.1–d3.4) | Sistema, Dealer |
+| | **Total** | **16 pasos** | **4 roles** |
 
 ## Datos clave del demo
 
@@ -100,7 +97,7 @@ Así ve el cliente final su proyecto: Mercy Health Phase 2 al 68% de avance. Una
 | Flow 1 — Resolución | 3 auto + 2 AI suggested + 2 Expert Hub |
 | Almacenes | Columbus 72%, Cincinnati 45%, Dayton 38% |
 | Puntaje de salud | 78/100 |
-| Precisión de inventario | 97.2% |
+| Sincronización de datos | 1,840/1,840 registros verificados |
 | Sobrecobro de flete | $340 |
 | Reclamos a fabricantes | $2,770 (3 reclamos) |
 | Diseñador | Alex Rivera |
