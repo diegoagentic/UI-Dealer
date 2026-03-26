@@ -2253,6 +2253,8 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
     const [showApproveSendPopover, setShowApproveSendPopover] = useState(false);
     const [approveSendRecipients, setApproveSendRecipients] = useState<string[]>(['designer', 'client']);
     const [specApproved, setSpecApproved] = useState(false);
+    const [scSyncPhase, setScSyncPhase] = useState<'idle' | 'syncing' | 'done'>('idle');
+    const [scSyncProgress, setScSyncProgress] = useState(0);
 
     const allDiscountsApplied = Object.keys(discountsApplied).length >= DISCOUNT_TIERS.length &&
         !Object.values(discountsApplied).includes('escalated');
@@ -2284,6 +2286,8 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
         setShowApproveSendPopover(false);
         setApproveSendRecipients(['designer', 'client']);
         setSpecApproved(false);
+        setScSyncPhase('idle');
+        setScSyncProgress(0);
         const t = setTimeout(pauseAware(() => setPhase('notification')), 1500);
         return () => clearTimeout(t);
     }, [currentStep.id]);
@@ -2332,6 +2336,23 @@ export function DuplerScReview({ onNavigate }: { onNavigate: (page: string) => v
         timers.push(setTimeout(pauseAware(() => setScSifPhase('ready')), duration + 400));
         return () => timers.forEach(clearTimeout);
     }, [scSifPhase]);
+
+    // SC sync effect (d1.5 — sync before approve/send)
+    useEffect(() => {
+        if (scSyncPhase !== 'syncing') return;
+        setScSyncProgress(0);
+        const duration = 2000;
+        const steps = 18;
+        const timers: ReturnType<typeof setTimeout>[] = [];
+        for (let i = 1; i <= steps; i++) {
+            timers.push(setTimeout(
+                pauseAware(() => setScSyncProgress(Math.min(100, Math.round((i / steps) * 100)))),
+                (duration / steps) * i
+            ));
+        }
+        timers.push(setTimeout(pauseAware(() => setScSyncPhase('done')), duration + 400));
+        return () => timers.forEach(clearTimeout);
+    }, [scSyncPhase]);
 
     if (currentStep.id !== 'd1.5') return null;
 
@@ -3332,71 +3353,156 @@ Checksum        = sha256:b7d3e1...f92a
                         </div>
                     )}
 
-                    {/* Approve & Send CTA */}
-                    {scSifPhase === 'ready' && !specApproved && (
-                        <div className="relative">
-                            <button onClick={() => setShowApproveSendPopover(!showApproveSendPopover)}
-                                className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors">
-                                <PaperAirplaneIcon className="h-4 w-4" />
-                                Approve & Send
-                            </button>
-                            {showApproveSendPopover && (
-                                <div className="absolute bottom-full mb-2 right-0 w-80 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 overflow-hidden">
-                                    <div className="px-4 py-2.5 border-b border-border bg-muted/50">
-                                        <p className="text-xs font-bold text-foreground">Approve & Send Priced SIF</p>
-                                        <p className="text-[9px] text-muted-foreground">Select recipients for {SPEC_ID}_priced.sif</p>
+                    {/* Approve & Sync CTA */}
+                    {scSifPhase === 'ready' && scSyncPhase === 'idle' && !specApproved && (
+                        <button onClick={() => setScSyncPhase('syncing')}
+                            className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors">
+                            <ArrowPathIcon className="h-4 w-4" />
+                            Approve & Synchronize
+                        </button>
+                    )}
+
+                    {/* SC Sync Animation */}
+                    {scSyncPhase === 'syncing' && (
+                        <div className="p-5 rounded-xl bg-gradient-to-br from-purple-50 via-brand-50 to-blue-50 dark:from-purple-500/10 dark:via-brand-500/5 dark:to-blue-500/10 border-2 border-purple-300 dark:border-purple-500/40 shadow-lg shadow-purple-200/30 dark:shadow-purple-500/10 animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4">
+                            <div className="flex items-center gap-3">
+                                <div className="relative">
+                                    <div className="p-2.5 rounded-xl bg-purple-100 dark:bg-purple-500/20">
+                                        <ArrowPathIcon className="h-5 w-5 text-purple-600 dark:text-purple-400 animate-spin" />
                                     </div>
-                                    <div className="p-2 space-y-0.5">
-                                        {[
-                                            { id: 'designer', name: 'Alex Rivera', subtitle: 'Designer — Interior Design', photo: DESIGNER_PHOTO },
-                                            { id: 'client', name: 'Mercy Health', subtitle: 'Client — Procurement Dept.', initials: 'MH', photo: null },
-                                            { id: 'ae', name: 'James Mitchell', subtitle: 'Account Executive', initials: 'JM', photo: null },
-                                        ].map(r => {
-                                            const selected = approveSendRecipients.includes(r.id);
-                                            return (
-                                                <button key={r.id}
-                                                    onClick={() => setApproveSendRecipients(prev => selected ? prev.filter(x => x !== r.id) : [...prev, r.id])}
-                                                    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
-                                                        selected ? 'bg-brand-50 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30' : 'hover:bg-muted/50'
-                                                    }`}>
-                                                    {r.photo ? (
-                                                        <img src={r.photo} alt={r.name} className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-300 shrink-0" />
-                                                    ) : (
-                                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0">{r.initials}</div>
-                                                    )}
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-[11px] font-bold text-foreground">{r.name}</p>
-                                                        <p className="text-[9px] text-muted-foreground">{r.subtitle}</p>
-                                                    </div>
-                                                    <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                                                        selected ? 'bg-brand-400 border-brand-400' : 'border-border'
-                                                    }`}>
-                                                        {selected && <CheckIcon className="h-2.5 w-2.5 text-zinc-900" />}
-                                                    </div>
-                                                </button>
-                                            );
-                                        })}
+                                    <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-purple-500 rounded-full animate-pulse" />
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-foreground">Synchronizing Priced Specification</p>
+                                    <p className="text-[10px] text-muted-foreground">Propagating SC pricing across all connected systems</p>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <div className="h-2.5 rounded-full bg-purple-100 dark:bg-purple-500/20 overflow-hidden">
+                                    <div className="h-full rounded-full bg-gradient-to-r from-purple-500 via-brand-400 to-purple-500 transition-all duration-300 ease-out"
+                                        style={{ width: `${scSyncProgress}%` }} />
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <p className="text-[10px] font-medium text-purple-600 dark:text-purple-400">
+                                        {scSyncProgress < 25 && 'Validating priced SIF against catalog source...'}
+                                        {scSyncProgress >= 25 && scSyncProgress < 50 && `Applying dealer discounts to ${CATALOG_ITEMS_TOTAL} line items...`}
+                                        {scSyncProgress >= 50 && scSyncProgress < 75 && 'Syncing pricing to SPEC, CET & project catalog...'}
+                                        {scSyncProgress >= 75 && 'Finalizing cross-system synchronization...'}
+                                    </p>
+                                    <span className="text-[10px] font-bold text-purple-600 dark:text-purple-400">{scSyncProgress}%</span>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${scSyncProgress >= 20 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                    <p className="text-[9px] text-muted-foreground">SPEC System</p>
+                                    <p className="text-xs font-bold text-foreground">{scSyncProgress >= 20 ? 'Synced' : 'Pending...'}</p>
+                                </div>
+                                <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${scSyncProgress >= 45 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                    <p className="text-[9px] text-muted-foreground">CET Catalog</p>
+                                    <p className="text-xs font-bold text-foreground">{scSyncProgress >= 45 ? 'Updated' : 'Pending...'}</p>
+                                </div>
+                                <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${scSyncProgress >= 65 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                    <p className="text-[9px] text-muted-foreground">Dealer Pricing</p>
+                                    <p className="text-xs font-bold text-foreground">{scSyncProgress >= 65 ? 'Verified' : 'Pending...'}</p>
+                                </div>
+                                <div className={`px-3 py-2 rounded-lg border transition-all duration-300 ${scSyncProgress >= 85 ? 'bg-green-50 dark:bg-green-500/5 border-green-300 dark:border-green-500/30' : 'bg-muted/30 border-border'}`}>
+                                    <p className="text-[9px] text-muted-foreground">Traceability</p>
+                                    <p className="text-xs font-bold text-foreground">{scSyncProgress >= 85 ? 'Complete' : 'Pending...'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Sync Done — Success + Send CTA */}
+                    {scSyncPhase === 'done' && !specApproved && (
+                        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-3 duration-500">
+                            <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border-2 border-green-400 dark:border-green-500/40 shadow-lg shadow-green-200/30 dark:shadow-green-500/10 space-y-3">
+                                <div className="flex items-start gap-3">
+                                    <div className="p-2.5 rounded-xl bg-green-100 dark:bg-green-500/20 shrink-0">
+                                        <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
                                     </div>
-                                    <div className="px-3 py-2 border-t border-border bg-muted/30">
-                                        <button
-                                            onClick={() => {
-                                                if (approveSendRecipients.length > 0) {
-                                                    setShowApproveSendPopover(false);
-                                                    setSpecApproved(true);
-                                                    setScSendToast(true);
-                                                    setTimeout(pauseAware(() => setScSendToast(false)), 3000);
-                                                    setTimeout(pauseAware(() => nextStep()), 2500);
-                                                }
-                                            }}
-                                            disabled={approveSendRecipients.length === 0}
-                                            className={`w-full py-2 rounded-lg text-[11px] font-bold transition-colors ${
-                                                approveSendRecipients.length > 0 ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900' : 'bg-muted text-muted-foreground cursor-not-allowed'
-                                            }`}>
-                                            Approve & Send to {approveSendRecipients.length} recipient{approveSendRecipients.length !== 1 ? 's' : ''}
-                                        </button>
+                                    <div className="flex-1">
+                                        <p className="text-sm font-bold text-green-800 dark:text-green-300">All Systems Synchronized</p>
+                                        <p className="text-[11px] text-muted-foreground mt-1">
+                                            Priced specification has been propagated to SPEC, CET, and project catalog.
+                                            All {CATALOG_ITEMS_TOTAL} items are aligned with dealer pricing and full traceability.
+                                        </p>
                                     </div>
                                 </div>
-                            )}
+                                <div className="flex flex-wrap items-center gap-2 ml-12">
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-200 dark:bg-green-500/20 text-green-800 dark:text-green-300 font-bold">SYSTEMS SYNCED</span>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 font-bold">SC PRICED</span>
+                                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 font-bold">TRACEABILITY OK</span>
+                                </div>
+                            </div>
+
+                            {/* Send to Recipients */}
+                            <div className="relative">
+                                <button onClick={() => setShowApproveSendPopover(!showApproveSendPopover)}
+                                    className="w-full py-3 rounded-xl bg-brand-400 hover:bg-brand-500 text-zinc-900 font-bold text-sm shadow-lg shadow-brand-400/20 animate-pulse flex items-center justify-center gap-2 transition-colors">
+                                    <PaperAirplaneIcon className="h-4 w-4" />
+                                    Send to Team
+                                </button>
+                                {showApproveSendPopover && (
+                                    <div className="absolute bottom-full mb-2 right-0 w-80 bg-card border border-border rounded-xl shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-200 z-50 overflow-hidden">
+                                        <div className="px-4 py-2.5 border-b border-border bg-muted/50">
+                                            <p className="text-xs font-bold text-foreground">Send Priced SIF</p>
+                                            <p className="text-[9px] text-muted-foreground">Select recipients for {SPEC_ID}_priced.sif</p>
+                                        </div>
+                                        <div className="p-2 space-y-0.5">
+                                            {[
+                                                { id: 'designer', name: 'Alex Rivera', subtitle: 'Designer — Interior Design', photo: DESIGNER_PHOTO },
+                                                { id: 'client', name: 'Mercy Health', subtitle: 'Client — Procurement Dept.', initials: 'MH', photo: null },
+                                                { id: 'ae', name: 'James Mitchell', subtitle: 'Account Executive', initials: 'JM', photo: null },
+                                            ].map(r => {
+                                                const selected = approveSendRecipients.includes(r.id);
+                                                return (
+                                                    <button key={r.id}
+                                                        onClick={() => setApproveSendRecipients(prev => selected ? prev.filter(x => x !== r.id) : [...prev, r.id])}
+                                                        className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-left ${
+                                                            selected ? 'bg-brand-50 dark:bg-brand-500/10 ring-1 ring-brand-300 dark:ring-brand-500/30' : 'hover:bg-muted/50'
+                                                        }`}>
+                                                        {r.photo ? (
+                                                            <img src={r.photo} alt={r.name} className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-300 shrink-0" />
+                                                        ) : (
+                                                            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0">{r.initials}</div>
+                                                        )}
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-[11px] font-bold text-foreground">{r.name}</p>
+                                                            <p className="text-[9px] text-muted-foreground">{r.subtitle}</p>
+                                                        </div>
+                                                        <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                                                            selected ? 'bg-brand-400 border-brand-400' : 'border-border'
+                                                        }`}>
+                                                            {selected && <CheckIcon className="h-2.5 w-2.5 text-zinc-900" />}
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className="px-3 py-2 border-t border-border bg-muted/30">
+                                            <button
+                                                onClick={() => {
+                                                    if (approveSendRecipients.length > 0) {
+                                                        setShowApproveSendPopover(false);
+                                                        setSpecApproved(true);
+                                                        setScSendToast(true);
+                                                        setTimeout(pauseAware(() => setScSendToast(false)), 3000);
+                                                        setTimeout(pauseAware(() => nextStep()), 2500);
+                                                    }
+                                                }}
+                                                disabled={approveSendRecipients.length === 0}
+                                                className={`w-full py-2 rounded-lg text-[11px] font-bold transition-colors ${
+                                                    approveSendRecipients.length > 0 ? 'bg-brand-400 hover:bg-brand-500 text-zinc-900' : 'bg-muted text-muted-foreground cursor-not-allowed'
+                                                }`}>
+                                                Send to {approveSendRecipients.length} recipient{approveSendRecipients.length !== 1 ? 's' : ''}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
 
