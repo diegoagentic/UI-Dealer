@@ -16,7 +16,11 @@ export type SimulationApp =
     | 'catalog' | 'survey' | 'ack-detail' | 'order-detail'
     | 'quote-detail' | 'transactions' | 'mac' | 'inventory'
     | 'crm'
-    | 'dupler-pdf' | 'dupler-warehouse' | 'dupler-reporting';
+    | 'dupler-pdf' | 'dupler-warehouse' | 'dupler-reporting'
+    | 'wrg-labor' | 'wrg-review'
+    | 'wrg-intake' | 'wrg-intake-review'
+    | 'wrg-handoff' | 'wrg-handoff-review'
+    | 'wrg-assembly' | 'wrg-assembly-review';
 
 export interface DemoStep {
     id: string;
@@ -25,7 +29,7 @@ export interface DemoStep {
     title: string;
     description: string;
     app: SimulationApp;
-    role: 'Expert' | 'System' | 'Dealer' | 'End User' | 'Sales Rep' | 'Facility Manager' | 'Facility User' | 'Designer' | 'Sales Coordinator';
+    role: 'Expert' | 'System' | 'Dealer' | 'End User' | 'Sales Rep' | 'Facility Manager' | 'Facility User' | 'Designer' | 'Sales Coordinator' | 'Estimator';
     highlightId?: string;
 }
 
@@ -102,9 +106,9 @@ export const DEMO_PROFILES: DemoProfile[] = [
     {
         id: 'wrg',
         name: 'WRG',
-        companyName: 'WRG',
-        description: 'Quote ingestion, acknowledgement processing & CRM',
-        icon: '🏢',
+        companyName: 'WRG Texas',
+        description: 'Quoting lifecycle — intake to client proposal',
+        icon: '🔧',
         steps: WRG_DEMO_STEPS,
         stepBehavior: WRG_DEMO_STEP_BEHAVIOR,
         stepMessages: WRG_DEMO_STEP_MESSAGES,

@@ -65,6 +65,10 @@ import MobileDeviceFrame from './components/simulations/MobileDeviceFrame'
 import ConfidenceScoreBadge from './components/widgets/ConfidenceScoreBadge'
 import DuplerReporting, { DuplerReportingNotification } from './components/simulations/DuplerReporting'
 import { DuplerScReview } from './components/simulations/DuplerPdfProcessor'
+import { WrgEstimatorReview } from './components/simulations/WrgLaborEstimation'
+import { WrgIntakeReview } from './components/simulations/WrgIntake'
+import { WrgHandoffReview } from './components/simulations/WrgHandoff'
+import { WrgAssemblyReview } from './components/simulations/WrgAssembly'
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -3229,6 +3233,22 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             {/* Dupler d1.4-d1.5: SC Price Validation & Priced SIF */}
                             {(currentStep.id === 'd1.4' || currentStep.id === 'd1.5') && (
                                 <DuplerScReview onNavigate={onNavigate} />
+                            )}
+                            {/* WRG w2.6-w2.7: Estimator Review & CORE Write-Back */}
+                            {(currentStep.id === 'w2.6' || currentStep.id === 'w2.7') && (
+                                <WrgEstimatorReview onNavigate={onNavigate} />
+                            )}
+                            {/* WRG w1.5: Sales Review & Pipeline Confirmation */}
+                            {currentStep.id === 'w1.5' && (
+                                <WrgIntakeReview onNavigate={onNavigate} />
+                            )}
+                            {/* WRG w3.5: Design Package Validation */}
+                            {currentStep.id === 'w3.5' && (
+                                <WrgHandoffReview onNavigate={onNavigate} />
+                            )}
+                            {/* WRG w4.5: Proposal Review & Release */}
+                            {currentStep.id === 'w4.5' && (
+                                <WrgAssemblyReview onNavigate={onNavigate} />
                             )}
 
                             {/* Dupler Flow 3: Notification card → switch to Metrics */}

@@ -19,6 +19,8 @@ function resolveRoleLabel(role: string, app: string, profileId?: string): string
     if (role === 'System') {
         // Continua & Dupler: all System steps are AI processing within Expert context
         if (profileId === 'continua' || profileId === 'dupler') return 'Expert';
+        // WRG: System steps stay as 'System' (AI agent processing)
+        if (profileId === 'wrg') return 'System';
         return EXPERT_HUB_APPS.includes(app) ? 'Expert' : 'Dealer';
     }
     return role;
@@ -66,6 +68,32 @@ function getStepDataThread(stepId: string): string | null {
         'd3.2': 'Updates verified and propagated — metrics configured',
         'd3.3': 'Report assembled — previewed and sent to team',
         'd3.4': 'Report reviewed — client portal live',
+        // WRG — Flow 1: Project Intake & Triage
+        'w1.1': 'JPS Health Network — healthcare, 14.2K sqft',
+        'w1.2': 'Complexity 8.2/10 — $9.8K-$12.2K predicted',
+        'w1.3': 'Mark Williams assigned — Dallas, 96.3% accuracy',
+        'w1.4': 'Design brief sent — CORE #QR-116719 created',
+        'w1.5': 'Intake confirmed — pipeline updated',
+        // WRG — Flow 2: Labor Estimation
+        'w2.1': 'Job assigned — JPS Health Center, Dallas',
+        'w2.2': '24 line items extracted from PDF',
+        'w2.3': '20 HIGH + 4 LOW confidence mappings',
+        'w2.4': '185.04 man-hrs — $10,547 install + delivery',
+        'w2.5': 'Draft ready — 5 items flagged for review',
+        'w2.6': 'Estimator reviewed — all items approved',
+        'w2.7': 'Submitted to CORE — 85% time saved',
+        // WRG — Flow 3: Design-to-Estimate Handoff
+        'w3.1': '2 PDFs uploaded — SHA-256 verified',
+        'w3.2': 'Checklist 7/8 — 1 qty discrepancy flagged',
+        'w3.3': '22/24 verified — 1 custom lead, 1 SKU update',
+        'w3.4': 'Handoff assembled — Mark Williams notified',
+        'w3.5': 'All flags acknowledged — released to estimation',
+        // WRG — Flow 4: Quote Assembly & Execution
+        'w4.1': '$15,378 labor + $287,450 product staged',
+        'w4.2': 'JPS -38% — total $202,138 tax exempt',
+        'w4.3': 'Proposal generated — 8-12 week timeline',
+        'w4.4': '3-phase delivery — 4 crew, 47 decisions tracked',
+        'w4.5': 'Proposal released to JPS Health Network',
     };
     return threads[stepId] || null;
 }
@@ -77,7 +105,8 @@ export default function DemoSidebar() {
     const STEP_BEHAVIOR = activeProfile.stepBehavior;
     const isContinua = activeProfile.id === 'continua';
     const isDupler = activeProfile.id === 'dupler';
-    const hasDataThreads = isContinua || isDupler;
+    const isWRG = activeProfile.id === 'wrg';
+    const hasDataThreads = isContinua || isDupler || isWRG;
 
     // Invert: when app is dark → sidebar is light, when app is light → sidebar is dark
     const isDarkSidebar = theme === 'light';
@@ -118,6 +147,7 @@ export default function DemoSidebar() {
         fuBadge: 'border-amber-800/50 bg-amber-900/30 text-amber-400',
         expertBadge: 'border-purple-800/50 bg-purple-900/30 text-purple-400',
         scBadge: 'border-indigo-800/50 bg-indigo-900/30 text-indigo-400',
+        estimatorBadge: 'border-teal-800/50 bg-teal-900/30 text-teal-400',
         endUserBadge: 'border-rose-800/50 bg-rose-900/30 text-rose-400',
         collapsedBg: 'bg-zinc-950',
         collapsedText: 'text-zinc-400',
@@ -158,6 +188,7 @@ export default function DemoSidebar() {
         fuBadge: 'border-amber-200 bg-amber-50 text-amber-700',
         expertBadge: 'border-purple-200 bg-purple-50 text-purple-700',
         scBadge: 'border-indigo-200 bg-indigo-50 text-indigo-700',
+        estimatorBadge: 'border-teal-200 bg-teal-50 text-teal-700',
         endUserBadge: 'border-rose-200 bg-rose-50 text-rose-700',
         collapsedBg: 'bg-white',
         collapsedText: 'text-zinc-500',
@@ -263,7 +294,7 @@ export default function DemoSidebar() {
                                         {(() => {
                                             const label = resolveRoleLabel(step.role, step.app, activeProfile.id);
                                             return (
-                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Facility Manager' ? c.fmBadge : label === 'Facility User' ? c.fuBadge : label === 'Dealer' ? c.dealerBadge : label === 'End User' ? c.endUserBadge : label === 'Sales Coordinator' ? c.scBadge : c.expertBadge}`}>
+                                                <span className={`text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-sm border ${label === 'Facility Manager' ? c.fmBadge : label === 'Facility User' ? c.fuBadge : label === 'Dealer' ? c.dealerBadge : label === 'End User' ? c.endUserBadge : label === 'Sales Coordinator' ? c.scBadge : label === 'Estimator' ? c.estimatorBadge : label === 'System' ? c.expertBadge : c.expertBadge}`}>
                                                     {label === 'Facility Manager' ? 'FACILITY MANAGER' : label === 'Facility User' ? 'FACILITY USER' : label}
                                                 </span>
                                             );

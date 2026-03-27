@@ -1,13 +1,25 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-// WRG — Demo Profile
-// Cloned from COI demo as starting point.
-// Flows and narrative to be customized for WRG stakeholder priorities.
+// WRG Texas — Demo Profile
+// 18-stage quoting process: AI automates intake → handoff → estimation → assembly
 //
-// AI Automation + Expert-in-the-Loop (HITL) per step:
-// Flow 1: 6 auto + 5 HITL + 2 CRM — email→extraction→normalization→quote→PO→CRM
-// Flow 2: ~95% auto PO vs Ack comparison + 1 CRM sync
-// Flow 3: AI validates docs + business rules + 1 CRM traceability
-// CRM steps integrated at end of each flow — data flows without re-entry
+// Flow 1: Project Intake & Triage (5 steps, w1.1-w1.5)
+//   w1.1-w1.4: AI automated pipeline (System role)
+//   w1.5: Dealer HITL review & pipeline confirmation
+//
+// Flow 2: Labor Estimation — PDF to Approved Quote (7 steps, w2.1-w2.7)
+//   w2.1-w2.5: AI automated pipeline (System role, ~75s total)
+//   w2.6-w2.7: Estimator HITL review + CORE write-back
+//
+// Flow 3: Design-to-Estimate Handoff (5 steps, w3.1-w3.5)
+//   w3.1-w3.4: AI automated pipeline (System role)
+//   w3.5: Expert HITL validation & release
+//
+// Flow 4: Quote Assembly & Execution (5 steps, w4.1-w4.5)
+//   w4.1-w4.4: AI automated pipeline (System role)
+//   w4.5: Dealer HITL review & client release
+//
+// Data source: JPS Health Center for Women (real project)
+//   24 line items, 185.04 man-hours, $10,547.28 at $57/hr
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import type { DemoStep } from '../demoProfiles';
@@ -18,490 +30,392 @@ import type { StepBehavior } from '../../components/demo/DemoStepBanner';
 export const WRG_DEMO_STEPS: DemoStep[] = [
 
     // ═══════════════════════════════════════════
-    // FLOW 1: RFQ → PO Processing (11 + 2 CRM = 13 steps)
-    // 6 automated + 5 HITL
-    // Addresses: #4 PDF/email quote ingestion, #5 reduce double entry,
-    //            #9 better customer quote, #10 familiar interfaces
+    // FLOW 1: Project Intake & Triage (Stages 1-5)
+    // 4 automated + 1 HITL = 5 steps
+    // Pain Points: #4 (no data layer), #1 (tribal knowledge), #6 (scope risk)
     // ═══════════════════════════════════════════
     {
-        id: '1.1',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Email Ingestion',
-        description: 'System detects incoming email with RFQ, identifies PDF spec + CSV attachments. Strata queues for AI processing — no manual download or re-entry needed.',
-        app: 'email-marketplace',
-        role: 'Dealer',
-        highlightId: 'email-rfq-incoming'
-    },
-    {
-        id: '1.2',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'AI Extraction',
-        description: '5 AI agents: OCR processes PDF, TextExtract parses CSV, extracts 200 line items, maps 4 delivery zones. Data converted to structured SIF format for 2020 Worksheet — fully automated, no human intervention.',
-        app: 'dealer-kanban',
+        id: 'w1.1',
+        groupId: 0,
+        groupTitle: 'Flow 1: Project Intake & Triage',
+        title: 'Client Request Capture',
+        description: 'The AI agent monitors the shared inbox, detects a project request from JPS Health Network for a new Women\'s Health Center wing, and extracts key parameters — 14,200 sqft, 6 floors, healthcare vertical, MillerKnoll primary spec. The new request enters the active pipeline alongside 4 other projects.',
+        app: 'wrg-intake',
         role: 'System',
-        highlightId: 'kanban-ai-extraction'
     },
     {
-        id: '1.3',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Normalization',
-        description: '4 AI agents: DataNormalizationAgent unifies data, generates confidence score per field, flags missing fields. 94% accuracy overall. Low-confidence items escalate as "Needs Attention" for expert review.',
-        app: 'dealer-kanban',
+        id: 'w1.2',
+        groupId: 0,
+        groupTitle: 'Flow 1: Project Intake & Triage',
+        title: 'Scope Analysis & Complexity Scoring',
+        description: 'AI analyzes the project scope against 340 historical WRG projects. Complexity score: 8.2/10 — hospital delivery protocol, 119 task chairs triggering scope limit warnings, and custom booth seating. Historical rate intelligence predicts labor range of $9,800–$12,200 based on 12 healthcare precedents.',
+        app: 'wrg-intake',
         role: 'System',
-        highlightId: 'kanban-normalization'
     },
     {
-        id: '1.4',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Quote Draft',
-        description: 'QuoteBuilder Agent auto-generates quote draft with pricing rules, applies volume discounts. Freight routing for multi-zone delivery requires human validation. Expert decides: "Route to Expert Hub" if exceptions exist.',
-        app: 'dealer-kanban',
+        id: 'w1.3',
+        groupId: 0,
+        groupTitle: 'Flow 1: Project Intake & Triage',
+        title: 'Estimator Assignment & Routing',
+        description: 'The routing engine evaluates estimator workload, location, and specialization. Mark Williams (Dallas, 3 active projects, 96.3% healthcare accuracy) is selected over Jaime Gonzalez (Houston, 5 active, 264 mi away). Assignment set for next business day.',
+        app: 'wrg-intake',
         role: 'System',
-        highlightId: 'kanban-quote-draft'
     },
     {
-        id: '1.5',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Expert Review (HITL)',
-        description: 'QuotePricingAgent validated 8 items, avg discount 60.8%. Flag: lounge seating 58% < standard 62%. Flag: Freight LTL $2,450 for Austin, TX due to building restrictions. Expert inputs freight rate manually, reviews warranties, approves corrections. Audit trail records each decision.',
-        app: 'expert-hub',
-        role: 'Expert',
-        highlightId: 'expert-validation-row'
+        id: 'w1.4',
+        groupId: 0,
+        groupTitle: 'Flow 1: Project Intake & Triage',
+        title: 'Design Brief & CORE Record',
+        description: 'AI assembles a structured design brief from intake data, creates a Smartsheet row (#2026-JPS-HCW) with attachments linked, and generates CORE quote request #QR-116719. The Design Team (Sarah Chen) is notified at HIGH priority.',
+        app: 'wrg-intake',
+        role: 'System',
     },
     {
-        id: '1.6',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Approval Chain',
-        description: 'Policy Engine auto-approves: VP Operations → auto, CFO → auto. 3-level automatic chain completes without human intervention — visual progression shown in real time.',
-        app: 'dashboard',
+        id: 'w1.5',
+        groupId: 0,
+        groupTitle: 'Flow 1: Project Intake & Triage',
+        title: 'Sales Review & Pipeline Confirmation',
+        description: 'The WRG business team reviews the AI-generated intake summary — project parameters, complexity score 8.2/10, estimator assignment (Mark Williams), and pipeline position among 5 active projects. Clicking "Confirm & Proceed to Design" authorizes the design phase.',
+        app: 'wrg-intake-review',
         role: 'Dealer',
-        highlightId: 'approval-chain-progress'
-    },
-    {
-        id: '1.7',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Dealer Approval',
-        description: 'AI pre-fills summary: total value $43,750, margin 35.4%, key metrics highlighted. Dealer reviews and approves final quote with one click.',
-        app: 'dashboard',
-        role: 'Dealer',
-        highlightId: 'manager-approval-view'
-    },
-    {
-        id: '1.8',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Sales Approval (Mobile)',
-        description: 'Automatic push notification sent to mobile device. End User taps "Acknowledge" from their phone — simplified view with products and delivery timeline, not technical line items.',
-        app: 'dashboard',
-        role: 'End User',
-        highlightId: 'mobile-dealer-approval'
-    },
-    {
-        id: '1.9',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'PO Generation',
-        description: 'Fully automated: generates PO, maps 5 SKUs, executes 3-level approval chain, transmits to supplier. Zero re-entry — data flows from vendor PDF to PO without manual re-typing.',
-        app: 'dashboard',
-        role: 'Dealer',
-        highlightId: 'po-order-approval'
-    },
-    {
-        id: '1.10',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Smart Notifications',
-        description: 'AI digests by role: Dealer receives lifecycle summary, Expert receives only exceptions by priority. Consistent nationwide communication — informational, no action required.',
-        app: 'dashboard',
-        role: 'Dealer',
-        highlightId: 'action-center-notifications'
-    },
-    {
-        id: '1.11',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'Pipeline View',
-        description: 'New order card appears in pipeline with animated column transition. Full traceability from original vendor email to PO. Project info auto-flows to CRM — no separate data entry needed.',
-        app: 'expert-hub',
-        role: 'Dealer',
-        highlightId: 'order-pipeline-view'
-    },
-    // CRM: Project Auto-Created (integrated at end of Flow 1)
-    {
-        id: '1.12',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'CRM: Project Auto-Created',
-        description: 'ProjectCreationAgent auto-creates CRM project from approved quote. Data flows: Customer "Apex Furniture", Quote #QT-1025 ($43,750), PO #ORD-2055, 200 line items across 4 delivery zones. Project record populated with all customer and product data — zero manual CRM entry required.',
-        app: 'crm',
-        role: 'Sales Rep',
-        highlightId: 'crm-project-created'
-    },
-    {
-        id: '1.13',
-        groupId: 1,
-        groupTitle: 'Flow 1: Quote Ingestion to Purchase Order',
-        title: 'CRM: Customer 360 Updated',
-        description: 'CustomerIntelligenceAgent updates Apex Furniture profile: new project linked, purchase history updated ($1.2M lifetime value across 5 projects), contact info cross-referenced with dealer system. Sales Rep reviews unified customer view — all data aggregated from Dealer Experience, Expert Hub, and quote system.',
-        app: 'crm',
-        role: 'Sales Rep',
-        highlightId: 'crm-customer-360'
     },
 
     // ═══════════════════════════════════════════
-    // FLOW 2: PO & Acknowledgement Comparison (7 + 1 CRM = 8 steps)
-    // AI eliminates ~95% of manual PO vs Acknowledgement work
-    // Addresses: #1 AI acknowledgement processing (highest priority),
-    //            #2 shipment/order visibility, #3 customer communication
+    // FLOW 2: Labor Estimation — PDF to Approved Quote (Stages 10-14)
+    // 5 automated + 2 HITL = 7 steps
+    // Pain Points: #1 (tribal knowledge), #2 (disconnected tools), #3 (manual PDF)
     // ═══════════════════════════════════════════
     {
-        id: '2.1',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Acknowledgement Intake',
-        description: 'EDI/855 automatic intake. AIS (50 line items, $65K) + HAT (5 line items, $8K) arrive in the pipeline. Both queued for AI comparison — monitoring only, no human action.',
-        app: 'expert-hub',
+        id: 'w2.1',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'CORE Trigger & Assignment',
+        description: 'The AI agent monitors CORE for new estimation requests. When a request is marked as ready, it parses the project scope, identifies site constraints (hospital delivery, elevator access, dock availability), and assigns the job to the correct estimator based on office location.',
+        app: 'wrg-labor',
         role: 'System',
-        highlightId: 'ack-pipeline-intake'
     },
     {
-        id: '2.2',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Smart Comparison',
-        description: '8 AI agents: EDI normalization from eManage ONE. HAT: AI-trained — color "Warm Grey 4" vs "Folkstone Grey" → same part# → auto-confirms at 91% confidence. AIS: grommet configuration error → flagged as discrepancy. Expert sees results: HAT = green "Confirmed", AIS = red "Discrepancy".',
-        app: 'expert-hub',
+        id: 'w2.2',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'PDF Ingestion & Data Extraction',
+        description: 'AI agents pull the Product Selection Sheet and Spec Sheet PDFs from CORE. Claude Sonnet 4 extracts structured data — product codes, descriptions, quantities, and KD (knocked-down) flags. Each line item is validated against the spec drawings to catch mismatches.',
+        app: 'wrg-labor',
         role: 'System',
-        highlightId: 'ack-dual-normalization'
     },
     {
-        id: '2.3',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Delta Engine',
-        description: 'AI auto-corrections shown: (1) Grommet error → AI auto-corrects config, (2) Date shifts +14d and +11d → auto-accepted as routine. Escalated: Qty shortfall 8→6 and 4→2 → exceeds threshold → escalates to Expert. Expert sees options: Accept new date / Expedite (+$800) / Cancel.',
-        app: 'expert-hub',
+        id: 'w2.3',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'Product-to-Category Mapping',
+        description: 'Each extracted product is mapped to a delivery category and an installation category using rate lookup tables. Items that match standard categories are auto-mapped at HIGH confidence. Unrecognized items go through LLM inference and are flagged at LOW confidence for estimator review.',
+        app: 'wrg-labor',
         role: 'System',
-        highlightId: 'ack-delta-results'
     },
     {
-        id: '2.4',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Expert Review — 50 Lines (HITL)',
-        description: 'DiscrepancyResolverAgent pre-analyzed: Azure fabric ≈ Navy (same price $89, same lead time). AI suggestions with confidence scores (91%, 76%). Expert reviews side-by-side PO vs Acknowledgement, can: accept AI correction (✓), reject (✗), edit fields, add notes. 50 line items with flagged rows highlighted. Audit log records each action.',
-        app: 'expert-hub',
-        role: 'Expert',
-        highlightId: 'expert-ack-review'
-    },
-    {
-        id: '2.5',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Authorization Chain',
-        description: '3-approver chain runs automatically (5s intervals). Approvals based on business rules and dollar thresholds — no human intervention needed.',
-        app: 'expert-hub',
+        id: 'w2.4',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'Dual-Engine Calculation',
+        description: 'Two calculation engines run in parallel. The Delivery Engine applies per-item minute rates at $0.95/min, then adds Section F multipliers (hospital, stairs, floors) and Section G transport charges. The Installation Engine multiplies quantities by man-hour rates at $57/hr. Scope limits are checked automatically.',
+        app: 'wrg-labor',
         role: 'System',
-        highlightId: 'backorder-approval-chain'
     },
     {
-        id: '2.6',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Pipeline Resolution',
-        description: 'HAT → Confirmed column. AIS → Partial column (quantity shortfall). Order status updated across all systems — customer portal reflects current state. Informational view.',
-        app: 'expert-hub',
-        role: 'Dealer',
-        highlightId: 'ack-pipeline-resolved'
-    },
-    {
-        id: '2.7',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'Smart Notifications',
-        description: '"2 Acknowledgements processed, 1 clean, 1 with 3 exceptions resolved" (Dealer digest). Expert receives only exceptions by priority. Consistent communication across all roles — informational.',
-        app: 'dashboard',
-        role: 'Dealer',
-        highlightId: 'action-center-ack-notify'
-    },
-    // CRM: Order Lifecycle Synced (integrated at end of Flow 2)
-    {
-        id: '2.8',
-        groupId: 2,
-        groupTitle: 'Flow 2: Acknowledgement Processing & Visibility',
-        title: 'CRM: Order Lifecycle Synced',
-        description: 'OrderSyncAgent updates CRM project timeline: AIS acknowledgment (50 lines, $65K) — 3 exceptions resolved, delivery dates adjusted +14d. HAT acknowledgment (5 lines, $8K) — confirmed, on schedule. Project "Apex HQ Office Renovation" timeline auto-updated with actual delivery milestones. Customer portal reflects current status.',
-        app: 'crm',
+        id: 'w2.5',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'Draft Generation & Scope Check',
+        description: 'The AI assembles a combined estimate with line-item breakdown, exception log, and audit trail. Items exceeding scope limits or with low confidence mappings are flagged. The draft is sent to the estimator via email link for review — no login required.',
+        app: 'wrg-labor',
         role: 'System',
-        highlightId: 'crm-order-synced'
+    },
+    {
+        id: 'w2.6',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'Estimator Review (HITL)',
+        description: 'The estimator opens the AI-generated draft and reviews all 24 line items. Flagged items are highlighted — scope limit overrides, low confidence mappings, and quantity mismatches. The estimator can approve, override rates, reclassify categories, or add notes. Every change is logged.',
+        app: 'wrg-review',
+        role: 'Estimator',
+    },
+    {
+        id: 'w2.7',
+        groupId: 1,
+        groupTitle: 'Flow 2: Labor Estimation',
+        title: 'Approval & CORE Write-Back',
+        description: 'The estimator reviews the final comparison between the AI draft and their adjustments, then submits the approved estimate. The agent writes the lump sum and audit trail PDF back to CORE and notifies the salesperson. Total time: under 5 minutes vs 4-8 hours manual.',
+        app: 'wrg-review',
+        role: 'Estimator',
     },
 
     // ═══════════════════════════════════════════
-    // FLOW 3: Punch List / Warranty Claims (5 + 1 CRM = 6 steps)
-    // AI validates docs + business rules, expert resolves exceptions
-    // Addresses: #6 reporting automation, #7 consistent reporting,
-    //            #2 shipment visibility, #3 customer communication
+    // FLOW 3: Design-to-Estimate Handoff (Stages 6-9)
+    // 4 automated + 1 HITL = 5 steps
+    // Pain Points: #3 (manual PDF), #4 (no data layer), #1 (tribal knowledge), #6 (scope risk)
     // ═══════════════════════════════════════════
     {
-        id: '3.1',
-        groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'Request Intake (HITL)',
-        description: 'AI validates 5 required documents with confidence: Order# ✓98%, Line# ✓96%, Issue photo ✓94%, Label photo ⚠️62% (SKU mismatch potential CC-AZ-2024 vs 2025), Box photo ✗0% (missing). Expert reviews each flag: Label → "May be model year variant, confirm with requester". Box → "Critical for carrier liability, contact requester".',
-        app: 'mac',
-        role: 'Expert',
-        highlightId: 'punch-request-intake'
+        id: 'w3.1',
+        groupId: 2,
+        groupTitle: 'Flow 3: Design-to-Estimate Handoff',
+        title: 'Design Package Upload & Detection',
+        description: 'The Design Team uploads the completed PDF package to CORE — Product Spec Sheet and Product Selection Sheet totaling 24 pages. The AI agent detects the upload, validates file formats (PDF/A compliant), confirms designer identity (Sarah Chen) against Smartsheet assignment, and logs file hashes for audit trail.',
+        app: 'wrg-handoff',
+        role: 'System',
     },
     {
-        id: '3.2',
-        groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'Labor Quote Requested',
-        description: 'Labor quote requested from certified installer. Strata tracks the request and triggers AI validation when quote arrives.',
-        app: 'mac',
-        role: 'Expert',
-        highlightId: 'punch-labor-requested'
+        id: 'w3.2',
+        groupId: 2,
+        groupTitle: 'Flow 3: Design-to-Estimate Handoff',
+        title: 'Package Completeness Validation',
+        description: 'AI validates the design package against an 8-point completeness checklist — manufacturer codes, quantities, KD flags, floor assignments, and site constraints. Cross-document verification catches 1 quantity discrepancy (Spec=19 vs Selection=20 on stacking chairs). Floor 4 has 2 items without room assignments.',
+        app: 'wrg-handoff',
+        role: 'System',
     },
     {
-        id: '3.3',
-        groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'Labor Review (HITL)',
-        description: 'AI validates labor quote against 6 business rules: Repair $510 vs $500 max ⚠️, Trip $175 ✓, Certified Installer ✓, Labor 6hrs vs 4hrs typical ⚠️, Warranty active ✓, No duplicates ✓. 4/6 passed, 2 flagged. Expert chooses from AI suggestions: Repair → [Adjust $495] [Exception $510] [Split 2×$255]. Hours → [4hrs standard] [5hrs partial] [6hrs justified].',
-        app: 'mac',
-        role: 'Expert',
-        highlightId: 'punch-labor-review'
+        id: 'w3.3',
+        groupId: 2,
+        groupTitle: 'Flow 3: Design-to-Estimate Handoff',
+        title: 'Product Catalog Cross-Reference',
+        description: 'Each product code is cross-referenced against 200+ manufacturer catalogs. 22 of 24 products verified with current pricing. Two flags: the OFS Coact Serpentine is a custom configuration with 12-week lead time, and the Nemschoff NC-2240 recliner has been discontinued — successor NC-2250 available at +$85/unit.',
+        app: 'wrg-handoff',
+        role: 'System',
     },
     {
-        id: '3.4',
+        id: 'w3.4',
+        groupId: 2,
+        groupTitle: 'Flow 3: Design-to-Estimate Handoff',
+        title: 'Handoff Package Assembly',
+        description: 'The system confirms Mark Williams as the assigned estimator, assembles the complete handoff package (validated PDFs, checklist results, catalog flags, complexity score 8.2/10, predicted labor range $9,800–$12,200), and sends the estimation-ready notification via email with token-based access — no CORE login required.',
+        app: 'wrg-handoff',
+        role: 'System',
+    },
+    {
+        id: 'w3.5',
+        groupId: 2,
+        groupTitle: 'Flow 3: Design-to-Estimate Handoff',
+        title: 'Design Package Validation',
+        description: 'The validation review shows AI results: completeness checklist (7/8 passed), 1 quantity discrepancy between spec and selection sheets, 2 catalog flags (custom lead time + discontinued SKU), and Floor 4 coverage gap. Each flagged item must be acknowledged before releasing the package to estimation.',
+        app: 'wrg-handoff-review',
+        role: 'Expert',
+    },
+
+    // ═══════════════════════════════════════════
+    // FLOW 4: Quote Assembly & Execution (Stages 15-18)
+    // 4 automated + 1 HITL = 5 steps
+    // Pain Points: #2 (disconnected tools), #4 (no data), #5 (inconsistent outputs), #6 (scope risk)
+    // ═══════════════════════════════════════════
+    {
+        id: 'w4.1',
         groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'Claim Submission & Tracking',
-        description: 'ClaimSubmissionAgent assembles claim package, forwards photos with SHA256 hashes, verifies ship-to, submits to manufacturer, receives acknowledgement, updates dashboard. Replacement unit tracked — customer sees real-time shipping status. Expert can review liability analysis (optional).',
-        app: 'mac',
+        groupTitle: 'Flow 4: Quote Assembly & Execution',
+        title: 'Estimate Approval & Staging',
+        description: 'CORE detects that Mark Williams has submitted the approved labor estimate ($10,547 installation + $4,831 delivery = $15,378 combined). The system notifies the salesperson and retrieves the MillerKnoll product quote ($287,450 list). Both components are staged for the Sales Coordinator to assemble the final client proposal.',
+        app: 'wrg-assembly',
+        role: 'System',
+    },
+    {
+        id: 'w4.2',
+        groupId: 3,
+        groupTitle: 'Flow 4: Quote Assembly & Execution',
+        title: 'Quote Combination & Markup Engine',
+        description: 'The markup engine applies WRG\'s pricing rules: JPS Health Network contracted discount (38% off list = $178,219 net product), standard 15% labor margin ($15,378 → $17,685), and freight calculated at $6,234 based on hospital dock delivery. Combined proposal total: $202,138. Sales tax exemption flagged (government healthcare entity).',
+        app: 'wrg-assembly',
+        role: 'System',
+    },
+    {
+        id: 'w4.3',
+        groupId: 3,
+        groupTitle: 'Flow 4: Quote Assembly & Execution',
+        title: 'Client Proposal Generation',
+        description: 'AI generates a branded WRG client proposal with line-item product breakdown, labor summary, freight charges, payment terms (Net 30), and 30-day validity. Delivery timeline projected: 8–10 weeks for standard items, 12 weeks for the OFS Coact custom configuration. The proposal PDF is attached to CORE.',
+        app: 'wrg-assembly',
+        role: 'System',
+    },
+    {
+        id: 'w4.4',
+        groupId: 3,
+        groupTitle: 'Flow 4: Quote Assembly & Execution',
+        title: 'Execution Planning Preview',
+        description: 'The system generates an execution plan: 3-phase delivery (Floors 1-2 week 8, Floors 3-4 week 9, Floors 5-6 week 10), 4-person crew for 3 days on-site (185 man-hours), hospital delivery protocol (sterile corridor, after-hours dock, elevator). Compliance package assembled — 47 decisions tracked across all 4 flows.',
+        app: 'wrg-assembly',
+        role: 'System',
+    },
+    {
+        id: 'w4.5',
+        groupId: 3,
+        groupTitle: 'Flow 4: Quote Assembly & Execution',
+        title: 'Proposal Review & Release',
+        description: 'The WRG business team reviews the assembled proposal: complete pricing breakdown (product $178,219 + labor $17,685 + freight $6,234 = $202,138), delivery timeline, execution plan, and full audit trail (47 decisions). Clicking "Release to Client" sends the proposal to JPS Health Network and creates the execution planning record.',
+        app: 'wrg-assembly-review',
         role: 'Dealer',
-        highlightId: 'punch-claim-submission'
-    },
-    {
-        id: '3.5',
-        groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'End User Report (Mobile)',
-        description: 'AI generates punch list report with photos, status, timeline. End User reviews on mobile: issue photos, resolution timeline, claim status. Can leave comments before final acknowledgement.',
-        app: 'dashboard',
-        role: 'End User',
-        highlightId: 'mobile-enduser-report'
-    },
-    // CRM: Service Record Logged (integrated at end of Flow 3)
-    {
-        id: '3.6',
-        groupId: 3,
-        groupTitle: 'Flow 3: Service, Warranty & Reporting',
-        title: 'CRM: Full Project Traceability',
-        description: 'ServiceRecordAgent logs punch list claim against project. Complete lifecycle captured: original email (1.1) → AI extraction (1.2) → quote approval (1.7) → PO generation (1.9) → ack processing (2.4) → warranty claim (3.4). Zero data re-entered across 5 systems. AI generates project health report: $43,750 value, 1 open service claim, 98% delivery complete.',
-        app: 'crm',
-        role: 'Sales Rep',
-        highlightId: 'crm-full-traceability'
     },
 ];
 
 // ─── STEP BEHAVIOR ───────────────────────────────────────────────────────────
 
 export const WRG_DEMO_STEP_BEHAVIOR: Record<string, StepBehavior> = {
-    // Flow 1: RFQ → PO (6 auto + 5 HITL)
-    '1.1': { mode: 'auto', duration: 34, aiSummary: 'System detected email with RFQ — identifying PDF spec + CSV attachments' },
-    '1.2': { mode: 'auto', duration: 27, aiSummary: '5 AI agents: OCR processing PDF, TextExtract parsing CSV — extracting 200 line items across 4 delivery zones' },
-    '1.3': { mode: 'interactive', userAction: 'Review confidence scores (94% overall). Low-confidence items marked "Needs Attention" — click "Continue to Quote Draft"' },
-    '1.4': { mode: 'interactive', userAction: 'Review QuoteBuilder output with pricing rules and volume discounts. Click "Route to Expert Hub" for freight exceptions' },
-    '1.5': { mode: 'interactive', userAction: 'Review 8 validated items (avg 60.8% discount). Input freight rate for Austin TX ($2,450 LTL). Click "Approve & Create Quote"' },
-    '1.6': { mode: 'auto', duration: 19, aiSummary: 'Policy Engine: VP Operations → auto-approved, CFO → auto-approved. 3-level chain complete' },
-    '1.7': { mode: 'interactive', userAction: 'Review AI summary: $43,750 total, 35.4% margin. Click "Approve Quote"' },
-    '1.8': { mode: 'interactive', userAction: 'Push notification on mobile — tap "Acknowledge" to confirm order' },
-    '1.9': { mode: 'auto', duration: 50, aiSummary: 'Generating PO — mapping 5 SKUs, executing 3-level approval chain, transmitting to supplier. Zero re-entry' },
-    '1.10': { mode: 'interactive', userAction: 'Review role-based notification digests: Dealer lifecycle, Expert exceptions only' },
-    '1.11': { mode: 'interactive', userAction: 'New order card appears with animated column transition. Click "Send Notifications"' },
-
-    // Flow 2: PO & Acknowledgement Comparison (AI eliminates ~95% manual work)
-    '2.1': { mode: 'auto', duration: 14, aiSummary: 'EDI/855 intake: AIS (50 lines, $65K) + HAT (5 lines, $8K) arriving in pipeline' },
-    '2.2': { mode: 'interactive', userAction: '8 AI agents completed comparison. HAT = green "Confirmed" (91%). AIS = red "Discrepancy". Click "Review Discrepancies" on AIS' },
-    '2.3': { mode: 'interactive', userAction: 'Delta results: grommet auto-corrected, dates +14d/+11d accepted. Qty shortfall 8→6, 4→2 escalated. Choose: Accept / Expedite (+$800) / Cancel' },
-    '2.4': { mode: 'interactive', userAction: 'Review 50 line items with AI confidence scores (91%, 76%). Accept ✓, reject ✗, or edit. Click "Send to System of Record"' },
-    '2.5': { mode: 'auto', duration: 20, aiSummary: '3-approver authorization chain running (5s intervals) — business rules and dollar thresholds' },
-    '2.6': { mode: 'interactive', userAction: 'HAT → Confirmed column. AIS → Partial column. Review pipeline resolution, click "Send Notifications"' },
-    '2.7': { mode: 'interactive', userAction: 'Review: "2 Acknowledgements processed, 1 clean, 1 with 3 exceptions resolved"' },
-
-    // Flow 3: Punch List / Warranty (AI validates, expert resolves)
-    '3.1': { mode: 'interactive', userAction: 'Review 5-doc validation: Order# ✓98%, Line# ✓96%, Photo ✓94%, Label ⚠️62% (SKU mismatch), Box ✗0%. Resolve flags, click "Validate & Continue"' },
-    '3.2': { mode: 'interactive', userAction: 'Presenter describes labor quote process — click Next to continue' },
-    '3.3': { mode: 'interactive', userAction: 'Review 6 rules: Repair $510 vs $500 max ⚠️, Hours 6 vs 4 typical ⚠️. Choose AI suggestions: [Adjust $495] [Exception] [Split]. Click "Reviewed and Continue"' },
-    '3.4': { mode: 'auto', duration: 24, aiSummary: 'ClaimSubmissionAgent assembling claim with SHA256 hashes, submitting to manufacturer, tracking replacement shipment' },
-    '3.5': { mode: 'interactive', userAction: 'AI-generated punch list report on mobile. Review photos, timeline, status. Leave comments, then acknowledge' },
-
-    // CRM steps (integrated at end of each flow)
-    '1.12': { mode: 'interactive', userAction: 'Review CRM Dashboard: notification + daily log entry auto-appear. Click "View Full Project" to see full project record with zero manual entry' },
-    '1.13': { mode: 'interactive', userAction: 'Review Customer 360: Apex Furniture profile with $1.2M lifetime value, 5 projects, cross-system data aggregated' },
-    '2.8': { mode: 'auto', duration: 10, aiSummary: 'OrderSyncAgent: syncing acknowledgment data to CRM project timeline — delivery dates adjusted, status updated' },
-    '3.6': { mode: 'interactive', userAction: 'Review complete project traceability: email → extraction → quote → PO → ack → service claim. Zero data re-entered' },
+    // Flow 1: Project Intake & Triage
+    'w1.1': { mode: 'auto', duration: 20, aiSummary: 'EmailMonitor detected JPS Health Network request — extracting project parameters from attachments' },
+    'w1.2': { mode: 'auto', duration: 16, aiSummary: 'ScopeAnalyzer cross-referencing JPS against 340 historical projects — complexity score 8.2/10' },
+    'w1.3': { mode: 'auto', duration: 12, aiSummary: 'EstimatorRouter evaluating workload — assigning Mark Williams (Dallas), 96.3% healthcare accuracy' },
+    'w1.4': { mode: 'auto', duration: 11, aiSummary: 'BriefAssembler generating design brief — routing to Design Team via Smartsheet' },
+    'w1.5': { mode: 'interactive', userAction: 'Review intake summary and pipeline position. Click "Confirm & Proceed to Design"' },
+    // Flow 2: Labor Estimation
+    'w2.1': { mode: 'auto', duration: 12, aiSummary: 'CORE detected estimation request — parsing site constraints for JPS Health Center' },
+    'w2.2': { mode: 'auto', duration: 20, aiSummary: '4 AI agents extracting structured data from JPS_116719 PDF — 24 line items identified' },
+    'w2.3': { mode: 'auto', duration: 15, aiSummary: 'CategoryMapper cross-referencing products — 20 HIGH + 4 LOW confidence mappings' },
+    'w2.4': { mode: 'auto', duration: 14, aiSummary: 'Dual engines calculating: delivery pricing + installation costing in parallel' },
+    'w2.5': { mode: 'auto', duration: 13, aiSummary: 'DraftBuilder assembling estimate — 5 items flagged, notifying estimator' },
+    'w2.6': { mode: 'interactive', userAction: 'Review 24 line items. Resolve 5 flagged items (amber). Click "Approve & Submit to CORE"' },
+    'w2.7': { mode: 'interactive', userAction: 'Review AI Draft vs After Review comparison. Click "Submit to CORE" to complete' },
+    // Flow 3: Design-to-Estimate Handoff
+    'w3.1': { mode: 'auto', duration: 13, aiSummary: 'UploadMonitor detected 2 PDFs in CORE — JPS_116719 spec + selection sheets uploaded by Sarah Chen' },
+    'w3.2': { mode: 'auto', duration: 18, aiSummary: 'CompletenessChecker validating JPS package — 7/8 checklist items passed, 1 warning' },
+    'w3.3': { mode: 'auto', duration: 15, aiSummary: 'CatalogVerifier cross-referencing 24 products against 200+ manufacturer catalogs — 2 flags' },
+    'w3.4': { mode: 'auto', duration: 11, aiSummary: 'HandoffAssembler packaging validated documents — notifying Mark Williams for labor estimation' },
+    'w3.5': { mode: 'interactive', userAction: 'Review checklist results, resolve 3 flagged items. Click "Acknowledge & Release to Estimation"' },
+    // Flow 4: Quote Assembly & Execution
+    'w4.1': { mode: 'auto', duration: 14, aiSummary: 'CoreMonitor: estimate approved — staging labor ($15,378) + product ($287,450) for quote assembly' },
+    'w4.2': { mode: 'auto', duration: 16, aiSummary: 'MarkupEngine applying JPS contracted discount (38% off) + 15% labor margin — proposal $202,138' },
+    'w4.3': { mode: 'auto', duration: 13, aiSummary: 'ProposalGenerator building client-facing document — 8-10 week delivery, 12-week custom lead' },
+    'w4.4': { mode: 'auto', duration: 15, aiSummary: 'ExecutionPlanner generating 3-phase delivery + 4-person crew dispatch for JPS — 3 days on-site' },
+    'w4.5': { mode: 'interactive', userAction: 'Review pricing breakdown and execution plan. Click "Release to Client" to send proposal to JPS Health Network' },
 };
 
-// ─── STEP MESSAGES ───────────────────────────────────────────────────────────
+// ─── STEP MESSAGES (AI Agent Progress) ───────────────────────────────────────
 
 export const WRG_DEMO_STEP_MESSAGES: Record<string, string[]> = {
-    // Flow 1
-    '1.1': [
-        'Incoming email detected — scanning for RFQ attachments...',
-        'Found: PDF spec sheet + CSV price list from manufacturer',
-        'Queuing attachments for AI extraction pipeline',
+    // Flow 1: Project Intake & Triage
+    'w1.1': [
+        'EmailMonitor: new project request detected — JPS Health Network, Women\'s Health Center...',
+        'AttachmentParser: extracting floor plans + spec narrative — 3 attachments identified',
+        'ProjectProfiler: healthcare vertical, 14,200 sqft, 6 floors — MillerKnoll primary spec',
+        'IntakeCreator: draft intake record created — JPS-HCW-2026 reference assigned',
     ],
-    '1.2': [
-        '5 AI agents activated: OCR processing vendor PDF...',
-        'TextExtract parsing CSV — mapping 4 delivery zones',
-        'Extracted 200 line items into SIF format — zero manual entry',
+    'w1.2': [
+        'ScopeAnalyzer: parsing spec narrative — 24 product categories, healthcare delivery constraints...',
+        'HistoricalMatcher: cross-referencing 340 past projects — 12 healthcare precedents found',
+        'ComplexityEngine: score 8.2/10 — hospital protocol, scope limit risk, custom assembly',
+        'RatePredictor: estimated labor range $9,800–$12,200 based on healthcare precedents',
     ],
-    '1.3': [
-        '4 AI agents: DataNormalizationAgent unifying data...',
-        'Confidence scoring: 94% overall extraction accuracy',
-        'Low-confidence items flagged as "Needs Attention" for expert',
+    'w1.3': [
+        'WorkloadAnalyzer: Mark Williams 3 active, Jaime Gonzalez 5 active — evaluating capacity...',
+        'LocationRouter: JPS Fort Worth → Dallas office optimal (32 mi vs 264 mi Houston)',
+        'SkillMatcher: Mark Williams — 96.3% healthcare accuracy, 12 precedents',
+        'AssignmentWriter: assigned to Mark Williams (Dallas) — start date projected',
     ],
-    '1.4': [
-        'QuoteBuilder Agent generating quote draft...',
-        'Applying pricing rules and volume discounts',
-        'Multi-zone freight routing requires validation — routing to Expert Hub',
+    'w1.4': [
+        'BriefAssembler: compiling scope, constraints, and manufacturer specs into structured brief...',
+        'SmartsheetWriter: creating row #2026-JPS-HCW — floor plans + spec narrative attached',
+        'CoreRecordCreator: CORE quote request #QR-116719 created — design brief linked',
+        'DesignNotifier: Design Team notified — Sarah Chen assigned, priority HIGH',
     ],
-    '1.5': [
-        'QuotePricingAgent validated 8 items — avg discount 60.8%',
-        'Flag: Lounge seating 58% < standard 62%',
-        'Flag: Freight LTL $2,450 for Austin, TX — building restrictions',
-        'Expert reviewing — all corrections tracked in audit trail',
+    'w1.5': [
+        'Project intake summary ready — JPS Health Center for Women',
+        'Complexity 8.2/10 — estimated timeline: 12 business days',
+        'Sales reviewing scope, assignment, and pipeline position',
     ],
-    '1.6': [
-        'Policy Engine triggered — 3-level approval chain',
-        'VP Operations → auto-approved',
-        'CFO → auto-approved',
-        'Approval chain complete',
+    // Flow 2: Labor Estimation
+    'w2.1': [
+        'CoreMonitor: new estimation request detected — JPS Health Center for Women...',
+        'RequestParser: site constraints identified — hospital delivery, elevator access',
+        'EstimatorRouter: assigning to Mark Williams — Dallas office',
+        'JobCreator: estimation job #JPS-116719 created in CORE',
     ],
-    '1.7': [
-        'AI pre-filled summary: $43,750 total value',
-        'Margin analysis: 35.4% — above target',
-        'Dealer reviewing final quote — one click to approve',
+    'w2.2': [
+        'AttachmentPuller: downloading 2 PDFs from CORE — Product Selection + Spec Sheet...',
+        'PdfExtractor: Claude Sonnet 4 reading specification — 24 line items detected',
+        'StructuredParser: extracting product codes, quantities, KD flags per row',
+        'DataValidator: 1 quantity mismatch flagged — Selection vs Spec drawing',
     ],
-    '1.8': [
-        'Push notification sent to mobile device...',
-        'Simplified view: products + delivery timeline',
-        'Waiting for End User acknowledgement',
+    'w2.3': [
+        'CategoryMapper: cross-referencing 24 products against delivery + installation rate tables...',
+        'LookupEngine: 20 items auto-mapped at HIGH confidence (>=90%)',
+        'LlmFallback: 4 unrecognized items processed via AI inference',
+        'ConfidenceScorer: 20 HIGH + 4 LOW — 4 items flagged for estimator review',
     ],
-    '1.9': [
-        'Generating Purchase Order from approved quote...',
-        'Mapping 5 SKUs to standardized PO format',
-        'Executing 3-level approval chain',
-        'PO transmitted to supplier — zero re-entry achieved',
+    'w2.4': [
+        'ScopeLimitChecker: 119 task chairs exceed 50-chair limit — flagging for override...',
+        'DeliveryEngine: calculating per-item minutes at $0.95/min + Section F/G multipliers',
+        'InstallEngine: 185.04 man-hours x $57/hr = $10,547.28',
+        'DualCombiner: merging delivery + installation totals — combined estimate ready',
     ],
-    '1.10': [
-        'AI generating role-based notification digests...',
-        'Dealer: lifecycle summary with milestones',
-        'Expert: exceptions only, sorted by priority',
+    'w2.5': [
+        'DraftBuilder: assembling line-item breakdown — 24 items with dual pricing...',
+        'ExceptionLogger: 5 items flagged — 1 scope limit + 4 low confidence mappings',
+        'AuditTrailGenerator: creating decision record with extraction source and mapping logic',
+        'EstimatorNotifier: sending draft review link to Mark Williams — token-based access',
     ],
-    '1.11': [
-        'New order card added to pipeline',
-        'Animated column transition — full traceability',
-        'CRM project auto-created from quote data',
+    'w2.6': [
+        'Draft estimate ready — 24 items, 5 flagged for review',
+        'Scope limit alert: 119 Task Chairs exceed 50-chair policy',
+        'Estimator reviewing — override modal available per item',
     ],
-
-    // Flow 2
-    '2.1': [
-        'EDI/855 intake processing...',
-        'AIS: 50 line items, $65K — queued for AI comparison',
-        'HAT: 5 line items, $8K — queued for AI comparison',
+    'w2.7': [
+        'CoreWriter: submitting approved estimate to CORE...',
+        'AuditAttacher: uploading audit trail PDF with estimator overrides',
+        'SalespersonNotifier: CORE emailing salesperson — service request complete',
     ],
-    '2.2': [
-        '8 AI agents: EDI normalization from eManage ONE...',
-        'HAT: "Warm Grey 4" vs "Folkstone Grey" — same part# → auto-confirmed (91%)',
-        'AIS: grommet configuration error → flagged as discrepancy',
+    // Flow 3: Design-to-Estimate Handoff
+    'w3.1': [
+        'UploadMonitor: 2 PDFs detected in CORE — JPS_116719_SPEC.pdf + JPS_116719_SEL.pdf...',
+        'FormatValidator: PDF/A compliant — 24 pages combined, integrity check passed',
+        'DesignerVerifier: Sarah Chen upload confirmed — matches Smartsheet #2026-JPS-HCW',
+        'AuditLogger: upload event recorded — file hashes and designer ID captured',
     ],
-    '2.3': [
-        'Delta Engine categorizing discrepancies...',
-        '(1) Grommet error → AI auto-corrected config',
-        '(2) Date shifts +14d, +11d → auto-accepted (routine)',
-        'Qty shortfall 8→6, 4→2 → exceeds threshold → escalated to expert',
+    'w3.2': [
+        'CompletenessChecker: running 8-point checklist — manufacturer codes, KD flags, floor assignments...',
+        'CrossDocVerifier: comparing spec vs selection — 23/24 items match, 1 discrepancy flagged',
+        'FloorCoverageAnalyzer: all 6 floors covered — Floor 4 missing 2 room assignments',
+        'ConstraintValidator: hospital protocol + elevator access documentation confirmed',
     ],
-    '2.4': [
-        'DiscrepancyResolverAgent pre-analyzed: Azure fabric ≈ Navy',
-        'Same price $89, same lead time — confidence 91%',
-        'Expert reviewing 50 line items with AI assistance',
+    'w3.3': [
+        'CatalogVerifier: cross-referencing 24 products — MillerKnoll, OFS, Nemschoff catalogs...',
+        'PricingChecker: 22/24 items confirmed with current pricing — no pending increases',
+        'LeadTimeAnalyzer: OFS Coact Serpentine custom config — 12-week lead time flagged',
+        'SkuValidator: Nemschoff NC-2240 discontinued — successor NC-2250 identified (+$85/unit)',
     ],
-    '2.5': [
-        '3-approver authorization chain running...',
-        'Approver 1 → approved (5s)',
-        'Approver 2 → approved (5s)',
-        'Approver 3 → approved — chain complete',
+    'w3.4': [
+        'AssignmentConfirmer: Mark Williams (Dallas) confirmed from intake — current load: 3 active projects...',
+        'HandoffAssembler: compiling validated PDFs, checklist, catalog flags, complexity 8.2/10',
+        'PredictionAttacher: historical range $9,800–$12,200 added to handoff brief',
+        'EstimatorNotifier: emailing Mark Williams — estimation-ready link with token access',
     ],
-    '2.6': [
-        'HAT → moved to Confirmed column',
-        'AIS → moved to Partial column (qty shortfall)',
-        'Order status updated across all systems',
+    'w3.5': [
+        'Validation report ready — 7/8 checklist items passed',
+        '1 quantity discrepancy + 2 catalog flags require acknowledgement',
+        'Expert reviewing before release to estimation',
     ],
-    '2.7': [
-        'Dealer digest: "2 Acknowledgements processed"',
-        '"1 clean, 1 with 3 exceptions resolved"',
-        'Expert: exceptions only, sorted by priority',
+    // Flow 4: Quote Assembly & Execution
+    'w4.1': [
+        'CoreMonitor: approved estimate detected — JPS-116719, $15,378 combined labor...',
+        'SalesNotifier: CORE emailing salesperson — estimate + audit trail attached',
+        'ProductQuoteRetriever: pulling MillerKnoll product quote — $287,450 list price',
+        'QuoteStager: labor + product staged for assembly — markup calculation ready',
     ],
-
-    // Flow 3
-    '3.1': [
-        'AI validating 5 required documents...',
-        'Order# ✓98% | Line# ✓96% | Issue photo ✓94%',
-        'Label photo ⚠️62% (SKU mismatch CC-AZ-2024 vs 2025)',
-        'Box photo ✗0% — missing, critical for carrier liability',
+    'w4.2': [
+        'DiscountResolver: applying JPS Health Network contracted discount — 38% off list...',
+        'LaborMarkupEngine: 15% margin applied — $15,378 → $17,685 client price',
+        'FreightCalculator: $6,234 freight — 24 items, hospital dock delivery, elevator access',
+        'ProposalAssembler: combined proposal $202,138 — sales tax exempt flagged',
     ],
-    '3.2': [
-        'Labor quote requested from certified installer...',
-        'Strata tracking request — AI validation triggers on arrival',
+    'w4.3': [
+        'TemplateEngine: applying WRG branded template — product, labor, freight sections...',
+        'TimelineProjector: standard 8-10 weeks, OFS custom 12 weeks — Q3 2026 completion',
+        'TermsAttacher: Net 30 payment, 30-day validity, tax exempt notation',
+        'ProposalPublisher: PDF generated — attached to CORE, preview link for review',
     ],
-    '3.3': [
-        'Validating labor quote against 6 business rules...',
-        'Repair $510 vs $500 max ⚠️ | Trip $175 ✓ | Certified ✓',
-        'Labor 6hrs vs 4hrs typical ⚠️ | Warranty ✓ | No duplicates ✓',
-        '4/6 passed — 2 flagged with AI suggestions for expert',
+    'w4.4': [
+        'DeliveryScheduler: 3-phase delivery plan — 2 floors per phase, hospital protocol applied...',
+        'CrewDispatcher: 4-person crew recommended — 3 days on-site, 185 man-hours',
+        'ProtocolChecker: sterile corridor clearance, after-hours dock, elevator reservation required',
+        'CompliancePackager: audit trail assembled — 47 tracked decisions across all 4 flows',
     ],
-    '3.4': [
-        'ClaimSubmissionAgent assembling claim package...',
-        'Forwarding photos with SHA256 hashes — verifying ship-to',
-        'Submitted to manufacturer — acknowledgement received',
-        'Replacement unit tracked on dashboard — real-time status active',
-    ],
-    '3.5': [
-        'AI generating service report for End User...',
-        'Mobile view: issue photos, resolution timeline, claim status',
-        'Waiting for End User comments and acknowledgement',
-    ],
-
-    // CRM steps (integrated at end of each flow)
-    '1.12': [
-        'ProjectCreationAgent: mapping quote data to CRM...',
-        'Customer: Apex Furniture | Quote #QT-1025 | $43,750',
-        'Project "Apex HQ Office Renovation" created — zero manual entry',
-    ],
-    '1.13': [
-        'CustomerIntelligenceAgent: aggregating cross-system data...',
-        'Lifetime value: $1.2M | 5 projects | 12 orders',
-        'Customer 360 profile ready for review',
-    ],
-    '2.8': [
-        'OrderSyncAgent: linking acknowledgment data to project...',
-        'AIS: 50 lines, $65K — 3 exceptions resolved, +14d delivery',
-        'HAT: 5 lines, $8K — confirmed, on schedule',
-    ],
-    '3.6': [
-        'ServiceRecordAgent: logging warranty claim to project...',
-        'Full lifecycle: email → AI → quote → PO → ack → service',
-        'Project health: $43,750 | 98% delivered | 1 open claim',
+    'w4.5': [
+        'Client proposal ready — $202,138 for JPS Health Center for Women',
+        'Pricing: product $178,219 + labor $17,685 + freight $6,234',
+        'Business team reviewing before release to JPS Health Network',
     ],
 };
 
@@ -509,7 +423,48 @@ export const WRG_DEMO_STEP_MESSAGES: Record<string, string[]> = {
 // Steps that handle their own AI indicator in the simulation UI
 
 export const WRG_DEMO_SELF_INDICATED: string[] = [
-    '1.2', '1.3', '1.4', '1.5', '1.6', '1.7', '1.8', '1.9', '1.10', '1.11', '1.12', '1.13',
-    '2.1', '2.2', '2.3', '2.4', '2.5', '2.6', '2.7', '2.8',
-    '3.1', '3.2', '3.3', '3.4', '3.5', '3.6',
+    'w1.1', 'w1.2', 'w1.3', 'w1.4', 'w1.5',
+    'w2.1', 'w2.2', 'w2.3', 'w2.4', 'w2.5', 'w2.6', 'w2.7',
+    'w3.1', 'w3.2', 'w3.3', 'w3.4', 'w3.5',
+    'w4.1', 'w4.2', 'w4.3', 'w4.4', 'w4.5',
 ];
+
+// ─── STEP TIMING ─────────────────────────────────────────────────────────────
+
+export interface WrgStepTiming {
+    notifDelay: number;     // ms before notification appears
+    notifDuration: number;  // ms notification stays before processing
+    agentStagger: number;   // ms between each agent appearing
+    agentDone: number;      // ms after agent appears before checkmark
+    breathing: number;      // ms pause between processing and revealed
+    resultsDur: number;     // ms results shown before auto-advance (0 = manual)
+}
+
+export const WRG_STEP_TIMING: Record<string, WrgStepTiming> = {
+    // Flow 1: Project Intake & Triage
+    'w1.1': { notifDelay: 1000, notifDuration: 2500, agentStagger: 800,  agentDone: 500, breathing: 1000, resultsDur: 2500 },
+    'w1.2': { notifDelay: 1000, notifDuration: 4500, agentStagger: 900,  agentDone: 600, breathing: 1500, resultsDur: 3000 },
+    'w1.3': { notifDelay: 1000, notifDuration: 3500, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2500 },
+    'w1.4': { notifDelay: 1000, notifDuration: 3500, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2000 },
+    'w1.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    // Flow 2: Labor Estimation
+    'w2.1': { notifDelay: 1500, notifDuration: 4000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 2000 },
+    'w2.2': { notifDelay: 1000, notifDuration: 5000, agentStagger: 900,  agentDone: 600, breathing: 1500, resultsDur: 3000 },
+    'w2.3': { notifDelay: 1000, notifDuration: 4000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 2500 },
+    'w2.4': { notifDelay: 1000, notifDuration: 4000, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2500 },
+    'w2.5': { notifDelay: 1000, notifDuration: 3500, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2000 },
+    'w2.6': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    'w2.7': { notifDelay: 1500, notifDuration: 4000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    // Flow 3: Design-to-Estimate Handoff
+    'w3.1': { notifDelay: 1500, notifDuration: 4000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 2500 },
+    'w3.2': { notifDelay: 1000, notifDuration: 5000, agentStagger: 900,  agentDone: 600, breathing: 1500, resultsDur: 3000 },
+    'w3.3': { notifDelay: 1000, notifDuration: 4000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 2500 },
+    'w3.4': { notifDelay: 1000, notifDuration: 3500, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2000 },
+    'w3.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
+    // Flow 4: Quote Assembly & Execution
+    'w4.1': { notifDelay: 1500, notifDuration: 4000, agentStagger: 800,  agentDone: 500, breathing: 1200, resultsDur: 2500 },
+    'w4.2': { notifDelay: 1000, notifDuration: 4500, agentStagger: 900,  agentDone: 600, breathing: 1500, resultsDur: 3000 },
+    'w4.3': { notifDelay: 1000, notifDuration: 3500, agentStagger: 700,  agentDone: 500, breathing: 1000, resultsDur: 2500 },
+    'w4.4': { notifDelay: 1000, notifDuration: 4500, agentStagger: 900,  agentDone: 600, breathing: 1500, resultsDur: 3000 },
+    'w4.5': { notifDelay: 2000, notifDuration: 5000, agentStagger: 0,    agentDone: 0,   breathing: 0,    resultsDur: 0 },
+};
