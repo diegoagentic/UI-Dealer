@@ -50,7 +50,7 @@ interface AgentVis { name: string; detail: string; visible: boolean; done: boole
 
 type PipelinePhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed';
 type ConfirmSubPhase = 'confirm' | 'staging' | 'staging-pipeline' | 'staging-revealed' | 'markup' | 'markup-pipeline' | 'markup-revealed';
-type ReviewPhase = 'reviewing' | 'releasing' | 'done';
+type ReviewPhase = 'reviewing' | 'approved' | 'releasing' | 'done';
 
 // Designer avatar for escalation micro-interaction
 const DESIGNER_PHOTO = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face';
@@ -1809,6 +1809,76 @@ export function WrgEstimatorReview({ onNavigate }: { onNavigate: (page: string) 
                 </div>
             )}
 
+            {/* ── Approved phase — preview & release ── */}
+            {reviewPhase === 'approved' && (
+                <div className="animate-in fade-in duration-500 space-y-3">
+                    {/* Approval confirmed header */}
+                    <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
+                        <div className="flex items-center gap-2">
+                            <CheckCircleIcon className="h-5 w-5 text-green-500 shrink-0" />
+                            <div>
+                                <div className="text-[11px] font-bold text-foreground">Approval Chain Complete</div>
+                                <div className="text-[9px] text-muted-foreground">David Park, Alex Rivera, Sara Chen, Jordan Park — all approved</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quote summary */}
+                    <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Proposal Summary</div>
+                        <div className="grid grid-cols-4 gap-2">
+                            {[
+                                { label: 'Product Net', val: '$178,219', color: 'text-foreground' },
+                                { label: 'Labor', val: '$17,685', color: 'text-green-700 dark:text-green-400' },
+                                { label: 'Freight', val: '$6,234', color: 'text-blue-700 dark:text-blue-400' },
+                            ].map(c => (
+                                <div key={c.label} className="text-center">
+                                    <div className="text-[8px] text-muted-foreground uppercase">{c.label}</div>
+                                    <div className={`text-xs font-bold ${c.color}`}>{c.val}</div>
+                                </div>
+                            ))}
+                            <div className="text-center">
+                                <div className="text-[8px] text-muted-foreground uppercase">Total</div>
+                                <div className="text-xs font-black text-foreground">$202,138</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Recipients */}
+                    <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Recipients</div>
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 text-[10px]">
+                                <PaperAirplaneIcon className="h-3 w-3 text-brand-500 shrink-0" />
+                                <span className="text-foreground"><span className="font-bold">JPS Health Network</span> — Client (PDF proposal)</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px]">
+                                <UserGroupIcon className="h-3 w-3 text-sky-500 shrink-0" />
+                                <span className="text-foreground"><span className="font-bold">David Park, Alex Rivera, Sara Chen</span> — Confirmation</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => setShowQuotePreview(true)}
+                            className="flex-1 py-3 rounded-xl text-xs font-bold border border-border bg-card text-foreground hover:bg-muted transition-all flex items-center justify-center gap-2"
+                        >
+                            <EyeIcon className="h-3.5 w-3.5" />
+                            Preview Quote PDF
+                        </button>
+                        <button
+                            onClick={() => setReviewPhase('releasing')}
+                            className="flex-1 py-3 rounded-xl text-xs font-bold bg-brand-400 text-zinc-900 hover:bg-brand-300 shadow-lg shadow-brand-500/20 transition-all flex items-center justify-center gap-2"
+                        >
+                            <PaperAirplaneIcon className="h-3.5 w-3.5" />
+                            Release to Client
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* ── Releasing phase — agent pipeline ── */}
             {reviewPhase === 'releasing' && (
                 <div className="animate-in fade-in duration-500 space-y-3">
@@ -2006,7 +2076,7 @@ export function WrgEstimatorReview({ onNavigate }: { onNavigate: (page: string) 
                 approvers={ESTIMATION_APPROVERS}
                 onComplete={() => {
                     setShowApprovalChain(false);
-                    setReviewPhase('releasing');
+                    setReviewPhase('approved');
                 }}
             />
 
