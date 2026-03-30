@@ -264,6 +264,24 @@ const COMBINED_BREAKDOWN = [
     { label: 'Items resolved', value: '24 / 24', note: '5 flagged → all reviewed & approved' },
 ];
 
+// ─── Staging cards breakdown (w2.3 staging-revealed) ────────────────────────
+const LABOR_ESTIMATE_BREAKDOWN = [
+    { label: 'Installation labor', value: `$${REVIEWED_INSTALL_COST.toLocaleString()}`, detail: `${INSTALL_TOTAL_HRS.toFixed(1)} hrs × $57/hr (Strata HC Standard)` },
+    { label: 'KD assembly surcharge', value: '+$450', detail: '124 KD chairs — 15% surcharge on assembly time' },
+    { label: 'Delivery base', value: `$${(DELIVERY_BASE_MIN * DELIVERY_RATE_PER_MIN).toLocaleString(undefined, { maximumFractionDigits: 0 })}`, detail: `${DELIVERY_BASE_MIN.toLocaleString()} min × $0.95/min (TX metro rate)` },
+    { label: 'Section G — site charges', value: `$${SECTION_G_CHARGES}`, detail: 'Trip charge $171 + hospital surcharge $114' },
+    { label: 'Expert adjustments', value: '+$375', detail: 'Bariatric (+$4.95), Carolina Booth (+$256.50), OFS Serpentine (+$114)' },
+    { label: 'Designer verification', value: '—', detail: 'OFS Serpentine 14.0 hrs confirmed — brackets compatible' },
+];
+
+const PRODUCT_QUOTE_BREAKDOWN = [
+    { label: 'Seating — task & guest', value: '$142,800', detail: '166 pcs — SOI Amplify, healthcare guest, stacking, folding' },
+    { label: 'Seating — lounge & specialty', value: '$68,500', detail: '23 pcs — lounge, recliners, bariatric, pediatric' },
+    { label: 'Custom products', value: '$38,200', detail: 'Carolina Booth ($12,400) + OFS Serpentine ($25,800)' },
+    { label: 'Tables & surfaces', value: '$24,350', detail: '25 pcs — conference, training, café, side, coffee' },
+    { label: 'Wall-mount accessories', value: '$13,600', detail: '12 glassboards 36×48 with mounting hardware' },
+];
+
 // ─── Dealer picker options (for w2.3 send) ──────────────────────────────────
 const DEALER_OPTIONS = [
     { name: 'Sara Chen', role: 'Account Manager', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face' },
@@ -324,7 +342,7 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
     const allModulesValidated = VERIFICATION_MODULES.every(m => moduleValidated[m.id]);
 
     // w2.3: cost cards expanded state (expanded by default)
-    const [expandedCostCards, setExpandedCostCards] = useState<Set<string>>(new Set(['delivery', 'installation', 'combined']));
+    const [expandedCostCards, setExpandedCostCards] = useState<Set<string>>(new Set(['delivery', 'installation', 'combined', 'labor', 'product']));
     const toggleCostCard = (card: string) => setExpandedCostCards(prev => { const n = new Set(prev); n.has(card) ? n.delete(card) : n.add(card); return n; });
 
     // w2.3: sub-phase state
@@ -1461,17 +1479,64 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
                     {subPhase === 'staging-revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-3">
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="p-4 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
-                                    <div className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Labor Estimate</div>
-                                    <div className="text-xl font-bold text-green-700 dark:text-green-400">$15,378</div>
-                                    <div className="text-[10px] text-muted-foreground mt-1">Install ${REVIEWED_INSTALL_COST.toLocaleString()} + Delivery ${DELIVERY_TOTAL_COST.toLocaleString()}</div>
-                                    <div className="mt-2"><span className="text-[9px] px-2 py-0.5 rounded-full bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30 font-bold">DAVID PARK &#10003;</span></div>
+                                {/* Labor Estimate — expandable */}
+                                <div className="rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 overflow-hidden">
+                                    <button onClick={() => toggleCostCard('labor')} className="w-full p-4 text-left hover:bg-green-100/50 dark:hover:bg-green-500/10 transition-colors">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Labor Estimate</span>
+                                            <ChevronDownIcon className={`h-3 w-3 text-muted-foreground transition-transform duration-200 ${expandedCostCards.has('labor') ? 'rotate-180' : ''}`} />
+                                        </div>
+                                        <div className="text-xl font-bold text-green-700 dark:text-green-400">$15,378</div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">Install ${REVIEWED_INSTALL_COST.toLocaleString()} + Delivery ${DELIVERY_TOTAL_COST.toLocaleString()}</div>
+                                        <div className="mt-2"><span className="text-[9px] px-2 py-0.5 rounded-full bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30 font-bold">DAVID PARK &#10003;</span></div>
+                                    </button>
+                                    {expandedCostCards.has('labor') && (
+                                        <div className="px-4 pb-3 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                                            <div className="h-px bg-green-200 dark:bg-green-500/20 mb-1" />
+                                            {LABOR_ESTIMATE_BREAKDOWN.map(row => (
+                                                <div key={row.label} className="flex items-start gap-1.5">
+                                                    <CheckCircleIcon className="h-3 w-3 text-green-400 shrink-0 mt-0.5" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[9px] font-bold text-foreground">{row.label}</span>
+                                                            <span className="text-[9px] font-bold text-green-600 dark:text-green-400 shrink-0 ml-1">{row.value}</span>
+                                                        </div>
+                                                        <div className="text-[8px] text-muted-foreground">{row.detail}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20">
-                                    <div className="text-[10px] text-muted-foreground mb-1 uppercase tracking-wider">Product Quote</div>
-                                    <div className="text-xl font-bold text-blue-700 dark:text-blue-400">$287,450</div>
-                                    <div className="mt-1"><span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30 font-bold">MILLERKNOLL LIST</span></div>
-                                    <div className="text-[10px] text-muted-foreground mt-1">24 line items</div>
+
+                                {/* Product Quote — expandable */}
+                                <div className="rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 overflow-hidden">
+                                    <button onClick={() => toggleCostCard('product')} className="w-full p-4 text-left hover:bg-blue-100/50 dark:hover:bg-blue-500/10 transition-colors">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Product Quote</span>
+                                            <ChevronDownIcon className={`h-3 w-3 text-muted-foreground transition-transform duration-200 ${expandedCostCards.has('product') ? 'rotate-180' : ''}`} />
+                                        </div>
+                                        <div className="text-xl font-bold text-blue-700 dark:text-blue-400">$287,450</div>
+                                        <div className="mt-1"><span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30 font-bold">MILLERKNOLL LIST</span></div>
+                                        <div className="text-[10px] text-muted-foreground mt-1">24 line items</div>
+                                    </button>
+                                    {expandedCostCards.has('product') && (
+                                        <div className="px-4 pb-3 space-y-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                                            <div className="h-px bg-blue-200 dark:bg-blue-500/20 mb-1" />
+                                            {PRODUCT_QUOTE_BREAKDOWN.map(row => (
+                                                <div key={row.label} className="flex items-start gap-1.5">
+                                                    <CubeIcon className="h-3 w-3 text-blue-400 shrink-0 mt-0.5" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[9px] font-bold text-foreground">{row.label}</span>
+                                                            <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 shrink-0 ml-1">{row.value}</span>
+                                                        </div>
+                                                        <div className="text-[8px] text-muted-foreground">{row.detail}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center justify-center gap-2 py-1">
