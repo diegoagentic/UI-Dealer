@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon, ChevronRightIcon, ChevronLeftIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon, ChevronRightIcon, ChevronLeftIcon, MagnifyingGlassIcon, QrCodeIcon, XMarkIcon, KeyIcon } from '@heroicons/react/24/outline'
 import logoLightBrand from './assets/logo-light-brand.png'
 import logoDarkBrand from './assets/logo-dark-brand.png'
 import { useAuth } from './context/AuthContext'
@@ -26,13 +26,18 @@ export default function Login() {
     )
 
     // MFA state
-    type MfaPhase = 'welcome' | 'phone' | 'sending' | 'code' | 'verifying' | 'success';
+    type MfaPhase = 'welcome' | 'method-select' | 'phone' | 'sending' | 'code' | 'totp-setup' | 'totp-qr' | 'verifying' | 'success';
     const [showMfa, setShowMfa] = useState(false)
     const [mfaPhase, setMfaPhase] = useState<MfaPhase>('welcome')
     const [mfaEmail, setMfaEmail] = useState('')
+    const [showAppList, setShowAppList] = useState(false)
+    const [showSecretKey, setShowSecretKey] = useState(false)
 
     const MFA_PHONE = '+1 (832) ***-4582'
     const MFA_CODE = ['8', '3', '1', '9', '0', '7']
+    const TOTP_CODE = ['4', '7', '2', '9', '1', '5']
+    const TOTP_SECRET = 'JBSWY3DPEHPK3PXP'
+    const COMPATIBLE_APPS = ['Twilio Authy Authenticator', 'Duo Mobile', 'Microsoft Authenticator', 'Google Authenticator', 'Symantec VIP']
 
     // Access selection state (tenant → role)
     type AccessPhase = 'tenants' | 'roles';
@@ -92,6 +97,8 @@ export default function Login() {
 
     const startMfaFlow = useCallback(() => {
         setMfaPhase('welcome')
+        setShowAppList(false)
+        setShowSecretKey(false)
         setShowMfa(true)
     }, [])
 
@@ -117,10 +124,10 @@ export default function Login() {
         addToast('success', 'Multi-factor authentication verified successfully!')
     }, [completeMfaLogin, mfaEmail, addToast])
 
-    // Auto-verify code after appearing
+    // Auto-verify code after appearing (SMS and TOTP)
     useEffect(() => {
-        if (mfaPhase === 'code') {
-            const timer = setTimeout(() => handleMfaVerify(), 2000)
+        if (mfaPhase === 'code' || mfaPhase === 'totp-qr') {
+            const timer = setTimeout(() => handleMfaVerify(), 2500)
             return () => clearTimeout(timer)
         }
         if (mfaPhase === 'success') {
@@ -418,23 +425,28 @@ export default function Login() {
                     <div className="w-full max-w-md mx-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         {/* Header */}
                         <div className="px-8 pt-8 pb-4 text-center">
-                            {mfaPhase !== 'welcome' && (
+                            {mfaPhase !== 'welcome' && mfaPhase !== 'totp-setup' && (
                                 <div className="mx-auto w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mb-4">
                                     {mfaPhase === 'success' ? (
                                         <ShieldCheckIcon className="w-7 h-7 text-green-500 dark:text-green-400" />
+                                    ) : (mfaPhase === 'totp-qr' || mfaPhase === 'method-select') ? (
+                                        <QrCodeIcon className="w-7 h-7 text-primary" />
                                     ) : (
                                         <DevicePhoneMobileIcon className="w-7 h-7 text-primary" />
                                     )}
                                 </div>
                             )}
                             <h3 className="text-xl font-bold text-zinc-900 dark:text-white">
-                                {mfaPhase === 'welcome' ? 'Welcome!' : mfaPhase === 'success' ? 'Verification Complete' : 'Multi-Factor Authentication'}
+                                {mfaPhase === 'welcome' ? 'Welcome!' : mfaPhase === 'method-select' ? 'Choose Verification Method' : mfaPhase === 'totp-setup' ? '' : mfaPhase === 'totp-qr' ? 'Set up MFA' : mfaPhase === 'success' ? 'Verification Complete' : 'Multi-Factor Authentication'}
                             </h3>
                             <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                                 {mfaPhase === 'welcome' && ''}
+                                {mfaPhase === 'method-select' && 'Select how you want to verify your identity.'}
                                 {mfaPhase === 'phone' && 'Verify your identity with a one-time code sent to your phone.'}
                                 {mfaPhase === 'sending' && 'Sending verification code...'}
                                 {mfaPhase === 'code' && 'Enter the 6-digit code sent to your phone.'}
+                                {mfaPhase === 'totp-setup' && ''}
+                                {mfaPhase === 'totp-qr' && ''}
                                 {mfaPhase === 'verifying' && 'Verifying your code...'}
                                 {mfaPhase === 'success' && 'Your identity has been verified successfully.'}
                             </p>
@@ -449,7 +461,238 @@ export default function Login() {
                                         To enhance the security of your account, we require an extra layer of protection. This additional step ensures that only you can access your account. Thank you for helping us keep your information safe and secure! Let us help you setting up your <span className="font-semibold text-zinc-900 dark:text-white">Multi-Factor Authentication (MFA)</span>.
                                     </p>
                                     <button
-                                        onClick={() => setMfaPhase('phone')}
+                                        onClick={() => setMfaPhase('method-select')}
+                                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Continue
+                                    </button>
+                                    <button
+                                        onClick={handleMfaSkip}
+                                        className="w-full text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline underline-offset-2 transition-colors"
+                                    >
+                                        Skip MFA for now
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Method select phase */}
+                            {mfaPhase === 'method-select' && (
+                                <div className="space-y-4 mt-2">
+                                    <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center">Choose your preferred verification method</p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <button
+                                            onClick={() => setMfaPhase('phone')}
+                                            className="p-5 rounded-xl border-2 border-zinc-200 dark:border-white/15 hover:border-primary dark:hover:border-primary bg-zinc-50 dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-center group"
+                                        >
+                                            <DevicePhoneMobileIcon className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
+                                            <div className="text-sm font-bold text-zinc-900 dark:text-white mb-1">Text Message (SMS)</div>
+                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">Receive a one-time code via SMS to your phone</p>
+                                        </button>
+                                        <button
+                                            onClick={() => setMfaPhase('totp-setup')}
+                                            className="p-5 rounded-xl border-2 border-zinc-200 dark:border-white/15 hover:border-primary dark:hover:border-primary bg-zinc-50 dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-center group"
+                                        >
+                                            <QrCodeIcon className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
+                                            <div className="text-sm font-bold text-zinc-900 dark:text-white mb-1">Authenticator App</div>
+                                            <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">Use an app to generate time-based codes</p>
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={handleMfaSkip}
+                                        className="w-full text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline underline-offset-2 transition-colors"
+                                    >
+                                        Skip MFA for now
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* TOTP setup phase — step 1: install app */}
+                            {mfaPhase === 'totp-setup' && (
+                                <div className="space-y-6 mt-2">
+                                    <div className="text-lg font-bold text-zinc-900 dark:text-white">Set up MFA</div>
+
+                                    {/* Vertical stepper */}
+                                    <div className="space-y-0">
+                                        {/* Step 1 — active */}
+                                        <div className="flex gap-3">
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">1</div>
+                                                <div className="w-0.5 flex-1 bg-zinc-200 dark:bg-white/20 my-1" />
+                                            </div>
+                                            <div className="pb-5">
+                                                <p className="text-sm text-zinc-900 dark:text-white font-medium leading-relaxed">
+                                                    Install the compatible app on your mobile device or computer. Or select an already installed one.
+                                                </p>
+                                                <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
+                                                    Select an MFA App from the{' '}
+                                                    <button onClick={() => setShowAppList(true)} className="text-primary hover:underline font-medium">
+                                                        list of compatible applications
+                                                    </button>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 2 — dimmed */}
+                                        <div className="flex gap-3">
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-7 h-7 rounded-full bg-zinc-200 dark:bg-white/15 text-zinc-500 dark:text-zinc-400 flex items-center justify-center text-xs font-bold shrink-0">2</div>
+                                                <div className="w-0.5 flex-1 bg-zinc-200 dark:bg-white/20 my-1" />
+                                            </div>
+                                            <div className="pb-5">
+                                                <p className="text-sm text-zinc-400 dark:text-zinc-500">Use your MFA App and your device's camera to scan the QR code</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Step 3 — dimmed */}
+                                        <div className="flex gap-3">
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-7 h-7 rounded-full bg-zinc-200 dark:bg-white/15 text-zinc-500 dark:text-zinc-400 flex items-center justify-center text-xs font-bold shrink-0">3</div>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-zinc-400 dark:text-zinc-500">Type the MFA Code displayed in the App</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={() => setMfaPhase('totp-qr')}
+                                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2"
+                                    >
+                                        Continue
+                                    </button>
+                                    <button
+                                        onClick={handleMfaSkip}
+                                        className="w-full text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white underline underline-offset-2 transition-colors"
+                                    >
+                                        Skip MFA for now
+                                    </button>
+
+                                    {/* Compatible apps modal */}
+                                    {showAppList && (
+                                        <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/30 rounded-2xl">
+                                            <div className="w-full max-w-sm mx-6 bg-white dark:bg-zinc-800 rounded-xl shadow-2xl border border-zinc-200 dark:border-white/10 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                                <div className="px-5 pt-5 pb-3 flex items-start justify-between">
+                                                    <div>
+                                                        <h4 className="text-base font-bold text-zinc-900 dark:text-white">List of compatible Apps</h4>
+                                                        <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">Click on the app you will be using. A barcode will be displayed on the next screen that you will use to complete the process.</p>
+                                                    </div>
+                                                    <button onClick={() => setShowAppList(false)} className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors shrink-0 ml-2">
+                                                        <XMarkIcon className="w-5 h-5 text-zinc-400" />
+                                                    </button>
+                                                </div>
+                                                <div className="px-5 pb-5 space-y-1">
+                                                    {COMPATIBLE_APPS.map(app => (
+                                                        <button
+                                                            key={app}
+                                                            onClick={() => { setShowAppList(false); setMfaPhase('totp-qr'); }}
+                                                            className="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium text-primary hover:bg-primary/10 dark:hover:bg-primary/15 transition-colors"
+                                                        >
+                                                            {app}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* TOTP QR phase — steps 2+3: scan QR + enter code */}
+                            {mfaPhase === 'totp-qr' && (
+                                <div className="space-y-5 mt-2">
+                                    {/* Step 2 header */}
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0">2</div>
+                                        <span className="text-sm font-medium text-zinc-900 dark:text-white">Use your MFA App and your device's camera to scan the QR code</span>
+                                    </div>
+
+                                    {/* QR code placeholder */}
+                                    <div className="flex justify-center">
+                                        <div className="p-3 bg-white rounded-xl border border-zinc-200 dark:border-zinc-300 inline-block">
+                                            <svg width="160" height="160" viewBox="0 0 160 160" className="block">
+                                                {/* QR-like pattern */}
+                                                {(() => {
+                                                    const size = 8;
+                                                    const grid = 20;
+                                                    const pattern = [
+                                                        [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+                                                        [1,0,0,0,0,0,1,0,0,1,0,1,0,0,1,0,0,0,0,0,1],
+                                                        [1,0,1,1,1,0,1,0,1,1,0,0,1,0,1,0,1,1,1,0,1],
+                                                        [1,0,1,1,1,0,1,0,0,1,1,0,0,0,1,0,1,1,1,0,1],
+                                                        [1,0,1,1,1,0,1,0,1,0,1,1,0,0,1,0,1,1,1,0,1],
+                                                        [1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,1],
+                                                        [1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1],
+                                                        [0,0,0,0,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0],
+                                                        [1,0,1,1,0,1,1,1,0,0,1,0,1,1,0,1,1,0,1,0,1],
+                                                        [0,1,0,1,1,0,0,1,1,0,0,1,0,1,1,0,1,1,0,1,0],
+                                                        [1,0,1,0,1,1,1,0,1,1,0,0,1,0,1,0,0,1,1,0,1],
+                                                        [0,1,1,0,0,1,0,1,0,1,1,0,0,1,0,1,1,0,1,1,0],
+                                                        [1,1,0,1,1,0,1,0,1,0,0,1,1,0,1,0,1,1,0,0,1],
+                                                        [0,0,0,0,0,0,0,0,1,0,1,1,0,0,1,1,0,1,0,1,0],
+                                                        [1,1,1,1,1,1,1,0,0,1,0,0,1,0,1,0,1,0,1,0,1],
+                                                        [1,0,0,0,0,0,1,0,1,1,1,0,0,1,0,1,1,0,0,1,0],
+                                                        [1,0,1,1,1,0,1,0,1,0,1,1,1,0,1,0,0,1,1,0,1],
+                                                        [1,0,1,1,1,0,1,0,0,1,0,1,0,1,1,1,0,1,0,1,0],
+                                                        [1,0,1,1,1,0,1,0,1,1,0,0,1,0,0,1,1,0,1,0,1],
+                                                        [1,0,0,0,0,0,1,0,0,0,1,1,0,1,0,0,1,1,0,1,0],
+                                                        [1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1],
+                                                    ];
+                                                    const rects: React.ReactNode[] = [];
+                                                    pattern.forEach((row, y) => {
+                                                        row.forEach((cell, x) => {
+                                                            if (cell && x < grid && y < grid) {
+                                                                rects.push(<rect key={`${x}-${y}`} x={x * size} y={y * size} width={size} height={size} fill="black" />);
+                                                            }
+                                                        });
+                                                    });
+                                                    return rects;
+                                                })()}
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                    {/* Secret key toggle */}
+                                    <div className="text-center">
+                                        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                                            <span className="underline decoration-dotted">Alternatively</span>, you can type the secret key.
+                                        </p>
+                                        <button
+                                            onClick={() => setShowSecretKey(!showSecretKey)}
+                                            className="text-xs text-primary hover:underline font-medium mt-0.5"
+                                        >
+                                            {showSecretKey ? 'Hide secret key' : 'Show secret key.'}
+                                        </button>
+                                        {showSecretKey && (
+                                            <div className="mt-2 flex items-center justify-center gap-2">
+                                                <div className="px-3 py-2 bg-zinc-100 dark:bg-white/10 rounded-lg border border-zinc-200 dark:border-white/20">
+                                                    <code className="text-sm font-mono font-bold text-zinc-900 dark:text-white tracking-wider">{TOTP_SECRET}</code>
+                                                </div>
+                                                <KeyIcon className="w-4 h-4 text-zinc-400" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Step 3 — code entry */}
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-bold shrink-0">3</div>
+                                            <span className="text-sm font-medium text-zinc-900 dark:text-white">Type the MFA Code displayed in the App</span>
+                                        </div>
+                                        <div className="flex gap-2 justify-center">
+                                            {TOTP_CODE.map((digit, i) => (
+                                                <input
+                                                    key={i}
+                                                    type="text"
+                                                    value={digit}
+                                                    readOnly
+                                                    className="w-12 h-14 text-center text-xl font-bold bg-zinc-50 dark:bg-white/10 border border-zinc-200 dark:border-white/20 text-zinc-900 dark:text-white rounded-lg outline-none cursor-default"
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={handleMfaVerify}
                                         className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg transition-all flex items-center justify-center gap-2"
                                     >
                                         Continue
