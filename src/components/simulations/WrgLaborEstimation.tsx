@@ -51,7 +51,7 @@ interface AgentVis { name: string; detail: string; visible: boolean; done: boole
 
 type PipelinePhase = 'idle' | 'notification' | 'processing' | 'breathing' | 'revealed';
 type ConfirmSubPhase = 'confirm' | 'staging' | 'staging-pipeline' | 'staging-revealed' | 'markup' | 'markup-pipeline' | 'markup-revealed';
-type ReviewPhase = 'reviewing' | 'approved' | 'releasing' | 'done';
+type ReviewPhase = 'notification' | 'reviewing' | 'approved' | 'releasing' | 'done';
 
 // Designer avatar for escalation micro-interaction
 const DESIGNER_PHOTO = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&fit=crop&crop=face';
@@ -2286,7 +2286,7 @@ export function WrgEstimatorReview({ onNavigate }: { onNavigate: (page: string) 
         };
     }, []);
 
-    const [reviewPhase, setReviewPhase] = useState<ReviewPhase>('reviewing');
+    const [reviewPhase, setReviewPhase] = useState<ReviewPhase>('notification');
     const [showApprovalChain, setShowApprovalChain] = useState(false);
     const [dealerModuleComments, setDealerModuleComments] = useState<Record<string, string>>({});
     const [dealerCommentingModule, setDealerCommentingModule] = useState<string | null>(null);
@@ -2316,6 +2316,84 @@ export function WrgEstimatorReview({ onNavigate }: { onNavigate: (page: string) 
 
     return (
         <div className="space-y-4">
+
+            {/* ── Notification phase — expert sends proposal ── */}
+            {reviewPhase === 'notification' && (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-500 space-y-3">
+                    <button
+                        onClick={() => setReviewPhase('reviewing')}
+                        className="w-full text-left p-4 rounded-xl bg-brand-50 dark:bg-brand-500/10 border-2 border-brand-400 dark:border-brand-500/40 shadow-lg shadow-brand-500/10 hover:shadow-xl hover:shadow-brand-500/15 transition-all group cursor-pointer"
+                    >
+                        <div className="flex items-start gap-3">
+                            <img src={EXPERT_PHOTO} alt="" className="w-10 h-10 rounded-full ring-2 ring-brand-400 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs font-bold text-foreground">David Park</span>
+                                    <span className="text-[9px] text-muted-foreground">Strata Expert · Just now</span>
+                                </div>
+                                <div className="text-[11px] text-foreground leading-relaxed mb-2">
+                                    Proposal ready for your review — <span className="font-bold">JPS Health Center for Women</span>. All labor costs verified by expert + designer, product quote from MillerKnoll applied with JPS contract pricing.
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-1.5">
+                                        <CubeIcon className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-[9px] text-muted-foreground">24 line items</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <CalculatorIcon className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-[9px] text-muted-foreground">$202,138 total</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <CheckCircleIcon className="h-3 w-3 text-green-500" />
+                                        <span className="text-[9px] text-green-600 dark:text-green-400 font-bold">Expert + Designer verified</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-400 text-zinc-900 text-[9px] font-bold opacity-80 group-hover:opacity-100 transition-opacity">
+                                <EyeIcon className="h-3 w-3" />
+                                Review
+                            </div>
+                        </div>
+                    </button>
+
+                    {/* Quick summary cards */}
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="p-2.5 rounded-lg bg-card border border-border text-center">
+                            <div className="text-[8px] text-muted-foreground uppercase">Product</div>
+                            <div className="text-sm font-bold text-foreground">$178,219</div>
+                            <div className="text-[8px] text-muted-foreground">MillerKnoll net</div>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-card border border-border text-center">
+                            <div className="text-[8px] text-muted-foreground uppercase">Labor + Freight</div>
+                            <div className="text-sm font-bold text-green-700 dark:text-green-400">$23,919</div>
+                            <div className="text-[8px] text-muted-foreground">$17,685 + $6,234</div>
+                        </div>
+                        <div className="p-2.5 rounded-lg bg-brand-50 dark:bg-brand-500/5 border-2 border-brand-400 dark:border-brand-500/40 text-center">
+                            <div className="text-[8px] text-muted-foreground uppercase">Total</div>
+                            <div className="text-sm font-bold text-foreground">$202,138</div>
+                            <div className="text-[8px] text-muted-foreground">Tax exempt</div>
+                        </div>
+                    </div>
+
+                    {/* Attachments */}
+                    <div className="p-3 rounded-xl bg-card border border-border">
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Attachments</div>
+                        <div className="space-y-1.5">
+                            {[
+                                { icon: <DocumentTextIcon className="h-3.5 w-3.5" />, name: 'Proposal_JPS_HCW_2026.pdf', size: '2.4 MB', color: 'text-red-500' },
+                                { icon: <ClipboardDocumentListIcon className="h-3.5 w-3.5" />, name: 'Labor_Estimation_Report.xlsx', size: '856 KB', color: 'text-green-600' },
+                                { icon: <DocumentTextIcon className="h-3.5 w-3.5" />, name: 'MillerKnoll_Quote_287450.pdf', size: '1.8 MB', color: 'text-red-500' },
+                            ].map(att => (
+                                <div key={att.name} className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
+                                    <span className={att.color}>{att.icon}</span>
+                                    <span className="text-[9px] font-bold text-foreground flex-1">{att.name}</span>
+                                    <span className="text-[8px] text-muted-foreground">{att.size}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* ── Reviewing phase ── */}
             {reviewPhase === 'reviewing' && (
