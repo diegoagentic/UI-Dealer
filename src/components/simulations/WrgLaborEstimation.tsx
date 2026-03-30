@@ -264,6 +264,38 @@ const COMBINED_BREAKDOWN = [
     { label: 'Items resolved', value: '24 / 24', note: '5 flagged → all reviewed & approved' },
 ];
 
+// ─── Project intake report (shared by w2.3 and w2.4) ────────────────────────
+const INTAKE_REPORT = {
+    project: [
+        { label: 'Project', value: 'JPS Health Center for Women' },
+        { label: 'Client', value: 'JPS Health Network' },
+        { label: 'Vertical', value: 'Healthcare', badge: 'HC' },
+        { label: 'Area', value: '14,200 sqft · 6 floors' },
+        { label: 'Location', value: 'Fort Worth, TX (JPS campus)' },
+        { label: 'Site', value: 'Hospital delivery — restricted hours', badge: 'HOSP' },
+    ],
+    scope: [
+        { label: 'Manufacturer', value: 'MillerKnoll (Herman Miller Healthcare)' },
+        { label: 'Line Items', value: '24 products across 4 categories' },
+        { label: 'Special Items', value: '2 custom configurations (Carolina Booth, OFS Serpentine)' },
+        { label: 'Documents', value: 'Spec Narrative, Selection Doc, Site Requirements' },
+    ],
+    team: [
+        { name: 'David Park', role: 'Strata Expert', detail: 'Dallas, TX · 96.3% HC accuracy · 60% workload', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face' },
+        { name: 'Alex Rivera', role: 'Designer', detail: 'Verified OFS Serpentine · 5 modules validated', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face' },
+    ],
+    registration: [
+        { label: 'Smartsheet Row', value: '#2026-JPS-HCW' },
+        { label: 'Estimation Template', value: 'Complex Sheet (>50 items)' },
+        { label: 'Quote Type', value: 'Product + Installation Labor + Delivery' },
+    ],
+    mismatches: [
+        { item: 'Plastic Stacking Chair', badge: 'QTY MISMATCH', resolution: 'Qty updated to 20' },
+        { item: 'OFS Coact Serpentine', badge: 'CUSTOM CONFIG', resolution: '12-week lead accepted' },
+        { item: 'Nemschoff NC-2240 Recliner', badge: 'DISCONTINUED', resolution: 'Replaced with NC-2250' },
+    ],
+};
+
 // ─── Staging cards breakdown (w2.3 staging-revealed) ────────────────────────
 const LABOR_ESTIMATE_BREAKDOWN = [
     { label: 'Installation labor', value: `$${REVIEWED_INSTALL_COST.toLocaleString()}`, detail: `${INSTALL_TOTAL_HRS.toFixed(1)} hrs × $57/hr (Strata HC Standard)` },
@@ -1578,18 +1610,12 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
                     {subPhase === 'markup-revealed' && (
                         <div className="animate-in fade-in duration-500 space-y-3">
 
-                            {/* Project context — from intake */}
-                            <div className="p-3 rounded-xl bg-card border border-border">
-                                <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider mb-2">Project Context</div>
+                            {/* Intake report — project, scope, team, registration, mismatches */}
+                            <div className="p-3 rounded-xl bg-card border border-border space-y-3">
+                                <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Project & Intake Summary</div>
+                                {/* Project details */}
                                 <div className="grid grid-cols-3 gap-2">
-                                    {[
-                                        { label: 'Client', value: 'JPS Health Center for Women' },
-                                        { label: 'Vertical', value: 'Healthcare', badge: 'HC' },
-                                        { label: 'Area', value: '14,200 sqft · 6 floors' },
-                                        { label: 'Manufacturer', value: 'MillerKnoll' },
-                                        { label: 'Site', value: 'Hospital delivery', badge: 'HOSP' },
-                                        { label: 'Template', value: 'Complex Sheet (>50 items)' },
-                                    ].map(f => (
+                                    {INTAKE_REPORT.project.map(f => (
                                         <div key={f.label} className="px-2 py-1.5 rounded-lg bg-muted/50">
                                             <div className="text-[7px] text-muted-foreground uppercase">{f.label}</div>
                                             <div className="text-[9px] font-bold text-foreground flex items-center gap-1">
@@ -1598,6 +1624,58 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                                {/* Scope + Registration */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Product Scope</div>
+                                        {INTAKE_REPORT.scope.map(s => (
+                                            <div key={s.label} className="flex items-center justify-between py-0.5">
+                                                <span className="text-[8px] text-muted-foreground">{s.label}</span>
+                                                <span className="text-[8px] font-bold text-foreground">{s.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div>
+                                        <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Strata Registration</div>
+                                        {INTAKE_REPORT.registration.map(r => (
+                                            <div key={r.label} className="flex items-center justify-between py-0.5">
+                                                <span className="text-[8px] text-muted-foreground">{r.label}</span>
+                                                <span className="text-[8px] font-bold text-foreground">{r.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Team */}
+                                <div>
+                                    <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1.5">Assigned Team</div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {INTAKE_REPORT.team.map(t => (
+                                            <div key={t.name} className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 border border-border">
+                                                <img src={t.photo} alt="" className="w-7 h-7 rounded-full ring-1 ring-border" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-[9px] font-bold text-foreground">{t.name}</div>
+                                                    <div className="text-[8px] text-muted-foreground">{t.role} — {t.detail}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Mismatches resolved */}
+                                <div>
+                                    <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Mismatches Resolved (Flow 1)</div>
+                                    <div className="space-y-1">
+                                        {INTAKE_REPORT.mismatches.map(m => (
+                                            <div key={m.item} className="flex items-center justify-between py-0.5">
+                                                <div className="flex items-center gap-1.5">
+                                                    <CheckCircleIcon className="h-3 w-3 text-green-500 shrink-0" />
+                                                    <span className="text-[8px] font-bold text-foreground">{m.item}</span>
+                                                    <span className="text-[7px] px-1 py-0.5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold ring-1 ring-inset ring-amber-600/20">{m.badge}</span>
+                                                </div>
+                                                <span className="text-[8px] text-muted-foreground">{m.resolution}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
@@ -2081,6 +2159,60 @@ export function WrgEstimatorReview({ onNavigate }: { onNavigate: (page: string) 
                             <div className="text-[9px] text-muted-foreground uppercase">Total</div>
                             <div className="text-sm font-bold text-foreground">$202,138</div>
                             <div className="text-[8px] text-muted-foreground">Tax exempt</div>
+                        </div>
+                    </div>
+
+                    {/* Intake report — collapsible */}
+                    <div className="p-3 rounded-xl bg-card border border-border space-y-2.5">
+                        <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Project & Intake Summary</div>
+                        <div className="grid grid-cols-3 gap-2">
+                            {INTAKE_REPORT.project.map(f => (
+                                <div key={f.label} className="px-2 py-1.5 rounded-lg bg-muted/50">
+                                    <div className="text-[7px] text-muted-foreground uppercase">{f.label}</div>
+                                    <div className="text-[9px] font-bold text-foreground flex items-center gap-1">
+                                        {f.value}
+                                        {f.badge && <span className="text-[7px] px-1 py-0.5 rounded bg-sky-100 dark:bg-sky-500/15 text-sky-700 dark:text-sky-300 font-bold">{f.badge}</span>}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Product Scope</div>
+                                {INTAKE_REPORT.scope.map(s => (
+                                    <div key={s.label} className="flex items-center justify-between py-0.5">
+                                        <span className="text-[8px] text-muted-foreground">{s.label}</span>
+                                        <span className="text-[8px] font-bold text-foreground">{s.value}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <div>
+                                <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Assigned Team</div>
+                                {INTAKE_REPORT.team.map(t => (
+                                    <div key={t.name} className="flex items-center gap-2 py-0.5">
+                                        <img src={t.photo} alt="" className="w-5 h-5 rounded-full ring-1 ring-border" />
+                                        <div>
+                                            <span className="text-[8px] font-bold text-foreground">{t.name}</span>
+                                            <span className="text-[8px] text-muted-foreground ml-1">— {t.role}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div>
+                            <div className="text-[8px] font-bold text-muted-foreground uppercase mb-1">Mismatches Resolved (Flow 1)</div>
+                            <div className="space-y-0.5">
+                                {INTAKE_REPORT.mismatches.map(m => (
+                                    <div key={m.item} className="flex items-center justify-between py-0.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <CheckCircleIcon className="h-2.5 w-2.5 text-green-500 shrink-0" />
+                                            <span className="text-[8px] font-bold text-foreground">{m.item}</span>
+                                            <span className="text-[7px] px-1 py-0.5 rounded bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold ring-1 ring-inset ring-amber-600/20">{m.badge}</span>
+                                        </div>
+                                        <span className="text-[8px] text-muted-foreground">{m.resolution}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
 
