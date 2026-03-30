@@ -236,6 +236,34 @@ const waterfallTextStyles: Record<string, string> = {
     total: 'text-foreground',
 };
 
+// ─── Cost breakdown details (w2.3 expandable cards) ─────────────────────────
+const DELIVERY_BREAKDOWN = [
+    { category: 'Seating — Chairs & Task', items: '162 pcs', minutes: '4,980 min', detail: 'Guest, task KD, stacking, folding, bariatric' },
+    { category: 'Seating — Lounge & Custom', items: '23 pcs', minutes: '930 min', detail: 'Lounge, recliners, Carolina Booth, OFS Serpentine' },
+    { category: 'Tables & Surfaces', items: '25 pcs', minutes: '1,290 min', detail: 'Training, café, conference, side, coffee' },
+    { category: 'Wall-Mount', items: '12 pcs', minutes: '1,080 min', detail: 'Glassboards 36×48 with mounting hardware' },
+    { category: 'Overhead — Logistics', items: '5 trips', minutes: '0 min', detail: 'Pre-install visit, punch walk, extra trips' },
+    { category: 'Section G — Site Charges', items: '—', minutes: '$285', detail: 'Trip charge ($171) + hospital surcharge ($114)' },
+];
+
+const INSTALLATION_BREAKDOWN = [
+    { category: 'Task Seating KD (+15%)', items: '124 pcs', hours: '42.8 hrs', detail: 'KD assembly surcharge applied — SOI Amplify chairs & stools' },
+    { category: 'Guest & Stack Seating', items: '71 pcs', hours: '21.6 hrs', detail: 'Healthcare guest, folding, stacking, bariatric' },
+    { category: 'Lounge & Specialty', items: '22 pcs', hours: '23.3 hrs', detail: 'Lounge chairs, recliners, pediatric variant' },
+    { category: 'Custom Assembly', items: '2 pcs', hours: '15.0 hrs', detail: 'Carolina Booth (3.0 hrs) + OFS Serpentine (12.0 hrs)' },
+    { category: 'Tables', items: '25 pcs', hours: '37.0 hrs', detail: 'Conference, training, café, side, coffee tables' },
+    { category: 'Wall Mount — Glassboards', items: '12 pcs', hours: '30.0 hrs', detail: '2.5 hrs each — drill, level, anchor, hang' },
+    { category: 'Overhead', items: '5 visits', hours: '16.0 hrs', detail: 'Site visits (8 hrs), punch walk (4 hrs), logistics' },
+];
+
+const COMBINED_BREAKDOWN = [
+    { label: 'Delivery base', value: `$${(DELIVERY_BASE_MIN * DELIVERY_RATE_PER_MIN).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`, note: `${DELIVERY_BASE_MIN.toLocaleString()} min × $0.95/min` },
+    { label: 'Section G charges', value: `$${SECTION_G_CHARGES}`, note: 'Trip + hospital surcharge' },
+    { label: 'Installation labor', value: `$${REVIEWED_INSTALL_COST.toLocaleString()}`, note: `${INSTALL_TOTAL_HRS.toFixed(1)} hrs × $57/hr (adjusted)` },
+    { label: 'Expert adjustments', value: '+$375.45', note: 'Bariatric +$4.95, Carolina +$256.50, OFS +$114.00' },
+    { label: 'Items resolved', value: '24 / 24', note: '5 flagged → all reviewed & approved' },
+];
+
 // ─── Dealer picker options (for w2.3 send) ──────────────────────────────────
 const DEALER_OPTIONS = [
     { name: 'Sara Chen', role: 'Account Manager', photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face' },
@@ -294,6 +322,10 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
     const [searchFilter, setSearchFilter] = useState('');
     const [showPdfPreview, setShowPdfPreview] = useState(false);
     const allModulesValidated = VERIFICATION_MODULES.every(m => moduleValidated[m.id]);
+
+    // w2.3: cost cards expanded state (expanded by default)
+    const [expandedCostCards, setExpandedCostCards] = useState<Set<string>>(new Set(['delivery', 'installation', 'combined']));
+    const toggleCostCard = (card: string) => setExpandedCostCards(prev => { const n = new Set(prev); n.has(card) ? n.delete(card) : n.add(card); return n; });
 
     // w2.3: sub-phase state
     const [subPhase, setSubPhase] = useState<ConfirmSubPhase>('confirm');
@@ -1275,31 +1307,102 @@ export default function WrgLaborEstimation({ onNavigate }: { onNavigate: (page: 
                             </div>
                         </div>
 
-                        {/* Cost totals */}
+                        {/* Cost totals — expandable cards */}
                         <div className="grid grid-cols-3 gap-3">
-                            <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <TruckIcon className="h-3.5 w-3.5 text-blue-500" />
-                                    <span className="text-[9px] text-muted-foreground uppercase">Delivery</span>
-                                </div>
-                                <div className="text-lg font-bold text-blue-700 dark:text-blue-400">${DELIVERY_TOTAL_COST.toLocaleString()}</div>
-                                <div className="text-[9px] text-muted-foreground">{DELIVERY_BASE_MIN} min + Section G</div>
+                            {/* Delivery card */}
+                            <div className="rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-200 dark:border-blue-500/20 overflow-hidden">
+                                <button onClick={() => toggleCostCard('delivery')} className="w-full p-3 text-left hover:bg-blue-100/50 dark:hover:bg-blue-500/10 transition-colors">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <TruckIcon className="h-3.5 w-3.5 text-blue-500" />
+                                            <span className="text-[9px] text-muted-foreground uppercase font-bold">Delivery</span>
+                                        </div>
+                                        <ChevronDownIcon className={`h-3 w-3 text-muted-foreground transition-transform duration-200 ${expandedCostCards.has('delivery') ? 'rotate-180' : ''}`} />
+                                    </div>
+                                    <div className="text-lg font-bold text-blue-700 dark:text-blue-400">${DELIVERY_TOTAL_COST.toLocaleString()}</div>
+                                    <div className="text-[9px] text-muted-foreground">{DELIVERY_BASE_MIN.toLocaleString()} min + Section G</div>
+                                </button>
+                                {expandedCostCards.has('delivery') && (
+                                    <div className="px-3 pb-3 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <div className="h-px bg-blue-200 dark:bg-blue-500/20 mb-1.5" />
+                                        {DELIVERY_BREAKDOWN.map(row => (
+                                            <div key={row.category} className="flex items-start gap-1.5">
+                                                <CheckCircleIcon className="h-2.5 w-2.5 text-blue-400 shrink-0 mt-0.5" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[8px] font-bold text-foreground truncate">{row.category}</span>
+                                                        <span className="text-[8px] font-bold text-blue-600 dark:text-blue-400 shrink-0 ml-1">{row.minutes}</span>
+                                                    </div>
+                                                    <div className="text-[7px] text-muted-foreground">{row.items} — {row.detail}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <div className="p-3 rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-green-500" />
-                                    <span className="text-[9px] text-muted-foreground uppercase">Installation</span>
-                                </div>
-                                <div className="text-lg font-bold text-green-700 dark:text-green-400">${REVIEWED_INSTALL_COST.toLocaleString()}</div>
-                                <div className="text-[9px] text-muted-foreground">{INSTALL_TOTAL_HRS.toFixed(1)} hrs × $57/hr</div>
+
+                            {/* Installation card */}
+                            <div className="rounded-xl bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 overflow-hidden">
+                                <button onClick={() => toggleCostCard('installation')} className="w-full p-3 text-left hover:bg-green-100/50 dark:hover:bg-green-500/10 transition-colors">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-green-500" />
+                                            <span className="text-[9px] text-muted-foreground uppercase font-bold">Installation</span>
+                                        </div>
+                                        <ChevronDownIcon className={`h-3 w-3 text-muted-foreground transition-transform duration-200 ${expandedCostCards.has('installation') ? 'rotate-180' : ''}`} />
+                                    </div>
+                                    <div className="text-lg font-bold text-green-700 dark:text-green-400">${REVIEWED_INSTALL_COST.toLocaleString()}</div>
+                                    <div className="text-[9px] text-muted-foreground">{INSTALL_TOTAL_HRS.toFixed(1)} hrs × $57/hr</div>
+                                </button>
+                                {expandedCostCards.has('installation') && (
+                                    <div className="px-3 pb-3 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <div className="h-px bg-green-200 dark:bg-green-500/20 mb-1.5" />
+                                        {INSTALLATION_BREAKDOWN.map(row => (
+                                            <div key={row.category} className="flex items-start gap-1.5">
+                                                <CheckCircleIcon className="h-2.5 w-2.5 text-green-400 shrink-0 mt-0.5" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[8px] font-bold text-foreground truncate">{row.category}</span>
+                                                        <span className="text-[8px] font-bold text-green-600 dark:text-green-400 shrink-0 ml-1">{row.hours}</span>
+                                                    </div>
+                                                    <div className="text-[7px] text-muted-foreground">{row.items} — {row.detail}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                            <div className="p-3 rounded-xl bg-card border-2 border-foreground/20">
-                                <div className="flex items-center gap-1.5 mb-1">
-                                    <CalculatorIcon className="h-3.5 w-3.5 text-foreground" />
-                                    <span className="text-[9px] text-muted-foreground uppercase">Combined</span>
-                                </div>
-                                <div className="text-lg font-bold text-foreground">${REVIEWED_COMBINED.toLocaleString()}</div>
-                                <div className="text-[9px] text-muted-foreground">24 items · all resolved</div>
+
+                            {/* Combined card */}
+                            <div className="rounded-xl bg-card border-2 border-foreground/20 overflow-hidden">
+                                <button onClick={() => toggleCostCard('combined')} className="w-full p-3 text-left hover:bg-muted/50 transition-colors">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <div className="flex items-center gap-1.5">
+                                            <CalculatorIcon className="h-3.5 w-3.5 text-foreground" />
+                                            <span className="text-[9px] text-muted-foreground uppercase font-bold">Combined</span>
+                                        </div>
+                                        <ChevronDownIcon className={`h-3 w-3 text-muted-foreground transition-transform duration-200 ${expandedCostCards.has('combined') ? 'rotate-180' : ''}`} />
+                                    </div>
+                                    <div className="text-lg font-bold text-foreground">${REVIEWED_COMBINED.toLocaleString()}</div>
+                                    <div className="text-[9px] text-muted-foreground">24 items · all resolved</div>
+                                </button>
+                                {expandedCostCards.has('combined') && (
+                                    <div className="px-3 pb-3 space-y-1 animate-in fade-in slide-in-from-top-1 duration-200">
+                                        <div className="h-px bg-border mb-1.5" />
+                                        {COMBINED_BREAKDOWN.map(row => (
+                                            <div key={row.label} className="flex items-start gap-1.5">
+                                                <CheckCircleIcon className="h-2.5 w-2.5 text-muted-foreground shrink-0 mt-0.5" />
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-[8px] font-bold text-foreground">{row.label}</span>
+                                                        <span className="text-[8px] font-bold text-foreground shrink-0 ml-1">{row.value}</span>
+                                                    </div>
+                                                    <div className="text-[7px] text-muted-foreground">{row.note}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
