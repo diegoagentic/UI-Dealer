@@ -53,7 +53,7 @@ type ConfirmSubPhase = 'confirm' | 'staging' | 'staging-pipeline' | 'staging-rev
 type ReviewPhase = 'reviewing' | 'approved' | 'releasing' | 'done';
 
 // Designer avatar for escalation micro-interaction
-const DESIGNER_PHOTO = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face';
+const DESIGNER_PHOTO = 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&fit=crop&crop=face';
 
 // ─── JPS Line Item Data (real project) ───────────────────────────────────────
 
@@ -282,7 +282,7 @@ const INTAKE_REPORT = {
     ],
     team: [
         { name: 'David Park', role: 'Strata Expert', detail: 'Dallas, TX · 96.3% HC accuracy · 60% workload', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face' },
-        { name: 'Alex Rivera', role: 'Designer', detail: 'Verified OFS Serpentine · 5 modules validated', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face' },
+        { name: 'Alex Rivera', role: 'Designer', detail: 'Verified OFS Serpentine · 5 modules validated', photo: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=80&h=80&fit=crop&crop=face' },
     ],
     registration: [
         { label: 'Smartsheet Row', value: '#2026-JPS-HCW' },
