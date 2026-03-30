@@ -174,8 +174,8 @@ const EXPERT_ADJUSTMENTS = [
 const ESTIMATION_APPROVERS: Approver[] = [
     { name: 'David Park', role: 'Strata Expert', status: 'approved' },
     { name: 'Alex Rivera', role: 'Designer', status: 'approved' },
-    { name: 'Sara Chen', role: 'Dealer — WR', status: 'current' },
-    { name: 'Jordan Park', role: 'Product Owner', status: 'pending' },
+    { name: 'Sara Chen', role: 'Dealer — WR', status: 'approved' },
+    { name: 'Jordan Park', role: 'Product Owner', status: 'current' },
 ];
 
 // ─── Designer Verification Agents (w2.2) ────────────────────────────────────
