@@ -15,6 +15,14 @@ import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
+import { useToast } from './hooks/useToast'
+import ToastNotification from './components/ToastNotification'
+import SendItemSlideOver from './components/SendItemSlideOver'
+import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
+import EditItemSlideOver from './components/EditItemSlideOver'
+import ItemActionsPopover from './components/ItemActionsPopover'
+import AddItemSlideOver from './components/AddItemSlideOver'
+import FilterPopover from './components/FilterPopover'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -498,6 +506,10 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
     const [isPOModalOpen, setIsPOModalOpen] = useState(false)
     const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
+    const [isSendOpen, setIsSendOpen] = useState(false)
+    const [isAddItemOpen, setIsAddItemOpen] = useState(false)
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
     const [isManualFixMode, setIsManualFixMode] = useState(false)
     const [resolutionMethod, setResolutionMethod] = useState<'local' | 'remote' | 'custom'>('remote')
@@ -530,13 +542,11 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                     />
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
-                        <FunnelIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Filter
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
+                    <FilterPopover onApply={(filters) => triggerToast('Filters Applied', `${filters.statuses.length + filters.categories.length} filters active`, 'info')} />
+                    <button onClick={() => { triggerToast('Preparing Export', 'Generating CSV file...', 'info'); setTimeout(() => triggerToast('Export Complete', 'ACK_ACK-3099_items.csv downloaded', 'success'), 1500); }} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
                         <ArrowDownTrayIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
                     </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
+                    <button onClick={() => setIsAddItemOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
                         <PlusIcon className="h-4 w-4" /> Add New Item
                     </button>
                 </div>
@@ -827,13 +837,16 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Preview Document">
+                                                    <DocumentChartBarIcon className="h-4 w-4" />
+                                                </button>
+                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
                                                     <PencilSquareIcon className="h-4 w-4" />
                                                 </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', `ACK_ACK-3099_${selectedItem.id}.pdf downloaded`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <ArrowDownTrayIcon className="h-4 w-4" />
                                                 </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <PaperAirplaneIcon className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
@@ -841,9 +854,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                     <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <EllipsisHorizontalIcon className="h-4 w-4" />
-                                                </button>
+                                                <ItemActionsPopover transactionType="ack" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />
                                             </div>
                                         </div>
 
@@ -1323,10 +1334,10 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
                                             <DialogTitle as="h3" className="text-lg font-bold leading-6 text-foreground">
-                                                Order Document Preview
+                                                Acknowledgement Document Preview
                                             </DialogTitle>
                                             <p className="text-sm text-muted-foreground mt-1">
-                                                Previewing Purchase Order #PO-2025-001
+                                                Previewing Order Acknowledgement #ACK-3099
                                             </p>
                                         </div>
                                         <button onClick={() => setIsDocumentModalOpen(false)} className="text-muted-foreground hover:text-foreground">
@@ -1336,60 +1347,138 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                                     <div className="bg-white text-black p-10 rounded-lg border border-zinc-200 h-[600px] overflow-auto shadow-sm">
                                         <div className="flex justify-between items-end mb-6 pb-4 border-b-2 border-black">
-                                            <h2 className="text-2xl font-bold uppercase">Purchase Order</h2>
+                                            <h2 className="text-2xl font-bold uppercase">Order Acknowledgement</h2>
                                             <div className="text-right">
                                                 <div className="font-bold text-lg">STRATA INC.</div>
-                                                <div className="text-sm">123 Innovation Dr., Tech City</div>
+                                                <div className="text-sm">123 Innovation Dr., Tech City, CA 94025</div>
+                                                <div className="text-xs text-zinc-500">Tel: (555) 123-4567 | ack@strata.io</div>
                                             </div>
                                         </div>
 
                                         <div className="flex justify-between mb-8">
                                             <div>
-                                                <div className="text-xs font-bold text-zinc-500 mb-1 uppercase">VENDOR</div>
-                                                <div className="font-bold">OfficeSupplies Co.</div>
-                                                <div className="text-sm">555 Supplier Lane</div>
+                                                <div className="text-xs font-bold text-zinc-500 mb-1 uppercase">CUSTOMER</div>
+                                                <div className="font-bold">Acme Corp.</div>
+                                                <div className="text-sm">742 Evergreen Terrace</div>
+                                                <div className="text-sm">Springfield, IL 62704</div>
+                                                <div className="text-xs text-zinc-500 mt-1">Contact: Michael Chen | m.chen@acmecorp.com</div>
                                             </div>
                                             <div className="text-right space-y-1">
-                                                <div className="flex justify-between w-48">
-                                                    <span className="text-sm font-bold text-zinc-500">PO #:</span>
-                                                    <span className="text-sm font-bold">PO-2025-001</span>
+                                                <div className="flex justify-between w-56">
+                                                    <span className="text-sm font-bold text-zinc-500">ACK #:</span>
+                                                    <span className="text-sm font-bold">ACK-3099</span>
                                                 </div>
-                                                <div className="flex justify-between w-48">
+                                                <div className="flex justify-between w-56">
                                                     <span className="text-sm font-bold text-zinc-500">DATE:</span>
-                                                    <span className="text-sm">Jan 12, 2026</span>
+                                                    <span className="text-sm">Mar 20, 2026</span>
                                                 </div>
+                                                <div className="flex justify-between w-56">
+                                                    <span className="text-sm font-bold text-zinc-500">REF PO #:</span>
+                                                    <span className="text-sm">PO-2025-001</span>
+                                                </div>
+                                                <div className="flex justify-between w-56">
+                                                    <span className="text-sm font-bold text-zinc-500">EXPECTED SHIP:</span>
+                                                    <span className="text-sm">Apr 5, 2026</span>
+                                                </div>
+                                                <div className="flex justify-between w-56">
+                                                    <span className="text-sm font-bold text-zinc-500">STATUS:</span>
+                                                    <span className="text-sm font-bold text-green-700">Confirmed</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded text-sm flex items-center gap-2">
+                                            <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                                            <div>
+                                                <span className="font-bold text-green-800">Order Confirmed</span>
+                                                <span className="text-green-700 ml-2">All items verified and scheduled for production.</span>
                                             </div>
                                         </div>
 
                                         <div className="mb-8">
-                                            <div className="flex bg-zinc-100 p-2 font-bold text-sm mb-2">
+                                            <div className="flex bg-zinc-100 p-2 font-bold text-xs mb-2">
+                                                <div className="w-8 text-center">#</div>
                                                 <div className="flex-grow-[2]">ITEM</div>
-                                                <div className="flex-1 text-right">QTY</div>
+                                                <div className="flex-1 text-right">QTY ORDERED</div>
+                                                <div className="flex-1 text-right">QTY CONFIRMED</div>
                                                 <div className="flex-1 text-right">UNIT PRICE</div>
                                                 <div className="flex-1 text-right">TOTAL</div>
                                             </div>
-                                            <div className="flex p-2 border-b border-zinc-100">
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-8 text-center text-sm text-zinc-500">1</div>
                                                 <div className="flex-grow-[2]">
-                                                    <div className="font-bold text-sm">{selectedItem.name}</div>
-                                                    <div className="text-xs text-zinc-500">{selectedItem.id}</div>
+                                                    <div className="font-bold text-sm">Executive Chair Pro</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-001 &middot; Leather / Black</div>
                                                 </div>
                                                 <div className="flex-1 text-right text-sm">50</div>
-                                                <div className="flex-1 text-right text-sm">$45.00</div>
-                                                <div className="flex-1 text-right text-sm">$2,250.00</div>
+                                                <div className="flex-1 text-right text-sm text-green-700 font-medium">50</div>
+                                                <div className="flex-1 text-right text-sm">$450.00</div>
+                                                <div className="flex-1 text-right text-sm">$22,500.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-8 text-center text-sm text-zinc-500">2</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Ergonomic Task Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-002 &middot; Mesh / Gray</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">120</div>
+                                                <div className="flex-1 text-right text-sm text-green-700 font-medium">120</div>
+                                                <div className="flex-1 text-right text-sm">$125.00</div>
+                                                <div className="flex-1 text-right text-sm">$15,000.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center bg-amber-50/50">
+                                                <div className="w-8 text-center text-sm text-zinc-500">3</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Conference Room Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-003 &middot; Fabric / Navy</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">30</div>
+                                                <div className="flex-1 text-right text-sm">
+                                                    <span className="text-amber-700 font-medium">28</span>
+                                                    <div className="text-[10px] text-amber-600">2 backordered</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">$85.00</div>
+                                                <div className="flex-1 text-right text-sm">$2,380.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-8 text-center text-sm text-zinc-500">4</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Visitor Stacking Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-004 &middot; Plastic / White</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">80</div>
+                                                <div className="flex-1 text-right text-sm text-green-700 font-medium">80</div>
+                                                <div className="flex-1 text-right text-sm">$55.00</div>
+                                                <div className="flex-1 text-right text-sm">$4,400.00</div>
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-end">
-                                            <div className="w-64">
-                                                <div className="flex justify-between mb-2">
+                                        <div className="flex justify-end mb-8">
+                                            <div className="w-72">
+                                                <div className="flex justify-between mb-1">
                                                     <span className="text-sm text-zinc-500">Subtotal:</span>
-                                                    <span className="text-sm font-bold">$2,250.00</span>
+                                                    <span className="text-sm font-bold">$44,280.00</span>
                                                 </div>
-                                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-100">
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-sm text-zinc-500">Shipping:</span>
+                                                    <span className="text-sm">Included</span>
+                                                </div>
+                                                <div className="flex justify-between mb-2">
+                                                    <span className="text-sm text-zinc-500">Tax (8.25%):</span>
+                                                    <span className="text-sm">$3,653.10</span>
+                                                </div>
+                                                <div className="flex justify-between items-center pt-2 border-t border-zinc-300">
                                                     <span className="text-lg font-bold">TOTAL:</span>
-                                                    <span className="text-xl font-bold text-foreground">$2,250.00</span>
+                                                    <span className="text-xl font-bold">$47,933.10</span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div className="border-t border-zinc-200 pt-4">
+                                            <div className="text-xs font-bold text-zinc-500 mb-2 uppercase">Notes</div>
+                                            <p className="text-sm text-zinc-700 leading-relaxed">
+                                                Items #1, #2, #4 confirmed for shipment by Apr 5, 2026. Item #3: 2 units backordered — estimated availability Apr 20, 2026. Partial shipment will proceed as scheduled.
+                                            </p>
                                         </div>
                                     </div>
 
@@ -1404,7 +1493,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-lg border border-transparent bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 focus:outline-none"
-                                            onClick={() => { }}
+                                            onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK-3099.pdf downloaded', 'success'), 1500); setIsDocumentModalOpen(false); }}
                                         >
                                             Download PDF
                                         </button>
@@ -1415,6 +1504,12 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                     </div>
                 </Dialog>
             </Transition>
+            {/* SlideOvers & Toast */}
+            <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="ack" transactionId="ACK-3099" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
+            <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="ack" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
+            <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="ack" transactionId="ACK-3099" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
+            <AddItemSlideOver open={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="ack" onAdd={() => triggerToast('Item Added', 'New line item added to Acknowledgement ACK-3099', 'success')} />
+            <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )
 }

@@ -15,6 +15,14 @@ import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
+import { useToast } from './hooks/useToast'
+import ToastNotification from './components/ToastNotification'
+import SendItemSlideOver from './components/SendItemSlideOver'
+import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
+import EditItemSlideOver from './components/EditItemSlideOver'
+import ItemActionsPopover from './components/ItemActionsPopover'
+import AddItemSlideOver from './components/AddItemSlideOver'
+import FilterPopover from './components/FilterPopover'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -99,6 +107,10 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isPOModalOpen, setIsPOModalOpen] = useState(false)
     const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
+    const [isSendOpen, setIsSendOpen] = useState(false)
+    const [isAddItemOpen, setIsAddItemOpen] = useState(false)
+    const [isEditOpen, setIsEditOpen] = useState(false)
+    const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
     const [isManualFixMode, setIsManualFixMode] = useState(false)
     const [resolutionMethod, setResolutionMethod] = useState<'local' | 'remote' | 'custom'>('remote')
@@ -131,13 +143,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     />
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
-                        <FunnelIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Filter
-                    </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
+                    <FilterPopover onApply={(filters) => triggerToast('Filters Applied', `${filters.statuses.length + filters.categories.length} filter(s) active`, 'info')} />
+                    <button onClick={() => { triggerToast('Exporting Items...', 'Generating CSV file', 'info'); setTimeout(() => triggerToast('Export Complete', 'Quote_QT-1025_Items.csv has been downloaded', 'success'), 1500); }} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
                         <ArrowDownTrayIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
                     </button>
-                    <button className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
+                    <button onClick={() => setIsAddItemOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
                         <PlusIcon className="h-4 w-4" /> Add New Item
                     </button>
                 </div>
@@ -416,12 +426,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                    <DocumentChartBarIcon className="h-4 w-4" title="Preview Document" />
+                                                </button>
+                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
                                                     <PencilSquareIcon className="h-4 w-4" />
                                                 </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => { triggerToast('Preparing Download...', `Generating PDF for ${selectedItem.name}`, 'info'); setTimeout(() => triggerToast('Download Complete', `Quote_QT-1025_${selectedItem.id}.pdf`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <ArrowDownTrayIcon className="h-4 w-4" />
                                                 </button>
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <PaperAirplaneIcon className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
@@ -429,9 +442,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <button className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <EllipsisHorizontalIcon className="h-4 w-4" />
-                                                </button>
+                                                <ItemActionsPopover transactionType="quote" onAction={(action) => triggerToast(action, `Action applied to ${selectedItem.name}`, 'success')} />
                                             </div>
                                         </div>
 
@@ -913,10 +924,10 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     <div className="flex justify-between items-center mb-6">
                                         <div>
                                             <DialogTitle as="h3" className="text-lg font-bold leading-6 text-foreground">
-                                                Order Document Preview
+                                                Quote Document Preview
                                             </DialogTitle>
                                             <p className="text-sm text-muted-foreground mt-1">
-                                                Previewing Purchase Order #PO-2025-001
+                                                Previewing Quotation #QT-1025
                                             </p>
                                         </div>
                                         <button onClick={() => setIsDocumentModalOpen(false)} className="text-muted-foreground hover:text-foreground">
@@ -926,60 +937,121 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                     <div className="bg-white text-black p-10 rounded-lg border border-zinc-200 h-[600px] overflow-auto shadow-sm">
                                         <div className="flex justify-between items-end mb-6 pb-4 border-b-2 border-black">
-                                            <h2 className="text-2xl font-bold uppercase">Purchase Order</h2>
+                                            <h2 className="text-2xl font-bold uppercase">Quotation</h2>
                                             <div className="text-right">
                                                 <div className="font-bold text-lg">STRATA INC.</div>
-                                                <div className="text-sm">123 Innovation Dr., Tech City</div>
+                                                <div className="text-sm">123 Innovation Dr., Tech City, CA 94025</div>
+                                                <div className="text-xs text-zinc-500 mt-1">Tel: (555) 123-4567 | sales@strata.io</div>
                                             </div>
                                         </div>
 
                                         <div className="flex justify-between mb-8">
                                             <div>
-                                                <div className="text-xs font-bold text-zinc-500 mb-1 uppercase">VENDOR</div>
-                                                <div className="font-bold">OfficeSupplies Co.</div>
-                                                <div className="text-sm">555 Supplier Lane</div>
+                                                <div className="text-xs font-bold text-zinc-500 mb-1 uppercase">PREPARED FOR</div>
+                                                <div className="font-bold">Acme Corp.</div>
+                                                <div className="text-sm">742 Evergreen Terrace</div>
+                                                <div className="text-sm">Springfield, IL 62704</div>
+                                                <div className="text-xs text-zinc-500 mt-1">Attn: Michael Chen | m.chen@acmecorp.com</div>
                                             </div>
                                             <div className="text-right space-y-1">
-                                                <div className="flex justify-between w-48">
-                                                    <span className="text-sm font-bold text-zinc-500">PO #:</span>
-                                                    <span className="text-sm font-bold">PO-2025-001</span>
+                                                <div className="flex justify-between w-52">
+                                                    <span className="text-sm font-bold text-zinc-500">QUOTE #:</span>
+                                                    <span className="text-sm font-bold">QT-1025</span>
                                                 </div>
-                                                <div className="flex justify-between w-48">
+                                                <div className="flex justify-between w-52">
                                                     <span className="text-sm font-bold text-zinc-500">DATE:</span>
-                                                    <span className="text-sm">Jan 12, 2026</span>
+                                                    <span className="text-sm">Mar 15, 2026</span>
+                                                </div>
+                                                <div className="flex justify-between w-52">
+                                                    <span className="text-sm font-bold text-zinc-500">VALID UNTIL:</span>
+                                                    <span className="text-sm">Apr 14, 2026</span>
+                                                </div>
+                                                <div className="flex justify-between w-52">
+                                                    <span className="text-sm font-bold text-zinc-500">PREPARED BY:</span>
+                                                    <span className="text-sm">Jessica Torres</span>
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="mb-8">
-                                            <div className="flex bg-zinc-100 p-2 font-bold text-sm mb-2">
+                                            <div className="flex bg-zinc-100 p-2 font-bold text-sm mb-1">
+                                                <div className="w-12 text-center">#</div>
                                                 <div className="flex-grow-[2]">ITEM</div>
                                                 <div className="flex-1 text-right">QTY</div>
                                                 <div className="flex-1 text-right">UNIT PRICE</div>
                                                 <div className="flex-1 text-right">TOTAL</div>
                                             </div>
-                                            <div className="flex p-2 border-b border-zinc-100">
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-12 text-center text-sm text-zinc-500">1</div>
                                                 <div className="flex-grow-[2]">
-                                                    <div className="font-bold text-sm">{selectedItem.name}</div>
-                                                    <div className="text-xs text-zinc-500">{selectedItem.id}</div>
+                                                    <div className="font-bold text-sm">Executive Chair Pro</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-001 · Leather / Black · Premium Series</div>
                                                 </div>
-                                                <div className="flex-1 text-right text-sm">50</div>
-                                                <div className="flex-1 text-right text-sm">$45.00</div>
-                                                <div className="flex-1 text-right text-sm">$2,250.00</div>
+                                                <div className="flex-1 text-right text-sm">25</div>
+                                                <div className="flex-1 text-right text-sm">$450.00</div>
+                                                <div className="flex-1 text-right text-sm font-medium">$11,250.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-12 text-center text-sm text-zinc-500">2</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Ergonomic Task Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-002 · Mesh / Gray · Standard Series</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">60</div>
+                                                <div className="flex-1 text-right text-sm">$125.00</div>
+                                                <div className="flex-1 text-right text-sm font-medium">$7,500.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-12 text-center text-sm text-zinc-500">3</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Conference Room Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-003 · Fabric / Navy · Meeting Series</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">40</div>
+                                                <div className="flex-1 text-right text-sm">$85.00</div>
+                                                <div className="flex-1 text-right text-sm font-medium">$3,400.00</div>
+                                            </div>
+                                            <div className="flex p-2 border-b border-zinc-100 items-center">
+                                                <div className="w-12 text-center text-sm text-zinc-500">4</div>
+                                                <div className="flex-grow-[2]">
+                                                    <div className="font-bold text-sm">Reception Lounge Chair</div>
+                                                    <div className="text-xs text-zinc-500">SKU-OFF-2025-006 · Velvet / Teal · Lobby Series</div>
+                                                </div>
+                                                <div className="flex-1 text-right text-sm">12</div>
+                                                <div className="flex-1 text-right text-sm">$220.00</div>
+                                                <div className="flex-1 text-right text-sm font-medium">$2,640.00</div>
                                             </div>
                                         </div>
 
                                         <div className="flex justify-end">
-                                            <div className="w-64">
-                                                <div className="flex justify-between mb-2">
+                                            <div className="w-72">
+                                                <div className="flex justify-between mb-1">
                                                     <span className="text-sm text-zinc-500">Subtotal:</span>
-                                                    <span className="text-sm font-bold">$2,250.00</span>
+                                                    <span className="text-sm font-medium">$24,790.00</span>
                                                 </div>
-                                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-zinc-100">
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-sm text-zinc-500">Volume Discount (5%):</span>
+                                                    <span className="text-sm font-medium text-green-600">-$1,239.50</span>
+                                                </div>
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-sm text-zinc-500">Shipping:</span>
+                                                    <span className="text-sm font-medium">$850.00</span>
+                                                </div>
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-sm text-zinc-500">Tax (8.25%):</span>
+                                                    <span className="text-sm font-medium">$2,013.04</span>
+                                                </div>
+                                                <div className="flex justify-between items-center mt-2 pt-2 border-t-2 border-black">
                                                     <span className="text-lg font-bold">TOTAL:</span>
-                                                    <span className="text-xl font-bold text-foreground">$2,250.00</span>
+                                                    <span className="text-xl font-bold">$26,413.54</span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div className="mt-8 pt-6 border-t border-zinc-200 text-xs text-zinc-500 space-y-2">
+                                            <p><strong>Terms & Conditions:</strong> Quote valid for 30 days. Prices subject to availability. Lead time: 4-6 weeks from order confirmation.</p>
+                                            <p><strong>Delivery:</strong> FOB Destination. Freight prepaid and added. Partial shipments allowed.</p>
+                                            <p className="text-zinc-400 mt-4">This quotation is subject to the terms and conditions available at strata.io/terms. Prepared by Jessica Torres, Account Executive.</p>
                                         </div>
                                     </div>
 
@@ -994,7 +1066,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-lg border border-transparent bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 focus:outline-none"
-                                            onClick={() => { }}
+                                            onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); setIsDocumentModalOpen(false); }}
                                         >
                                             Download PDF
                                         </button>
@@ -1005,6 +1077,13 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 </Dialog>
             </Transition>
+
+            {/* SlideOvers & Toast */}
+            <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="quote" transactionId="QT-1025" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
+            <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="quote" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
+            <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="quote" transactionId="QT-1025" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
+            <AddItemSlideOver open={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="quote" onAdd={() => triggerToast('Item Added', 'New line item added to Quote QT-1025', 'success')} />
+            <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )
 }
