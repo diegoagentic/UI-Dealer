@@ -7,8 +7,11 @@ node_modules
 coverage
 
 # Production
-dist
+/dist
 build
+
+# Keep strata-ds dist (pre-built for Vercel)
+!packages/strata-ds/dist/
 
 # Misc
 .DS_Store
