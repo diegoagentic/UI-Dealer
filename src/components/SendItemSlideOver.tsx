@@ -25,7 +25,7 @@ interface Stakeholder {
 
 const STAKEHOLDERS: Stakeholder[] = [
     { id: '1', name: 'Sarah Mitchell', email: 'sarah.mitchell@acmecorp.com', role: 'Procurement Manager', avatar: '', initials: 'SM', color: 'bg-blue-500' },
-    { id: '2', name: 'Michael Chen', email: 'm.chen@acmecorp.com', role: 'VP of Operations', avatar: '', initials: 'MC', color: 'bg-emerald-500' },
+    { id: '2', name: 'Michael Chen', email: 'm.chen@acmecorp.com', role: 'VP of Operations', avatar: '', initials: 'MC', color: 'bg-success' },
     { id: '3', name: 'Jessica Torres', email: 'j.torres@strata.io', role: 'Account Executive', avatar: '', initials: 'JT', color: 'bg-violet-500' },
     { id: '4', name: 'David Park', email: 'd.park@strata.io', role: 'Product Manager', avatar: '', initials: 'DP', color: 'bg-amber-500' },
     { id: '5', name: 'Emily Watson', email: 'e.watson@acmecorp.com', role: 'Finance Director', avatar: '', initials: 'EW', color: 'bg-rose-500' },
