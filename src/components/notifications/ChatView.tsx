@@ -93,12 +93,12 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                             "w-8 h-8 rounded-full flex items-center justify-center shrink-0 border",
                             msg.sender === 'user'
                                 ? "bg-muted border-border"
-                                : "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-100 dark:border-indigo-500/20"
+                                : "bg-ai-light dark:bg-ai/10 border-ai/10 dark:border-ai/20"
                         )}>
                             {msg.sender === 'user' ? (
                                 <User className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                             ) : (
-                                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">S</span>
+                                <span className="text-xs font-bold text-ai">S</span>
                             )}
                         </div>
 
@@ -137,7 +137,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                     <button
                         type="submit"
                         disabled={!inputValue.trim()}
-                        className="p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="p-2 rounded-full bg-ai text-white hover:bg-ai disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                         <Send className="w-4 h-4" />
                     </button>

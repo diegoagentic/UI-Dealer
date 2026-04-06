@@ -35,7 +35,7 @@ export default function ItemActionsPopover({ transactionType, onAction }: ItemAc
                             onClick={() => { onAction(contextual.label); close(); }}
                             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-zinc-900 dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                         >
-                            <contextual.icon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                            <contextual.icon className="h-4 w-4 text-ai" />
                             {contextual.label}
                         </button>
 

@@ -29,7 +29,7 @@ export default function PricingConfigurationArtifact({ data, onConfirm }: { data
                 {/* Warranties */}
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
+                        <div className="p-1.5 bg-ai-light dark:bg-ai/10 text-ai rounded-lg">
                             <ShieldCheck className="w-5 h-5" />
                         </div>
                         <h3 className="font-bold text-foreground">Warranty Coverage</h3>
@@ -43,16 +43,16 @@ export default function PricingConfigurationArtifact({ data, onConfirm }: { data
                                     key={plan}
                                     onClick={() => setSelectedWarranty(plan)}
                                     className={`w-full text-left p-3 rounded-xl border-2 transition-all flex items-center justify-between ${isSelected
-                                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10'
-                                        : 'border-zinc-100 dark:border-zinc-700 hover:border-indigo-200'
+                                        ? 'border-ai bg-ai-light dark:bg-ai/5'
+                                        : 'border-zinc-100 dark:border-zinc-700 hover:border-ai/20'
                                         }`}
                                 >
                                     <div>
-                                        <div className={`font-bold text-sm ${isSelected ? 'text-indigo-700 dark:text-indigo-300' : 'text-foreground'}`}>
+                                        <div className={`font-bold text-sm ${isSelected ? 'text-ai' : 'text-foreground'}`}>
                                             {plan}
                                         </div>
                                     </div>
-                                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-zinc-300'}`}>
+                                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? 'bg-ai border-ai text-white' : 'border-zinc-300'}`}>
                                         {isSelected && <CheckCircle2 className="w-3 h-3" />}
                                     </div>
                                 </button>

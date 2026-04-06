@@ -182,7 +182,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                             {
                                                 title: "Finance",
                                                 apps: [
-                                                    { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+                                                    { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-ai", bg: "bg-ai-light dark:bg-ai/10" },
                                                     { icon: <FileText className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
                                                     { icon: <Banknote className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
                                                 ]
@@ -245,7 +245,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                             { icon: <Calculator className="w-6 h-6" />, label: "Quoting", color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/10" },
                                             { icon: <Wrench className="w-6 h-6" />, label: "Configurator", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
                                             { icon: <ImageIcon className="w-6 h-6" />, label: "Marketing", color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-500/10" },
-                                            { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+                                            { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-ai", bg: "bg-ai-light dark:bg-ai/10" },
                                             { icon: <FileText className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
                                             { icon: <Banknote className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
                                             { icon: <BookOpen className="w-6 h-6" />, label: "Academy", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },

@@ -31,7 +31,7 @@ export default function FilterPopover({ onApply }: FilterPopoverProps) {
                 <Filter className="h-4 w-4" />
                 Filter
                 {(selectedStatuses.length + selectedCategories.length) > 0 && (
-                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-xs text-white font-semibold">
+                    <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-ai text-xs text-white font-semibold">
                         {selectedStatuses.length + selectedCategories.length}
                     </span>
                 )}
@@ -49,7 +49,7 @@ export default function FilterPopover({ onApply }: FilterPopoverProps) {
                                             type="checkbox"
                                             checked={selectedStatuses.includes(s)}
                                             onChange={() => toggleStatus(s)}
-                                            className="h-3.5 w-3.5 rounded border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500"
+                                            className="h-3.5 w-3.5 rounded border-zinc-300 dark:border-zinc-700 text-ai focus:ring-indigo-500"
                                         />
                                         <span className="text-sm text-zinc-700 dark:text-zinc-300">{s}</span>
                                     </label>
@@ -67,7 +67,7 @@ export default function FilterPopover({ onApply }: FilterPopoverProps) {
                                             type="checkbox"
                                             checked={selectedCategories.includes(c)}
                                             onChange={() => toggleCategory(c)}
-                                            className="h-3.5 w-3.5 rounded border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500"
+                                            className="h-3.5 w-3.5 rounded border-zinc-300 dark:border-zinc-700 text-ai focus:ring-indigo-500"
                                         />
                                         <span className="text-sm text-zinc-700 dark:text-zinc-300">{c}</span>
                                     </label>

@@ -80,8 +80,8 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
 
                             {/* Context Badge */}
                             <div className="mb-6 flex items-center gap-3 p-3 rounded-lg bg-zinc-800/50 border border-zinc-700/50">
-                                <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                                    <span className="text-indigo-400 font-bold text-lg">A</span>
+                                <div className="w-10 h-10 rounded-full bg-ai/20 flex items-center justify-center">
+                                    <span className="text-ai font-bold text-lg">A</span>
                                 </div>
                                 <div>
                                     <div className="text-xs text-zinc-400 font-medium uppercase tracking-wider">Quoting For</div>
@@ -114,8 +114,8 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
-                                            <Sparkles className="w-4 h-4 text-indigo-400" />
-                                            <div className="text-sm font-medium text-indigo-100">Copilot Suggestions</div>
+                                            <Sparkles className="w-4 h-4 text-ai" />
+                                            <div className="text-sm font-medium text-ai-light">Copilot Suggestions</div>
                                         </div>
 
                                         {/* Business Rules Popover */}
@@ -185,17 +185,17 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                             )}
                                         </Popover>
                                     </div>
-                                    <div className="bg-indigo-900/10 border border-indigo-500/20 rounded-xl p-4 space-y-4">
+                                    <div className="bg-ai/5 border border-ai/20 rounded-xl p-4 space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <div className="text-sm font-medium text-indigo-100">Recommended Assets Only</div>
-                                                <div className="text-xs text-indigo-300/70">Filter for high-margin & contract compliant</div>
+                                                <div className="text-sm font-medium text-ai-light">Recommended Assets Only</div>
+                                                <div className="text-xs text-ai/70">Filter for high-margin & contract compliant</div>
                                             </div>
                                             <Switch
                                                 checked={copilotEnabled}
                                                 onChange={setCopilotEnabled}
                                                 className={clsx(
-                                                    copilotEnabled ? 'bg-indigo-600' : 'bg-zinc-700',
+                                                    copilotEnabled ? 'bg-ai' : 'bg-zinc-700',
                                                     'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
                                                 )}
                                             >
@@ -203,16 +203,16 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                             </Switch>
                                         </div>
 
-                                        <div className="flex items-center justify-between border-t border-indigo-500/10 pt-3">
+                                        <div className="flex items-center justify-between border-t border-ai/10 pt-3">
                                             <div>
-                                                <div className="text-sm font-medium text-indigo-100">Apply Volume Discounts</div>
-                                                <div className="text-xs text-indigo-300/70">Using Tier 2 rates based on history</div>
+                                                <div className="text-sm font-medium text-ai-light">Apply Volume Discounts</div>
+                                                <div className="text-xs text-ai/70">Using Tier 2 rates based on history</div>
                                             </div>
                                             <Switch
                                                 checked={volumeDiscount}
                                                 onChange={setVolumeDiscount}
                                                 className={clsx(
-                                                    volumeDiscount ? 'bg-indigo-600' : 'bg-zinc-700',
+                                                    volumeDiscount ? 'bg-ai' : 'bg-zinc-700',
                                                     'relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-zinc-900'
                                                 )}
                                             >
@@ -221,7 +221,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                         </div>
 
                                         {copilotEnabled && (
-                                            <div className="mt-2 text-xs text-indigo-200 bg-indigo-500/10 p-2 rounded border border-indigo-500/20">
+                                            <div className="mt-2 text-xs text-ai-light bg-ai/10 p-2 rounded border border-ai/20">
                                                 AI Insight: Acme prefers "Task Seating" and "Herman Miller". We've highlighted these categories.
                                             </div>
                                         )}

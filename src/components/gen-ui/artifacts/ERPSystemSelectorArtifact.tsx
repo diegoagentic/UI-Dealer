@@ -42,7 +42,7 @@ export default function ERPSystemSelectorArtifact() {
         <div className="w-full max-w-md mx-auto bg-white dark:bg-zinc-800 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl overflow-hidden font-sans">
             {/* Header Area */}
             <div className="bg-zinc-50/50 dark:bg-zinc-800/30 p-8 flex flex-col items-center justify-center border-b border-zinc-100 dark:border-zinc-800">
-                <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 transform rotate-3">
+                <div className="w-16 h-16 bg-ai rounded-2xl flex items-center justify-center shadow-lg shadow-ai/20 mb-4 transform rotate-3">
                     <Box className="w-8 h-8 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold font-brand text-foreground tracking-tight">Welcome to Avanto!</h2>
@@ -62,7 +62,7 @@ export default function ERPSystemSelectorArtifact() {
                 <div className="relative">
                     <button
                         onClick={() => setIsOpen(!isOpen)}
-                        className="w-full p-3 pl-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-2xl flex items-center justify-between hover:border-indigo-400 transition-colors group"
+                        className="w-full p-3 pl-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-2xl flex items-center justify-between hover:border-ai/40 transition-colors group"
                     >
                         <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedSystem.color}`}>

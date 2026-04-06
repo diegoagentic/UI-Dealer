@@ -384,7 +384,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                 <div className="p-6 bg-card border-b border-border flex justify-between items-center z-10">
                                     <div>
                                         <Dialog.Title className="text-xl font-bold text-foreground flex items-center gap-2">
-                                            <RefreshCw className="w-6 h-6 text-indigo-500" />
+                                            <RefreshCw className="w-6 h-6 text-ai" />
                                             Quick Movements
                                         </Dialog.Title>
                                         <p className="text-sm text-muted-foreground">Drag and drop assets to organize your facility.</p>
@@ -392,7 +392,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                     <div className="flex items-center gap-3">
                                         <button
                                             onClick={generateAiSuggestions}
-                                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full text-sm font-medium hover:from-purple-500 hover:to-indigo-500 transition-all shadow-md shadow-indigo-500/20"
+                                            className="hidden sm:flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple to-ai text-white rounded-full text-sm font-medium hover:from-purple-500 hover:to-ai-light0 transition-all shadow-md shadow-ai/20"
                                         >
                                             <Sparkles className="w-4 h-4" />
                                             AI Smart Optimization
@@ -420,7 +420,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         onClick={() => setShowBulkMove(!showBulkMove)}
                                                         className={clsx(
                                                             "p-2 rounded-lg transition-colors",
-                                                            showBulkMove ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50" : "bg-muted text-muted-foreground"
+                                                            showBulkMove ? "bg-ai-light text-ai dark:bg-ai/20" : "bg-muted text-muted-foreground"
                                                         )}
                                                         title="Bulk Move Tool"
                                                     >
@@ -443,7 +443,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         className="overflow-hidden"
                                                     >
                                                         <div className="bg-muted/50 rounded-xl p-3 border border-border space-y-3">
-                                                            <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
+                                                            <p className="text-xs font-medium text-ai flex items-center gap-1">
                                                                 <Truck className="w-3 h-3" />
                                                                 Bulk Move {selectedAssetIds.length > 0 ? `(${selectedAssetIds.length} selected)` : ''}
                                                             </p>
@@ -498,7 +498,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         className={clsx(
                                                             "px-3 py-1.5 rounded-full whitespace-nowrap transition-colors",
                                                             filterCategory === cat
-                                                                ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300 font-medium"
+                                                                ? "bg-ai-light text-ai dark:bg-ai/15 dark:text-ai font-medium"
                                                                 : "bg-muted text-muted-foreground hover:bg-accent"
                                                         )}
                                                     >
@@ -519,7 +519,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             setSelectedAssetIds([]);
                                                         }
                                                     }}
-                                                    className="rounded border-input text-indigo-600 focus:ring-indigo-500"
+                                                    className="rounded border-input text-ai focus:ring-indigo-500"
                                                 />
                                                 <label htmlFor="selectAll" className="text-xs text-muted-foreground cursor-pointer select-none">
                                                     Select All ({selectedAssetIds.length})
@@ -543,8 +543,8 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         onDrag={handleDrag}
                                                         onDragEnd={(e, info) => handleDragEnd(e, info, asset, 'unassigned')}
                                                         className={clsx(
-                                                            "bg-card p-3 rounded-xl border shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-indigo-400 dark:hover:border-indigo-500 transition-colors group relative z-20",
-                                                            selectedAssetIds.includes(asset.id) ? "border-indigo-500 ring-1 ring-indigo-500 bg-indigo-50/10" : "border-border"
+                                                            "bg-card p-3 rounded-xl border shadow-sm cursor-grab active:cursor-grabbing hover:shadow-md hover:border-ai/40 dark:hover:border-ai/50 transition-colors group relative z-20",
+                                                            selectedAssetIds.includes(asset.id) ? "border-ai/50 ring-1 ring-indigo-500 bg-ai-light/10" : "border-border"
                                                         )}
                                                         onClick={(e) => {
                                                             // Multi-select logic on click
@@ -567,7 +567,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                         whileDrag={{ scale: 1.1, zIndex: 9999, cursor: 'grabbing' }}
                                                     >
                                                         {selectedAssetIds.includes(asset.id) && (
-                                                            <div className="absolute top-2 right-2 w-4 h-4 bg-indigo-500 rounded-full flex items-center justify-center">
+                                                            <div className="absolute top-2 right-2 w-4 h-4 bg-ai rounded-full flex items-center justify-center">
                                                                 <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                                 </svg>
@@ -634,7 +634,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             "rounded-3xl border-2 border-dashed flex flex-col transition-all min-h-[400px] overflow-hidden bg-card/50",
                                                             draggingId ? "scale-[1.01]" : "",
                                                             activeDropZone === zone.id || activeDropZone?.startsWith(zone.id + '::')
-                                                                ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20 ring-4 ring-indigo-500/10 shadow-xl scale-[1.02]"
+                                                                ? "border-ai/50 bg-ai-light/50 dark:bg-ai/10 ring-4 ring-indigo-500/10 shadow-xl scale-[1.02]"
                                                                 : "border-border"
                                                         )}
                                                     >
@@ -644,7 +644,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                 <div className={clsx("p-2 rounded-xl shadow-sm",
                                                                     zone.type === 'office' ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" :
                                                                         zone.type === 'warehouse' ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" :
-                                                                            "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+                                                                            "bg-ai-light text-ai dark:bg-ai/10 dark:text-ai"
                                                                 )}>
                                                                     <zone.icon className="w-5 h-5" />
                                                                 </div>
@@ -688,7 +688,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                         className={clsx(
                                                                             "bg-card/40 rounded-lg border overflow-hidden shadow-sm transition-all duration-200",
                                                                             activeDropZone === `${zone.id}::${category}`
-                                                                                ? "border-indigo-500 ring-2 ring-indigo-500/20 bg-indigo-50/30 dark:bg-indigo-900/10 scale-[1.02] shadow-md z-10"
+                                                                                ? "border-ai/50 ring-2 ring-indigo-500/20 bg-ai-light/30 dark:bg-ai/5 scale-[1.02] shadow-md z-10"
                                                                                 : "border-border"
                                                                         )}>
                                                                         <button
@@ -728,7 +728,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                                                 className={clsx(
                                                                                                     "aspect-square rounded-lg border flex flex-col items-center justify-center p-1 text-center shadow-sm relative cursor-grab active:cursor-grabbing bg-card",
                                                                                                     (item as any).isPending
-                                                                                                        ? "border-indigo-300 dark:border-indigo-700 opacity-80"
+                                                                                                        ? "border-ai/30 dark:border-ai/30 opacity-80"
                                                                                                         : "border-border"
                                                                                                 )}
                                                                                             >
@@ -743,7 +743,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
 
                                                                                                 {/* Pending Badge */}
                                                                                                 {(item as any).isPending && (
-                                                                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-indigo-500 rounded-full border-2 border-background z-20 shadow-sm" />
+                                                                                                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-ai rounded-full border-2 border-background z-20 shadow-sm" />
                                                                                                 )}
                                                                                             </motion.div>
                                                                                         ))}
@@ -767,15 +767,15 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                     initial={{ y: 100, opacity: 0 }}
                                                     animate={{ y: 0, opacity: 1 }}
                                                     exit={{ y: 100, opacity: 0 }}
-                                                    className="absolute bottom-6 left-6 right-6 bg-card rounded-2xl border border-indigo-100 dark:border-indigo-800 shadow-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4 z-50 ring-1 ring-indigo-500/20"
+                                                    className="absolute bottom-6 left-6 right-6 bg-card rounded-2xl border border-ai/10 dark:border-ai/30 shadow-2xl p-4 flex flex-col md:flex-row items-start md:items-center gap-4 z-50 ring-1 ring-indigo-500/20"
                                                 >
-                                                    <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl text-white shadow-lg shrink-0">
+                                                    <div className="p-3 bg-gradient-to-br from-ai to-purple-600 rounded-xl text-white shadow-lg shrink-0">
                                                         <Sparkles className="w-6 h-6 animate-pulse" />
                                                     </div>
                                                     <div className="flex-1">
                                                         <h4 className="font-semibold text-foreground flex items-center gap-2">
                                                             AI Suggestions
-                                                            <span className="text-[10px] font-mono bg-indigo-50 text-indigo-600 px-1.5 py-0.5 rounded">BETA</span>
+                                                            <span className="text-[10px] font-mono bg-ai-light text-ai px-1.5 py-0.5 rounded">BETA</span>
                                                         </h4>
                                                         <div className="space-y-1 mt-1">
                                                             {aiSuggestions.length === 0 ? (
@@ -784,7 +784,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                                 <ul className="text-sm text-muted-foreground space-y-1">
                                                                     {aiSuggestions.map((sug, i) => (
                                                                         <li key={i} className="flex items-center gap-2">
-                                                                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                                                                            <span className="w-1.5 h-1.5 bg-ai rounded-full" />
                                                                             {sug}
                                                                         </li>
                                                                     ))}
@@ -802,7 +802,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                                             </button>
                                                             <button
                                                                 onClick={applyAiSuggestion}
-                                                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 shadow-sm whitespace-nowrap"
+                                                                className="px-4 py-2 bg-ai text-white rounded-lg text-sm font-medium hover:bg-ai shadow-sm whitespace-nowrap"
                                                             >
                                                                 Apply All
                                                             </button>
@@ -819,7 +819,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                 {pendingMoves.length > 0 && (
                                     <div className="bg-card border-t border-border p-4 px-6 flex items-center justify-between animate-in slide-in-from-bottom duration-300 z-50">
                                         <div className="flex items-center gap-4">
-                                            <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
+                                            <div className="bg-ai-light dark:bg-ai/10 text-ai dark:text-ai rounded-full w-8 h-8 flex items-center justify-center font-bold text-sm">
                                                 {pendingMoves.length}
                                             </div>
                                             <div>
@@ -839,7 +839,7 @@ export default function QuickMovementsModal({ isOpen, onClose }: QuickMovementsM
                                             </button>
                                             <button
                                                 onClick={commitMoves}
-                                                className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-lg shadow-lg shadow-indigo-500/20 active:scale-95 transition-all flex items-center gap-2"
+                                                className="px-5 py-2 bg-ai hover:bg-ai text-white text-sm font-semibold rounded-lg shadow-lg shadow-ai/20 active:scale-95 transition-all flex items-center gap-2"
                                             >
                                                 <CheckCircle2 className="w-4 h-4" />
                                                 Confirm Transfers

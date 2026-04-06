@@ -90,11 +90,11 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.type === 'announcement' && n.unread).length,
             icon: Megaphone,
             colorTheme: {
-                activeBg: 'bg-indigo-500/15',
-                activeText: 'text-indigo-500',
-                activeBorder: 'border-indigo-500/20',
-                badgeBg: 'bg-indigo-500/20',
-                badgeText: 'text-indigo-500'
+                activeBg: 'bg-ai/15',
+                activeText: 'text-ai',
+                activeBorder: 'border-ai/20',
+                badgeBg: 'bg-ai/20',
+                badgeText: 'text-ai'
             },
             filter: (n) => n.type === 'announcement'
         },
@@ -104,11 +104,11 @@ export default function ActionCenter() {
             count: mockNotifications.filter(n => n.type === 'live_chat' && n.unread).length,
             icon: MessageSquare,
             colorTheme: {
-                activeBg: 'bg-indigo-500/15',
-                activeText: 'text-indigo-500',
-                activeBorder: 'border-indigo-500/20',
-                badgeBg: 'bg-indigo-500/20',
-                badgeText: 'text-indigo-500'
+                activeBg: 'bg-ai/15',
+                activeText: 'text-ai',
+                activeBorder: 'border-ai/20',
+                badgeBg: 'bg-ai/20',
+                badgeText: 'text-ai'
             },
             filter: (n) => n.type === 'live_chat'
         },

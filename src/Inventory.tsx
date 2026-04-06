@@ -133,11 +133,11 @@ const inventorySummary = {
 // Color Mapping for Status Icons (from Transactions)
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    purple: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
     orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
-    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    indigo: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
 };
 
 // --- Components ---
@@ -325,7 +325,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
             case 'Available': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
             case 'Under Maintenance': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
             case 'In Use': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-            case 'Reserved': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400';
+            case 'Reserved': return 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai';
             case 'In Consignment': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
             case 'Sold': return 'bg-zinc-100 text-zinc-700 dark:bg-card dark:text-zinc-400 line-through opacity-75';
             case 'Write-off': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';

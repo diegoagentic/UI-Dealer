@@ -18,9 +18,9 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
     return (
         <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
-            <div className="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
-                <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">Layout Generator</h4>
+            <div className="bg-ai-light dark:bg-ai/10 px-4 py-3 border-b border-ai/10 dark:border-ai/30 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-ai dark:text-ai" />
+                <h4 className="font-semibold text-ai dark:text-ai-light text-sm">Layout Generator</h4>
             </div>
 
             <div className="p-4 space-y-4">
@@ -35,12 +35,12 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
                             key={opt}
                             onClick={() => handleSelect(opt)}
                             className={`aspect-square rounded-lg border flex flex-col items-center justify-center gap-2 transition-all ${selectedOption === opt
-                                ? 'bg-indigo-50 dark:bg-indigo-900/40 border-indigo-500 ring-1 ring-indigo-500'
-                                : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-indigo-300'
+                                ? 'bg-ai-light dark:bg-ai/15 border-ai/50 ring-1 ring-indigo-500'
+                                : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-ai/30'
                                 }`}
                         >
-                            <Box className={`w-6 h-6 ${selectedOption === opt ? 'text-indigo-600' : 'text-zinc-400'}`} />
-                            <span className={`text-[10px] font-medium ${selectedOption === opt ? 'text-indigo-700 dark:text-indigo-300' : 'text-zinc-500'}`}>{opt}</span>
+                            <Box className={`w-6 h-6 ${selectedOption === opt ? 'text-ai' : 'text-zinc-400'}`} />
+                            <span className={`text-[10px] font-medium ${selectedOption === opt ? 'text-ai' : 'text-zinc-500'}`}>{opt}</span>
                         </button>
                     ))}
                 </div>
@@ -57,7 +57,7 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
                     onClick={handleConfirm}
                     disabled={!selectedOption}
                     className={`w-full py-2.5 rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2 ${selectedOption
-                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                        ? 'bg-ai hover:bg-ai text-white'
                         : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
                         }`}
                 >

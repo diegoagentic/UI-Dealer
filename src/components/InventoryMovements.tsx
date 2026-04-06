@@ -194,7 +194,7 @@ export default function InventoryMovements() {
         switch (status) {
             case 'Ordered': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50';
             case 'Assigned': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-700/50';
-            case 'Scheduled': return 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-700/50';
+            case 'Scheduled': return 'bg-ai-light text-ai border-ai/20 dark:bg-ai/10 dark:text-ai dark:border-ai/30';
             case 'In-Progress': return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-700/50';
             case 'Completed': return 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700/50';
             default: return 'bg-zinc-100 text-zinc-700 border-zinc-200';
@@ -389,7 +389,7 @@ export default function InventoryMovements() {
                                     {/* Asset History */}
                                     <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
-                                            <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
+                                            <div className="p-1.5 bg-ai-light dark:bg-ai/10 text-ai rounded-lg">
                                                 <Presentation className="w-4 h-4" />
                                             </div>
                                             <h4 className="text-sm font-semibold text-foreground">Movement History (6 Mo)</h4>
@@ -403,7 +403,7 @@ export default function InventoryMovements() {
                                                     <Tooltip
                                                         contentStyle={{ backgroundColor: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}
                                                     />
-                                                    <Line type="monotone" dataKey="moves" stroke="bg-indigo-500" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
+                                                    <Line type="monotone" dataKey="moves" stroke="bg-ai" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 5 }} />
                                                 </LineChart>
                                             </ResponsiveContainer>
                                         </div>

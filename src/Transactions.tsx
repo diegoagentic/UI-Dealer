@@ -47,13 +47,13 @@ const recentOrders = [
     { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-zinc-100 text-zinc-700", location: "Berlin" },
     { id: "#ORD-2051", customer: "City Builders", client: "City Builders", project: "City Center", amount: "$120,000", status: "Order Received", date: "Jan 05, 2026", initials: "CB", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
     { id: "#ORD-2050", customer: "Modern Homes", client: "Modern Homes", project: "Residential A", amount: "$85,000", status: "Acknowledgement", date: "Jan 02, 2026", initials: "MH", statusColor: "bg-blue-50 text-blue-700", location: "Austin" },
-    { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-indigo-50 text-indigo-700", location: "London" },
-    { id: "#ORD-2048", customer: "Valley Homes", client: "Valley Homes", project: "Mountain Retreat", amount: "$95,000", status: "Ready to Ship", date: "Nov 20, 2025", initials: "VH", statusColor: "bg-indigo-50 text-indigo-700", location: "Berlin" },
+    { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-ai-light text-ai", location: "London" },
+    { id: "#ORD-2048", customer: "Valley Homes", client: "Valley Homes", project: "Mountain Retreat", amount: "$95,000", status: "Ready to Ship", date: "Nov 20, 2025", initials: "VH", statusColor: "bg-ai-light text-ai", location: "Berlin" },
     { id: "#ORD-2047", customer: "Elite Builders", client: "Elite Builders", project: "Sky V", amount: "$450,000", status: "In Transit", date: "Nov 05, 2025", initials: "EB", statusColor: "bg-amber-50 text-amber-700", location: "New York" },
 ]
 
 const recentQuotes = [
-    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-indigo-50 text-indigo-700", location: "Austin" },
+    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-ai-light text-ai", location: "Austin" },
     { id: "QT-1024", customer: "BioLife Inc", project: "Lab Expansion", amount: "$540,000", status: "Draft", date: "Jan 10, 2026", validUntil: "Draft", probability: "N/A", initials: "BL", statusColor: "bg-zinc-100 text-zinc-700", location: "Boston" },
     { id: "QT-1023", customer: "FinServe Corp", project: "Branch Rollout", amount: "$890,000", status: "Sent", date: "Jan 08, 2026", validUntil: "Feb 08, 2026", probability: "Medium", initials: "FS", statusColor: "bg-blue-50 text-blue-700", location: "New York" },
     { id: "QT-1022", customer: "Redwood School", project: "Classroom Refresh", amount: "$150,000", status: "Approved", date: "Dec 28, 2025", validUntil: "Jan 28, 2026", probability: "Closed", initials: "RS", statusColor: "bg-green-50 text-green-700", location: "Portland" },
@@ -74,20 +74,20 @@ const ackStages = ['Pending', 'Discrepancy', 'Partial', 'Confirmed']
 // Color Mapping for Status Icons
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    purple: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
     orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
-    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    indigo: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
 }
 
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    purple: 'bg-ai hover:bg-ai text-white shadow-sm shadow-purple-500/20 border-ai/50',
     orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
-    indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
+    indigo: 'bg-ai hover:bg-ai text-white shadow-sm shadow-ai/20 border-ai/50',
 }
 
 // Summary Data matching Wireframe
@@ -420,8 +420,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
                                                         data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
-                                                                data.color === 'indigo' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
+                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
+                                                                data.color === 'indigo' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
                                                         {data.icon}
@@ -523,7 +523,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
                                                         data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
+                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
                                                                 data.color === 'red' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
@@ -633,8 +633,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     </div>
                                                     <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
                                                         data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
-                                                                data.color === 'indigo' ? 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400' :
+                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
+                                                                data.color === 'indigo' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
                                                                     'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
                                                         }`}>
                                                         {data.icon}
@@ -722,7 +722,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         { icon: <FilePlus className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
                                         { icon: <Box className="w-5 h-5" />, label: "Check Stock", color: "text-amber-500" },
                                         { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
-                                        { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", color: "text-indigo-500" },
+                                        { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", color: "text-ai" },
                                     ].map((action, i) => (
                                         <button
                                             key={i}
@@ -965,7 +965,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
 
                                             {/* Active Orders Card */}
-                                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-blue-50 to-ai-light dark:from-blue-900/10 dark:to-ai/5 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
                                                         {lifecycleTab === 'quotes' ? 'Active Quotes' : lifecycleTab === 'acknowledgments' ? 'Pending Acks' : 'Active Orders'}
@@ -981,16 +981,16 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
 
                                             {/* Completion Rate Card */}
-                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-ai/20 dark:border-ai/30/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">
+                                                    <p className="text-sm font-medium text-ai dark:text-ai">
                                                         {lifecycleTab === 'quotes' ? 'Win Rate' : lifecycleTab === 'acknowledgments' ? 'Conf. Rate' : 'Completion Rate'}
                                                     </p>
-                                                    <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                    <BarChart3 className="h-5 w-5 text-ai" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
-                                                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 mt-1">
+                                                    <p className="text-2xl font-bold text-ai">{metricsData.efficiency}%</p>
+                                                    <p className="text-xs text-ai/80 dark:text-ai/80 mt-1">
                                                         {lifecycleTab === 'quotes' ? 'Quotes approved' : lifecycleTab === 'acknowledgments' ? 'Acks confirmed' : 'Orders delivered successfully'}
                                                     </p>
                                                 </div>
@@ -1050,7 +1050,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                             >
                                                                 <td className="p-4">
                                                                     <div className="flex items-center gap-3">
-                                                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                                                                        <div className="h-8 w-8 rounded-full bg-gradient-to-br from-ai to-ai text-white flex items-center justify-center text-xs font-bold shadow-sm">
                                                                             {order.initials}
                                                                         </div>
                                                                         <div>
@@ -1171,7 +1171,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                 <div className="p-4">
                                                                     <div className="flex items-center justify-between mb-3">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                                                                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-ai to-ai text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-zinc-900">
                                                                                 {order.initials}
                                                                             </div>
                                                                             <div className="space-y-0.5">

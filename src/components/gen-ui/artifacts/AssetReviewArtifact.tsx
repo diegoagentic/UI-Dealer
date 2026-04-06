@@ -734,7 +734,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                                     </div>
 
                                                     {asset.warranty && asset.warranty !== 'Standard Warranty' && (
-                                                        <span className="text-[10px] flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800/30">
+                                                        <span className="text-[10px] flex items-center gap-1 bg-ai-light dark:bg-ai/10 text-ai px-1.5 py-0.5 rounded border border-ai/10 dark:border-ai/30/30">
                                                             <ShieldCheck className="w-3 h-3" />
                                                             {asset.warranty}
                                                         </span>
@@ -1015,9 +1015,9 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                             {/* Warranty Quick Actions */}
                                             <div className="mb-6 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
                                                 <div className="flex items-center gap-3">
-                                                    <ShieldCheck className="w-5 h-5 text-indigo-500 shrink-0" />
+                                                    <ShieldCheck className="w-5 h-5 text-ai shrink-0" />
                                                     <span className="font-bold text-foreground whitespace-nowrap">Warranty Actions</span>
-                                                    <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-xs rounded-full font-bold">
+                                                    <span className="px-2 py-0.5 bg-ai-light text-ai dark:bg-ai/10 dark:text-ai text-xs rounded-full font-bold">
                                                         {assets.filter(a => a.warranty !== 'Standard Warranty').length}
                                                     </span>
                                                 </div>
@@ -1127,7 +1127,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
                                     <span className="text-muted-foreground">Warranties & Protection</span>
-                                    <span className="font-medium text-indigo-600 dark:text-indigo-400">
+                                    <span className="font-medium text-ai">
                                         +{formatCurrency(assets.reduce((acc, a) => acc + ((a.unitPrice - (a.basePrice || a.unitPrice)) * a.qty), 0))}
                                     </span>
                                 </div>

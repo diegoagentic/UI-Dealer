@@ -30,7 +30,7 @@ const STAKEHOLDERS: Stakeholder[] = [
     { id: '4', name: 'David Park', email: 'd.park@strata.io', role: 'Product Manager', avatar: '', initials: 'DP', color: 'bg-amber-500' },
     { id: '5', name: 'Emily Watson', email: 'e.watson@acmecorp.com', role: 'Finance Director', avatar: '', initials: 'EW', color: 'bg-rose-500' },
     { id: '6', name: 'James Kim', email: 'j.kim@strata.io', role: 'Logistics Coordinator', avatar: '', initials: 'JK', color: 'bg-cyan-500' },
-    { id: '7', name: 'Rachel Adams', email: 'r.adams@acmecorp.com', role: 'Project Lead', avatar: '', initials: 'RA', color: 'bg-indigo-500' },
+    { id: '7', name: 'Rachel Adams', email: 'r.adams@acmecorp.com', role: 'Project Lead', avatar: '', initials: 'RA', color: 'bg-ai' },
 ];
 
 const TYPE_LABELS: Record<string, string> = {
@@ -132,7 +132,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                                             type="checkbox"
                                             checked={isSelected}
                                             onChange={() => toggleStakeholder(s.id)}
-                                            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600 text-indigo-600 focus:ring-indigo-500"
+                                            className="h-4 w-4 rounded border-zinc-300 dark:border-zinc-600 text-ai focus:ring-indigo-500"
                                         />
                                         <span className={`inline-flex items-center justify-center h-8 w-8 rounded-full text-xs font-bold text-white shrink-0 ${s.color}`}>
                                             {s.initials}
@@ -153,7 +153,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                         {!showAddNew ? (
                             <button
                                 onClick={() => setShowAddNew(true)}
-                                className="mt-2 flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors"
+                                className="mt-2 flex items-center gap-1.5 text-sm text-ai hover:text-ai dark:hover:text-ai font-medium transition-colors"
                             >
                                 <Plus className="h-4 w-4" />
                                 Add new recipient

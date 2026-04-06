@@ -24,7 +24,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
         },
         {
             id: 'premium',
-            badge: { text: 'Premium Quality', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' },
+            badge: { text: 'Premium Quality', color: 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' },
             title: 'Premium Height Adjustable Workstation',
             sku: 'DESK-ELECTRIC-7230-PREMIUM',
             total: 148437.5,

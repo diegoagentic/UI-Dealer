@@ -24,10 +24,10 @@ const ackOptions = [
         description: 'Select an existing Purchase Order to convert into an acknowledgement.',
         icon: Link2,
         estimatedTime: '2-3 mins',
-        color: 'text-indigo-600',
-        bgColor: 'bg-indigo-100',
-        darkColor: 'dark:text-indigo-400',
-        darkBgColor: 'dark:bg-indigo-900/30'
+        color: 'text-ai',
+        bgColor: 'bg-ai-light',
+        darkColor: 'dark:text-ai',
+        darkBgColor: 'dark:bg-ai/10'
     },
     {
         id: 'manual',

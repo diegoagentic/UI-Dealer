@@ -758,9 +758,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" onClick={() => setIsSendOpen(true)}>
                                                     <Send className="h-4 w-4" />
                                                 </Button>
-                                                <Button variant="ghost" onClick={() => setIsAiDiagnosisOpen(true)} className="relative h-auto p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                <Button variant="ghost" onClick={() => setIsAiDiagnosisOpen(true)} className="relative h-auto p-1 text-ai hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <Sparkles className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
+                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-ai ring-2 ring-white dark:ring-zinc-900" />
                                                 </Button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
                                                 <ItemActionsPopover transactionType="order" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />
@@ -777,11 +777,11 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         className="flex items-center justify-between w-full h-auto p-0 hover:bg-transparent group"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                            <Sparkles className="h-4 w-4 text-ai" />
                                                             <span className="text-sm font-bold text-foreground">AI Suggestions</span>
                                                             <span className="relative flex h-2 w-2">
-                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ai opacity-75"></span>
+                                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-ai"></span>
                                                             </span>
                                                         </div>
                                                         <ChevronDown
@@ -817,11 +817,11 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                         </div>
                                                                     </div>
 
-                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-indigo-500 transition-colors">
+                                                                    <div className="p-2 bg-background border border-border rounded cursor-pointer hover:border-ai/50 transition-colors">
                                                                         <div className="flex gap-2">
                                                                             <div className="mt-1 h-3 w-3 rounded-full border border-muted-foreground"></div>
                                                                             <div>
-                                                                                <div className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Premium {selectedItem.name}</div>
+                                                                                <div className="text-sm font-medium text-ai dark:text-ai">Premium {selectedItem.name}</div>
                                                                                 <div className="text-xs text-muted-foreground">+ High Durability Finish</div>
                                                                             </div>
                                                                         </div>
@@ -1051,7 +1051,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 {collaborators.map((c, i) => (
                                                     <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background">
                                                         {c.avatar === 'AI' ? (
-                                                            <div className="h-full w-full rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white">AI</div>
+                                                            <div className="h-full w-full rounded-full bg-ai flex items-center justify-center text-xs font-bold text-white">AI</div>
                                                         ) : (
                                                             <img className="h-full w-full rounded-full object-cover" src={c.avatar} alt={c.name} />
                                                         )}
@@ -1082,8 +1082,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                         </div>
                                                     ) : msg.avatar === 'AI' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
-                                                            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                        <div className="h-10 w-10 rounded-full bg-ai-light dark:bg-ai/10 flex items-center justify-center border border-ai/20 dark:border-ai/30">
+                                                            <Sparkles className="h-5 w-5 text-ai" />
                                                         </div>
                                                     ) : msg.avatar ? (
                                                         <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />

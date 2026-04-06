@@ -59,7 +59,7 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
         <SlideOver open={open} onClose={() => onClose()}>
             <SlideOverHeader onClose={onClose}>
                 <div className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <Sparkles className="h-5 w-5 text-ai" />
                     <SlideOverTitle>AI Item Diagnosis</SlideOverTitle>
                 </div>
                 <SlideOverDescription>Intelligent analysis for {selectedItem.name}</SlideOverDescription>

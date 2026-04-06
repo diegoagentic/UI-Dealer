@@ -109,7 +109,7 @@ export default function MACRequests() {
 
     const getOriginIcon = (origin: RequestOrigin) => {
         switch (origin) {
-            case 'Slack': return <MessageCircle className="w-5 h-5 text-indigo-500" />;
+            case 'Slack': return <MessageCircle className="w-5 h-5 text-ai" />;
             case 'Email': return <Mail className="w-5 h-5 text-blue-500" />;
             case 'MobileApp': return <Smartphone className="w-5 h-5 text-green-500" />;
         }

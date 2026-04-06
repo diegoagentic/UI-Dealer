@@ -190,7 +190,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                         const colorMap: Record<string, any> = {
                             blue: { bg: 'bg-blue-50 dark:bg-blue-900/10', border: 'border-blue-100 dark:border-blue-800/30', text: 'text-blue-700 dark:text-blue-400', badge: 'bg-blue-100 dark:bg-blue-800' },
                             orange: { bg: 'bg-amber-50 dark:bg-amber-900/10', border: 'border-amber-100 dark:border-amber-800/30', text: 'text-amber-700 dark:text-amber-400', badge: 'bg-amber-100 dark:bg-amber-800' },
-                            purple: { bg: 'bg-indigo-50 dark:bg-indigo-900/10', border: 'border-indigo-100 dark:border-indigo-800/30', text: 'text-indigo-700 dark:text-indigo-400', badge: 'bg-indigo-100 dark:bg-indigo-800' },
+                            purple: { bg: 'bg-ai-light dark:bg-ai/5', border: 'border-ai/10 dark:border-ai/30/30', text: 'text-ai dark:text-ai', badge: 'bg-ai-light dark:bg-ai' },
                             green: { bg: 'bg-green-50 dark:bg-green-900/10', border: 'border-green-100 dark:border-green-800/30', text: 'text-green-700 dark:text-green-400', badge: 'bg-green-100 dark:bg-green-800' },
                             teal: { bg: 'bg-teal-50 dark:bg-teal-900/10', border: 'border-teal-100 dark:border-teal-800/30', text: 'text-teal-700 dark:text-teal-400', badge: 'bg-teal-100 dark:bg-teal-800' },
                         };

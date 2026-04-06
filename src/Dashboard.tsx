@@ -198,21 +198,21 @@ const aiSuggestions = [
 // Color Mapping for Status Icons - Optimized for Dark Mode Contrast
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    purple: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
     orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
-    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    indigo: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
 }
 
 // Solid Color Mapping for Action Buttons (High Contrast)
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    purple: 'bg-ai hover:bg-ai text-white shadow-sm shadow-purple-500/20 border-ai/50',
     orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
-    indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
+    indigo: 'bg-ai hover:bg-ai text-white shadow-sm shadow-ai/20 border-ai/50',
 }
 
 // Simulate Platform Summary Data
@@ -854,14 +854,14 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         )}
 
                                                         {item.aiSuggestion && (
-                                                            <div className="rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 p-3">
+                                                            <div className="rounded-lg bg-ai-light dark:bg-ai/5 border border-ai/10 dark:border-ai/10 p-3">
                                                                 <div className="flex items-start gap-3">
-                                                                    <Sparkles className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                                                    <Sparkles className="w-4 h-4 text-ai mt-0.5 shrink-0" />
                                                                     <div className="flex-1">
-                                                                        <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">
+                                                                        <p className="text-xs font-semibold text-ai mb-1">
                                                                             AI Insight
                                                                         </p>
-                                                                        <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 leading-relaxed mb-2">
+                                                                        <p className="text-xs text-ai/80 dark:text-ai/80 leading-relaxed mb-2">
                                                                             {item.aiSuggestion}
                                                                         </p>
                                                                         <button
@@ -881,7 +881,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     }, 2500);
                                                                                 }
                                                                             }}
-                                                                            className="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-500/30 transition-colors flex items-center gap-1"
+                                                                            className="text-[10px] font-bold bg-ai-light dark:bg-ai/20 text-ai px-3 py-1 rounded-md hover:bg-ai-light dark:hover:bg-ai/30 transition-colors flex items-center gap-1"
                                                                         >
                                                                             Resolve Issue <Sparkles className="w-3 h-3" />
                                                                         </button>
@@ -907,16 +907,16 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 <div className="bg-card rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
-                                            <Sparkles className="w-5 h-5 text-indigo-500" />
+                                            <Sparkles className="w-5 h-5 text-ai" />
                                             AI Suggestions
                                         </h3>
-                                        <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold">
+                                        <span className="px-2.5 py-0.5 rounded-full bg-ai-light dark:bg-ai/10 text-ai dark:text-ai text-xs font-bold">
                                             3 New
                                         </span>
                                     </div>
                                     <div className="space-y-4 flex-1">
                                         {aiSuggestions.map((suggestion) => (
-                                            <div key={suggestion.id} className="p-4 rounded-xl border border-border bg-muted dark:bg-secondary/50 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-colors group cursor-pointer">
+                                            <div key={suggestion.id} className="p-4 rounded-xl border border-border bg-muted dark:bg-secondary/50 hover:border-ai/20 dark:hover:border-ai/20 transition-colors group cursor-pointer">
                                                 <div className="flex items-start gap-4">
                                                     <div className="w-10 h-10 rounded-full bg-card dark:bg-secondary border border-zinc-100 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                                                         <suggestion.icon className="w-5 h-5 text-zinc-500" />
@@ -933,7 +933,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         </p>
                                                         <button
                                                             onClick={() => handleGenUIAction(`Apply Suggestion: ${suggestion.title}`)}
-                                                            className="mt-3 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 group/btn"
+                                                            className="mt-3 text-xs font-medium text-ai hover:text-ai dark:hover:text-ai flex items-center gap-1 group/btn"
                                                         >
                                                             Apply Suggestion <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
                                                         </button>
@@ -1290,7 +1290,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         <div className="p-5">
                                                                             <div className="flex items-center justify-between mb-4">
                                                                                 <div className="flex items-center gap-3">
-                                                                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                                                                                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-ai to-ai text-white flex items-center justify-center text-sm font-bold shadow-md">
                                                                                         {order.initials}
                                                                                     </div>
                                                                                     <div>

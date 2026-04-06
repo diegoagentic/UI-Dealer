@@ -512,7 +512,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                         className="flex flex-col items-start p-4 rounded-xl border border-border hover:border-primary hover:bg-muted/50 transition-all text-left group"
                     >
                         <div className="flex items-center justify-between w-full mb-2">
-                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-ai-light dark:bg-ai/10 text-ai group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                                 <FileText className="w-5 h-5" />
                             </span>
                             <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">{template.category}</span>
@@ -568,9 +568,9 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                         </div>
 
                         <div className="grid grid-cols-4 gap-4">
-                            <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-xl text-center">
-                                <span className="block text-2xl font-bold text-indigo-600">7</span>
-                                <span className="text-xs font-medium text-indigo-400">Total Rows</span>
+                            <div className="bg-ai-light dark:bg-ai/10 p-4 rounded-xl text-center">
+                                <span className="block text-2xl font-bold text-ai">7</span>
+                                <span className="text-xs font-medium text-ai">Total Rows</span>
                             </div>
                             <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl text-center">
                                 <span className="block text-2xl font-bold text-green-600">6</span>

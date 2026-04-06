@@ -48,7 +48,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-800/50 flex justify-between items-start">
                 <div>
                     <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                        <div className="p-1.5 bg-indigo-600 rounded-lg">
+                        <div className="p-1.5 bg-ai rounded-lg">
                             <Cloud className="w-5 h-5 text-white" />
                         </div>
                         Connect ERP Integration
@@ -69,7 +69,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                             className={`
                                 relative p-4 rounded-xl border-2 text-left transition-all duration-200 flex flex-col gap-3 group
                                 ${selectedSystem === sys.id
-                                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10 ring-1 ring-indigo-600/20'
+                                    ? 'border-ai bg-ai-light dark:bg-ai/5 ring-1 ring-indigo-600/20'
                                     : 'border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
                                 }
                             `}
@@ -78,7 +78,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                                 {sys.icon}
                             </div>
                             <div>
-                                <h4 className={`font-semibold ${selectedSystem === sys.id ? 'text-indigo-700 dark:text-indigo-400' : 'text-foreground'}`}>
+                                <h4 className={`font-semibold ${selectedSystem === sys.id ? 'text-ai dark:text-ai' : 'text-foreground'}`}>
                                     {sys.name}
                                 </h4>
                                 <p className="text-xs text-muted-foreground mt-1">
@@ -86,7 +86,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                                 </p>
                             </div>
                             {selectedSystem === sys.id && (
-                                <div className="absolute top-3 right-3 text-indigo-600">
+                                <div className="absolute top-3 right-3 text-ai">
                                     <CheckCircle2 className="w-5 h-5" />
                                 </div>
                             )}
@@ -115,7 +115,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                     disabled={!selectedSystem || isConnecting}
                     className={`
                         px-6 py-2 rounded-lg text-sm font-semibold text-white shadow-sm transition-all flex items-center gap-2
-                        ${!selectedSystem || isConnecting ? 'bg-zinc-300 dark:bg-zinc-700 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'}
+                        ${!selectedSystem || isConnecting ? 'bg-zinc-300 dark:bg-zinc-700 cursor-not-allowed' : 'bg-ai hover:bg-ai'}
                     `}
                 >
                     {isConnecting ? (

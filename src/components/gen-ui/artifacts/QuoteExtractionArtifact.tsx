@@ -192,9 +192,9 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
     return (
         <div className="h-full flex flex-col p-6 animate-in fade-in duration-500 overflow-hidden">
             <div className="text-center mb-6 shrink-0">
-                <div className="inline-flex items-center justify-center p-3.5 bg-indigo-50 dark:bg-indigo-900/10 rounded-full mb-3 relative">
-                    <div className="absolute inset-0 rounded-full border border-indigo-500/20 w-full h-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                    <Cpu className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                <div className="inline-flex items-center justify-center p-3.5 bg-ai-light dark:bg-ai/5 rounded-full mb-3 relative">
+                    <div className="absolute inset-0 rounded-full border border-ai/20 w-full h-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
+                    <Cpu className="w-8 h-8 text-ai" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">Autonomous Processing</h3>
                 <p className="text-xs font-mono text-muted-foreground mt-1 uppercase tracking-wider h-4 overflow-visible whitespace-nowrap">{currentLog}</p>
@@ -207,7 +207,7 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
                         {index !== steps.length - 1 && (
                             <div className={clsx(
                                 "absolute left-[11px] top-6 w-0.5 h-full -z-10 transition-colors duration-500",
-                                step.status === 'complete' ? "bg-indigo-200 dark:bg-indigo-700/50" : "bg-zinc-100 dark:bg-zinc-800"
+                                step.status === 'complete' ? "bg-ai-light dark:bg-ai/50" : "bg-zinc-100 dark:bg-zinc-800"
                             )}></div>
                         )}
 
@@ -217,7 +217,7 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
                                 step.status === 'complete'
                                     ? "border-green-500 text-green-500 bg-green-50 dark:bg-green-900/10"
                                     : step.status === 'active'
-                                        ? "border-indigo-500 text-indigo-500 animate-pulse bg-indigo-50 dark:bg-indigo-900/10"
+                                        ? "border-ai/50 text-ai animate-pulse bg-ai-light dark:bg-ai/5"
                                         : "border-zinc-200 dark:border-zinc-700 text-zinc-300"
                             )}>
                                 {step.status === 'complete' ? (
@@ -235,14 +235,14 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
                                     )}>
                                         {step.label}
                                     </h4>
-                                    {step.status === 'active' && <span className="text-[10px] text-indigo-500 font-mono animate-pulse">PROCESSING</span>}
+                                    {step.status === 'active' && <span className="text-[10px] text-ai font-mono animate-pulse">PROCESSING</span>}
                                 </div>
 
                                 {/* Logs for this step */}
                                 {(step.status === 'active' || (step.status === 'complete' && step.logs.length > 0)) && (
                                     <div className="mt-2 space-y-1">
                                         {step.logs.map((log, i) => (
-                                            <div key={i} className="flex gap-2 text-[11px] font-mono text-indigo-600/80 dark:text-indigo-400/80 animate-in slide-in-from-left-2 fade-in duration-300">
+                                            <div key={i} className="flex gap-2 text-[11px] font-mono text-ai/80 dark:text-ai/80 animate-in slide-in-from-left-2 fade-in duration-300">
                                                 <span className="shrink-0 opacity-50">{'>'}</span>
                                                 <span>{log}</span>
                                             </div>

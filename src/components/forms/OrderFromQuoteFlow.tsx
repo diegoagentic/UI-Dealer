@@ -232,7 +232,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                 </div>
                                 <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
-                                        <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
+                                        <div className="p-2 bg-ai-light dark:bg-ai/10 text-ai rounded-lg">
                                             <Banknote className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Total Value</span>

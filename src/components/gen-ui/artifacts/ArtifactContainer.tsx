@@ -188,8 +188,8 @@ export default function ArtifactContainer({ artifact }: { artifact: ArtifactData
             {/* Context Source Header */}
             {artifact.source && (
                 <div className="flex items-center gap-1.5 px-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                    <span className="text-[10px] font-medium text-indigo-500 uppercase tracking-wide">
+                    <span className="w-1.5 h-1.5 rounded-full bg-ai animate-pulse" />
+                    <span className="text-[10px] font-medium text-ai uppercase tracking-wide">
                         Triggered from {artifact.source}
                     </span>
                 </div>

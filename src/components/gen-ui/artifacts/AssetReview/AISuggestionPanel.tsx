@@ -13,7 +13,7 @@ export default function AISuggestionPanel({ originalAsset, suggestion, onAccept,
     const savings = (originalAsset.unitPrice - suggestion.price) * originalAsset.qty;
 
     return (
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-4 shadow-sm my-3 animate-in fade-in slide-in-from-top-2">
+        <div className="bg-gradient-to-br from-blue-50 to-ai-light dark:from-blue-900/20 dark:to-ai/10 border border-blue-100 dark:border-blue-800 rounded-xl p-4 shadow-sm my-3 animate-in fade-in slide-in-from-top-2">
             <div className="flex items-start gap-3">
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg text-blue-600 dark:text-blue-400">
                     <Sparkles className="w-5 h-5" />

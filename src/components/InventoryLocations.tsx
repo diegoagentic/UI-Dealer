@@ -154,7 +154,7 @@ export default function InventoryLocations() {
                     {/* Add Button */}
                     <button
                         onClick={handleAddClick}
-                        className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-ai text-white rounded-lg text-sm font-medium hover:bg-ai transition-colors shadow-sm"
                     >
                         <Plus className="w-4 h-4" />
                         Add {activeTab}
@@ -176,7 +176,7 @@ export default function InventoryLocations() {
                             <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => handleEditClick(loc)}
-                                    className="p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                                    className="p-1.5 text-zinc-400 hover:text-ai hover:bg-ai-light dark:hover:bg-ai/10 rounded-lg transition-colors"
                                 >
                                     <SquarePen className="w-4 h-4" />
                                 </button>

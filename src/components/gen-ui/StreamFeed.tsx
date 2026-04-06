@@ -57,7 +57,7 @@ const MessageBubble = ({ message }: { message: StreamMessage }) => {
 
     return (
         <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} mb-4`}>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUser ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600' : 'bg-gradient-to-br from-purple-500 to-indigo-500 text-white'
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUser ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600' : 'bg-gradient-to-br from-purple-500 to-ai-light0 text-white'
                 }`}>
                 {isUser ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
             </div>
@@ -152,7 +152,7 @@ export default function StreamFeed() {
                                     <div className="flex items-center gap-2 mb-0.5">
                                         <span className={`w-2 h-2 rounded-full ${trigger.category === 'correction' ? 'bg-red-400' :
                                             trigger.category === 'sourcing' ? 'bg-amber-400' :
-                                                trigger.category === 'layout' ? 'bg-indigo-400' :
+                                                trigger.category === 'layout' ? 'bg-ai' :
                                                     trigger.category === 'support' ? 'bg-blue-400' : 'bg-green-400'
                                             }`} />
                                         <span className="font-semibold text-sm text-foreground">{trigger.label}</span>

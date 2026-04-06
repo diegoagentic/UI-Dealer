@@ -38,10 +38,10 @@ const creationOptions = [
         icon: Copy,
         actionLabel: 'Browse Templates',
         estimatedTime: '5-8 minutes',
-        color: 'text-indigo-600',
-        bgColor: 'bg-indigo-100',
-        darkColor: 'dark:text-indigo-400',
-        darkBgColor: 'dark:bg-indigo-900/30'
+        color: 'text-ai',
+        bgColor: 'bg-ai-light',
+        darkColor: 'dark:text-ai',
+        darkBgColor: 'dark:bg-ai/10'
     },
     {
         id: 'manual',
@@ -301,7 +301,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                         className="group flex items-center justify-between p-4 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
                                                     >
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                                                            <div className="h-10 w-10 rounded-lg bg-ai-light dark:bg-ai/10 text-ai flex items-center justify-center">
                                                                 <Copy className="h-5 w-5" />
                                                             </div>
                                                             <div>

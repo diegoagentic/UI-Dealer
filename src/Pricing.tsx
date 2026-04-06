@@ -32,20 +32,20 @@ const recentOrders = [
 // Color Mapping for Status Icons
 const colorStyles: Record<string, string> = {
     blue: 'bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300 ring-1 ring-inset ring-blue-600/20 dark:ring-blue-400/30',
-    purple: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    purple: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
     orange: 'bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300 ring-1 ring-inset ring-amber-600/20 dark:ring-amber-400/30',
     green: 'bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300 ring-1 ring-inset ring-green-600/20 dark:ring-green-400/30',
     pink: 'bg-pink-50 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300 ring-1 ring-inset ring-pink-600/20 dark:ring-pink-400/30',
-    indigo: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300 ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
+    indigo: 'bg-ai-light text-ai dark:bg-ai/15 dark:text-ai ring-1 ring-inset ring-indigo-600/20 dark:ring-indigo-400/30',
 }
 
 const solidColorStyles: Record<string, string> = {
     blue: 'bg-blue-600 hover:bg-blue-700 text-white shadow-sm shadow-blue-500/20 border-blue-500',
-    purple: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-purple-500/20 border-indigo-500',
+    purple: 'bg-ai hover:bg-ai text-white shadow-sm shadow-purple-500/20 border-ai/50',
     orange: 'bg-amber-600 hover:bg-amber-700 text-white shadow-sm shadow-orange-500/20 border-amber-500',
     green: 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-500/20 border-green-500',
     pink: 'bg-pink-600 hover:bg-pink-700 text-white shadow-sm shadow-pink-500/20 border-pink-500',
-    indigo: 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm shadow-indigo-500/20 border-indigo-500',
+    indigo: 'bg-ai hover:bg-ai text-white shadow-sm shadow-ai/20 border-ai/50',
 }
 
 // Summary Data matching Wireframe
@@ -223,7 +223,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Efficiency</p>
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">88%</p>
                                     </div>
-                                    <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
+                                    <div className="p-3 bg-ai-light dark:bg-ai/10 rounded-xl text-ai">
                                         <BarChart3 className="w-6 h-6" />
                                     </div>
                                 </div>
@@ -446,7 +446,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             </div>
 
                                             {/* Active Orders Card */}
-                                            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-blue-50 to-ai-light dark:from-blue-900/10 dark:to-ai/5 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-blue-700 dark:text-blue-400">Active Orders</p>
                                                     <ShoppingBag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
@@ -458,14 +458,14 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             </div>
 
                                             {/* Completion Rate Card */}
-                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800/20 shadow-sm">
+                                            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-ai/20 dark:border-ai/30/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
-                                                    <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Completion Rate</p>
-                                                    <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                    <p className="text-sm font-medium text-ai dark:text-ai">Completion Rate</p>
+                                                    <BarChart3 className="h-5 w-5 text-ai" />
                                                 </div>
                                                 <div>
-                                                    <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
-                                                    <p className="text-xs text-indigo-600/80 dark:text-indigo-400/80 mt-1">Orders delivered successfully</p>
+                                                    <p className="text-2xl font-bold text-ai">{metricsData.efficiency}%</p>
+                                                    <p className="text-xs text-ai/80 dark:text-ai/80 mt-1">Orders delivered successfully</p>
                                                 </div>
                                             </div>
 
@@ -648,7 +648,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                 <div className="p-5">
                                                     <div className="flex items-center justify-between mb-4">
                                                         <div className="flex items-center gap-3">
-                                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 text-white flex items-center justify-center text-sm font-bold shadow-md">
+                                                            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-ai to-ai text-white flex items-center justify-center text-sm font-bold shadow-md">
                                                                 {order.initials}
                                                             </div>
                                                             <div>

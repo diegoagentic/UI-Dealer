@@ -156,7 +156,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                             {/* Header */}
                             <div className="flex items-center justify-between p-5 border-b border-border bg-muted/30">
                                 <Dialog.Title className="text-lg font-semibold text-foreground flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-indigo-500" />
+                                    <Sparkles className="w-5 h-5 text-ai" />
                                     A.I. Rule Builder
                                 </Dialog.Title>
                                 {step !== 'analyzing' && (
@@ -170,7 +170,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                 {step === 'prompt' && (
                                     <div className="space-y-6">
                                         <div className="text-center space-y-2 mb-8 animate-in fade-in slide-in-from-bottom-2">
-                                            <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
+                                            <div className="w-12 h-12 bg-ai-light dark:bg-ai/10 rounded-2xl flex items-center justify-center mx-auto text-ai">
                                                 <Sparkles className="w-6 h-6" />
                                             </div>
                                             <h3 className="text-xl font-bold text-foreground">Describe your business rule</h3>
@@ -181,7 +181,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
 
                                         <div className="relative">
                                             <textarea
-                                                className="w-full h-32 p-4 bg-background border border-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-none disabled:opacity-50"
+                                                className="w-full h-32 p-4 bg-background border border-input rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-ai/50 outline-none resize-none disabled:opacity-50"
                                                 placeholder="e.g. Give a 10% discount on all orders over $50,000 for standard accounts..."
                                                 value={prompt}
                                                 onChange={e => setPrompt(e.target.value)}
@@ -197,9 +197,9 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                 {step === 'analyzing' && (
                                     <div className="flex flex-col items-center justify-center py-16 text-center space-y-6">
                                         <div className="relative">
-                                            <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping" />
-                                            <div className="relative bg-background p-4 rounded-full border border-indigo-500/20 shadow-xl shadow-indigo-500/10">
-                                                <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
+                                            <div className="absolute inset-0 bg-ai/20 rounded-full animate-ping" />
+                                            <div className="relative bg-background p-4 rounded-full border border-ai/20 shadow-xl shadow-ai/10">
+                                                <RefreshCw className="w-8 h-8 text-ai animate-spin" />
                                             </div>
                                         </div>
                                         <div>
@@ -209,7 +209,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                             </p>
                                         </div>
                                         <div className="w-full max-w-xs bg-muted rounded-full h-1.5 overflow-hidden">
-                                            <div className="bg-indigo-500 h-full rounded-full animate-[pulse_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
+                                            <div className="bg-ai h-full rounded-full animate-[pulse_2s_ease-in-out_infinite]" style={{ width: '60%' }} />
                                         </div>
                                     </div>
                                 )}
@@ -219,18 +219,18 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
 
                                         {/* AI Analysis Cards */}
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                            <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 p-4 rounded-xl">
-                                                <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-semibold mb-2">
+                                            <div className="bg-ai-light dark:bg-ai/5 border border-ai/10 dark:border-ai/20 p-4 rounded-xl">
+                                                <div className="flex items-center gap-2 text-ai dark:text-ai font-semibold mb-2">
                                                     <BarChart3 className="w-5 h-5" />
                                                     Forecasted Impact
                                                 </div>
-                                                <p className="text-sm text-indigo-900/80 dark:text-indigo-200/80 mb-3">
+                                                <p className="text-sm text-ai/80 dark:text-ai-light/80 mb-3">
                                                     Based on the current Reference Basket net value of {formatCurrency(currentNet)}.
                                                 </p>
                                                 <div className="flex items-end justify-between">
                                                     <div>
-                                                        <div className="text-xs uppercase tracking-wider text-indigo-600/60 dark:text-indigo-400/60 font-medium">Estimated Discount</div>
-                                                        <div className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">
+                                                        <div className="text-xs uppercase tracking-wider text-ai/60 dark:text-ai/60 font-medium">Estimated Discount</div>
+                                                        <div className="text-2xl font-bold text-ai">
                                                             -{formatCurrency(forecastedDiscount)}
                                                         </div>
                                                     </div>
@@ -357,7 +357,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                         <button
                                             onClick={handleGenerate}
                                             disabled={!prompt}
-                                            className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
+                                            className="px-6 py-2 bg-ai text-white font-medium rounded-lg hover:bg-ai transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
                                         >
                                             Generate Rule
                                             <Sparkles className="w-4 h-4" />

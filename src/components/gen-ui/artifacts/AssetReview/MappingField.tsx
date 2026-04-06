@@ -98,13 +98,13 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                                     <div className="flex items-center gap-2 text-xs font-semibold text-primary mb-1">
                                         <Sparkles className="w-4 h-4" /> Best Match
                                     </div>
-                                    <div className="border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg p-2.5 relative group hover:border-indigo-300 transition-colors cursor-pointer" onClick={() => setSelectedValue(field.suggestions![0].value)}>
+                                    <div className="border border-ai/10 dark:border-ai/20 bg-ai-light/50 dark:bg-ai/10 rounded-lg p-2.5 relative group hover:border-ai/30 transition-colors cursor-pointer" onClick={() => setSelectedValue(field.suggestions![0].value)}>
                                         <div className="flex justify-between items-start">
                                             <div>
-                                                <div className="font-medium text-sm text-indigo-900 dark:text-indigo-200">{field.suggestions[0].value}</div>
-                                                <div className="text-[10px] text-indigo-700 dark:text-indigo-400 mt-0.5">{field.suggestions[0].description}</div>
+                                                <div className="font-medium text-sm text-ai dark:text-ai-light">{field.suggestions[0].value}</div>
+                                                <div className="text-[10px] text-ai dark:text-ai mt-0.5">{field.suggestions[0].description}</div>
                                             </div>
-                                            <span className="text-[10px] font-bold bg-white dark:bg-zinc-800 px-1.5 py-0.5 rounded text-indigo-600 shadow-sm float-right">
+                                            <span className="text-[10px] font-bold bg-white dark:bg-zinc-800 px-1.5 py-0.5 rounded text-ai shadow-sm float-right">
                                                 {field.suggestions[0].confidence}%
                                             </span>
                                         </div>

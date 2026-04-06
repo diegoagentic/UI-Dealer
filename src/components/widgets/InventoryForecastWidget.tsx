@@ -100,11 +100,11 @@ export default function InventoryForecastWidget() {
                 ))}
 
                 {/* AI Insight Footer */}
-                <div className="mt-4 pt-3 border-t border-border flex items-start gap-3 bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-500/20">
-                    <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                <div className="mt-4 pt-3 border-t border-border flex items-start gap-3 bg-ai-light dark:bg-ai/5 p-3 rounded-lg border border-ai/10 dark:border-ai/20">
+                    <Sparkles className="w-5 h-5 text-ai shrink-0 mt-0.5" />
                     <div>
-                        <p className="text-xs text-indigo-900 dark:text-indigo-200 font-medium">AI Insight</p>
-                        <p className="text-xs text-indigo-700 dark:text-indigo-300 mt-0.5">
+                        <p className="text-xs text-ai dark:text-ai-light font-medium">AI Insight</p>
+                        <p className="text-xs text-ai mt-0.5">
                             High demand predicted for "Aeron Chair" next week due to 3 pending bulk quotes. Recommend increasing safety stock.
                         </p>
                     </div>

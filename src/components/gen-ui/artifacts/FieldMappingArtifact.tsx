@@ -97,7 +97,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                                     <span className="font-mono text-[10px] truncate max-w-[120px]">{field.text}</span>
                                     <ArrowRight className="w-3 h-3 text-zinc-300" />
                                     <span className="font-medium text-foreground flex items-center gap-1">
-                                        <Sparkles className="w-3 h-3 text-indigo-400" />
+                                        <Sparkles className="w-3 h-3 text-ai" />
                                         {field.match}
                                     </span>
                                 </div>
@@ -105,7 +105,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                                 {field.status !== 'confirmed' && (
                                     <button
                                         onClick={() => handleConfirm(idx)}
-                                        className="mt-2 w-full py-1.5 text-[10px] font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-md transition-colors"
+                                        className="mt-2 w-full py-1.5 text-[10px] font-bold text-ai hover:bg-ai-light dark:hover:bg-ai/10 rounded-md transition-colors"
                                     >
                                         Confirm Mapping
                                     </button>
@@ -119,7 +119,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                 <button
                     onClick={handleProcess}
                     disabled={!allConfirmed || isProcessing}
-                    className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2"
+                    className="w-full py-2.5 bg-ai hover:bg-ai disabled:bg-zinc-300 dark:disabled:bg-zinc-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2"
                 >
                     {isProcessing ? 'Processing...' : 'Continue to Asset Processing'}
                     {!isProcessing && <ArrowRight className="w-4 h-4" />}

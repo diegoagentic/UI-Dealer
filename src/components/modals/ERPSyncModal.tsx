@@ -112,7 +112,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                     <X className="w-5 h-5" />
                                 </button>
 
-                                <div className="mx-auto w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-3 transform rotate-3">
+                                <div className="mx-auto w-12 h-12 bg-ai rounded-xl flex items-center justify-center shadow-lg shadow-ai/20 mb-3 transform rotate-3">
                                     <Box className="w-6 h-6 text-white" />
                                 </div>
                                 <Dialog.Title className="text-xl font-bold font-brand text-foreground">
@@ -134,7 +134,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                 onClick={() => handleConnect(system)}
                                                 className={`w-full flex items-center gap-4 p-4 rounded-2xl border bg-card shadow-sm transition-all group text-left ${system.status === 'Connected'
                                                     ? 'border-green-200 dark:border-green-900/30 ring-1 ring-green-500/20'
-                                                    : 'border-zinc-200 dark:border-zinc-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md'
+                                                    : 'border-zinc-200 dark:border-zinc-800 hover:border-ai/30 dark:hover:border-ai/30 hover:shadow-md'
                                                     }`}
                                             >
                                                 {/* Icon */}
@@ -158,11 +158,11 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                 </div>
 
                                                 {/* Arrow / Action */}
-                                                <div className="text-zinc-300 dark:text-zinc-600 group-hover:text-indigo-500 transition-colors">
+                                                <div className="text-zinc-300 dark:text-zinc-600 group-hover:text-ai transition-colors">
                                                     {system.status === 'Connected' ? (
                                                         <RefreshCw className="w-5 h-5 hover:rotate-180 transition-transform duration-500" />
                                                     ) : (
-                                                        <div className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center group-hover:border-indigo-500 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20">
+                                                        <div className="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center group-hover:border-ai/50 group-hover:bg-ai-light dark:group-hover:bg-ai/10">
                                                             <div className="w-2 h-2 rounded-full bg-current" />
                                                         </div>
                                                     )}
@@ -193,7 +193,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-ai/50 transition-colors text-sm"
                                                         placeholder={`e.g. ${selectedSystem.name.toLowerCase()}.app.com`}
                                                         defaultValue="acme-corp-global"
                                                     />
@@ -208,7 +208,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="text"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-ai/50 transition-colors text-sm"
                                                         defaultValue="jdoe@acmecorp.com"
                                                     />
                                                 </div>
@@ -222,7 +222,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                     </div>
                                                     <input
                                                         type="password"
-                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                                                        className="block w-full pl-10 pr-3 py-2.5 bg-card border border-border rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-ai/50 transition-colors text-sm"
                                                         defaultValue="password123"
                                                     />
                                                 </div>
@@ -239,7 +239,7 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                                 <button
                                                     type="submit"
                                                     disabled={isLoggingIn}
-                                                    className="flex-[2] py-2.5 px-4 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                    className="flex-[2] py-2.5 px-4 bg-ai text-white rounded-xl font-semibold hover:bg-ai transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                                 >
                                                     {isLoggingIn ? (
                                                         <>
@@ -259,9 +259,9 @@ export default function ERPSyncModal({ isOpen, onClose }: { isOpen: boolean; onC
                                     <div className="flex flex-col items-center justify-center py-8 animate-in fade-in zoom-in-95 duration-300">
                                         <div className="relative w-20 h-20 mb-6">
                                             <div className="absolute inset-0 rounded-full border-4 border-zinc-100 dark:border-zinc-800" />
-                                            <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin" />
+                                            <div className="absolute inset-0 rounded-full border-4 border-ai/50 border-t-transparent animate-spin" />
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <selectedSystem.icon className="w-8 h-8 text-indigo-500 animate-pulse" />
+                                                <selectedSystem.icon className="w-8 h-8 text-ai animate-pulse" />
                                             </div>
                                         </div>
                                         <h3 className="text-lg font-bold text-foreground">

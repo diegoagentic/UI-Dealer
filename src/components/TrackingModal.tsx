@@ -89,17 +89,17 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                 </div>
 
                                 {/* AI Forecast Section */}
-                                <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 border border-indigo-100 dark:border-indigo-800/30 rounded-xl p-4 relative overflow-hidden">
+                                <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 border border-ai/10 dark:border-ai/30/30 rounded-xl p-4 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                                        <Sparkles className="w-24 h-24 text-indigo-500" />
+                                        <Sparkles className="w-24 h-24 text-ai" />
                                     </div>
                                     <div className="relative z-10 flex items-start gap-3">
-                                        <div className="p-2 bg-card rounded-lg shadow-sm border border-indigo-100 dark:border-indigo-800/50">
-                                            <Sparkles className="w-5 h-5 text-indigo-500" />
+                                        <div className="p-2 bg-card rounded-lg shadow-sm border border-ai/10 dark:border-ai/30/50">
+                                            <Sparkles className="w-5 h-5 text-ai" />
                                         </div>
                                         <div>
-                                            <h4 className="text-sm font-semibold text-indigo-900 dark:text-indigo-200 mb-1">AI Smart Forecast</h4>
-                                            <p className="text-sm text-indigo-700 dark:text-indigo-300">
+                                            <h4 className="text-sm font-semibold text-ai dark:text-ai-light mb-1">AI Smart Forecast</h4>
+                                            <p className="text-sm text-ai">
                                                 Based on current traffic and workflow velocity, the team is expected to arrive <span className="font-semibold">15 minutes early</span>.
                                             </p>
                                             <div className="flex items-center gap-4 mt-2">
@@ -107,7 +107,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
                                                     98% Probability
                                                 </div>
-                                                <div className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                                                <div className="flex items-center gap-1 text-xs font-medium text-ai">
                                                     <Clock className="w-3.5 h-3.5" />
                                                     ETA: 2:45 PM
                                                 </div>
@@ -180,7 +180,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                             {step.evidence.map((ev, idx) => (
                                                                 <div key={idx} className="bg-muted/50 rounded-lg p-3 border border-border flex items-start gap-3">
                                                                     <div className="shrink-0 mt-0.5">
-                                                                        {ev.type === 'photo' && <Camera className="w-4 h-4 text-indigo-500" />}
+                                                                        {ev.type === 'photo' && <Camera className="w-4 h-4 text-ai" />}
                                                                         {ev.type === 'signature' && <FileText className="w-4 h-4 text-blue-500" />}
                                                                         {ev.type === 'note' && <FileText className="w-4 h-4 text-amber-500" />}
                                                                     </div>

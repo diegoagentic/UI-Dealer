@@ -45,7 +45,7 @@ export default function CommandCenter() {
                 "relative group transition-all duration-700 ease-in-out rounded-2xl",
                 isHighlighted && "ring-4 ring-purple-500 ring-offset-4 ring-offset-background shadow-[0_0_30px_rgba(168,85,247,0.6)] animate-pulse"
             )}>
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple to-ai rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                 <div className="relative flex items-center bg-white dark:bg-zinc-800 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800 p-2 gap-1">
                     <button
                         onClick={toggleStream}
@@ -68,7 +68,7 @@ export default function CommandCenter() {
 
                     <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
-                    <div className="pl-1 text-indigo-500">
+                    <div className="pl-1 text-ai">
                         <Sparkles className="w-6 h-6 animate-pulse" />
                     </div>
                     <input

@@ -196,7 +196,7 @@ export default function ClientPolicyManager() {
                         {/* Add Rule Button */}
                         <button
                             onClick={() => setIsRuleModalOpen(true)}
-                            className="w-full py-3 mb-2 border-2 border-dashed border-indigo-200 dark:border-indigo-900/50 rounded-xl text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors flex items-center justify-center gap-2"
+                            className="w-full py-3 mb-2 border-2 border-dashed border-ai/20 dark:border-ai/20 rounded-xl text-ai font-medium hover:bg-ai-light dark:hover:bg-ai/10 transition-colors flex items-center justify-center gap-2"
                         >
                             <Sparkles className="w-5 h-5" />
                             Use A.I. to create a rule
@@ -233,16 +233,16 @@ export default function ClientPolicyManager() {
                         </div>
 
                         {/* 3. Volume Discounts */}
-                        <div className="flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/20">
+                        <div className="flex items-center justify-between p-4 bg-ai-light/50 dark:bg-ai/10 rounded-xl border border-ai/10 dark:border-ai/20">
                             <div>
-                                <div className="font-medium text-indigo-900 dark:text-indigo-300">Volume Tier 2</div>
-                                <div className="text-xs text-indigo-700/70 dark:text-indigo-400/70">Orders &gt; $100k Net (3%)</div>
+                                <div className="font-medium text-ai dark:text-ai">Volume Tier 2</div>
+                                <div className="text-xs text-ai/70 dark:text-ai/70">Orders &gt; $100k Net (3%)</div>
                             </div>
                             <Switch
                                 checked={useVolumeDiscount}
                                 onChange={setUseVolumeDiscount}
                                 disabled={results.net <= 100000 && !useVolumeDiscount} // Disable if threshold not met in simulation
-                                className={`${useVolumeDiscount ? 'bg-indigo-600' : 'bg-zinc-200 dark:bg-zinc-700'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50`}
+                                className={`${useVolumeDiscount ? 'bg-ai' : 'bg-zinc-200 dark:bg-zinc-700'} relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50`}
                             >
                                 <span className={`${useVolumeDiscount ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
                             </Switch>
@@ -267,21 +267,21 @@ export default function ClientPolicyManager() {
                         {customRules.map(rule => {
                             const conditionMet = results.net > rule.conditionThreshold;
                             return (
-                                <div key={rule.id} className="flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/20">
+                                <div key={rule.id} className="flex items-center justify-between p-4 bg-ai-light/50 dark:bg-ai/10 rounded-xl border border-ai/10 dark:border-ai/20">
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-1.5 font-medium text-indigo-900 dark:text-indigo-300">
-                                            <Sparkles className="w-4 h-4 text-indigo-500" />
+                                        <div className="flex items-center gap-1.5 font-medium text-ai dark:text-ai">
+                                            <Sparkles className="w-4 h-4 text-ai" />
                                             {rule.name}
                                         </div>
-                                        <div className="text-xs text-indigo-700/70 dark:text-indigo-400/70 mt-0.5">{rule.description}</div>
+                                        <div className="text-xs text-ai/70 dark:text-ai/70 mt-0.5">{rule.description}</div>
                                         {!conditionMet && (
-                                            <div className="text-[10px] uppercase text-indigo-500/70 font-semibold mt-1 flex items-center gap-1"><ShieldCheck className="w-3 h-3" />Condition not met (Net &lt; ${rule.conditionThreshold.toLocaleString()})</div>
+                                            <div className="text-[10px] uppercase text-ai/70 font-semibold mt-1 flex items-center gap-1"><ShieldCheck className="w-3 h-3" />Condition not met (Net &lt; ${rule.conditionThreshold.toLocaleString()})</div>
                                         )}
                                     </div>
                                     <Switch
                                         checked={true} // Custom rules are always on once saved in this simplified flow, could add toggle later
                                         onChange={() => { }}
-                                        className={`bg-indigo-500 relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors`}
+                                        className={`bg-ai relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors`}
                                     >
                                         <span className={`translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
                                     </Switch>

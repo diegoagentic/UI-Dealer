@@ -551,7 +551,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                         {appActivities.map((activity, i) => {
                             let iconColorClass = "bg-primary/10 text-zinc-900 dark:text-primary" // Default
                             if (activity.app === 'Inventory') iconColorClass = "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                            if (activity.app === 'Analytics') iconColorClass = "bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400"
+                            if (activity.app === 'Analytics') iconColorClass = "bg-ai-light text-ai dark:bg-ai/10 dark:text-ai"
                             if (activity.app === 'CRM') iconColorClass = "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
 
                             return (

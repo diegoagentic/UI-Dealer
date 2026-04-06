@@ -54,7 +54,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
             <div className="flex-1 flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-800/50 animate-in fade-in zoom-in duration-300 h-full">
                 <div className="bg-white/90 dark:bg-zinc-900/90 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between w-full text-left">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-full flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 bg-ai-light dark:bg-ai/10 text-ai rounded-full flex items-center justify-center shrink-0">
                             <BarChart3 className="w-5 h-5" />
                         </div>
                         <div>
