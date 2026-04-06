@@ -22,6 +22,21 @@
     --input: var(--color-input);
     --ring: var(--color-ring);
     --radius: 0.5rem;
+    /* Semantic Status Colors — Figma */
+    --success: var(--color-success);
+    --success-light: var(--color-success-light);
+    --warning: var(--color-warning);
+    --warning-light: var(--color-warning-light);
+    --info: var(--color-info);
+    --info-light: var(--color-info-light);
+    --error: var(--color-error);
+    --error-light: var(--color-error-light);
+    --orange: var(--color-orange);
+    --orange-light: var(--color-orange-light);
+    --purple: var(--color-purple);
+    --purple-light: var(--color-purple-light);
+    --ai: var(--color-ai);
+    --ai-light: var(--color-ai-light);
     --chart-trend-line: #a1a1aa;
     --chart-trend-dot-fill: var(--color-primary);
     --chart-trend-dot-stroke: var(--color-primary);

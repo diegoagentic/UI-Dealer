@@ -69,6 +69,26 @@ export default {
                     900: "rgb(from var(--color-zinc-900) r g b / <alpha-value>)",
                     950: "rgb(from var(--color-zinc-950) r g b / <alpha-value>)",
                 },
+                success: {
+                    DEFAULT: "rgb(from var(--color-success) r g b / <alpha-value>)",
+                    light: "rgb(from var(--color-success-light) r g b / <alpha-value>)",
+                },
+                warning: {
+                    DEFAULT: "rgb(from var(--color-warning) r g b / <alpha-value>)",
+                    light: "rgb(from var(--color-warning-light) r g b / <alpha-value>)",
+                },
+                info: {
+                    DEFAULT: "rgb(from var(--color-info) r g b / <alpha-value>)",
+                    light: "rgb(from var(--color-info-light) r g b / <alpha-value>)",
+                },
+                error: {
+                    DEFAULT: "rgb(from var(--color-error) r g b / <alpha-value>)",
+                    light: "rgb(from var(--color-error-light) r g b / <alpha-value>)",
+                },
+                ai: {
+                    DEFAULT: "rgb(from var(--color-ai) r g b / <alpha-value>)",
+                    light: "rgb(from var(--color-ai-light) r g b / <alpha-value>)",
+                },
             },
             borderRadius: {
                 lg: "var(--radius)",

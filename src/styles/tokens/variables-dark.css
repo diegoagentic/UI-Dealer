@@ -112,6 +112,23 @@
   --color-indigo-950: #1e1b4b;
   --color-white: #ffffff;
   --color-black: #000000;
+  /* Semantic Status Colors — from Figma UI-Reps variables */
+  --color-success: #098400;
+  --color-success-light: #e5f9e4;
+  --color-warning: #b27d00;
+  --color-warning-light: #fff5cd;
+  --color-info: #2164d1;
+  --color-info-light: #ecf4ff;
+  --color-error: #d20322;
+  --color-error-light: #ffe4e7;
+  /* Semantic Accent Colors — from Figma UI-Reps variables */
+  --color-orange: #f97316;
+  --color-orange-light: #ffedd5;
+  --color-purple: #6c26ee;
+  --color-purple-light: #f5f1ff;
+  /* AI Colors — from Figma Expert Hub variables */
+  --color-ai: #8b5cf6;
+  --color-ai-light: #ede9fe;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
