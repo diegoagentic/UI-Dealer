@@ -44,8 +44,8 @@ export function TeamWorkloadChart() {
                             itemStyle={{ color: '#1F2937' }}
                         />
                         <Legend />
-                        <Bar dataKey="active" fill="#f43f5e" name="Active Tasks" radius={[0, 4, 4, 0]} barSize={10} />
-                        <Bar dataKey="completed" fill="#14b8a6" name="Completed" radius={[0, 4, 4, 0]} barSize={10} />
+                        <Bar dataKey="active" fill="var(--color-error)" name="Active Tasks" radius={[0, 4, 4, 0]} barSize={10} />
+                        <Bar dataKey="completed" fill="var(--color-success)" name="Completed" radius={[0, 4, 4, 0]} barSize={10} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

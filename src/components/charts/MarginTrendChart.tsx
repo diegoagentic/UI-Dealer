@@ -37,7 +37,7 @@ export function MarginTrendChart() {
                             }}
                         />
                         <Legend />
-                        <Bar yAxisId="left" dataKey="revenue" barSize={20} fill="#6366f1" radius={[4, 4, 0, 0]} />
+                        <Bar yAxisId="left" dataKey="revenue" barSize={20} fill="var(--color-chart-1)" radius={[4, 4, 0, 0]} />
                         <Line yAxisId="right" type="monotone" dataKey="margin" stroke="#10b981" strokeWidth={2} dot={{ fill: '#10b981' }} />
                     </ComposedChart>
                 </ResponsiveContainer>

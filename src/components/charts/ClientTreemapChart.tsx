@@ -59,7 +59,7 @@ export function ClientTreemapChart() {
                         dataKey="size"
                         aspectRatio={4 / 3}
                         stroke="#fff"
-                        fill="#8884d8"
+                        fill="var(--color-chart-1)"
                         content={<CustomizeContent />}
                     >
                         <Tooltip

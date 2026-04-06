@@ -1031,7 +1031,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <Tooltip
                                                         contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                                     />
-                                                    <Bar dataKey="sales" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="sales" fill="var(--color-info)" radius={[4, 4, 0, 0]} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>
@@ -1343,7 +1343,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     <XAxis dataKey="name" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                                     <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
                                     <Tooltip cursor={{ fill: 'var(--muted)' }} contentStyle={{ backgroundColor: 'var(--popover)', borderRadius: '12px', border: '1px solid var(--border)', color: 'var(--popover-foreground)' }} />
-                                    <Bar dataKey="value" fill="#C3E433" radius={[6, 6, 0, 0]} barSize={40} />
+                                    <Bar dataKey="value" fill="var(--color-brand-500)" radius={[6, 6, 0, 0]} barSize={40} />
                                 </BarChart>
                             </ResponsiveContainer>
                         </div>

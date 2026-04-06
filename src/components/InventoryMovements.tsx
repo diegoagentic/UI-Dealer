@@ -390,7 +390,7 @@ export default function InventoryMovements() {
                                                         cursor={{ fill: 'transparent' }}
                                                         contentStyle={{ backgroundColor: 'var(--background)', borderRadius: '8px', border: '1px solid var(--border)' }}
                                                     />
-                                                    <Bar dataKey="actual" fill="#3b82f6" radius={[0, 4, 4, 0]} name="Actual Time" barSize={12} />
+                                                    <Bar dataKey="actual" fill="var(--color-info)" radius={[0, 4, 4, 0]} name="Actual Time" barSize={12} />
                                                     <Bar dataKey="target" fill="#e4e4e7" radius={[0, 4, 4, 0]} name="Target SLA" barSize={12} />
                                                 </BarChart>
                                             </ResponsiveContainer>

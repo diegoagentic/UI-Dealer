@@ -43,9 +43,9 @@ export function LogisticsStatusChart() {
                             itemStyle={{ color: '#1F2937' }}
                         />
                         <Legend />
-                        <Bar dataKey="processing" stackId="a" fill="#f59e0b" name="Processing" radius={[0, 0, 0, 4]} />
-                        <Bar dataKey="transit" stackId="a" fill="#3b82f6" name="In Transit" />
-                        <Bar dataKey="delivered" stackId="a" fill="#10b981" name="Delivered" radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="processing" stackId="a" fill="var(--color-warning)" name="Processing" radius={[0, 0, 0, 4]} />
+                        <Bar dataKey="transit" stackId="a" fill="var(--color-info)" name="In Transit" />
+                        <Bar dataKey="delivered" stackId="a" fill="var(--color-success)" name="Delivered" radius={[0, 4, 4, 0]} />
                     </BarChart>
                 </ResponsiveContainer>
             </div>

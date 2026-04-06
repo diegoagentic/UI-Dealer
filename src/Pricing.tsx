@@ -502,7 +502,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                     <Tooltip
                                                         contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                                     />
-                                                    <Bar dataKey="sales" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                                                    <Bar dataKey="sales" fill="var(--color-info)" radius={[4, 4, 0, 0]} />
                                                 </BarChart>
                                             </ResponsiveContainer>
                                         </div>

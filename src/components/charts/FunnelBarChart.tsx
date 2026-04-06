@@ -48,7 +48,7 @@ export function FunnelBarChart() {
                             dataKey="value"
                             radius={[0, 4, 4, 0]}
                             barSize={32}
-                            activeBar={<Rectangle fill="#4f46e5" stroke="#4338ca" />}
+                            activeBar={<Rectangle fill="var(--color-indigo-600)" stroke="var(--color-indigo-700)" />}
                         />
                     </BarChart>
                 </ResponsiveContainer>
