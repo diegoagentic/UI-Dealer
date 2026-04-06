@@ -6,14 +6,7 @@ import ERPSystemSelectorArtifact from '../gen-ui/artifacts/ERPSystemSelectorArti
 import QuoteExtractionArtifact from '../gen-ui/artifacts/QuoteExtractionArtifact';
 import QuoteSetupModal from '../catalogs/QuoteSetupModal';
 import OrderImportFlow from '../forms/OrderImportFlow';
-import {
-    CheckCircleIcon,
-    DocumentPlusIcon,
-    ArrowRightIcon,
-    WrenchScrewdriverIcon,
-    ArrowUpTrayIcon,
-    DocumentCheckIcon // Added DocumentCheckIcon
-} from '@heroicons/react/24/outline';
+import { ArrowRight, CheckCircle2, FilePlus, Upload, Wrench } from 'lucide-react';
 
 // Define new props interface for SmartQuoteHub
 interface SmartQuoteHubProps {
@@ -172,7 +165,7 @@ function SmartQuoteHubContent({ onNavigate, demoPhase = 'IDLE', onUploadStart, o
             {mode === 'selection' && (
                 <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                        <DocumentPlusIcon className="w-6 h-6" />
+                        <FilePlus className="w-6 h-6" />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
@@ -204,7 +197,7 @@ function SmartQuoteHubContent({ onNavigate, demoPhase = 'IDLE', onUploadStart, o
                                     className="flex items-center gap-2 p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-sm transition-all text-left group"
                                 >
                                     <div className="p-1.5 rounded-lg bg-secondary text-muted-foreground group-hover:text-foreground transition-colors">
-                                        <WrenchScrewdriverIcon className="w-4 h-4" />
+                                        <Wrench className="w-4 h-4" />
                                     </div>
                                     <div>
                                         <div className="text-sm font-medium text-foreground">Manual Builder</div>
@@ -217,7 +210,7 @@ function SmartQuoteHubContent({ onNavigate, demoPhase = 'IDLE', onUploadStart, o
                                     className="flex items-center gap-2 p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:shadow-sm transition-all text-left group"
                                 >
                                     <div className="p-1.5 rounded-lg bg-secondary text-muted-foreground group-hover:text-foreground transition-colors">
-                                        <ArrowUpTrayIcon className="w-4 h-4" />
+                                        <Upload className="w-4 h-4" />
                                     </div>
                                     <div>
                                         <div className="text-sm font-medium text-foreground">Standard Import</div>
@@ -253,12 +246,12 @@ function SmartQuoteHubContent({ onNavigate, demoPhase = 'IDLE', onUploadStart, o
                 {mode === 'success' && (
                     <div className="h-full flex flex-col items-center justify-center p-8 text-center animate-in zoom-in duration-300">
                         <div className="w-20 h-20 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-full flex items-center justify-center mb-6">
-                            <CheckCircleIcon className="w-10 h-10" />
+                            <CheckCircle2 className="w-10 h-10" />
                         </div>
                         <h3 className="text-2xl font-bold text-foreground mb-2">Order Submitted!</h3>
                         <p className="text-muted-foreground mb-8">Redirecting to Transactions...</p>
                         <button onClick={() => onNavigate && onNavigate('transactions')} className="flex items-center gap-2 text-primary font-medium hover:underline">
-                            Go to Transactions Now <ArrowRightIcon className="w-4 h-4" />
+                            Go to Transactions Now <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
                 )}

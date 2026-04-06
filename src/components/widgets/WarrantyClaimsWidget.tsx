@@ -1,7 +1,6 @@
 
 import WidgetCard from './WidgetCard'
-import { ShieldCheckIcon, PlusIcon, PhotoIcon, ArrowPathIcon, CheckCircleIcon, ExclamationCircleIcon, ClockIcon } from '@heroicons/react/24/outline'
-
+import { AlertCircle, CheckCircle2, Clock, ImageIcon, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
 const claims = [
     {
         id: 'CLM-2024-882',
@@ -34,10 +33,10 @@ export default function WarrantyClaimsWidget() {
         <WidgetCard
             title="Warranty & Claims"
             description="Active support requests."
-            icon={ShieldCheckIcon}
+            icon={ShieldCheck}
             action={
                 <button className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-lg text-xs font-semibold hover:opacity-90 transition-opacity">
-                    <PlusIcon className="w-3.5 h-3.5" />
+                    <Plus className="w-3.5 h-3.5" />
                     New Claim
                 </button>
             }
@@ -50,9 +49,9 @@ export default function WarrantyClaimsWidget() {
                             claim.status === 'action_required' ? 'border-red-500 text-red-500' :
                                 'border-amber-500 text-amber-500'
                             }`}>
-                            {claim.status === 'approved' && <CheckCircleIcon className="w-2.5 h-2.5" />}
-                            {claim.status === 'action_required' && <ExclamationCircleIcon className="w-2.5 h-2.5" />}
-                            {claim.status === 'in_review' && <ClockIcon className="w-2.5 h-2.5" />}
+                            {claim.status === 'approved' && <CheckCircle2 className="w-2.5 h-2.5" />}
+                            {claim.status === 'action_required' && <AlertCircle className="w-2.5 h-2.5" />}
+                            {claim.status === 'in_review' && <Clock className="w-2.5 h-2.5" />}
                         </div>
 
                         <div className="flex justify-between items-start mb-1">
@@ -78,7 +77,7 @@ export default function WarrantyClaimsWidget() {
                             </span>
                             {claim.image && (
                                 <div className="flex items-center gap-1 text-[10px] text-zinc-500 font-medium">
-                                    <PhotoIcon className="w-3 h-3" />
+                                    <ImageIcon className="w-3 h-3" />
                                     <span>Image attached</span>
                                 </div>
                             )}

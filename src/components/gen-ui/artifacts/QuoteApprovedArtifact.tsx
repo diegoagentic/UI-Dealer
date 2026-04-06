@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CheckCircleIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline'
+import { CheckCircle2, Eye, FileText } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext'
 import OrderSimulationArtifact from './OrderSimulationArtifact'
 
@@ -47,7 +47,7 @@ export default function QuoteApprovedArtifact({ onGeneratePO }: QuoteApprovedArt
             <div className="flex-1 flex flex-col items-center justify-center p-6 bg-zinc-50 dark:bg-zinc-800/50 animate-in fade-in zoom-in duration-300 h-full">
                 <div className="bg-white/90 dark:bg-zinc-900/90 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center gap-3 text-left">
                     <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 rounded-full flex items-center justify-center shrink-0">
-                        <DocumentTextIcon className="w-5 h-5" />
+                        <FileText className="w-5 h-5" />
                     </div>
                     <div>
                         <h4 className="text-sm font-bold text-foreground">PO Generation Started</h4>
@@ -61,7 +61,7 @@ export default function QuoteApprovedArtifact({ onGeneratePO }: QuoteApprovedArt
     return (
         <div className="h-full flex flex-col items-center justify-center p-8 bg-card rounded-2xl border border-green-100 dark:border-green-900 shadow-sm animate-in fade-in zoom-in duration-500">
             <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
-                <CheckCircleIcon className="w-10 h-10 text-green-600 dark:text-green-400" />
+                <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
             </div>
             <h3 className="text-2xl font-bold font-brand text-foreground mb-2">Quote Approved</h3>
             <p className="text-muted-foreground text-center max-w-md mb-8">
@@ -71,14 +71,14 @@ export default function QuoteApprovedArtifact({ onGeneratePO }: QuoteApprovedArt
                 onClick={handleGeneratePO}
                 className="px-8 py-3 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-2"
             >
-                <DocumentTextIcon className="w-5 h-5" />
+                <FileText className="w-5 h-5" />
                 Generate Purchase Order
             </button>
             <button
                 onClick={handleSimulate}
                 className="mt-6 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-2"
             >
-                <EyeIcon className="w-4 h-4" />
+                <Eye className="w-4 h-4" />
                 Simulate Benefit View
             </button>
         </div>

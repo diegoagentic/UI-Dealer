@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-    CheckCircleIcon,
-    XCircleIcon,
-    ArrowRightIcon,
-    SparklesIcon,
-    ShieldExclamationIcon,
-    ArrowPathIcon,
-    BoltIcon,
-    DocumentTextIcon,
-    ScaleIcon
-} from '@heroicons/react/24/outline';
+import { ArrowRight, CheckCircle2, FileText, RefreshCw, Scale, ShieldAlert, Sparkles, XCircle, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
 
 // Unified Discrepancy Type
@@ -110,10 +100,10 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
     // Helper to render type icon
     const getTypeIcon = (type: string) => {
         switch (type) {
-            case 'header': return <DocumentTextIcon className="w-5 h-5 text-blue-500" />;
-            case 'rule': return <ScaleIcon className="w-5 h-5 text-indigo-500" />;
-            case 'line_item': return <BoltIcon className="w-5 h-5 text-amber-500" />;
-            default: return <BoltIcon className="w-5 h-5" />;
+            case 'header': return <FileText className="w-5 h-5 text-blue-500" />;
+            case 'rule': return <Scale className="w-5 h-5 text-indigo-500" />;
+            case 'line_item': return <Zap className="w-5 h-5 text-amber-500" />;
+            default: return <Zap className="w-5 h-5" />;
         }
     };
 
@@ -138,7 +128,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
             <div className={`shrink-0 p-6 border-b flex justify-between items-center z-10 ${isSubstitution ? 'bg-indigo-50/50 dark:bg-indigo-900/20 border-indigo-100 dark:border-indigo-800/50' : 'bg-white dark:bg-zinc-800 border-zinc-100 dark:border-zinc-800'}`}>
                 <div>
                     <h2 className="text-xl font-bold font-brand flex items-center gap-2 text-foreground">
-                        {isSubstitution ? <SparklesIcon className="w-6 h-6 text-indigo-500" /> : getTypeIcon(currentIssue.type)}
+                        {isSubstitution ? <Sparkles className="w-6 h-6 text-indigo-500" /> : getTypeIcon(currentIssue.type)}
                         {title || 'Review Discrepancy'}
                     </h2>
                     <p className="text-sm text-muted-foreground mt-1">
@@ -160,7 +150,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
 
                 {isAutoFixing ? (
                     <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                        <SparklesIcon className="w-12 h-12 text-indigo-500 animate-pulse mb-4" />
+                        <Sparkles className="w-12 h-12 text-indigo-500 animate-pulse mb-4" />
                         <h3 className="text-xl font-semibold">Auto-Resolving Remaining Issues...</h3>
                         <p className="text-muted-foreground">Applying AI recommendations with high confidence.</p>
                     </div>
@@ -169,7 +159,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                         {/* Original */}
                         <div className="space-y-4">
                             <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-                                <ShieldExclamationIcon className="w-4 h-4" /> Original {currentIssue.type === 'header' ? 'Context' : 'Value'}
+                                <ShieldAlert className="w-4 h-4" /> Original {currentIssue.type === 'header' ? 'Context' : 'Value'}
                             </div>
                             <div className="bg-white dark:bg-zinc-800/50 p-6 rounded-xl border border-zinc-200 dark:border-zinc-700/50 h-full flex flex-col">
                                 <div className="flex-1 space-y-4">
@@ -199,7 +189,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                         {/* AI Suggestion */}
                         <div className="space-y-4">
                             <div className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                                <SparklesIcon className="w-4 h-4" /> {currentIssue.metadata?.options ? 'Manual Substitution Required' : 'AI Recommendation'}
+                                <Sparkles className="w-4 h-4" /> {currentIssue.metadata?.options ? 'Manual Substitution Required' : 'AI Recommendation'}
                                 <span className="ml-auto text-[10px] bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800">
                                     {confidence}% Confidence
                                 </span>
@@ -213,7 +203,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                                         <div className="text-sm font-medium text-indigo-900 dark:text-indigo-100 mt-2 space-y-2">
                                             {currentIssue.suggestion.reason.split(',').map((criteria, idx) => (
                                                 <div key={idx} className="flex items-start gap-2">
-                                                    <CheckCircleIcon className="w-4 h-4 mt-0.5 shrink-0 text-indigo-500" />
+                                                    <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0 text-indigo-500" />
                                                     <span className="leading-snug">{criteria.trim()}</span>
                                                 </div>
                                             ))}
@@ -244,7 +234,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                                             <>
                                                 <div className="font-mono text-sm bg-white dark:bg-zinc-800 p-2 rounded border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 shadow-sm flex items-center gap-2 mt-1">
                                                     {String(currentIssue.suggestion.value)}
-                                                    <CheckCircleIcon className="w-4 h-4 text-green-500 ml-auto" />
+                                                    <CheckCircle2 className="w-4 h-4 text-green-500 ml-auto" />
                                                 </div>
                                                 {currentIssue.suggestion.subText && (
                                                     <div className="text-xs text-green-600 font-medium mt-1">{currentIssue.suggestion.subText}</div>
@@ -272,7 +262,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                             disabled={isAutoFixing}
                             className={`mr-2 px-3 py-2 text-xs font-bold uppercase tracking-wide disabled:opacity-50 whitespace-nowrap flex items-center gap-1 rounded-lg transition-colors ${isSubstitution ? 'text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/30' : 'text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/30'}`}
                         >
-                            <SparklesIcon className="w-4 h-4" />
+                            <Sparkles className="w-4 h-4" />
                             Auto-Fix ({issues.length})
                         </button>
                     )}
@@ -283,7 +273,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                             disabled={isAutoFixing}
                             className="flex-1 sm:flex-none px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                         >
-                            <XCircleIcon className="w-4 h-4" />
+                            <XCircle className="w-4 h-4" />
                             Keep Original
                         </button>
                     )}
@@ -292,7 +282,7 @@ export default function DiscrepancyResolverArtifact({ issues, onResolve, onClose
                         disabled={isAutoFixing}
                         className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-white font-bold transition-colors shadow-sm flex items-center justify-center gap-2 whitespace-nowrap ${isSubstitution ? 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-200 dark:shadow-indigo-900/20' : 'bg-amber-600 hover:bg-amber-700 shadow-amber-200 dark:shadow-amber-900/20'}`}
                     >
-                        <CheckCircleIcon className="w-4 h-4" />
+                        <CheckCircle2 className="w-4 h-4" />
                         Accept & Next
                     </button>
                 </div>

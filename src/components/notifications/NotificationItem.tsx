@@ -1,17 +1,17 @@
-import { ArrowRightIcon, ExclamationTriangleIcon, ExclamationCircleIcon, InformationCircleIcon, CheckCircleIcon, DocumentTextIcon, CreditCardIcon, ClipboardDocumentCheckIcon, MegaphoneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { AlertCircle, AlertTriangle, ArrowRight, CheckCircle2, ClipboardCheck, CreditCard, FileText, Info, Megaphone, MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 import type { Notification } from './types';
 import { clsx } from 'clsx';
 
 const PriorityIcon = ({ priority, type }: { priority: Notification['priority'], type: Notification['type'] }) => {
-    if (type === 'discrepancy') return <ExclamationTriangleIcon className="w-4 h-4" />;
-    if (type === 'payment') return <CreditCardIcon className="w-4 h-4" />;
-    if (type === 'invoice') return <DocumentTextIcon className="w-4 h-4" />;
-    if (type === 'approval') return <ClipboardDocumentCheckIcon className="w-4 h-4" />;
-    if (type === 'announcement') return <MegaphoneIcon className="w-4 h-4" />;
-    if (type === 'live_chat') return <ChatBubbleLeftRightIcon className="w-4 h-4" />;
+    if (type === 'discrepancy') return <AlertTriangle className="w-4 h-4" />;
+    if (type === 'payment') return <CreditCard className="w-4 h-4" />;
+    if (type === 'invoice') return <FileText className="w-4 h-4" />;
+    if (type === 'approval') return <ClipboardDocumentCheck className="w-4 h-4" />;
+    if (type === 'announcement') return <Megaphone className="w-4 h-4" />;
+    if (type === 'live_chat') return <MessageSquare className="w-4 h-4" />;
 
-    return <InformationCircleIcon className="w-4 h-4" />;
+    return <Info className="w-4 h-4" />;
 };
 
 const PriorityBadge = ({ priority, type }: { priority: Notification['priority'], type: Notification['type'] }) => {
@@ -116,7 +116,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                         onClick={() => handleActionClick(action.label, i)}
                     >
                         {actionState[i] || action.label}
-                        {actionState[i] === 'Sent!' ? <CheckCircleIcon className="w-3 h-3" /> : <ArrowRightIcon className="w-3 h-3" />}
+                        {actionState[i] === 'Sent!' ? <CheckCircle2 className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
                     </button>
                 ))}
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CloudArrowUpIcon, ServerStackIcon, DocumentTextIcon, ArrowPathIcon, CheckCircleIcon, XMarkIcon, ArrowLeftIcon, ArrowUpTrayIcon } from '@heroicons/react/24/outline';
+import { ArrowLeft, CheckCircle2, CloudUpload, FileText, RefreshCw, Server, Upload, X } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 
 export default function ModeSelectionArtifact() {
@@ -78,9 +78,9 @@ export default function ModeSelectionArtifact() {
             <div className="flex flex-col items-center justify-center p-8 w-full max-w-lg mx-auto bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm animate-in fade-in zoom-in-95 duration-300">
                 <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-full flex items-center justify-center mb-6 relative">
                     {progress < 100 ? (
-                        <ArrowPathIcon className="w-8 h-8 text-blue-500 animate-spin" />
+                        <RefreshCw className="w-8 h-8 text-blue-500 animate-spin" />
                     ) : (
-                        <CheckCircleIcon className="w-8 h-8 text-green-500 animate-in zoom-in duration-300" />
+                        <CheckCircle2 className="w-8 h-8 text-green-500 animate-in zoom-in duration-300" />
                     )}
                 </div>
 
@@ -112,7 +112,7 @@ export default function ModeSelectionArtifact() {
         <div className="flex flex-col w-full max-w-lg mx-auto bg-white dark:bg-zinc-800 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm animate-in fade-in slide-in-from-right-8 duration-300">
             <div className="p-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/20 text-brand-600 flex items-center justify-center shrink-0">
-                    <CloudArrowUpIcon className="w-4 h-4" />
+                    <CloudUpload className="w-4 h-4" />
                 </div>
                 <div>
                     <span className="font-semibold text-sm text-foreground">Intelligent Ingestion</span>
@@ -138,7 +138,7 @@ export default function ModeSelectionArtifact() {
                     />
 
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-transform ${dragActive ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 scale-110' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 group-hover:scale-110 group-hover:text-brand-500'}`}>
-                        <ArrowUpTrayIcon className="w-7 h-7" />
+                        <Upload className="w-7 h-7" />
                     </div>
                     <h4 className="text-base font-semibold text-foreground">Drop PDF, Excel or Email</h4>
                     <p className="text-sm text-muted-foreground mt-1 mb-4">
@@ -160,7 +160,7 @@ export default function ModeSelectionArtifact() {
                         className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors border border-zinc-100 dark:border-zinc-800 hover:border-brand-300 dark:hover:border-brand-600/50 text-left group shadow-sm hover:shadow"
                     >
                         <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center shrink-0">
-                            <DocumentTextIcon className="w-5 h-5 text-red-500" />
+                            <FileText className="w-5 h-5 text-red-500" />
                         </div>
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">Office_Renovation_Specs.pdf</p>
@@ -173,7 +173,7 @@ export default function ModeSelectionArtifact() {
                         className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors border border-zinc-100 dark:border-zinc-800 hover:border-brand-300 dark:hover:border-brand-600/50 text-left group shadow-sm hover:shadow"
                     >
                         <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/20 flex items-center justify-center shrink-0">
-                            <DocumentTextIcon className="w-5 h-5 text-green-500" />
+                            <FileText className="w-5 h-5 text-green-500" />
                         </div>
                         <div className="flex-1">
                             <p className="text-sm font-semibold text-foreground group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">Q1_Requirements.xlsx</p>
@@ -192,7 +192,7 @@ export default function ModeSelectionArtifact() {
                             onClick={() => sendMessage("Mode Selected: Connect ERP")}
                             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700/80 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700"
                         >
-                            <ServerStackIcon className="w-4 h-4" />
+                            <Server className="w-4 h-4" />
                             Auto-Sync ERP
                         </button>
                     </div>

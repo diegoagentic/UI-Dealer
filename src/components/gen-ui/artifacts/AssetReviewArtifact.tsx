@@ -1,23 +1,5 @@
 import { useState } from 'react';
-import {
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    DocumentTextIcon,
-    ArrowPathIcon,
-    FunnelIcon,
-    ChevronDownIcon,
-    PencilSquareIcon,
-    TrashIcon,
-    BoltIcon,
-    SparklesIcon,
-    ArrowLongRightIcon,
-    ShieldCheckIcon,
-    ChartBarIcon,
-    ArrowLeftIcon,
-    TagIcon,
-    BuildingOfficeIcon,
-    ShoppingCartIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowLeft, BarChart3, Building2, CheckCircle2, ChevronDown, FileText, Filter, MoveRight, RefreshCw, ShieldCheck, ShoppingCart, Sparkles, SquarePen, Tag, Trash2, Zap } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 import EditAssetModal from './AssetReview/EditAssetModal';
 import AISuggestionPanel from './AssetReview/AISuggestionPanel';
@@ -547,7 +529,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
             <div className="shrink-0 bg-white dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-800 p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/20 dark:bg-primary/10 rounded-lg">
-                        <SparklesIcon className="w-5 h-5 text-zinc-900 dark:text-primary" />
+                        <Sparkles className="w-5 h-5 text-zinc-900 dark:text-primary" />
                     </div>
                     <div>
                         <h2 className="text-lg font-bold font-brand text-foreground flex items-center gap-2">
@@ -566,7 +548,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
 
 
                     <button className="flex items-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-lg text-xs font-medium transition-colors text-foreground">
-                        <DocumentTextIcon className="w-4 h-4" />
+                        <FileText className="w-4 h-4" />
                         Save Draft
                     </button>
 
@@ -582,12 +564,12 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                     >
                         {totalIssues > 0 ? (
                             <>
-                                <ExclamationTriangleIcon className="w-4 h-4" />
+                                <AlertTriangle className="w-4 h-4" />
                                 Resolve Issues
                             </>
                         ) : (
                             <>
-                                <TagIcon className="w-4 h-4" />
+                                <Tag className="w-4 h-4" />
                                 Apply Discounts & Warranties
                             </>
                         )}
@@ -610,7 +592,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                     <p className="text-2xl font-bold text-foreground mt-1">{stats.validated}</p>
                                 </div>
                                 <div className="p-2 bg-green-50 dark:bg-green-900/10 text-green-600 rounded-lg">
-                                    <CheckCircleIcon className="w-6 h-6" />
+                                    <CheckCircle2 className="w-6 h-6" />
                                 </div>
                             </div>
 
@@ -621,7 +603,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                     <p className="text-2xl font-bold text-foreground mt-1">{formatCurrency(stats.totalValue)}</p>
                                 </div>
                                 <div className="p-2 bg-blue-50 dark:bg-blue-900/10 text-blue-600 rounded-lg">
-                                    <ChartBarIcon className="w-6 h-6" />
+                                    <BarChart3 className="w-6 h-6" />
                                 </div>
                             </div>
 
@@ -655,7 +637,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                 onClick={() => setIsMappingExpanded(!isMappingExpanded)}
                                 className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors mb-2"
                             >
-                                <ChevronDownIcon className={`w-3 h-3 transition-transform ${isMappingExpanded ? '' : '-rotate-90'}`} />
+                                <ChevronDown className={`w-3 h-3 transition-transform ${isMappingExpanded ? '' : '-rotate-90'}`} />
                                 Detected Context & Mappings
                             </button>
 
@@ -725,9 +707,9 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                         asset.status === 'suggestion' ? 'bg-blue-100 text-blue-600' :
                                             'bg-green-100 text-green-600'
                                         }`}>
-                                        {asset.status === 'review' && <ExclamationTriangleIcon className="w-5 h-5" />}
-                                        {asset.status === 'suggestion' && <SparklesIcon className="w-5 h-5" />}
-                                        {asset.status === 'validated' && <CheckCircleIcon className="w-5 h-5" />}
+                                        {asset.status === 'review' && <AlertTriangle className="w-5 h-5" />}
+                                        {asset.status === 'suggestion' && <Sparkles className="w-5 h-5" />}
+                                        {asset.status === 'validated' && <CheckCircle2 className="w-5 h-5" />}
                                     </div>
 
                                     {/* Details */}
@@ -741,7 +723,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
 
                                                     {/* Cost Center input */}
                                                     <div className="flex items-center gap-1 bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded px-1.5 py-0.5">
-                                                        <BuildingOfficeIcon className="w-3 h-3 text-zinc-400" />
+                                                        <Building2 className="w-3 h-3 text-zinc-400" />
                                                         <input
                                                             type="text"
                                                             value={asset.costCenter || ''}
@@ -753,7 +735,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
 
                                                     {asset.warranty && asset.warranty !== 'Standard Warranty' && (
                                                         <span className="text-[10px] flex items-center gap-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-100 dark:border-indigo-800/30">
-                                                            <ShieldCheckIcon className="w-3 h-3" />
+                                                            <ShieldCheck className="w-3 h-3" />
                                                             {asset.warranty}
                                                         </span>
                                                     )}
@@ -771,13 +753,13 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                                 <div className="flex items-center gap-2 text-xs">
                                                     {asset.status === 'review' ? (
                                                         <>
-                                                            <ExclamationTriangleIcon className="w-4 h-4 text-amber-600" />
+                                                            <AlertTriangle className="w-4 h-4 text-amber-600" />
                                                             <span className="text-amber-700 dark:text-amber-500 font-medium">Issue Detected:</span>
                                                             <span className="text-zinc-600 dark:text-zinc-400">{asset.issues?.join(', ')}</span>
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <SparklesIcon className="w-4 h-4 text-blue-600" />
+                                                            <Sparkles className="w-4 h-4 text-blue-600" />
                                                             <span className="text-blue-700 dark:text-blue-500 font-medium">AI Suggestion:</span>
                                                             <span className="text-zinc-600 dark:text-zinc-400">{asset.suggestion?.reason}</span>
                                                         </>
@@ -800,13 +782,13 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                             className="p-1.5 text-zinc-400 hover:text-primary hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg"
                                             title="Edit Asset"
                                         >
-                                            <PencilSquareIcon className="w-4 h-4" />
+                                            <SquarePen className="w-4 h-4" />
                                         </button>
                                         <button
                                             className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg"
                                             title="Remove Asset"
                                         >
-                                            <TrashIcon className="w-4 h-4" />
+                                            <Trash2 className="w-4 h-4" />
                                         </button>
                                     </div>
                                 </div>
@@ -832,7 +814,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                         <div className="h-full flex flex-col">
                             <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
                                 <h3 className="font-bold flex items-center gap-2">
-                                    <TagIcon className="w-5 h-5" />
+                                    <Tag className="w-5 h-5" />
                                     Discounts & Pricing
                                 </h3>
                                 <button onClick={() => setPricingStep('warranties')} className="text-xs text-primary hover:underline">Close</button>
@@ -852,11 +834,11 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                         <div className="h-full flex flex-col">
                             <div className="p-3 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-800 flex justify-between items-center text-sm font-medium">
                                 <span className="flex items-center gap-2">
-                                    <DocumentTextIcon className="w-4 h-4" />
+                                    <FileText className="w-4 h-4" />
                                     Source Document
                                 </span>
                                 <div className="flex gap-2">
-                                    <button className="p-1 hover:bg-zinc-100 rounded"><ArrowPathIcon className="w-4 h-4" /></button>
+                                    <button className="p-1 hover:bg-zinc-100 rounded"><RefreshCw className="w-4 h-4" /></button>
                                 </div>
                             </div>
 
@@ -912,7 +894,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                                 <h3 className="text-lg font-bold flex items-center gap-2 mb-4 relative z-10">
                                     <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
-                                        <ShieldCheckIcon className="w-5 h-5" />
+                                        <ShieldCheck className="w-5 h-5" />
                                     </div>
                                     Context & Rules
                                 </h3>
@@ -938,7 +920,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                                 <h3 className="text-lg font-bold flex items-center gap-2 mb-4 relative z-10">
                                     <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                                        <BoltIcon className="w-5 h-5" />
+                                        <Zap className="w-5 h-5" />
                                     </div>
                                     Line Items
                                 </h3>
@@ -973,7 +955,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                     onClick={() => setCurrentStep('discount')}
                                     className="px-8 py-4 bg-green-600 text-white text-lg font-bold rounded-xl shadow-lg hover:bg-green-700 transition-colors flex items-center gap-2"
                                 >
-                                    <CheckCircleIcon className="w-6 h-6" />
+                                    <CheckCircle2 className="w-6 h-6" />
                                     Proceed to Pricing
                                 </button>
                             )}
@@ -994,7 +976,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                         onClick={() => setCurrentStep('review')}
                                         className="p-2 -ml-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full transition-colors text-zinc-500 hover:text-foreground shrink-0"
                                     >
-                                        <ArrowLeftIcon className="w-5 h-5" />
+                                        <ArrowLeft className="w-5 h-5" />
                                     </button>
                                     <div>
                                         <h2 className="text-2xl font-bold font-brand text-foreground mb-1">Pricing & Configuration</h2>
@@ -1013,7 +995,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                         className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-sm hover:shadow-primary/20 transition-all flex items-center gap-2"
                                     >
                                         Proceed to Finalize
-                                        <ArrowLongRightIcon className="w-5 h-5" />
+                                        <MoveRight className="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -1026,14 +1008,14 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                     <div className="flex flex-col gap-6">
                                         <section>
                                             <h3 className="text-2xl font-bold font-brand text-foreground mb-6 flex items-center gap-3">
-                                                <ShoppingCartIcon className="w-6 h-6 text-zinc-400" />
+                                                <ShoppingCart className="w-6 h-6 text-zinc-400" />
                                                 Purchase Order Items
                                             </h3>
 
                                             {/* Warranty Quick Actions */}
                                             <div className="mb-6 p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50 flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4">
                                                 <div className="flex items-center gap-3">
-                                                    <ShieldCheckIcon className="w-5 h-5 text-indigo-500 shrink-0" />
+                                                    <ShieldCheck className="w-5 h-5 text-indigo-500 shrink-0" />
                                                     <span className="font-bold text-foreground whitespace-nowrap">Warranty Actions</span>
                                                     <span className="px-2 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 text-xs rounded-full font-bold">
                                                         {assets.filter(a => a.warranty !== 'Standard Warranty').length}
@@ -1041,15 +1023,15 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto">
                                                     <button onClick={() => handleApplyWarranty('Extended Warranty', 'all')} className="flex-1 xl:flex-none px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors flex justify-center items-center gap-2">
-                                                        <CheckCircleIcon className="w-4 h-4 text-zinc-400" />
+                                                        <CheckCircle2 className="w-4 h-4 text-zinc-400" />
                                                         Extended
                                                     </button>
                                                     <button onClick={() => handleApplyWarranty('Premium Protection', 'all')} className="flex-1 xl:flex-none px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg text-sm font-medium hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors flex justify-center items-center gap-2">
-                                                        <SparklesIcon className="w-4 h-4 text-amber-500" />
+                                                        <Sparkles className="w-4 h-4 text-amber-500" />
                                                         Premium
                                                     </button>
                                                     <button onClick={() => handleApplyWarranty('Standard Warranty', 'all')} className="px-3 py-1.5 text-zinc-500 hover:text-foreground text-sm font-medium transition-colors flex items-center gap-2">
-                                                        <ArrowPathIcon className="w-4 h-4 shrink-0" />
+                                                        <RefreshCw className="w-4 h-4 shrink-0" />
                                                         <span className="hidden sm:inline">Reset</span>
                                                     </button>
                                                 </div>
@@ -1073,7 +1055,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                                                 </div>
                                                                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                                                                     <div className="relative">
-                                                                        <ShieldCheckIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+                                                                        <ShieldCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                                                                         <select
                                                                             value={asset.warranty || 'Standard Warranty'}
                                                                             onChange={(e) => handleApplyWarranty(e.target.value, 'single', asset.id)}
@@ -1083,7 +1065,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                                                                             <option value="Extended Warranty">Extended Warranty</option>
                                                                             <option value="Premium Protection">Premium Protection</option>
                                                                         </select>
-                                                                        <ChevronDownIcon className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
+                                                                        <ChevronDown className="w-3.5 h-3.5 absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" />
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1130,7 +1112,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                     <div className="absolute inset-0 z-20 bg-zinc-50 dark:bg-zinc-800 flex flex-col items-center justify-center animate-in fade-in zoom-in duration-300">
                         <div className="max-w-md w-full bg-white dark:bg-zinc-800 p-8 rounded-2xl border border-zinc-200 dark:border-zinc-700 shadow-xl text-center">
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <CheckCircleIcon className="w-8 h-8" />
+                                <CheckCircle2 className="w-8 h-8" />
                             </div>
                             <h2 className="text-2xl font-bold font-brand text-foreground mb-2">Quote Ready</h2>
                             <p className="text-muted-foreground mb-6">
@@ -1191,7 +1173,7 @@ export default function AssetReviewArtifact({ data, source = 'upload', onApprove
                     <div className="flex-1 flex flex-col items-center justify-center p-8 bg-zinc-50 dark:bg-zinc-800/50 animate-in fade-in zoom-in duration-300">
                         <div className="bg-white/90 dark:bg-zinc-900/90 p-6 rounded-2xl border border-green-200 dark:border-green-900/50 shadow-sm flex items-center gap-4 text-left">
                             <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-full flex items-center justify-center shrink-0">
-                                <CheckCircleIcon className="w-6 h-6" />
+                                <CheckCircle2 className="w-6 h-6" />
                             </div>
                             <div>
                                 <h4 className="text-lg font-bold text-foreground">Quote Finalized</h4>

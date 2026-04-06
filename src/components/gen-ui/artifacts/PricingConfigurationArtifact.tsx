@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheckIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 import DiscountStructureWidget from './AssetReview/DiscountStructureWidget';
 
@@ -30,7 +30,7 @@ export default function PricingConfigurationArtifact({ data, onConfirm }: { data
                 <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-2">
                         <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
-                            <ShieldCheckIcon className="w-5 h-5" />
+                            <ShieldCheck className="w-5 h-5" />
                         </div>
                         <h3 className="font-bold text-foreground">Warranty Coverage</h3>
                     </div>
@@ -53,7 +53,7 @@ export default function PricingConfigurationArtifact({ data, onConfirm }: { data
                                         </div>
                                     </div>
                                     <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-zinc-300'}`}>
-                                        {isSelected && <CheckCircleIcon className="w-3 h-3" />}
+                                        {isSelected && <CheckCircle2 className="w-3 h-3" />}
                                     </div>
                                 </button>
                             );
@@ -82,7 +82,7 @@ export default function PricingConfigurationArtifact({ data, onConfirm }: { data
                     }}
                     className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-lg shadow-sm hover:scale-[1.02] transition-transform flex items-center gap-2"
                 >
-                    <CheckCircleIcon className="w-5 h-5" />
+                    <CheckCircle2 className="w-5 h-5" />
                     Confirm & Review Assets
                 </button>
             </div>

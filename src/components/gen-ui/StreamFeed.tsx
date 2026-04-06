@@ -2,8 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useGenUI, type StreamMessage, TRIGGERS } from '../../context/GenUIContext';
 import ArtifactContainer from './artifacts/ArtifactContainer';
 import ThinkingIndicator from './ThinkingIndicator';
-import { UserIcon } from '@heroicons/react/24/solid';
-import { SparklesIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowRight, Sparkles, User, X } from 'lucide-react';
 
 const MessageBubble = ({ message }: { message: StreamMessage }) => {
     const { navigate } = useGenUI();
@@ -60,7 +59,7 @@ const MessageBubble = ({ message }: { message: StreamMessage }) => {
         <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'} mb-4`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUser ? 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600' : 'bg-gradient-to-br from-purple-500 to-indigo-500 text-white'
                 }`}>
-                {isUser ? <UserIcon className="w-5 h-5" /> : <SparklesIcon className="w-5 h-5" />}
+                {isUser ? <User className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
             </div>
 
             <div className={`flex flex-col max-w-[85%] ${isUser ? 'items-end' : 'items-start'}`}>
@@ -123,7 +122,7 @@ export default function StreamFeed() {
                 </span>
                 {showTriggers ? (
                     <button onClick={() => setShowTriggers(false)} className="text-zinc-400 hover:text-foreground">
-                        <XMarkIcon className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                     </button>
                 ) : (
                     <button onClick={() => setShowTriggers(true)} className="text-[10px] text-zinc-400 hover:text-primary transition-colors cursor-pointer flex items-center gap-1">
@@ -160,7 +159,7 @@ export default function StreamFeed() {
                                     </div>
                                     <p className="text-xs text-muted-foreground pl-4">{trigger.prompt}</p>
                                 </div>
-                                <ArrowRightIcon className="w-4 h-4 text-zinc-300 group-hover:text-primary transition-colors" />
+                                <ArrowRight className="w-4 h-4 text-zinc-300 group-hover:text-primary transition-colors" />
                             </button>
                         ))}
                     </div>
@@ -168,7 +167,7 @@ export default function StreamFeed() {
                     <>
                         {messages.length === 0 ? (
                             <div className="flex flex-col items-center justify-center h-40 text-muted-foreground opacity-50">
-                                <SparklesIcon className="w-8 h-8 mb-2" />
+                                <Sparkles className="w-8 h-8 mb-2" />
                                 <p className="text-sm">Start a conversation...</p>
                             </div>
                         ) : (

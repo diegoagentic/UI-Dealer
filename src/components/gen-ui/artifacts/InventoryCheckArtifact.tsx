@@ -1,4 +1,4 @@
-import { GlobeAltIcon } from '@heroicons/react/24/outline';
+import { Globe } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 
 export default function InventoryCheckArtifact({ data }: { data: any }) {
@@ -14,7 +14,7 @@ export default function InventoryCheckArtifact({ data }: { data: any }) {
         <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-3 border-b border-blue-100 dark:border-blue-800 flex items-center gap-2">
-                <GlobeAltIcon className="w-4 h-4 text-blue-600 dark:text-blue-500" />
+                <Globe className="w-4 h-4 text-blue-600 dark:text-blue-500" />
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Global Inventory Check</h4>
             </div>
 

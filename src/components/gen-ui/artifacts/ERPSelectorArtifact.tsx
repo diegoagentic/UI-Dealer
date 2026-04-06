@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGenUI } from '../../../context/GenUIContext';
-import { DocumentTextIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircle2, FileText } from 'lucide-react';
 
 const MOCK_ERP_ORDERS = [
     { id: 'PO-2024-001', client: 'Acme Corp', amount: 12450.00, items: 15, date: '2024-02-01', status: 'Pending' },

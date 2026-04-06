@@ -1,4 +1,4 @@
-import { MapPinIcon, ShoppingCartIcon, TruckIcon } from '@heroicons/react/24/outline';
+import { MapPin, ShoppingCart, Truck } from 'lucide-react';
 import { useState } from 'react';
 import { useGenUI } from '../../../context/GenUIContext';
 
@@ -24,7 +24,7 @@ export default function StockMatrixArtifact({ data }: { data: any }) {
         return (
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 flex items-start gap-3 animate-in fade-in zoom-in duration-300">
                 <div className="p-1 bg-blue-100 dark:bg-blue-900/40 rounded-full text-blue-600 dark:text-blue-400">
-                    <TruckIcon className="w-5 h-5" />
+                    <Truck className="w-5 h-5" />
                 </div>
                 <div>
                     <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Stock Reserved</h4>
@@ -38,7 +38,7 @@ export default function StockMatrixArtifact({ data }: { data: any }) {
         <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-3 border-b border-blue-100 dark:border-blue-800 flex items-center gap-2">
-                <TruckIcon className="w-4 h-4 text-blue-600 dark:text-blue-500" />
+                <Truck className="w-4 h-4 text-blue-600 dark:text-blue-500" />
                 <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">Urgent Stock Locator</h4>
             </div>
 
@@ -61,7 +61,7 @@ export default function StockMatrixArtifact({ data }: { data: any }) {
 
                 {/* Location Match */}
                 <div className="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3 flex items-start gap-3 border border-zinc-100 dark:border-zinc-700">
-                    <MapPinIcon className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <MapPin className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                     <div>
                         <p className="text-sm font-semibold text-foreground">{data.location}</p>
                         <p className="text-xs text-muted-foreground mt-0.5">25 mins away • Open until 8 PM</p>
@@ -77,7 +77,7 @@ export default function StockMatrixArtifact({ data }: { data: any }) {
                     onClick={handleReserve}
                     className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2"
                 >
-                    <ShoppingCartIcon className="w-4 h-4" />
+                    <ShoppingCart className="w-4 h-4" />
                     Fast-Track Checkout
                 </button>
             </div>

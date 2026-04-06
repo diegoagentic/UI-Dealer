@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid';
-import { BuildingOfficeIcon, CloudIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { Building2, CheckCircle2, Cloud, RefreshCw, X } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 
 export default function ERPConnectModal({ data }: { data: any }) {
@@ -10,9 +9,9 @@ export default function ERPConnectModal({ data }: { data: any }) {
     const [isConnected, setIsConnected] = useState(false);
 
     const systems = [
-        { id: 'netsuite', name: 'NetSuite', icon: <BuildingOfficeIcon className="w-6 h-6" />, color: 'bg-blue-600' },
-        { id: 'quickbooks', name: 'QuickBooks', icon: <CloudIcon className="w-6 h-6" />, color: 'bg-green-600' },
-        { id: 'sap', name: 'SAP S/4HANA', icon: <ArrowPathIcon className="w-6 h-6" />, color: 'bg-blue-900' },
+        { id: 'netsuite', name: 'NetSuite', icon: <Building2 className="w-6 h-6" />, color: 'bg-blue-600' },
+        { id: 'quickbooks', name: 'QuickBooks', icon: <Cloud className="w-6 h-6" />, color: 'bg-green-600' },
+        { id: 'sap', name: 'SAP S/4HANA', icon: <RefreshCw className="w-6 h-6" />, color: 'bg-blue-900' },
     ];
 
     const handleConnect = () => {
@@ -33,7 +32,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
         return (
             <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 p-8 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-300">
                 <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-500 mb-2">
-                    <CheckCircleIcon className="w-10 h-10" />
+                    <CheckCircle2 className="w-10 h-10" />
                 </div>
                 <h3 className="text-xl font-semibold text-foreground">Successfully Connected!</h3>
                 <p className="text-muted-foreground max-w-xs">
@@ -50,7 +49,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                 <div>
                     <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                         <div className="p-1.5 bg-indigo-600 rounded-lg">
-                            <CloudIcon className="w-5 h-5 text-white" />
+                            <Cloud className="w-5 h-5 text-white" />
                         </div>
                         Connect ERP Integration
                     </h2>
@@ -88,7 +87,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                             </div>
                             {selectedSystem === sys.id && (
                                 <div className="absolute top-3 right-3 text-indigo-600">
-                                    <CheckCircleIcon className="w-5 h-5" />
+                                    <CheckCircle2 className="w-5 h-5" />
                                 </div>
                             )}
                         </button>
@@ -96,7 +95,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                 </div>
 
                 <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg p-4 flex gap-3 text-sm text-amber-800 dark:text-amber-200">
-                    <BuildingOfficeIcon className="w-5 h-5 flex-shrink-0" />
+                    <Building2 className="w-5 h-5 flex-shrink-0" />
                     <p>
                         <strong>Secure Connection:</strong> All credentials are encrypted. We only access product catalog and pricing information needed for quoting.
                     </p>
@@ -121,7 +120,7 @@ export default function ERPConnectModal({ data }: { data: any }) {
                 >
                     {isConnecting ? (
                         <>
-                            <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                            <RefreshCw className="w-4 h-4 animate-spin" />
                             Connecting...
                         </>
                     ) : (

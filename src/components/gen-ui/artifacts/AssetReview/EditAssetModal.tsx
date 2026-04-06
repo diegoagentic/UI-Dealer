@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { XMarkIcon, ExclamationTriangleIcon, PencilSquareIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { AlertTriangle, Sparkles, SquarePen, X } from 'lucide-react';
 import type { AssetType } from '../AssetReviewArtifact';
 
 interface EditAssetModalProps {
@@ -57,14 +57,14 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                         {asset.status === 'review' ? (
                             <>
                                 <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-500">
-                                    <ExclamationTriangleIcon className="w-5 h-5" />
+                                    <AlertTriangle className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-lg font-bold">Review Required</h3>
                             </>
                         ) : (
                             <>
                                 <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400">
-                                    <PencilSquareIcon className="w-5 h-5" />
+                                    <SquarePen className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-lg font-bold">Edit Asset</h3>
                             </>
@@ -72,7 +72,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                         <span className="text-muted-foreground font-normal text-sm ml-2 border-l border-zinc-200 dark:border-zinc-700 pl-2">{asset.description}</span>
                     </div>
                     <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
-                        <XMarkIcon className="w-6 h-6" />
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
 
@@ -81,7 +81,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
 
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
-                            <PencilSquareIcon className="w-5 h-5 text-blue-600" />
+                            <SquarePen className="w-5 h-5 text-blue-600" />
                             <h4 className="font-semibold text-foreground">Manual Edit Asset</h4>
                         </div>
                         <button
@@ -106,7 +106,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                             {asset.issues?.length && (
                                 <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-1">
                                     <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
-                                        <SparklesIcon className="w-3.5 h-3.5" />
+                                        <Sparkles className="w-3.5 h-3.5" />
                                         <span>AI suggests: "{suggestions.description}"</span>
                                     </div>
                                     <button
@@ -142,7 +142,7 @@ export default function EditAssetModal({ isOpen, onClose, asset, onSave }: EditA
                             {asset.issues?.length && (
                                 <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg flex items-center justify-between gap-2 animate-in fade-in slide-in-from-top-1">
                                     <div className="flex items-center gap-2 text-xs text-blue-700 dark:text-blue-300">
-                                        <SparklesIcon className="w-3.5 h-3.5" />
+                                        <Sparkles className="w-3.5 h-3.5" />
                                         <span>AI suggests: "Seating" (optimized)</span>
                                     </div>
                                     <button className="text-[10px] font-bold bg-white dark:bg-blue-900 shadow-sm border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 px-2 py-1 rounded hover:bg-blue-50 transition-colors">

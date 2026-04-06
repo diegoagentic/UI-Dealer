@@ -1,16 +1,5 @@
 import { useState } from 'react';
-import {
-    TagIcon,
-    CalculatorIcon,
-    ChevronDownIcon,
-    CheckCircleIcon,
-    InformationCircleIcon,
-    CurrencyDollarIcon,
-    BriefcaseIcon,
-    ShieldCheckIcon,
-    GiftIcon,
-    PlusCircleIcon
-} from '@heroicons/react/24/outline';
+import { Briefcase, Calculator, CheckCircle2, ChevronDown, DollarSign, Gift, Info, PlusCircle, ShieldCheck, Tag } from 'lucide-react';
 
 interface DiscountStructureWidgetProps {
     subtotal: number;
@@ -43,7 +32,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             id: 'contract',
             title: 'Contract Pricing',
             color: 'blue',
-            icon: BriefcaseIcon,
+            icon: Briefcase,
             expanded: false,
             items: [
                 { id: 'c1', label: 'GSA Schedule Header', description: 'Federal government base rate', rate: 45, enabled: true, type: 'percentage' },
@@ -54,7 +43,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             id: 'special',
             title: 'Special Authorizations',
             color: 'orange',
-            icon: ShieldCheckIcon,
+            icon: ShieldCheck,
             expanded: false,
             items: [
                 { id: 's1', label: 'Director Approval', description: 'Manual override code: DIR-2024', rate: 2, enabled: false, type: 'percentage' }
@@ -64,7 +53,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             id: 'volume',
             title: 'Volume Discounts',
             color: 'purple',
-            icon: CalculatorIcon,
+            icon: Calculator,
             expanded: false,
             items: [
                 { id: 'v1', label: 'Bulk Order > $50k', description: 'Automated volume tier 1', rate: 3, enabled: false, type: 'percentage' },
@@ -75,7 +64,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             id: 'promo',
             title: 'Promotions',
             color: 'green',
-            icon: GiftIcon,
+            icon: Gift,
             expanded: false,
             items: [
                 { id: 'p1', label: 'Q1 Sales Kickoff', description: 'Seasonal promotion', rate: 5, enabled: false, type: 'percentage' },
@@ -86,7 +75,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             id: 'additional',
             title: 'Additional Discounts',
             color: 'teal',
-            icon: PlusCircleIcon,
+            icon: PlusCircle,
             expanded: true, // Default expanded as per reference
             items: [
                 { id: 'a1', label: 'Early Payment Discount', description: '2% discount for payment within 10 days', rate: 2, enabled: true, type: 'percentage' },
@@ -151,7 +140,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                        <CalculatorIcon className="w-6 h-6 text-foreground" />
+                        <Calculator className="w-6 h-6 text-foreground" />
                     </div>
                     <div>
                         <h2 className="text-xl font-bold text-foreground">Interactive Discount Structure</h2>
@@ -186,7 +175,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                         <div className="text-right">
                             <div className="text-xs text-green-600 dark:text-green-500">Discount Rate</div>
                             <div className="text-xl font-bold text-green-700 dark:text-green-400">{totalDiscountRate.toFixed(1)}%</div>
-                            <InformationCircleIcon className="w-4 h-4 text-green-400 absolute bottom-5 right-6" />
+                            <Info className="w-4 h-4 text-green-400 absolute bottom-5 right-6" />
                         </div>
                     </div>
                 </div>
@@ -221,7 +210,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                                             {activeInSection}/{section.items.length}
                                         </span>
                                     </div>
-                                    <ChevronDownIcon className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${section.expanded ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${section.expanded ? 'rotate-180' : ''}`} />
                                 </button>
 
                                 {/* Section Content */}
@@ -252,7 +241,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
                                                         <span className="text-xs text-muted-foreground">{item.description}</span>
                                                         {item.enabled && (
                                                             <div className="mt-2 flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-medium">
-                                                                <CheckCircleIcon className="w-3.5 h-3.5" />
+                                                                <CheckCircle2 className="w-3.5 h-3.5" />
                                                                 <span>Applied: -{formatCurrency(subtotal * (item.rate / 100))}</span>
                                                             </div>
                                                         )}
@@ -277,7 +266,7 @@ export default function DiscountStructureWidget({ subtotal, onApply }: DiscountS
 
                 {/* Info Footer */}
                 <div className="bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/30 rounded-lg p-4 flex gap-3">
-                    <InformationCircleIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" />
                     <div>
                         <h4 className="text-sm font-semibold text-blue-700 dark:text-blue-400 mb-1">How Discounts Are Applied:</h4>
                         <ul className="text-xs text-blue-600 dark:text-blue-300 list-disc list-inside space-y-1">

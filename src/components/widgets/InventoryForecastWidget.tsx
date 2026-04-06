@@ -1,7 +1,6 @@
 
 import WidgetCard from './WidgetCard'
-import { ChartBarIcon, ArrowTrendingUpIcon, ExclamationTriangleIcon, ShoppingBagIcon, SparklesIcon } from '@heroicons/react/24/outline'
-
+import { AlertTriangle, BarChart3, ShoppingBag, Sparkles, TrendingUp } from 'lucide-react';
 const inventoryItems = [
     {
         id: 'AER-B-001',
@@ -46,10 +45,10 @@ export default function InventoryForecastWidget() {
         <WidgetCard
             title="Inventory Forecast"
             description="AI-driven stock predictions & health."
-            icon={ChartBarIcon}
+            icon={BarChart3}
             action={
                 <button className="text-xs font-medium text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex items-center gap-1">
-                    <ArrowTrendingUpIcon className="w-3 h-3" />
+                    <TrendingUp className="w-3 h-3" />
                     Full Report
                 </button>
             }
@@ -69,7 +68,7 @@ export default function InventoryForecastWidget() {
                                 <span className="text-[10px] text-muted-foreground font-mono bg-muted px-1 rounded">{item.id}</span>
                                 {item.velocity === 'high' && (
                                     <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/20 px-1 rounded flex items-center gap-0.5">
-                                        <ArrowTrendingUpIcon className="w-2.5 h-2.5" /> FAST MOVER
+                                        <TrendingUp className="w-2.5 h-2.5" /> FAST MOVER
                                     </span>
                                 )}
                             </div>
@@ -88,7 +87,7 @@ export default function InventoryForecastWidget() {
                                 <span className="uppercase tracking-wide">{item.health}</span>
                                 {(item.health === 'critical' || item.health === 'warning') && (
                                     <div className="flex items-center gap-1 mt-0.5">
-                                        <SparklesIcon className="w-2.5 h-2.5" />
+                                        <Sparkles className="w-2.5 h-2.5" />
                                         <span>{item.aiSuggestion}</span>
                                     </div>
                                 )}
@@ -102,7 +101,7 @@ export default function InventoryForecastWidget() {
 
                 {/* AI Insight Footer */}
                 <div className="mt-4 pt-3 border-t border-border flex items-start gap-3 bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-500/20">
-                    <SparklesIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+                    <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
                     <div>
                         <p className="text-xs text-indigo-900 dark:text-indigo-200 font-medium">AI Insight</p>
                         <p className="text-xs text-indigo-700 dark:text-indigo-300 mt-0.5">

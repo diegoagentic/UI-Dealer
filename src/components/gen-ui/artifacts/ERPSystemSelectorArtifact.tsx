@@ -1,34 +1,27 @@
 import { useState } from 'react';
 import { useGenUI } from '../../../context/GenUIContext';
-import {
-    CloudIcon,
-    BuildingOffice2Icon,
-    ChevronDownIcon,
-    BoltIcon,
-    CheckCircleIcon,
-    CubeIcon
-} from '@heroicons/react/24/outline';
+import { Box, Building, CheckCircle2, ChevronDown, Cloud, Zap } from 'lucide-react';
 
 const SYSTEMS = [
     {
         id: 'netsuite',
         name: 'NetSuite',
         status: 'Connected',
-        icon: CubeIcon,
+        icon: Box,
         color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400'
     },
     {
         id: 'rcp',
         name: 'RCP Core',
         status: 'Available',
-        icon: BoltIcon,
+        icon: Zap,
         color: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400'
     },
     {
         id: 'emanage',
         name: 'EManage One',
         status: 'Available',
-        icon: BuildingOffice2Icon,
+        icon: Building,
         color: 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400'
     }
 ];
@@ -50,7 +43,7 @@ export default function ERPSystemSelectorArtifact() {
             {/* Header Area */}
             <div className="bg-zinc-50/50 dark:bg-zinc-800/30 p-8 flex flex-col items-center justify-center border-b border-zinc-100 dark:border-zinc-800">
                 <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4 transform rotate-3">
-                    <CubeIcon className="w-8 h-8 text-white" />
+                    <Box className="w-8 h-8 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold font-brand text-foreground tracking-tight">Welcome to Avanto!</h2>
                 <p className="text-sm text-muted-foreground mt-2">Your integrated ERP systems</p>
@@ -82,7 +75,7 @@ export default function ERPSystemSelectorArtifact() {
                                 </span>
                             )}
                         </div>
-                        <ChevronDownIcon className={`w-5 h-5 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Dropdown Menu */}
@@ -104,7 +97,7 @@ export default function ERPSystemSelectorArtifact() {
                                             <div className="text-xs text-muted-foreground">Available for connection</div>
                                         </div>
                                         {selectedSystem.id === system.id && (
-                                            <CheckCircleIcon className="w-5 h-5 text-primary" />
+                                            <CheckCircle2 className="w-5 h-5 text-primary" />
                                         )}
                                     </button>
                                 ))}

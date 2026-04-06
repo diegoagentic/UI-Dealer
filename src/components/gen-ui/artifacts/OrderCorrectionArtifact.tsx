@@ -1,4 +1,4 @@
-import { ArrowRightIcon, CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useState } from 'react';
 import { useGenUI } from '../../../context/GenUIContext';
 
@@ -18,7 +18,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
         return (
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 flex items-start gap-3 animate-in fade-in zoom-in duration-300">
                 <div className="p-1 bg-green-100 dark:bg-green-900/40 rounded-full text-green-600 dark:text-green-400">
-                    <CheckCircleIcon className="w-5 h-5" />
+                    <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
                     <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm">Correction Applied</h4>
@@ -32,7 +32,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
         <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-amber-50 dark:bg-amber-900/20 px-4 py-3 border-b border-amber-100 dark:border-amber-800 flex items-center gap-2">
-                <ExclamationTriangleIcon className="w-4 h-4 text-amber-600 dark:text-amber-500" />
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500" />
                 <h4 className="font-semibold text-amber-900 dark:text-amber-100 text-sm">Potential Error Detected</h4>
             </div>
 
@@ -51,7 +51,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
                         <div className="text-xs text-zinc-400">Standard Carpet</div>
                     </div>
 
-                    <ArrowRightIcon className="w-4 h-4 text-zinc-300" />
+                    <ArrowRight className="w-4 h-4 text-zinc-300" />
 
                     <div className="space-y-1">
                         <p className="text-xs text-green-600 dark:text-green-400 uppercase tracking-wider font-semibold">Correction</p>
@@ -69,7 +69,7 @@ export default function OrderCorrectionArtifact({ data }: { data: any }) {
                     onClick={handleApply}
                     className="w-full py-2.5 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg text-sm font-semibold hover:opacity-90 transition-all shadow-sm flex items-center justify-center gap-2"
                 >
-                    <CheckCircleIcon className="w-4 h-4" />
+                    <CheckCircle2 className="w-4 h-4" />
                     Apply Correction
                 </button>
             </div>

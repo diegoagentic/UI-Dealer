@@ -1,4 +1,4 @@
-import { XMarkIcon, SparklesIcon, ArrowLongRightIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircle2, MoveRight, Sparkles, X, XCircle } from 'lucide-react';
 import type { AssetType } from '../AssetReviewArtifact';
 
 interface SuggestionModalProps {
@@ -57,7 +57,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
                 <div className="flex justify-between items-start p-6 border-b border-zinc-100 dark:border-zinc-800 shrink-0">
                     <div>
                         <div className="flex items-center gap-2 mb-1">
-                            <SparklesIcon className="w-5 h-5 text-blue-600" />
+                            <Sparkles className="w-5 h-5 text-blue-600" />
                             <h3 className="text-lg font-bold text-foreground">AI Suggestions</h3>
                             <span className="text-muted-foreground font-normal ml-2">{asset.description}</span>
                         </div>
@@ -74,7 +74,7 @@ export default function SuggestionModal({ isOpen, onClose, asset, onAccept, onRe
                             Apply Best Option
                         </button>
                         <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-                            <XMarkIcon className="w-6 h-6" />
+                            <X className="w-6 h-6" />
                         </button>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import { Popover, PopoverButton, PopoverPanel, Transition } from '@headlessui/react';
-import { BellIcon, MagnifyingGlassIcon, XMarkIcon, Squares2X2Icon, ExclamationTriangleIcon, CreditCardIcon, ClipboardDocumentCheckIcon, TruckIcon, MegaphoneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
+import { AlertTriangle, Bell, ClipboardCheck, CreditCard, LayoutGrid, Megaphone, MessageSquare, Search, Truck, X } from 'lucide-react';
 import { Fragment, useState, useMemo } from 'react';
 import { clsx } from 'clsx';
 import { mockNotifications } from './data';
@@ -18,7 +18,7 @@ export default function ActionCenter() {
             id: 'all',
             label: 'All',
             count: mockNotifications.filter(n => n.unread).length,
-            icon: Squares2X2Icon,
+            icon: LayoutGrid,
             colorTheme: {
                 activeBg: 'bg-zinc-800 dark:bg-white/10',
                 activeText: 'text-white',
@@ -32,7 +32,7 @@ export default function ActionCenter() {
             id: 'discrepancy',
             label: 'Discrepancies',
             count: mockNotifications.filter(n => n.type === 'discrepancy' && n.unread).length,
-            icon: ExclamationTriangleIcon,
+            icon: AlertTriangle,
             colorTheme: {
                 activeBg: 'bg-red-500/15',
                 activeText: 'text-red-500',
@@ -46,7 +46,7 @@ export default function ActionCenter() {
             id: 'payment',
             label: 'Payments',
             count: mockNotifications.filter(n => n.type === 'payment' && n.unread).length,
-            icon: CreditCardIcon,
+            icon: CreditCard,
             colorTheme: {
                 activeBg: 'bg-amber-500/15',
                 activeText: 'text-amber-500',
@@ -60,7 +60,7 @@ export default function ActionCenter() {
             id: 'approval',
             label: 'Approvals',
             count: mockNotifications.filter(n => n.type === 'approval' && n.unread).length,
-            icon: ClipboardDocumentCheckIcon,
+            icon: ClipboardDocumentCheck,
             colorTheme: {
                 activeBg: 'bg-blue-500/15',
                 activeText: 'text-blue-500',
@@ -74,7 +74,7 @@ export default function ActionCenter() {
             id: 'shipping',
             label: 'Shipping',
             count: 3, // Mock count for demo
-            icon: TruckIcon,
+            icon: Truck,
             colorTheme: {
                 activeBg: 'bg-green-500/15',
                 activeText: 'text-green-500',
@@ -88,7 +88,7 @@ export default function ActionCenter() {
             id: 'announcement',
             label: 'Announcements',
             count: mockNotifications.filter(n => n.type === 'announcement' && n.unread).length,
-            icon: MegaphoneIcon,
+            icon: Megaphone,
             colorTheme: {
                 activeBg: 'bg-indigo-500/15',
                 activeText: 'text-indigo-500',
@@ -102,7 +102,7 @@ export default function ActionCenter() {
             id: 'live_chat',
             label: 'Live Chat',
             count: mockNotifications.filter(n => n.type === 'live_chat' && n.unread).length,
-            icon: ChatBubbleLeftRightIcon,
+            icon: MessageSquare,
             colorTheme: {
                 activeBg: 'bg-indigo-500/15',
                 activeText: 'text-indigo-500',
@@ -136,7 +136,7 @@ export default function ActionCenter() {
                         "relative p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors outline-none",
                         open ? "bg-black/5 dark:bg-white/10 text-zinc-900 dark:text-white" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
                     )}>
-                        <BellIcon className="w-5 h-5" />
+                        <Bell className="w-5 h-5" />
                         {totalCount > 0 && (
                             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-400 dark:bg-red-500 ring-2 ring-white dark:ring-zinc-900" />
                         )}
@@ -164,10 +164,10 @@ export default function ActionCenter() {
                                                 <h3 className="text-lg font-bold text-zinc-900 dark:text-white">Action Center</h3>
                                                 <div className="flex items-center gap-2">
                                                     <button className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 transition-colors">
-                                                        <MagnifyingGlassIcon className="w-5 h-5" />
+                                                        <Search className="w-5 h-5" />
                                                     </button>
                                                     <button className="p-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 transition-colors">
-                                                        <XMarkIcon className="w-5 h-5" />
+                                                        <X className="w-5 h-5" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -197,7 +197,7 @@ export default function ActionCenter() {
                                                 ))
                                             ) : (
                                                 <div className="flex flex-col items-center justify-center py-12 text-center text-zinc-500 dark:text-zinc-400">
-                                                    <BellIcon className="w-12 h-12 mb-3 text-zinc-300 dark:text-zinc-600" />
+                                                    <Bell className="w-12 h-12 mb-3 text-zinc-300 dark:text-zinc-600" />
                                                     <p className="text-sm font-medium">No updates found</p>
                                                     <p className="text-xs mt-1">You're all caught up!</p>
                                                 </div>

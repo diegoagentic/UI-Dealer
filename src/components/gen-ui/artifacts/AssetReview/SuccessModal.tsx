@@ -1,4 +1,4 @@
-import { CheckBadgeIcon, ArrowDownTrayIcon, ShareIcon, ArrowRightIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { ArrowRight, BadgeCheck, Download, FileText, Share2 } from 'lucide-react';
 
 interface SuccessModalProps {
     isOpen: boolean;
@@ -21,9 +21,9 @@ export default function SuccessModal({ isOpen, type = 'po', poNumber = 'PO-2026-
                 <div className="flex justify-center mb-6">
                     <div className={`w-20 h-20 rounded-full flex items-center justify-center animate-in zoom-in spin-in-12 duration-500 ${isPO ? 'bg-green-100 dark:bg-green-900/30' : 'bg-amber-100 dark:bg-amber-900/30'}`}>
                         {isPO ? (
-                            <CheckBadgeIcon className="w-12 h-12 text-green-600 dark:text-green-400" />
+                            <BadgeCheck className="w-12 h-12 text-green-600 dark:text-green-400" />
                         ) : (
-                            <DocumentTextIcon className="w-12 h-12 text-amber-600 dark:text-amber-400" />
+                            <FileText className="w-12 h-12 text-amber-600 dark:text-amber-400" />
                         )}
                     </div>
                 </div>
@@ -41,7 +41,7 @@ export default function SuccessModal({ isOpen, type = 'po', poNumber = 'PO-2026-
                         className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-medium shadow-sm transition-transform active:scale-[0.98] flex items-center justify-center gap-2"
                     >
                         View in Transactions
-                        <ArrowRightIcon className="w-4 h-4" />
+                        <ArrowRight className="w-4 h-4" />
                     </button>
 
                     <button
@@ -53,11 +53,11 @@ export default function SuccessModal({ isOpen, type = 'po', poNumber = 'PO-2026-
 
                     <div className="grid grid-cols-2 gap-3 mt-2">
                         <button className="flex items-center justify-center gap-2 py-2.5 px-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl text-sm font-medium transition-colors">
-                            <ArrowDownTrayIcon className="w-4 h-4" />
+                            <Download className="w-4 h-4" />
                             Download PDF
                         </button>
                         <button className="flex items-center justify-center gap-2 py-2.5 px-4 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-xl text-sm font-medium transition-colors">
-                            <ShareIcon className="w-4 h-4" />
+                            <Share2 className="w-4 h-4" />
                             Share
                         </button>
                     </div>

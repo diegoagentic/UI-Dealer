@@ -1,5 +1,5 @@
 import { useState, useEffect, type KeyboardEvent } from 'react';
-import { PaperAirplaneIcon, SparklesIcon, ChevronUpIcon, ClockIcon } from '@heroicons/react/24/solid';
+import { ChevronUp, Clock, Send, Sparkles } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useGenUI } from '../../context/GenUIContext';
@@ -52,7 +52,7 @@ export default function CommandCenter() {
                         className={`p-2 rounded-xl text-zinc-400 hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50 dark:hover:text-white transition-all ${isStreamOpen ? 'bg-brand-300 dark:bg-brand-600/50 text-zinc-900 dark:text-white' : ''}`}
                         title={isStreamOpen ? "Hide Stream" : "Show Stream"}
                     >
-                        <ChevronUpIcon className={`w-5 h-5 transition-transform duration-300 ${isStreamOpen ? 'rotate-180' : ''}`} />
+                        <ChevronUp className={`w-5 h-5 transition-transform duration-300 ${isStreamOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <button
@@ -63,13 +63,13 @@ export default function CommandCenter() {
                         className={`p-2 rounded-xl text-zinc-400 hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50 dark:hover:text-white transition-all ${showTriggers ? 'bg-brand-300 dark:bg-brand-600/50 text-zinc-900 dark:text-white' : ''}`}
                         title="History & Triggers"
                     >
-                        <ClockIcon className="w-5 h-5" />
+                        <Clock className="w-5 h-5" />
                     </button>
 
                     <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
                     <div className="pl-1 text-indigo-500">
-                        <SparklesIcon className="w-6 h-6 animate-pulse" />
+                        <Sparkles className="w-6 h-6 animate-pulse" />
                     </div>
                     <input
                         type="text"
@@ -89,7 +89,7 @@ export default function CommandCenter() {
                             : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed'
                             }`}
                     >
-                        <PaperAirplaneIcon className="w-5 h-5" />
+                        <Send className="w-5 h-5" />
                     </button>
                 </div>
             </div>

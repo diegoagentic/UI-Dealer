@@ -1,13 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import {
-    CheckCircleIcon,
-    CpuChipIcon,
-    DocumentTextIcon,
-    ShieldCheckIcon,
-    TagIcon,
-    BuildingOfficeIcon,
-    CalculatorIcon
-} from '@heroicons/react/24/outline';
+import { Building2, CheckCircle2, Cpu, FileText, ShieldCheck, Tag } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface QuoteExtractionArtifactProps {
@@ -30,28 +22,28 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
         {
             id: 'context',
             label: 'Analyzing Context',
-            icon: BuildingOfficeIcon,
+            icon: Building2,
             status: 'active',
             logs: []
         },
         {
             id: 'rules',
             label: 'Applying Business Rules',
-            icon: ShieldCheckIcon,
+            icon: ShieldCheck,
             status: 'pending',
             logs: []
         },
         {
             id: 'extraction',
             label: 'Extracting Line Items',
-            icon: TagIcon,
+            icon: Tag,
             status: 'pending',
             logs: []
         },
         {
             id: 'validation',
             label: 'Validating Catalog Data',
-            icon: CheckCircleIcon,
+            icon: CheckCircle2,
             status: 'pending',
             logs: []
         }
@@ -202,7 +194,7 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
             <div className="text-center mb-6 shrink-0">
                 <div className="inline-flex items-center justify-center p-3.5 bg-indigo-50 dark:bg-indigo-900/10 rounded-full mb-3 relative">
                     <div className="absolute inset-0 rounded-full border border-indigo-500/20 w-full h-full animate-[ping_3s_cubic-bezier(0,0,0.2,1)_infinite]"></div>
-                    <CpuChipIcon className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+                    <Cpu className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">Autonomous Processing</h3>
                 <p className="text-xs font-mono text-muted-foreground mt-1 uppercase tracking-wider h-4 overflow-visible whitespace-nowrap">{currentLog}</p>
@@ -229,7 +221,7 @@ export default function QuoteExtractionArtifact({ fileName, onComplete }: QuoteE
                                         : "border-zinc-200 dark:border-zinc-700 text-zinc-300"
                             )}>
                                 {step.status === 'complete' ? (
-                                    <CheckCircleIcon className="w-4 h-4" />
+                                    <CheckCircle2 className="w-4 h-4" />
                                 ) : (
                                     <step.icon className="w-3.5 h-3.5" />
                                 )}

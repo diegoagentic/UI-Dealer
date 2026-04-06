@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheckIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { ShieldCheck, Zap } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 
 export default function AnalysisReportArtifact({ data }: { data: any }) {
@@ -23,7 +23,7 @@ export default function AnalysisReportArtifact({ data }: { data: any }) {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-xl -mr-8 -mt-8"></div>
                     <h3 className="font-bold flex items-center gap-2 mb-3 relative z-10 text-sm">
                         <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
-                            <ShieldCheckIcon className="w-4 h-4" />
+                            <ShieldCheck className="w-4 h-4" />
                         </div>
                         Context & Rules
                     </h3>
@@ -48,7 +48,7 @@ export default function AnalysisReportArtifact({ data }: { data: any }) {
                     <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-xl -mr-8 -mt-8"></div>
                     <h3 className="font-bold flex items-center gap-2 mb-3 relative z-10 text-sm">
                         <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                            <BoltIcon className="w-4 h-4" />
+                            <Zap className="w-4 h-4" />
                         </div>
                         Line Items
                     </h3>

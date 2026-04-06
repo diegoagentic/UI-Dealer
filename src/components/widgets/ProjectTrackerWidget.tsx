@@ -1,7 +1,6 @@
 
 import WidgetCard from './WidgetCard'
-import { ClipboardDocumentListIcon, TruckIcon, WrenchScrewdriverIcon, CheckCircleIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline'
-
+import { CheckCircle2, ClipboardList, MoreHorizontal, Truck, Wrench } from 'lucide-react';
 const projects = [
     {
         id: 'PRJ-2024-001',
@@ -33,10 +32,10 @@ const projects = [
 ]
 
 const stages = [
-    { id: 'planning', label: 'Plan', icon: ClipboardDocumentListIcon },
-    { id: 'production', label: 'Mfg', icon: WrenchScrewdriverIcon },
-    { id: 'shipping', label: 'Ship', icon: TruckIcon },
-    { id: 'installation', label: 'Install', icon: CheckCircleIcon },
+    { id: 'planning', label: 'Plan', icon: ClipboardList },
+    { id: 'production', label: 'Mfg', icon: Wrench },
+    { id: 'shipping', label: 'Ship', icon: Truck },
+    { id: 'installation', label: 'Install', icon: CheckCircle2 },
 ]
 
 export default function ProjectTrackerWidget() {
@@ -44,7 +43,7 @@ export default function ProjectTrackerWidget() {
         <WidgetCard
             title="Project Tracker"
             description="Active fit-out milestones and timeline."
-            icon={ClipboardDocumentListIcon}
+            icon={ClipboardList}
             action={
                 <button className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
                     View All Projects
@@ -103,7 +102,7 @@ export default function ProjectTrackerWidget() {
                         </div>
 
                         <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-3 bg-muted/50 p-1.5 rounded-md w-fit">
-                            <EllipsisHorizontalIcon className="w-3 h-3" />
+                            <MoreHorizontal className="w-3 h-3" />
                             Next: <span className="font-medium text-foreground">{project.nextMilestone}</span>
                         </div>
                     </div>

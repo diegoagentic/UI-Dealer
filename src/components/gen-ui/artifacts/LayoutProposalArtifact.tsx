@@ -1,4 +1,4 @@
-import { CubeIcon, Square3Stack3DIcon } from '@heroicons/react/24/outline';
+import { Box, Layers } from 'lucide-react';
 import { useState } from 'react';
 import { useGenUI } from '../../../context/GenUIContext';
 
@@ -19,7 +19,7 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
         <div className="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
             {/* Header */}
             <div className="bg-indigo-50 dark:bg-indigo-900/20 px-4 py-3 border-b border-indigo-100 dark:border-indigo-800 flex items-center gap-2">
-                <Square3Stack3DIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
+                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-500" />
                 <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm">Layout Generator</h4>
             </div>
 
@@ -39,7 +39,7 @@ export default function LayoutProposalArtifact({ data }: { data: any }) {
                                 : 'bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 hover:border-indigo-300'
                                 }`}
                         >
-                            <CubeIcon className={`w-6 h-6 ${selectedOption === opt ? 'text-indigo-600' : 'text-zinc-400'}`} />
+                            <Box className={`w-6 h-6 ${selectedOption === opt ? 'text-indigo-600' : 'text-zinc-400'}`} />
                             <span className={`text-[10px] font-medium ${selectedOption === opt ? 'text-indigo-700 dark:text-indigo-300' : 'text-zinc-500'}`}>{opt}</span>
                         </button>
                     ))}

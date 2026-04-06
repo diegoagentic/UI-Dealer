@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import {
-    BuildingOffice2Icon,
-    UserIcon,
-    TruckIcon,
-    CheckCircleIcon,
-    CurrencyDollarIcon,
-    DocumentTextIcon,
-    ArrowLeftIcon,
-    ChartBarIcon
-} from '@heroicons/react/24/outline'
-
+import { ArrowLeft, BarChart3, Building, CheckCircle2, DollarSign, FileText, Truck, User } from 'lucide-react';
 interface OrderSimulationArtifactProps {
     onBack?: () => void;
     onGeneratePO?: () => void;
@@ -65,7 +55,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                 <div className="bg-white/90 dark:bg-zinc-900/90 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex items-center justify-between w-full text-left">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-full flex items-center justify-center shrink-0">
-                            <ChartBarIcon className="w-5 h-5" />
+                            <BarChart3 className="w-5 h-5" />
                         </div>
                         <div>
                             <h4 className="text-sm font-bold text-foreground">Order Simulation</h4>
@@ -90,7 +80,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                         className="p-2 -ml-2 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-full transition-colors group"
                         title={onBack ? "Go Back" : "Collapse Simulation"}
                     >
-                        <ArrowLeftIcon className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
+                        <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-foreground" />
                     </button>
                     <div>
                         <h3 className="text-xl font-brand font-bold text-foreground">Order Simulation</h3>
@@ -105,7 +95,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                             : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
-                        <BuildingOffice2Icon className="w-4 h-4" /> Manufacturer
+                        <Building className="w-4 h-4" /> Manufacturer
                     </button>
                     <button
                         onClick={() => setActiveRole('dealer')}
@@ -114,7 +104,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                             : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
-                        <UserIcon className="w-4 h-4" /> Dealer
+                        <User className="w-4 h-4" /> Dealer
                     </button>
                     <button
                         onClick={() => setActiveRole('end_user')}
@@ -123,7 +113,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                             : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
-                        <UserIcon className="w-4 h-4" /> End User
+                        <User className="w-4 h-4" /> End User
                     </button>
                 </div>
             </div>
@@ -141,7 +131,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                                 {activeRole === 'end_user' && 'preview: invoice_final_ORD-7829.pdf'}
                             </span>
                             <div className="flex gap-2">
-                                <DocumentTextIcon className="w-4 h-4" />
+                                <FileText className="w-4 h-4" />
                             </div>
                         </div>
 
@@ -377,7 +367,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
                         }}
                         className="px-6 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg hover:shadow-primary/20 hover:scale-[1.02] transition-all flex items-center gap-2"
                     >
-                        <DocumentTextIcon className="w-5 h-5" />
+                        <FileText className="w-5 h-5" />
                         Generate Purchase Order
                     </button>
                 </div>
@@ -385,7 +375,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
             {onGeneratePO && isGenerated && (
                 <div className="p-4 border-t border-border flex justify-end bg-zinc-50 dark:bg-zinc-800/50">
                     <div className="px-6 py-2.5 bg-green-100 dark:bg-green-900/10 text-green-700 dark:text-green-400 font-bold rounded-xl flex items-center gap-2 border border-green-200 dark:border-green-800/50">
-                        <CheckCircleIcon className="w-5 h-5" />
+                        <CheckCircle2 className="w-5 h-5" />
                         PO Generation Started
                     </div>
                 </div>

@@ -1,7 +1,6 @@
 
 import WidgetCard from './WidgetCard'
-import { DocumentCheckIcon, ExclamationTriangleIcon, CheckCircleIcon, ArrowPathIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-
+import { AlertTriangle, CheckCircle2, FileCheck, RefreshCw, Search } from 'lucide-react';
 const verificationItems = [
     {
         id: 'PO-9921',
@@ -37,10 +36,10 @@ export default function POVerificationWidget() {
         <WidgetCard
             title="PO vs Acknowledgement"
             description="AI-powered discrepancy detection."
-            icon={DocumentCheckIcon}
+            icon={DocumentCheck}
             action={
                 <button className="text-xs font-medium text-zinc-900 dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors flex items-center gap-1">
-                    <ArrowPathIcon className="w-3 h-3" />
+                    <RefreshCw className="w-3 h-3" />
                     Sync
                 </button>
             }
@@ -61,9 +60,9 @@ export default function POVerificationWidget() {
                                 item.status === 'matched' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-900/30' :
                                     'bg-muted text-muted-foreground border-border'
                                 }`}>
-                                {item.status === 'discrepancy' && <ExclamationTriangleIcon className="w-3 h-3" />}
-                                {item.status === 'matched' && <CheckCircleIcon className="w-3 h-3" />}
-                                {item.status === 'pending' && <MagnifyingGlassIcon className="w-3 h-3" />}
+                                {item.status === 'discrepancy' && <AlertTriangle className="w-3 h-3" />}
+                                {item.status === 'matched' && <CheckCircle2 className="w-3 h-3" />}
+                                {item.status === 'pending' && <Search className="w-3 h-3" />}
                                 {item.status}
                             </div>
                         </div>
@@ -71,7 +70,7 @@ export default function POVerificationWidget() {
                         {item.status === 'discrepancy' && (
                             <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-lg p-2 mt-2">
                                 <div className="flex items-start gap-2">
-                                    <ExclamationTriangleIcon className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+                                    <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
                                     <div>
                                         <p className="text-xs font-semibold text-red-900 dark:text-red-200">
                                             AI Detected {item.mismatches} Mismatches
@@ -89,7 +88,7 @@ export default function POVerificationWidget() {
 
                         {item.status === 'matched' && (
                             <p className="text-[10px] text-green-600 dark:text-green-400 flex items-center gap-1 mt-2">
-                                <CheckCircleIcon className="w-3 h-3" /> Verified by AI {item.date}
+                                <CheckCircle2 className="w-3 h-3" /> Verified by AI {item.date}
                             </p>
                         )}
                     </div>

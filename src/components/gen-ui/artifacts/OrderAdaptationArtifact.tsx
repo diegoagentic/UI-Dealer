@@ -1,17 +1,5 @@
 import { useState } from 'react';
-import {
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    DocumentTextIcon,
-    ArrowPathIcon,
-    ChevronDownIcon,
-    PencilSquareIcon,
-    BoltIcon,
-    SparklesIcon,
-    ArrowLongRightIcon,
-    ChartBarIcon,
-    ArrowLeftIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowLeft, BarChart3, CheckCircle2, ChevronDown, FileText, MoveRight, RefreshCw, Sparkles, SquarePen, Zap } from 'lucide-react';
 import EditAssetModal from './AssetReview/EditAssetModal';
 import DiscountStructureWidget from './AssetReview/DiscountStructureWidget';
 import MappingField from './AssetReview/MappingField';
@@ -127,7 +115,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
             <div className="bg-background border-b border-border p-4 flex justify-between items-center shadow-sm z-10 shrink-0">
                 <div className="flex items-center gap-4">
                     <button onClick={onCancel} className="p-1 -ml-1 rounded-lg text-muted-foreground hover:bg-accent transition-colors">
-                        <ArrowLeftIcon className="w-5 h-5" />
+                        <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div>
                         <div className="flex items-center gap-3 mb-1">
@@ -189,7 +177,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                                             onClick={() => setFilter('attention')}
                                             className={`px-3 py-1 rounded-md text-xs font-medium transition-all flex items-center gap-1.5 ${filter === 'attention' ? 'bg-white dark:bg-zinc-700 shadow-sm text-amber-600 dark:text-amber-500' : 'text-muted-foreground hover:text-foreground'}`}
                                         >
-                                            <ExclamationTriangleIcon className="w-3.5 h-3.5" />
+                                            <AlertTriangle className="w-3.5 h-3.5" />
                                             Alerts ({stats.attention})
                                         </button>
                                     </div>
@@ -203,7 +191,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                                     <div key={asset.id} className="bg-card rounded-xl border border-border p-4 shadow-sm hover:shadow-md transition-shadow group">
                                         <div className="flex gap-4 items-start">
                                             <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${asset.status === 'review' ? 'bg-amber-100 text-amber-600' : 'bg-green-100 text-green-600'}`}>
-                                                {asset.status === 'review' ? <ExclamationTriangleIcon className="w-5 h-5" /> : <CheckCircleIcon className="w-5 h-5" />}
+                                                {asset.status === 'review' ? <AlertTriangle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex justify-between items-start">
@@ -220,7 +208,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                                                 </div>
                                                 {asset.status === 'review' && asset.issues && (
                                                     <div className="mt-2 bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30 rounded-lg p-2 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400">
-                                                        <ExclamationTriangleIcon className="w-4 h-4" />
+                                                        <AlertTriangle className="w-4 h-4" />
                                                         <span>{asset.issues.join(', ')}</span>
                                                     </div>
                                                 )}
@@ -229,7 +217,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                                                 onClick={() => handleEdit(asset)}
                                                 className="px-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium hover:border-primary/50 hover:text-primary transition-colors flex items-center gap-1"
                                             >
-                                                <PencilSquareIcon className="w-3.5 h-3.5" />
+                                                <SquarePen className="w-3.5 h-3.5" />
                                                 Edit
                                             </button>
                                         </div>
@@ -244,7 +232,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                                     className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-primary/20"
                                 >
                                     <span className="text-sm">Next: Pricing & Warranties</span>
-                                    <ArrowLongRightIcon className="w-5 h-5" />
+                                    <MoveRight className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
@@ -253,7 +241,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                         <div className="w-1/3 border-l border-zinc-200 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-950 hidden lg:flex flex-col">
 
                             <div className="p-3 border-b border-border bg-background text-sm font-medium flex items-center gap-2">
-                                <DocumentTextIcon className="w-4 h-4" /> Order Summary
+                                <FileText className="w-4 h-4" /> Order Summary
                             </div>
                             <div className="flex-1 p-8 overflow-y-auto scrollbar-micro flex justify-center">
                                 <div className="bg-white w-full max-w-[300px] min-h-[500px] h-fit shadow-lg rounded-sm border p-6 text-[10px] flex flex-col text-zinc-900">
@@ -297,7 +285,7 @@ export default function OrderAdaptationArtifact({ initialData, onConfirm, onCanc
                     <div className="absolute inset-0 z-20 bg-background flex flex-col animate-in slide-in-from-right duration-300">
                         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center max-w-lg mx-auto">
                             <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 text-green-600 rounded-full flex items-center justify-center mb-6">
-                                <CheckCircleIcon className="w-8 h-8" />
+                                <CheckCircle2 className="w-8 h-8" />
                             </div>
                             <h3 className="text-2xl font-bold mb-2">Ready to Create?</h3>
                             <p className="text-muted-foreground mb-8">

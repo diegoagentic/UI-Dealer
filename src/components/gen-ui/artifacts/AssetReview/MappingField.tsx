@@ -1,12 +1,5 @@
 import { useState } from 'react';
-import {
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ChevronDownIcon,
-    SparklesIcon,
-    Bars2Icon,
-    ArrowRightIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowRight, CheckCircle2, ChevronDown, GripHorizontal, Sparkles } from 'lucide-react';
 
 interface Suggestion {
     value: string;
@@ -58,7 +51,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
             >
                 <div className="flex items-center gap-3">
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isMatched ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-600'}`}>
-                        {isMatched ? <CheckCircleIcon className="w-5 h-5" /> : <ExclamationTriangleIcon className="w-5 h-5" />}
+                        {isMatched ? <CheckCircle2 className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />}
                     </div>
                     <div>
                         <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
@@ -76,11 +69,11 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                     {isMatched && (
                         <div className="text-right mr-2">
                             <div className="text-xs font-semibold text-green-600 flex items-center gap-1">
-                                <CheckCircleIcon className="w-3 h-3" /> Validated
+                                <CheckCircle2 className="w-3 h-3" /> Validated
                             </div>
                         </div>
                     )}
-                    <ChevronDownIcon className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
             </div>
 
@@ -91,7 +84,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                         {/* Column 1: Source Data */}
                         <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground mb-1">
-                                <Bars2Icon className="w-4 h-4" /> Source Data
+                                <GripHorizontal className="w-4 h-4" /> Source Data
                             </div>
                             <div className="font-mono text-sm text-foreground bg-zinc-50 dark:bg-zinc-800/50 p-2.5 rounded-lg border border-zinc-100 dark:border-zinc-800">
                                 {field.description || "Sample data not available"}
@@ -103,7 +96,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                             {field.suggestions && field.suggestions.length > 0 && (
                                 <>
                                     <div className="flex items-center gap-2 text-xs font-semibold text-primary mb-1">
-                                        <SparklesIcon className="w-4 h-4" /> Best Match
+                                        <Sparkles className="w-4 h-4" /> Best Match
                                     </div>
                                     <div className="border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-lg p-2.5 relative group hover:border-indigo-300 transition-colors cursor-pointer" onClick={() => setSelectedValue(field.suggestions![0].value)}>
                                         <div className="flex justify-between items-start">
@@ -136,7 +129,7 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                                             <option key={idx} value={sugg.value}>{sugg.value} ({sugg.confidence}%)</option>
                                         ))}
                                     </select>
-                                    <ChevronDownIcon className="absolute right-2 top-2 w-3 h-3 text-zinc-400 pointer-events-none" />
+                                    <ChevronDown className="absolute right-2 top-2 w-3 h-3 text-zinc-400 pointer-events-none" />
                                 </div>
                             )}
                         </div>
@@ -146,9 +139,9 @@ export default function MappingField({ field }: { field: MappingFieldProps }) {
                             className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm ml-auto ${isMatched ? 'bg-green-100 text-green-700 cursor-default' : 'bg-primary text-primary-foreground hover:bg-primary/90'}`}
                         >
                             {isMatched ? (
-                                <>Validated <CheckCircleIcon className="w-3 h-3" /></>
+                                <>Validated <CheckCircle2 className="w-3 h-3" /></>
                             ) : (
-                                <>Apply Match <ArrowRightIcon className="w-3 h-3" /></>
+                                <>Apply Match <ArrowRight className="w-3 h-3" /></>
                             )}
                         </button>
                     </div>

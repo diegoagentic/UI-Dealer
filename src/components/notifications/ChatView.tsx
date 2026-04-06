@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, PaperAirplaneIcon, UserIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
+import { ArrowLeft, Maximize2, Send, User } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { clsx } from 'clsx';
 
@@ -62,7 +62,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                     onClick={onBack}
                     className="p-1 -ml-1 rounded-full hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-500 dark:text-zinc-400 transition-colors"
                 >
-                    <ArrowLeftIcon className="w-5 h-5" />
+                    <ArrowLeft className="w-5 h-5" />
                 </button>
                 <div>
                     <h3 className="text-sm font-bold text-zinc-900 dark:text-white">Support Chat</h3>
@@ -75,7 +75,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                     className="ml-auto p-1 rounded-full hover:bg-zinc-100 dark:hover:bg-white/10 text-zinc-400 hover:text-zinc-600 dark:hover:text-white transition-colors"
                     title="Open in full page"
                 >
-                    <ArrowsPointingOutIcon className="w-5 h-5" />
+                    <Maximize2 className="w-5 h-5" />
                 </button>
             </div>
 
@@ -96,7 +96,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                                 : "bg-indigo-50 dark:bg-indigo-900/30 border-indigo-100 dark:border-indigo-500/20"
                         )}>
                             {msg.sender === 'user' ? (
-                                <UserIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
+                                <User className="w-4 h-4 text-zinc-500 dark:text-zinc-400" />
                             ) : (
                                 <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">S</span>
                             )}
@@ -139,7 +139,7 @@ export default function ChatView({ onBack }: { onBack: () => void }) {
                         disabled={!inputValue.trim()}
                         className="p-2 rounded-full bg-indigo-500 text-white hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        <PaperAirplaneIcon className="w-4 h-4" />
+                        <Send className="w-4 h-4" />
                     </button>
                 </form>
             </div>

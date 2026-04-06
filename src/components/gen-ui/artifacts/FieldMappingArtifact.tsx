@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ArrowRightIcon, CheckCircleIcon, ExclamationTriangleIcon, DocumentMagnifyingGlassIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowRight, CheckCircle2, FileSearch, Sparkles } from 'lucide-react';
 import { useGenUI } from '../../../context/GenUIContext';
 
 interface FieldItem {
@@ -38,7 +38,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
             <div className="bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
-                        <DocumentMagnifyingGlassIcon className="w-4 h-4" />
+                        <FileSearch className="w-4 h-4" />
                     </div>
                     <div>
                         <h4 className="text-sm font-semibold text-foreground">Field Mapping Analysis</h4>
@@ -54,7 +54,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                 {/* Auto Detected Section */}
                 <div className="space-y-2">
                     <p className="text-xs font-medium text-green-600 dark:text-green-400 flex items-center gap-1.5">
-                        <CheckCircleIcon className="w-3.5 h-3.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5" />
                         Auto-Detected (High Confidence)
                     </p>
                     <div className="grid grid-cols-2 gap-2">
@@ -70,7 +70,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                 {/* Needs Mapping Section */}
                 <div className="space-y-3">
                     <p className="text-xs font-medium text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
-                        <ExclamationTriangleIcon className="w-3.5 h-3.5" />
+                        <AlertTriangle className="w-3.5 h-3.5" />
                         Needs Verification
                     </p>
                     <div className="space-y-2">
@@ -95,9 +95,9 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
 
                                 <div className="flex items-center gap-2 text-xs text-zinc-500 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 p-2 rounded border border-zinc-100 dark:border-zinc-700/50">
                                     <span className="font-mono text-[10px] truncate max-w-[120px]">{field.text}</span>
-                                    <ArrowRightIcon className="w-3 h-3 text-zinc-300" />
+                                    <ArrowRight className="w-3 h-3 text-zinc-300" />
                                     <span className="font-medium text-foreground flex items-center gap-1">
-                                        <SparklesIcon className="w-3 h-3 text-indigo-400" />
+                                        <Sparkles className="w-3 h-3 text-indigo-400" />
                                         {field.match}
                                     </span>
                                 </div>
@@ -122,7 +122,7 @@ export default function FieldMappingArtifact({ data }: { data: any }) {
                     className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2"
                 >
                     {isProcessing ? 'Processing...' : 'Continue to Asset Processing'}
-                    {!isProcessing && <ArrowRightIcon className="w-4 h-4" />}
+                    {!isProcessing && <ArrowRight className="w-4 h-4" />}
                 </button>
             </div>
         </div>
