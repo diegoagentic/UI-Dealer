@@ -5,13 +5,7 @@ import InventoryMovements from './components/InventoryMovements';
 import InventoryMaintenance from './components/InventoryMaintenance';
 import MACRequests from './components/MACRequests';
 import MACPunchList from './components/MACPunchList';
-import {
-    Squares2X2Icon,
-    WrenchScrewdriverIcon,
-    ArrowPathRoundedSquareIcon,
-    ClipboardDocumentCheckIcon,
-    ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, ClipboardCheck, LayoutGrid, RefreshCcw, Wrench } from 'lucide-react';
 
 // Mock Utils if cn is not available globally
 import { clsx, type ClassValue } from "clsx"
@@ -61,10 +55,10 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                 {/* Tabs */}
                 <div className="flex gap-1 bg-card/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                     {[
-                        { id: 'requests', label: 'Requests', count: 12, icon: ClipboardDocumentCheckIcon },
-                        { id: 'movements', label: 'Movements', count: 4, icon: ArrowPathRoundedSquareIcon },
-                        { id: 'maintenance', label: 'Maintenance', count: 3, icon: WrenchScrewdriverIcon },
-                        { id: 'punchlist', label: 'Punch List', count: 3, icon: ExclamationTriangleIcon }
+                        { id: 'requests', label: 'Requests', count: 12, icon: ClipboardDocumentCheck },
+                        { id: 'movements', label: 'Movements', count: 4, icon: RefreshCcw },
+                        { id: 'maintenance', label: 'Maintenance', count: 3, icon: Wrench },
+                        { id: 'punchlist', label: 'Punch List', count: 3, icon: AlertTriangle }
                     ].map((tab) => (
                         <button
                             key={tab.id}

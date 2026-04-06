@@ -1,15 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-    DocumentTextIcon,
-    MagnifyingGlassIcon,
-    ArrowRightIcon,
-    ArrowPathIcon,
-    CheckCircleIcon,
-    PencilSquareIcon,
-    BanknotesIcon,
-    BuildingOfficeIcon,
-    CalendarIcon
-} from '@heroicons/react/24/outline'
+import { ArrowRight, Banknote, Building2, Calendar, CheckCircle2, FileText, RefreshCw, Search, SquarePen } from 'lucide-react';
 import { clsx } from 'clsx'
 import { type OrderFormData } from './OrderCreationForm'
 import OrderAdaptationArtifact from '../gen-ui/artifacts/OrderAdaptationArtifact'
@@ -123,7 +113,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                     }}
                     className="p-2 -ml-2 rounded-lg hover:bg-accent transition-colors"
                 >
-                    <ArrowPathIcon className={clsx("w-5 h-5 text-muted-foreground", step === 'selection' ? "rotate-90" : "")} />
+                    <RefreshCw className={clsx("w-5 h-5 text-muted-foreground", step === 'selection' ? "rotate-90" : "")} />
                     {step !== 'selection' && <span className="sr-only">Back</span>}
                 </button>
                 <div>
@@ -147,7 +137,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                         <div className="max-w-4xl mx-auto space-y-4">
                             {/* Search Mock */}
                             <div className="relative mb-6">
-                                <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 <input
                                     type="text"
                                     placeholder="Search by Quote ID, Customer, or Project..."
@@ -233,7 +223,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                 <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-lg">
-                                            <BuildingOfficeIcon className="w-5 h-5" />
+                                            <Building2 className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Customer</span>
                                     </div>
@@ -243,7 +233,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                 <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 rounded-lg">
-                                            <BanknotesIcon className="w-5 h-5" />
+                                            <Banknote className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Total Value</span>
                                     </div>
@@ -253,7 +243,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                 <div className="p-4 bg-card rounded-xl border border-border shadow-sm">
                                     <div className="flex items-center gap-3 mb-2">
                                         <div className="p-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 rounded-lg">
-                                            <CalendarIcon className="w-5 h-5" />
+                                            <Calendar className="w-5 h-5" />
                                         </div>
                                         <span className="text-xs font-semibold text-muted-foreground uppercase">Requested Date</span>
                                     </div>
@@ -266,7 +256,7 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                             <div className="bg-white dark:bg-zinc-800 rounded-xl border border-border shadow-sm overflow-hidden mb-8">
                                 <div className="px-6 py-4 border-b border-border flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/20">
                                     <h3 className="font-semibold text-foreground flex items-center gap-2">
-                                        <DocumentTextIcon className="w-5 h-5 text-muted-foreground" />
+                                        <FileText className="w-5 h-5 text-muted-foreground" />
                                         Order Items
                                     </h3>
                                     <span className="text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full border border-green-100 dark:border-green-800">
@@ -307,14 +297,14 @@ export default function OrderFromQuoteFlow({ onOrderCreate, onEditDetails, onCan
                                     onClick={() => setStep('editing')}
                                     className="px-4 py-2.5 rounded-xl border border-border text-foreground hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors font-medium text-sm flex items-center gap-2"
                                 >
-                                    <PencilSquareIcon className="w-4 h-4" />
+                                    <SquarePen className="w-4 h-4" />
                                     Review & Adapt Details
                                 </button>
                                 <button
                                     onClick={() => onOrderCreate(getOrderData())}
                                     className="px-6 py-2.5 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2"
                                 >
-                                    <CheckCircleIcon className="w-4 h-4" />
+                                    <CheckCircle2 className="w-4 h-4" />
                                     Confirm & Create Order
                                 </button>
                             </div>

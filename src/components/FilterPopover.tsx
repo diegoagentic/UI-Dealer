@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Popover, PopoverButton, PopoverPanel } from '@headlessui/react';
-import { FunnelIcon } from '@heroicons/react/24/outline';
+import { Filter } from 'lucide-react';
 import { Button } from 'strata-design-system';
 
 interface FilterPopoverProps {
@@ -28,7 +28,7 @@ export default function FilterPopover({ onApply }: FilterPopoverProps) {
     return (
         <Popover className="relative">
             <PopoverButton className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium border border-input rounded-lg hover:bg-primary hover:text-primary-foreground transition-colors text-foreground">
-                <FunnelIcon className="h-4 w-4" />
+                <Filter className="h-4 w-4" />
                 Filter
                 {(selectedStatuses.length + selectedCategories.length) > 0 && (
                     <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-xs text-white font-semibold">

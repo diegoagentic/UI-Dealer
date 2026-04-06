@@ -1,15 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import {
-    UsersIcon,
-    CalculatorIcon,
-    CurrencyDollarIcon,
-    ShieldCheckIcon,
-    ListBulletIcon,
-    InformationCircleIcon
-} from '@heroicons/react/24/outline';
+import { Calculator, DollarSign, Info, List, ShieldCheck, Sparkles, Users } from 'lucide-react';
 import { Switch } from '@headlessui/react';
 import SmartRuleBuilderModal, { type CustomRule } from './SmartRuleBuilderModal';
-import { SparklesIcon } from '@heroicons/react/24/solid';
 
 const MOCK_CLIENTS = [
     { id: '1', name: 'Wells Fargo', contractId: 'WF-2024-QX' },
@@ -119,7 +111,7 @@ export default function ClientPolicyManager() {
                     <label className="block text-sm font-medium text-muted-foreground mb-2">Configure Policy For</label>
                     <div className="flex items-center gap-4">
                         <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-900 dark:text-zinc-100">
-                            <UsersIcon className="w-6 h-6" />
+                            <Users className="w-6 h-6" />
                         </div>
                         <select
                             className="flex-1 text-lg font-semibold bg-transparent border-none focus:ring-0 p-0 text-foreground cursor-pointer"
@@ -137,7 +129,7 @@ export default function ClientPolicyManager() {
                 <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm flex-1">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="font-semibold text-foreground flex items-center gap-2">
-                            <ListBulletIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
+                            <List className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                             Reference Basket
                         </h3>
                         <span className="text-xs text-muted-foreground bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Simulation Only</span>
@@ -171,7 +163,7 @@ export default function ClientPolicyManager() {
                     <div className="bg-green-50 dark:bg-green-900/10 p-6 border-b border-green-100 dark:border-green-900/20">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="font-semibold text-green-900 dark:text-green-400 flex items-center gap-2">
-                                <CalculatorIcon className="w-5 h-5" />
+                                <Calculator className="w-5 h-5" />
                                 Interactive Pricing
                             </h3>
                             <span className="text-xs font-medium bg-green-200/50 dark:bg-green-500/20 text-green-800 dark:text-green-300 px-2 py-1 rounded-full">
@@ -206,7 +198,7 @@ export default function ClientPolicyManager() {
                             onClick={() => setIsRuleModalOpen(true)}
                             className="w-full py-3 mb-2 border-2 border-dashed border-indigo-200 dark:border-indigo-900/50 rounded-xl text-indigo-600 dark:text-indigo-400 font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors flex items-center justify-center gap-2"
                         >
-                            <SparklesIcon className="w-5 h-5" />
+                            <Sparkles className="w-5 h-5" />
                             Use A.I. to create a rule
                         </button>
 
@@ -278,12 +270,12 @@ export default function ClientPolicyManager() {
                                 <div key={rule.id} className="flex items-center justify-between p-4 bg-indigo-50/50 dark:bg-indigo-900/10 rounded-xl border border-indigo-100 dark:border-indigo-900/20">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-1.5 font-medium text-indigo-900 dark:text-indigo-300">
-                                            <SparklesIcon className="w-4 h-4 text-indigo-500" />
+                                            <Sparkles className="w-4 h-4 text-indigo-500" />
                                             {rule.name}
                                         </div>
                                         <div className="text-xs text-indigo-700/70 dark:text-indigo-400/70 mt-0.5">{rule.description}</div>
                                         {!conditionMet && (
-                                            <div className="text-[10px] uppercase text-indigo-500/70 font-semibold mt-1 flex items-center gap-1"><ShieldCheckIcon className="w-3 h-3" />Condition not met (Net &lt; ${rule.conditionThreshold.toLocaleString()})</div>
+                                            <div className="text-[10px] uppercase text-indigo-500/70 font-semibold mt-1 flex items-center gap-1"><ShieldCheck className="w-3 h-3" />Condition not met (Net &lt; ${rule.conditionThreshold.toLocaleString()})</div>
                                         )}
                                     </div>
                                     <Switch
@@ -301,7 +293,7 @@ export default function ClientPolicyManager() {
 
                     {/* Footer / Warranty Actions */}
                     <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-100 dark:border-zinc-800 text-xs text-center text-muted-foreground flex items-center justify-center gap-2">
-                        <ShieldCheckIcon className="w-4 h-4" />
+                        <ShieldCheck className="w-4 h-4" />
                         Standard Warranty Applied (12 Years)
                     </div>
                 </div>

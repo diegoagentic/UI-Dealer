@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { ClockIcon, ArrowPathIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { Clock, LogOut, RefreshCw } from 'lucide-react';
 
 interface SessionExpiryModalProps {
   isOpen: boolean;
@@ -37,7 +37,7 @@ export default function SessionExpiryModal({ isOpen, onExtend, onLogout }: Sessi
             >
               <Dialog.Panel className="w-full max-w-sm transform overflow-hidden rounded-2xl bg-card p-6 text-center shadow-xl transition-all border border-border space-y-4">
                 <div className="mx-auto w-12 h-12 bg-amber-100 dark:bg-amber-500/20 rounded-full flex items-center justify-center">
-                  <ClockIcon className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                  <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                 </div>
 
                 <div className="space-y-2">
@@ -54,14 +54,14 @@ export default function SessionExpiryModal({ isOpen, onExtend, onLogout }: Sessi
                     onClick={onLogout}
                     className="flex-1 px-4 py-2.5 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
                   >
-                    <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                    <LogOut className="w-4 h-4" />
                     Log Out
                   </button>
                   <button
                     onClick={onExtend}
                     className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm shadow-primary/25 flex items-center justify-center gap-2"
                   >
-                    <ArrowPathIcon className="w-4 h-4" />
+                    <RefreshCw className="w-4 h-4" />
                     Extend Session
                   </button>
                 </div>

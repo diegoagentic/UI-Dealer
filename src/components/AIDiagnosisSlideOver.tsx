@@ -1,4 +1,4 @@
-import { SparklesIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ExclamationTriangleIcon, CheckCircleIcon, CubeIcon } from '@heroicons/react/24/outline';
+import { AlertTriangle, Box, CheckCircle2, Sparkles, TrendingDown, TrendingUp } from 'lucide-react';
 import { SlideOver, SlideOverHeader, SlideOverTitle, SlideOverDescription, SlideOverBody, Badge, Button } from 'strata-design-system';
 
 interface SelectedItem {
@@ -59,7 +59,7 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
         <SlideOver open={open} onClose={() => onClose()}>
             <SlideOverHeader onClose={onClose}>
                 <div className="flex items-center gap-2">
-                    <SparklesIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                     <SlideOverTitle>AI Item Diagnosis</SlideOverTitle>
                 </div>
                 <SlideOverDescription>Intelligent analysis for {selectedItem.name}</SlideOverDescription>
@@ -78,7 +78,7 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
                     <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                                <CubeIcon className="h-4 w-4 text-zinc-500" />
+                                <Box className="h-4 w-4 text-zinc-500" />
                                 <span className="text-sm font-medium text-zinc-900 dark:text-white">Stock Health</span>
                             </div>
                             <span className="text-sm text-zinc-500">{selectedItem.stock} units</span>
@@ -98,7 +98,7 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
                     <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-zinc-900 dark:text-white">Price Optimization</span>
-                            <ArrowTrendingDownIcon className="h-4 w-4 text-green-500" />
+                            <TrendingDown className="h-4 w-4 text-green-500" />
                         </div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
                             AI detected potential savings of <span className="font-semibold text-green-600 dark:text-green-400">8-12%</span> through alternative configurations or volume adjustments.
@@ -109,7 +109,7 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
                     <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-zinc-900 dark:text-white">Demand Forecast</span>
-                            <ArrowTrendingUpIcon className="h-4 w-4 text-blue-500" />
+                            <TrendingUp className="h-4 w-4 text-blue-500" />
                         </div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">
                             Projected demand increase of <span className="font-semibold text-blue-600 dark:text-blue-400">+15%</span> over next quarter based on historical patterns and current pipeline.
@@ -124,9 +124,9 @@ export default function AIDiagnosisSlideOver({ open, onClose, transactionType, s
                                 <div key={i} className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-3">
                                     <div className="flex items-start gap-2">
                                         {rec.impact === 'High' ? (
-                                            <ExclamationTriangleIcon className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                            <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
                                         ) : (
-                                            <CheckCircleIcon className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                                            <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
                                         )}
                                         <div>
                                             <p className="text-sm font-medium text-zinc-900 dark:text-white">{rec.title}</p>

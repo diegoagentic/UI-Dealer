@@ -8,40 +8,7 @@ import ChangeStatusModal from './components/ChangeStatusModal';
 import QuickMovementsModal from './components/QuickMovementsModal';
 import { useTenant } from './TenantContext';
 import Breadcrumbs from './components/Breadcrumbs';
-import {
-    MagnifyingGlassIcon,
-    AdjustmentsHorizontalIcon,
-    Squares2X2Icon,
-    ListBulletIcon,
-    PlusIcon,
-    EllipsisHorizontalIcon,
-    MapPinIcon,
-    WrenchScrewdriverIcon,
-    TrashIcon,
-    ArrowPathRoundedSquareIcon,
-    TagIcon,
-    BuildingOfficeIcon,
-    CubeIcon,
-    BoltIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    FunnelIcon,
-    ChevronUpIcon,
-    ChevronDownIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-    QrCodeIcon,
-    ClipboardDocumentCheckIcon,
-    TruckIcon,
-    ChartBarIcon,
-    CurrencyDollarIcon, // Keep only one
-    PhotoIcon,
-    LightBulbIcon,
-    ComputerDesktopIcon,
-    TableCellsIcon,
-    ArchiveBoxIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, Archive, BarChart3, Box, Building2, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, Clock, DollarSign, Filter, LayoutGrid, Lightbulb, List, MapPin, MoreHorizontal, Plus, QrCode, RefreshCcw, Search, Table, Tag, Trash2, Truck, Wrench, Zap } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -156,11 +123,11 @@ const MOCK_INVENTORY: InventoryItem[] = Array.from({ length: 50 }, (_, i) => {
 
 // Summary Data adapted for Inventory
 const inventorySummary = {
-    total_assets: { label: 'Total Assets', value: '1,248', sub: '+12 this week', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
-    total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <TagIcon className="w-5 h-5" />, color: 'green' },
-    low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'orange' },
-    utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <BoltIcon className="w-5 h-5" />, color: 'purple' },
-    pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
+    total_assets: { label: 'Total Assets', value: '1,248', sub: '+12 this week', icon: <Box className="w-5 h-5" />, color: 'blue' },
+    total_value: { label: 'Total Value', value: '$482.5k', sub: 'Current inventory', icon: <Tag className="w-5 h-5" />, color: 'green' },
+    low_stock: { label: 'Low Stock', value: '14', sub: 'Action required', icon: <AlertTriangle className="w-5 h-5" />, color: 'orange' },
+    utilization: { label: 'Utilization', value: '87%', sub: 'Assets in use', icon: <Zap className="w-5 h-5" />, color: 'purple' },
+    pending_moves: { label: 'Pending Moves', value: '23', sub: 'In transit', icon: <Truck className="w-5 h-5" />, color: 'indigo' },
 };
 
 // Color Mapping for Status Icons (from Transactions)
@@ -374,10 +341,10 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
 
     const getCategoryIcon = (category: string, className: string = "w-12 h-12 mb-2 text-zinc-300 dark:text-zinc-600") => {
         switch (category) {
-            case 'Lighting': return <LightBulbIcon className={className} />;
-            case 'Furniture': return <TableCellsIcon className={className} />; // TableCells as generic furniture/desk
-            case 'Partitions': return <Squares2X2Icon className={className} />;
-            default: return <ArchiveBoxIcon className={className} />;
+            case 'Lighting': return <Lightbulb className={className} />;
+            case 'Furniture': return <Table className={className} />; // TableCells as generic furniture/desk
+            case 'Partitions': return <LayoutGrid className={className} />;
+            default: return <Archive className={className} />;
         }
     };
 
@@ -437,7 +404,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                         <div className="flex justify-end mb-2">
                             <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                Hide Details <ChevronUpIcon className="w-4 h-4" />
+                                Hide Details <ChevronUp className="w-4 h-4" />
                             </button>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
@@ -466,10 +433,10 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         <div className="flex flex-wrap items-center gap-4 mt-2 animate-in fade-in slide-in-from-top-3 duration-500 delay-100">
                             <span className="text-sm font-medium text-muted-foreground">Quick Actions:</span>
                             {[
-                                { icon: <PlusIcon className="w-4 h-4" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
-                                { icon: <ArrowPathRoundedSquareIcon className="w-4 h-4" />, label: "Transfer", onClick: () => setIsRelocateModalOpen(true) },
-                                { icon: <WrenchScrewdriverIcon className="w-4 h-4" />, label: "Maintenance", onClick: () => setIsMaintenanceModalOpen(true) },
-                                { icon: <ChartBarIcon className="w-4 h-4" />, label: "Export Report", onClick: () => { } },
+                                { icon: <Plus className="w-4 h-4" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
+                                { icon: <RefreshCcw className="w-4 h-4" />, label: "Transfer", onClick: () => setIsRelocateModalOpen(true) },
+                                { icon: <Wrench className="w-4 h-4" />, label: "Maintenance", onClick: () => setIsMaintenanceModalOpen(true) },
+                                { icon: <BarChart3 className="w-4 h-4" />, label: "Export Report", onClick: () => { } },
                             ].map((action, i) => (
                                 <button
                                     key={i}
@@ -490,7 +457,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 onClick={() => scroll(scrollContainerRef, 'left')}
                                 className="p-1.5 rounded-full hover:bg-brand-50 dark:hover:bg-brand-500/15 text-muted-foreground hover:text-foreground transition-colors shrink-0"
                             >
-                                <ChevronLeftIcon className="w-4 h-4" />
+                                <ChevronLeft className="w-4 h-4" />
                             </button>
 
                             <div
@@ -520,7 +487,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 onClick={() => scroll(scrollContainerRef, 'right')}
                                 className="p-1.5 rounded-full hover:bg-brand-50 dark:hover:bg-brand-500/15 text-muted-foreground hover:text-foreground transition-colors shrink-0"
                             >
-                                <ChevronRightIcon className="w-4 h-4" />
+                                <ChevronRight className="w-4 h-4" />
                             </button>
                         </div>
 
@@ -529,10 +496,10 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                         {/* Quick Actions (Product Owner Context) */}
                         <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                             {[
-                                { icon: <QrCodeIcon className="w-5 h-5" />, label: "Scan Item" },
-                                { icon: <ArrowPathRoundedSquareIcon className="w-5 h-5" />, label: "Quick Transfer", onClick: () => setIsQuickMovementsModalOpen(true) },
-                                { icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, label: "Start Audit" },
-                                { icon: <PlusIcon className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
+                                { icon: <QrCode className="w-5 h-5" />, label: "Scan Item" },
+                                { icon: <RefreshCcw className="w-5 h-5" />, label: "Quick Transfer", onClick: () => setIsQuickMovementsModalOpen(true) },
+                                { icon: <ClipboardDocumentCheck className="w-5 h-5" />, label: "Start Audit" },
+                                { icon: <Plus className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
                             ].map((action, i) => (
                                 <button key={i} onClick={action.onClick} className="p-2 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/15 text-muted-foreground hover:text-foreground transition-colors relative group" title={action.label}>
                                     {action.icon}
@@ -547,7 +514,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                             className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                         >
                             <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                                <ChevronDownIcon className="w-4 h-4" />
+                                <ChevronDown className="w-4 h-4" />
                             </div>
                             <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
                         </button>
@@ -567,7 +534,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 {/* Left: Search & Filters */}
                                 <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
                                     <div className="relative w-full sm:w-64">
-                                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         <input
                                             type="text"
                                             placeholder="Search assets..."
@@ -578,7 +545,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                     </div>
                                     <div className="flex items-center gap-2 w-full sm:w-auto">
                                         <div className="relative">
-                                            <BuildingOfficeIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                                            <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                                             <select
                                                 value={filterType}
                                                 onChange={(e) => setFilterType(e.target.value)}
@@ -589,11 +556,11 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     <option key={type} value={type}>{type}</option>
                                                 ))}
                                             </select>
-                                            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
                                         </div>
 
                                         <div className="relative">
-                                            <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
                                             <select
                                                 value={filterLocation}
                                                 onChange={(e) => setFilterLocation(e.target.value)}
@@ -604,7 +571,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     <option key={loc} value={loc}>{loc}</option>
                                                 ))}
                                             </select>
-                                            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                                            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
                                         </div>
                                     </div>
                                 </div>
@@ -615,12 +582,12 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                         onClick={() => setViewMode('list')}
                                         className={cn("p-1.5 rounded-md transition-all", viewMode === 'list' ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50")}
                                     >
-                                        <ListBulletIcon className="w-5 h-5" />
+                                        <List className="w-5 h-5" />
                                     </button>
                                     <button
                                         className={cn("p-1.5 rounded-md transition-all", viewMode === 'grid' ? "bg-white dark:bg-zinc-700 shadow-sm text-foreground" : "text-muted-foreground hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50")}
                                     >
-                                        <Squares2X2Icon className="w-5 h-5" />
+                                        <LayoutGrid className="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>
@@ -692,7 +659,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         <td className="p-4 text-muted-foreground">{item.category}</td>
                                                         <td className="p-4">
                                                             <div className="flex items-center gap-1.5 text-muted-foreground">
-                                                                <MapPinIcon className="w-3.5 h-3.5 text-zinc-400" />
+                                                                <MapPin className="w-3.5 h-3.5 text-zinc-400" />
                                                                 <span>{item.location}</span>
                                                             </div>
                                                         </td>
@@ -709,7 +676,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         </td>
                                                         <td className="p-4 text-right">
                                                             <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
-                                                                <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                                <MoreHorizontal className="w-5 h-5" />
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -776,7 +743,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 {/* Kebab Menu */}
                                                 <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button className="p-1.5 bg-background/90 backdrop-blur rounded-lg text-foreground hover:bg-background shadow-sm" onClick={(e) => e.stopPropagation()}>
-                                                        <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                        <MoreHorizontal className="w-5 h-5" />
                                                     </button>
                                                 </div>
 
@@ -800,7 +767,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     <p className="text-xs text-muted-foreground mb-3 truncate">{item.description}</p>
 
                                                     <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 mb-2">
-                                                        <MapPinIcon className="w-3.5 h-3.5 shrink-0" />
+                                                        <MapPin className="w-3.5 h-3.5 shrink-0" />
                                                         <span className="truncate">{item.location}</span>
                                                     </div>
                                                 </div>
@@ -895,7 +862,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                             >
                                 <div className="p-0.5 rounded-md transition-colors group-hover:bg-brand-300 dark:group-hover:bg-transparent">
-                                    <ArrowPathRoundedSquareIcon className="w-4 h-4 text-muted-foreground group-hover:text-zinc-600 dark:group-hover:text-primary transition-colors" />
+                                    <RefreshCcw className="w-4 h-4 text-muted-foreground group-hover:text-zinc-600 dark:group-hover:text-primary transition-colors" />
                                 </div>
                                 Change Status
                             </button>
@@ -903,18 +870,18 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                                 onClick={() => setIsRelocateModalOpen(true)}
                                 className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                             >
-                                <MapPinIcon className="w-4 h-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
+                                <MapPin className="w-4 h-4 text-muted-foreground group-hover:text-blue-500 transition-colors" />
                                 Move
                             </button>
                             <button
                                 onClick={() => setIsMaintenanceModalOpen(true)}
                                 className="flex items-center gap-2 px-3 py-1.5 hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors group"
                             >
-                                <WrenchScrewdriverIcon className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
+                                <Wrench className="w-4 h-4 text-muted-foreground group-hover:text-amber-500 transition-colors" />
                                 Maintenance
                             </button>
                             <button className="flex items-center gap-2 px-3 py-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 transition-colors group">
-                                <TrashIcon className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4" />
                                 Delete
                             </button>
                         </div>
@@ -928,7 +895,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                     <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-right-10 fade-in duration-300">
                         <div className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-lg shadow-2xl p-4 flex items-start gap-4 max-w-md border border-zinc-800 dark:border-zinc-200">
                             <div className="bg-green-500/20 text-green-500 p-2 rounded-full shrink-0">
-                                <CheckCircleIcon className="w-5 h-5" />
+                                <CheckCircle2 className="w-5 h-5" />
                             </div>
                             <div className="flex-1">
                                 <h4 className="font-semibold text-sm">{toastMessage.title}</h4>

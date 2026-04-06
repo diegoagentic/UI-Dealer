@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon, EnvelopeIcon, ArrowLeftIcon, DevicePhoneMobileIcon, ShieldCheckIcon, ChevronRightIcon, ChevronLeftIcon, MagnifyingGlassIcon, QrCodeIcon, XMarkIcon, KeyIcon } from '@heroicons/react/24/outline'
+import { ArrowLeft, ArrowRight, CheckCircle2, ChevronLeft, ChevronRight, Eye, EyeOff, Key, Mail, QrCode, Search, ShieldCheck, Smartphone, X } from 'lucide-react';
 import logoLightBrand from './assets/logo-light-brand.png'
 import logoDarkBrand from './assets/logo-dark-brand.png'
 import { useAuth } from './context/AuthContext'
@@ -315,7 +315,7 @@ export default function Login() {
                                         onClick={handleAccessBack}
                                         className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors"
                                     >
-                                        <ChevronLeftIcon className="w-4 h-4" />
+                                        <ChevronLeft className="w-4 h-4" />
                                     </button>
                                     <p className="text-sm text-zinc-500 dark:text-zinc-400">
                                         {selectedTenant} <span className="mx-1">{'>'}</span> <span className="font-bold text-zinc-700 dark:text-zinc-300">Roles</span>
@@ -327,7 +327,7 @@ export default function Login() {
                         {/* Search */}
                         <div className="px-8 py-3">
                             <div className="relative">
-                                <MagnifyingGlassIcon className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                                <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
                                 <input
                                     type="text"
                                     placeholder="Find in list"
@@ -361,7 +361,7 @@ export default function Login() {
                                                 <span className="text-sm text-zinc-900 dark:text-white font-medium">{tenant.name}</span>
                                                 <span className="text-sm text-zinc-400 dark:text-zinc-500"> — {tenant.description}</span>
                                             </div>
-                                            <ChevronRightIcon className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors shrink-0" />
+                                            <ChevronRight className="w-4 h-4 text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-500 dark:group-hover:text-zinc-400 transition-colors shrink-0" />
                                         </button>
                                     ))}
                                     {filteredTenants.length === 0 && (
@@ -428,11 +428,11 @@ export default function Login() {
                             {mfaPhase !== 'welcome' && mfaPhase !== 'totp-setup' && (
                                 <div className="mx-auto w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center mb-4">
                                     {mfaPhase === 'success' ? (
-                                        <ShieldCheckIcon className="w-7 h-7 text-green-500 dark:text-green-400" />
+                                        <ShieldCheck className="w-7 h-7 text-green-500 dark:text-green-400" />
                                     ) : (mfaPhase === 'totp-qr' || mfaPhase === 'method-select') ? (
-                                        <QrCodeIcon className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
+                                        <QrCode className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
                                     ) : (
-                                        <DevicePhoneMobileIcon className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
+                                        <Smartphone className="w-7 h-7 text-indigo-600 dark:text-indigo-400" />
                                     )}
                                 </div>
                             )}
@@ -484,7 +484,7 @@ export default function Login() {
                                             onClick={() => setMfaPhase('phone')}
                                             className="p-5 rounded-xl border-2 border-zinc-200 dark:border-white/15 hover:border-primary dark:hover:border-primary bg-zinc-50 dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-center group"
                                         >
-                                            <DevicePhoneMobileIcon className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
+                                            <Smartphone className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
                                             <div className="text-sm font-bold text-zinc-900 dark:text-white mb-1">Text Message (SMS)</div>
                                             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">Receive a one-time code via SMS to your phone</p>
                                         </button>
@@ -492,7 +492,7 @@ export default function Login() {
                                             onClick={() => setMfaPhase('totp-setup')}
                                             className="p-5 rounded-xl border-2 border-zinc-200 dark:border-white/15 hover:border-primary dark:hover:border-primary bg-zinc-50 dark:bg-white/5 hover:bg-primary/5 dark:hover:bg-primary/10 transition-all text-center group"
                                         >
-                                            <QrCodeIcon className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
+                                            <QrCode className="w-8 h-8 mx-auto mb-3 text-zinc-400 group-hover:text-primary transition-colors" />
                                             <div className="text-sm font-bold text-zinc-900 dark:text-white mb-1">Authenticator App</div>
                                             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">Use an app to generate time-based codes</p>
                                         </button>
@@ -577,7 +577,7 @@ export default function Login() {
                                                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 leading-relaxed">Click on the app you will be using. A barcode will be displayed on the next screen that you will use to complete the process.</p>
                                                     </div>
                                                     <button onClick={() => setShowAppList(false)} className="p-1 rounded-lg hover:bg-zinc-100 dark:hover:bg-white/10 transition-colors shrink-0 ml-2">
-                                                        <XMarkIcon className="w-5 h-5 text-zinc-400" />
+                                                        <X className="w-5 h-5 text-zinc-400" />
                                                     </button>
                                                 </div>
                                                 <div className="px-5 pb-5 space-y-1">
@@ -667,7 +667,7 @@ export default function Login() {
                                                 <div className="px-3 py-2 bg-zinc-100 dark:bg-white/10 rounded-lg border border-zinc-200 dark:border-white/20">
                                                     <code className="text-sm font-mono font-bold text-zinc-900 dark:text-white tracking-wider">{TOTP_SECRET}</code>
                                                 </div>
-                                                <KeyIcon className="w-4 h-4 text-zinc-400" />
+                                                <Key className="w-4 h-4 text-zinc-400" />
                                             </div>
                                         )}
                                     </div>
@@ -743,7 +743,7 @@ export default function Login() {
                             {mfaPhase === 'code' && (
                                 <div className="space-y-5 mt-2">
                                     <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20">
-                                        <CheckCircleIcon className="w-5 h-5 text-green-500 dark:text-green-400 shrink-0" />
+                                        <CheckCircle2 className="w-5 h-5 text-green-500 dark:text-green-400 shrink-0" />
                                         <p className="text-sm text-green-700 dark:text-green-300">Code sent to {MFA_PHONE}</p>
                                     </div>
                                     <div>
@@ -784,7 +784,7 @@ export default function Login() {
                             {mfaPhase === 'success' && (
                                 <div className="flex flex-col items-center py-4 gap-3">
                                     <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center">
-                                        <CheckCircleIcon className="w-8 h-8 text-green-500 dark:text-green-400" />
+                                        <CheckCircle2 className="w-8 h-8 text-green-500 dark:text-green-400" />
                                     </div>
                                     <p className="text-green-700 dark:text-green-300 text-sm font-medium">Authentication successful. Redirecting...</p>
                                 </div>
@@ -816,7 +816,7 @@ export default function Login() {
 
                     <div className="flex gap-4 pt-4">
                         <button className="px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-full hover:opacity-90 transition-opacity flex items-center gap-2">
-                            Talk to an Expert <ArrowRightIcon className="w-4 h-4" />
+                            Talk to an Expert <ArrowRight className="w-4 h-4" />
                         </button>
                         <button className="px-6 py-3 bg-transparent text-sidebar-foreground font-semibold rounded-full hover:bg-sidebar-accent transition-colors border border-sidebar-border">
                             Browse all Services
@@ -836,7 +836,7 @@ export default function Login() {
                         {successMessage ? (
                             <div className="space-y-6 text-center">
                                 <div className="mx-auto w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
-                                    <CheckCircleIcon className="w-8 h-8 text-green-400" />
+                                    <CheckCircle2 className="w-8 h-8 text-green-400" />
                                 </div>
                                 <div className="space-y-2">
                                     <h2 className="text-2xl font-bold text-white">Check Your Email</h2>
@@ -846,7 +846,7 @@ export default function Login() {
                                     onClick={() => { setSuccessMessage(null); switchView('login') }}
                                     className="w-full h-12 rounded-xl bg-primary text-primary-foreground hover:opacity-90 font-bold text-base shadow-lg shadow-black/10 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <ArrowLeftIcon className="w-4 h-4" />
+                                    <ArrowLeft className="w-4 h-4" />
                                     Back to Login
                                 </button>
                             </div>
@@ -870,7 +870,7 @@ export default function Login() {
                                                 placeholder="you@company.com"
                                                 className="w-full bg-white/10 border border-white/20 text-white focus:border-white/40 focus:ring-0 rounded-lg h-12 px-4 pl-10 placeholder:text-zinc-500 outline-none transition-colors"
                                             />
-                                            <EnvelopeIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-3.5" />
+                                            <Mail className="w-5 h-5 text-zinc-400 absolute left-3 top-3.5" />
                                         </div>
                                     </div>
 
@@ -888,7 +888,7 @@ export default function Login() {
                                         onClick={() => switchView('login')}
                                         className="text-sm font-medium text-zinc-300 hover:text-white transition-colors flex items-center gap-1 mx-auto"
                                     >
-                                        <ArrowLeftIcon className="w-3.5 h-3.5" />
+                                        <ArrowLeft className="w-3.5 h-3.5" />
                                         Back to Login
                                     </button>
                                 </div>
@@ -987,7 +987,7 @@ export default function Login() {
                                                     onClick={() => setShowPassword(!showPassword)}
                                                     className="absolute right-3 top-3.5 text-zinc-300 hover:text-white transition-colors"
                                                 >
-                                                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                                                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                                 </button>
                                             </div>
                                         </div>

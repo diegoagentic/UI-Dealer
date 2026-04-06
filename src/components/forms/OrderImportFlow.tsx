@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-    CloudArrowUpIcon,
-    DocumentTextIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ArrowRightIcon,
-    ArrowPathIcon
-} from '@heroicons/react/24/outline'
+import { AlertTriangle, ArrowRight, CheckCircle2, CloudUpload, FileText, RefreshCw } from 'lucide-react';
 import { clsx } from 'clsx'
 import { type OrderFormData } from './OrderCreationForm'
 
@@ -85,7 +78,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                     onClick={onCancel}
                     className="p-2 -ml-2 rounded-lg hover:bg-accent transition-colors"
                 >
-                    <ArrowPathIcon className="w-5 h-5 text-muted-foreground rotate-90" /> {/* Simulating 'Back' icon logic */}
+                    <RefreshCw className="w-5 h-5 text-muted-foreground rotate-90" /> {/* Simulating 'Back' icon logic */}
                 </button>
                 <div>
                     <h2 className="text-xl font-brand font-bold text-foreground">
@@ -117,7 +110,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                             onClick={handleFileSelect}
                         >
                             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 text-primary">
-                                <CloudArrowUpIcon className="w-10 h-10" />
+                                <CloudUpload className="w-10 h-10" />
                             </div>
                             <h3 className="text-xl font-semibold text-foreground mb-2">
                                 Drop your file here to upload
@@ -180,7 +173,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                             <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-lg">
-                                        <DocumentTextIcon className="w-5 h-5" />
+                                        <FileText className="w-5 h-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-semibold text-foreground">Analysis Complete</h4>
@@ -188,7 +181,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                                     </div>
                                 </div>
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium">
-                                    <CheckCircleIcon className="w-4 h-4" />
+                                    <CheckCircle2 className="w-4 h-4" />
                                     Confidence: High
                                 </span>
                             </div>
@@ -228,7 +221,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                                             <div className="w-24 text-right text-muted-foreground">${item.unitPrice.toFixed(2)}</div>
                                             <div className="w-24 text-right font-medium text-foreground">${item.total.toFixed(2)}</div>
                                             <div className="w-8 flex justify-center text-green-500">
-                                                <CheckCircleIcon className="w-5 h-5" />
+                                                <CheckCircle2 className="w-5 h-5" />
                                             </div>
                                         </div>
                                     ))}
@@ -248,7 +241,7 @@ export default function OrderImportFlow({ onImportComplete, onCancel }: OrderImp
                                 className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2"
                             >
                                 Continue to Order Creation
-                                <ArrowRightIcon className="w-4 h-4" />
+                                <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
                     </div>

@@ -1,11 +1,4 @@
-import {
-    ChevronRightIcon, MagnifyingGlassIcon, FunnelIcon, ArrowDownTrayIcon,
-    PlusIcon, CheckCircleIcon, DocumentTextIcon, CubeIcon,
-    ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon, EllipsisHorizontalIcon, SunIcon, MoonIcon,
-    XMarkIcon, HomeIcon, Squares2X2Icon, ArrowTrendingUpIcon, ClipboardDocumentListIcon,
-    UserIcon, CalendarIcon, ChartBarIcon, ExclamationCircleIcon, ArrowRightOnRectangleIcon, PencilSquareIcon, EnvelopeIcon, SparklesIcon, ArrowPathIcon,
-    PaperAirplaneIcon, ChatBubbleLeftRightIcon, PhotoIcon, PaperClipIcon, ClockIcon, CheckIcon, PencilIcon, DocumentChartBarIcon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useState } from 'react'
@@ -132,7 +125,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <div className="pt-24 px-6 pb-4 flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
-                        <ChevronRightIcon className="h-4 w-4 rotate-180" />
+                        <ChevronRight className="h-4 w-4 rotate-180" />
                     </button>
                     <Breadcrumbs
                         items={[
@@ -145,10 +138,10 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 <div className="flex items-center gap-3">
                     <FilterPopover onApply={(filters) => triggerToast('Filters Applied', `${filters.statuses.length + filters.categories.length} filter(s) active`, 'info')} />
                     <button onClick={() => { triggerToast('Exporting Items...', 'Generating CSV file', 'info'); setTimeout(() => triggerToast('Export Complete', 'Quote_QT-1025_Items.csv has been downloaded', 'success'), 1500); }} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
-                        <ArrowDownTrayIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
+                        <Download className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
                     </button>
                     <button onClick={() => setIsAddItemOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
-                        <PlusIcon className="h-4 w-4" /> Add New Item
+                        <Plus className="h-4 w-4" /> Add New Item
                     </button>
                 </div>
             </div>
@@ -160,7 +153,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         <div className="bg-card p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
                                 <button onClick={() => setIsSummaryExpanded(false)} className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 transition-colors bg-zinc-100 dark:bg-card hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
-                                    Hide Details <ChevronUpIcon className="w-3.5 h-3.5" />
+                                    Hide Details <ChevronUp className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 animate-in fade-in zoom-in duration-300">
@@ -212,7 +205,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             ? 'bg-primary text-primary-foreground'
                                                             : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'
                                                     )}>
-                                                        {isCompleted ? <CheckIcon className="w-4 h-4" /> :
+                                                        {isCompleted ? <Check className="w-4 h-4" /> :
                                                             isCurrent ? <div className="w-2 h-2 rounded-full bg-primary-foreground" /> :
                                                                 <div className="w-2 h-2 rounded-full bg-white/50 dark:bg-zinc-600" />}
                                                     </div>
@@ -269,7 +262,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
                             >
                                 <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                    <ChevronDownIcon className="w-4 h-4" />
+                                    <ChevronDown className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Show Details</span>
                             </button>
@@ -319,7 +312,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <div className="flex-1 max-w-lg relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <MagnifyingGlassIcon className="h-5 w-5 text-muted-foreground" />
+                                                    <Search className="h-5 w-5 text-muted-foreground" />
                                                 </div>
                                                 <input
                                                     type="text"
@@ -330,11 +323,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <div className="flex gap-2 ml-4">
                                                 <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
                                                     All Materials
-                                                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                                                    <ChevronDown className="ml-2 h-4 w-4" />
                                                 </button>
                                                 <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
                                                     Stock Status
-                                                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                                                    <ChevronDown className="ml-2 h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -371,7 +364,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{item.id}</td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
-                                                                    <CubeIcon className="h-5 w-5 text-muted-foreground" />
+                                                                    <Box className="h-5 w-5 text-muted-foreground" />
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -426,19 +419,19 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <DocumentChartBarIcon className="h-4 w-4" title="Preview Document" />
+                                                    <DocumentBarChart3 className="h-4 w-4" title="Preview Document" />
                                                 </button>
                                                 <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                    <SquarePen className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => { triggerToast('Preparing Download...', `Generating PDF for ${selectedItem.name}`, 'info'); setTimeout(() => triggerToast('Download Complete', `Quote_QT-1025_${selectedItem.id}.pdf`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <ArrowDownTrayIcon className="h-4 w-4" />
+                                                    <Download className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <PaperAirplaneIcon className="h-4 w-4" />
+                                                    <Send className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <SparklesIcon className="h-4 w-4" />
+                                                    <Sparkles className="h-4 w-4" />
                                                     <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
@@ -455,14 +448,14 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         className="flex items-center justify-between w-full mb-2 group"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <SparklesIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                                             <span className="text-sm font-bold text-foreground">AI Suggestions</span>
                                                             <span className="relative flex h-2 w-2">
                                                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                                                             </span>
                                                         </div>
-                                                        <ChevronDownIcon
+                                                        <ChevronDown
                                                             className={cn(
                                                                 "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                                 sections.aiSuggestions ? "transform rotate-0" : "transform -rotate-90"
@@ -513,7 +506,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         ) : (
                                                             <div className="bg-zinc-50 dark:bg-card/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
                                                                 <div className="flex gap-3">
-                                                                    <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                                                                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                     <div className="w-full">
                                                                         <div className="flex justify-between items-start">
                                                                             <div>
@@ -537,7 +530,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                                         <div className="text-[10px] text-muted-foreground uppercase font-medium">Local</div>
                                                                                         <div className="text-sm font-bold text-foreground">{selectedItem.stock}</div>
                                                                                     </div>
-                                                                                    <ArrowPathIcon className="h-4 w-4 text-muted-foreground" />
+                                                                                    <RefreshCw className="h-4 w-4 text-muted-foreground" />
                                                                                     <div className="text-center">
                                                                                         <div className="text-[10px] text-muted-foreground uppercase font-medium">Remote</div>
                                                                                         <div className="text-sm font-bold text-amber-600 dark:text-amber-400">{(selectedItem.stock || 0) + 5}</div>
@@ -616,7 +609,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     className="flex items-center justify-between w-full mb-2 group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Product Overview</span>
-                                                    <ChevronDownIcon
+                                                    <ChevronDown
                                                         className={cn(
                                                             "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                             sections.productOverview ? "transform rotate-0" : "transform -rotate-90"
@@ -626,7 +619,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 {sections.productOverview && (
                                                     <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-card border border-border rounded-lg p-4">
                                                         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                                                            <CubeIcon className="h-12 w-12 text-muted-foreground/50" />
+                                                            <Box className="h-12 w-12 text-muted-foreground/50" />
                                                         </div>
                                                         <div>
                                                             <h4 className="text-base font-semibold text-foreground">{selectedItem.name}</h4>
@@ -656,7 +649,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                     className="flex items-center justify-between w-full mb-2 group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Lifecycle Status</span>
-                                                    <ChevronDownIcon
+                                                    <ChevronDown
                                                         className={cn(
                                                             "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                             sections.lifecycle ? "transform rotate-0" : "transform -rotate-90"
@@ -730,7 +723,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 ))}
                                             </div>
                                             <button className="h-8 w-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                                                <PlusIcon className="h-4 w-4" />
+                                                <Plus className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -742,21 +735,21 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 <div className="flex-shrink-0">
                                                     {msg.type === 'action_processing' ? (
                                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
-                                                            <DocumentTextIcon className="h-5 w-5 text-zinc-900 dark:text-primary" />
+                                                            <FileText className="h-5 w-5 text-zinc-900 dark:text-primary" />
                                                         </div>
                                                     ) : msg.type === 'action_success' ? (
                                                         <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border border-green-200 dark:border-green-800">
-                                                            <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                         </div>
                                                     ) : msg.avatar === 'AI' ? (
                                                         <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
-                                                            <SparklesIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                         </div>
                                                     ) : msg.avatar ? (
                                                         <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />
                                                     ) : (
                                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                                            <ExclamationTriangleIcon className="h-5 w-5 text-zinc-900 dark:text-primary" />
+                                                            <AlertTriangle className="h-5 w-5 text-zinc-900 dark:text-primary" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -780,7 +773,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                             {msg.content}
                                                             {msg.type === 'action_processing' && (
                                                                 <div className="mt-3 flex items-center gap-2 text-zinc-900 dark:text-primary font-medium">
-                                                                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                                                                    <RefreshCw className="h-4 w-4 animate-spin" />
                                                                     <span>Processing request...</span>
                                                                 </div>
                                                             )}
@@ -801,12 +794,12 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 />
                                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                                     <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted">
-                                                        <PaperClipIcon className="h-5 w-5" />
+                                                        <Paperclip className="h-5 w-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                             <button className="p-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity shadow-sm">
-                                                <PaperAirplaneIcon className="h-5 w-5" />
+                                                <Send className="h-5 w-5" />
                                             </button>
                                         </div>
                                     </div>
@@ -821,7 +814,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center border border-amber-200 dark:border-amber-500/30">
-                                                <ClockIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                                <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-foreground">Pending Review</p>
@@ -836,7 +829,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <div className="space-y-3">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors text-zinc-900 dark:text-primary">
-                                                        <DocumentTextIcon className="h-5 w-5" />
+                                                        <FileText className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-zinc-900 dark:group-hover:text-primary transition-colors">Process Quote</p>
@@ -846,7 +839,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                                 <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-green-500/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors text-green-600 dark:text-green-400">
-                                                        <CheckIcon className="h-5 w-5" />
+                                                        <Check className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Approve Order</p>
@@ -856,7 +849,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                                 <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600 dark:text-amber-400">
-                                                        <PencilIcon className="h-5 w-5" />
+                                                        <Pencil className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Request Changes</p>
@@ -885,7 +878,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                                     <div className="p-4 border-t border-border bg-muted/50">
                                         <button className="w-full py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1">
-                                            View Activity Log <ArrowRightOnRectangleIcon className="h-3 w-3" />
+                                            View Activity Log <LogOut className="h-3 w-3" />
                                         </button>
                                     </div>
                                 </div>
@@ -931,7 +924,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             </p>
                                         </div>
                                         <button onClick={() => setIsDocumentModalOpen(false)} className="text-muted-foreground hover:text-foreground">
-                                            <XMarkIcon className="h-6 w-6" />
+                                            <X className="h-6 w-6" />
                                         </button>
                                     </div>
 

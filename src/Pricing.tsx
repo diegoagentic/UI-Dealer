@@ -1,14 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import { Fragment, useState, useMemo, useEffect, useRef } from 'react'
-import {
-    ClipboardDocumentListIcon, TruckIcon,
-    CurrencyDollarIcon, ChartBarIcon, ArrowTrendingUpIcon, ExclamationCircleIcon,
-    PlusIcon, DocumentDuplicateIcon, DocumentTextIcon, EnvelopeIcon, Squares2X2Icon,
-    EllipsisHorizontalIcon, ListBulletIcon,
-    ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, PencilSquareIcon, TrashIcon,
-    CheckIcon, MapPinIcon, UserIcon, ShoppingBagIcon, ExclamationTriangleIcon,
-    CubeIcon, ClockIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, BarChart3, Box, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardList, Clock, CloudUpload, Copy, DollarSign, FileText, LayoutGrid, List, Mail, MapPin, MoreHorizontal, Plus, ShoppingBag, SquarePen, Trash2, TrendingUp, Truck, User, Wrench } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
@@ -58,11 +50,11 @@ const solidColorStyles: Record<string, string> = {
 
 // Summary Data matching Wireframe
 const ordersSummary = {
-    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
-    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
-    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple' },
-    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
-    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green' },
+    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <Box className="w-5 h-5" />, color: 'blue' },
+    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <Clock className="w-5 h-5" />, color: 'orange' },
+    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <Wrench className="w-5 h-5" />, color: 'purple' },
+    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <Truck className="w-5 h-5" />, color: 'indigo' },
+    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <DollarSign className="w-5 h-5" />, color: 'green' },
 }
 
 interface PageProps {
@@ -205,7 +197,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                     <>
                         <div className="flex justify-end mb-2">
                             <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                Hide Details <ChevronUpIcon className="w-4 h-4" />
+                                Hide Details <ChevronUp className="w-4 h-4" />
                             </button>
                         </div>
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in zoom-in duration-300">
@@ -216,11 +208,11 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">$1.2M</p>
                                     </div>
                                     <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                                        <CurrencyDollarIcon className="w-6 h-6" />
+                                        <DollarSign className="w-6 h-6" />
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-center text-sm text-green-600">
-                                    <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
+                                    <TrendingUp className="w-4 h-4 mr-1" />
                                     <span className="font-medium">+0.2%</span> <span className="text-muted-foreground ml-1">vs last month</span>
                                 </div>
                             </div>
@@ -232,11 +224,11 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">88%</p>
                                     </div>
                                     <div className="p-3 bg-indigo-50 dark:bg-indigo-500/10 rounded-xl text-indigo-600 dark:text-indigo-400">
-                                        <ChartBarIcon className="w-6 h-6" />
+                                        <BarChart3 className="w-6 h-6" />
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-center text-sm text-green-600">
-                                    <ArrowTrendingUpIcon className="w-4 h-4 mr-1" />
+                                    <TrendingUp className="w-4 h-4 mr-1" />
                                     <span className="font-medium">+3.5%</span> <span className="text-muted-foreground ml-1">vs last month</span>
                                 </div>
                             </div>
@@ -248,7 +240,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">142</p>
                                     </div>
                                     <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-600 dark:text-amber-400">
-                                        <ClipboardDocumentListIcon className="w-6 h-6" />
+                                        <ClipboardList className="w-6 h-6" />
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-center text-sm text-muted-foreground">
@@ -263,7 +255,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">15</p>
                                     </div>
                                     <div className="p-3 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-600 dark:text-red-400">
-                                        <ExclamationCircleIcon className="w-6 h-6" />
+                                        <AlertCircle className="w-6 h-6" />
                                     </div>
                                 </div>
                                 <div className="mt-4 flex items-center text-sm text-red-500">
@@ -275,10 +267,10 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                         <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
                             <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                             {[
-                                { icon: <PlusIcon className="w-5 h-5" />, label: "New Order" },
-                                { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export PDF" },
-                                { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send Email" },
+                                { icon: <Plus className="w-5 h-5" />, label: "New Order" },
+                                { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                                { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
                             ].map((action, i) => (
                                 <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                     {action.icon}
@@ -317,10 +309,10 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                         {/* Quick Actions Integrated */}
                         <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-white/10 xl:border-none xl:pl-0">
                             {[
-                                { icon: <PlusIcon className="w-4 h-4" />, label: "New" },
-                                { icon: <DocumentDuplicateIcon className="w-4 h-4" />, label: "Copy" },
-                                { icon: <DocumentTextIcon className="w-4 h-4" />, label: "PDF" },
-                                { icon: <EnvelopeIcon className="w-4 h-4" />, label: "Email" },
+                                { icon: <Plus className="w-4 h-4" />, label: "New" },
+                                { icon: <Copy className="w-4 h-4" />, label: "Copy" },
+                                { icon: <FileText className="w-4 h-4" />, label: "PDF" },
+                                { icon: <Mail className="w-4 h-4" />, label: "Email" },
                             ].map((action, i) => (
                                 <button key={i} className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors">
                                     <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
@@ -336,7 +328,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                             className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
                         >
                             <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                <ChevronDownIcon className="w-4 h-4" />
+                                <ChevronDown className="w-4 h-4" />
                             </div>
                             <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Details</span>
                         </button>
@@ -372,7 +364,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                         : "text-muted-foreground hover:text-foreground"
                                                 )}
                                             >
-                                                {tab.id === 'metrics' && <ChartBarIcon className="w-4 h-4" />}
+                                                {tab.id === 'metrics' && <BarChart3 className="w-4 h-4" />}
                                                 {tab.label}
                                                 {tab.count !== null && (
                                                     <span className={cn(
@@ -414,13 +406,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                 onClick={() => setViewMode('list')}
                                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                             >
-                                                <ListBulletIcon className="h-4 w-4" />
+                                                <List className="h-4 w-4" />
                                             </button>
                                             <button
                                                 onClick={() => setViewMode('grid')}
                                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                             >
-                                                <Squares2X2Icon className="h-4 w-4" />
+                                                <LayoutGrid className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -445,7 +437,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             <div className="bg-gradient-to-br from-green-50 to-success-light dark:from-green-900/10 dark:to-success/10 rounded-2xl p-6 border border-green-200 dark:border-green-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-green-700 dark:text-green-400">Total Revenue</p>
-                                                    <CurrencyDollarIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                    <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-green-700 dark:text-green-300">{metricsData.revenue}</p>
@@ -457,7 +449,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl p-6 border border-blue-200 dark:border-blue-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-blue-700 dark:text-blue-400">Active Orders</p>
-                                                    <ShoppingBagIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                                    <ShoppingBag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{metricsData.activeOrders}</p>
@@ -469,7 +461,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 rounded-2xl p-6 border border-indigo-200 dark:border-indigo-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">Completion Rate</p>
-                                                    <ChartBarIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                    <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
@@ -481,7 +473,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                             <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Project Count</p>
-                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                                    <ClipboardList className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
@@ -528,7 +520,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                             onClick={() => toggleExpand(order.id)}
                                                         >
                                                             <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-foreground flex items-center gap-2">
-                                                                {expandedIds.has(order.id) ? <ChevronDownIcon className="h-4 w-4 text-foreground" /> : <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />}
+                                                                {expandedIds.has(order.id) ? <ChevronDown className="h-4 w-4 text-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                                                                 {order.id}
                                                             </td>
                                                             <td className="whitespace-nowrap px-3 py-4 text-sm text-foreground/80">
@@ -547,7 +539,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                             <td className="whitespace-nowrap px-3 py-4 text-right text-sm font-medium">
                                                                 <Menu as="div" className="relative inline-block text-left">
                                                                     <MenuButton onClick={(e) => e.stopPropagation()} className="bg-transparent p-1 rounded-full text-muted-foreground hover:text-foreground">
-                                                                        <EllipsisHorizontalIcon className="h-5 w-5" />
+                                                                        <MoreHorizontal className="h-5 w-5" />
                                                                     </MenuButton>
                                                                     <Transition
                                                                         as={Fragment}
@@ -563,28 +555,28 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
                                                                                         <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className={`${active ? 'bg-muted' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
-                                                                                            <span className="w-4 h-4 mr-2" ><DocumentTextIcon /></span> View Details
+                                                                                            <span className="w-4 h-4 mr-2" ><FileText /></span> View Details
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
                                                                                         <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
-                                                                                            <span className="w-4 h-4 mr-2" ><PencilSquareIcon /></span> Edit
+                                                                                            <span className="w-4 h-4 mr-2" ><SquarePen /></span> Edit
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
                                                                                         <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                            <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
+                                                                                            <span className="w-4 h-4 mr-2" ><Trash2 /></span> Delete
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
                                                                                 <MenuItem>
                                                                                     {({ active }) => (
                                                                                         <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
-                                                                                            <span className="w-4 h-4 mr-2" ><EnvelopeIcon /></span> Contact
+                                                                                            <span className="w-4 h-4 mr-2" ><Mail /></span> Contact
                                                                                         </button>
                                                                                     )}
                                                                                 </MenuItem>
@@ -602,7 +594,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                         <div className="flex items-start gap-4">
                                                                             <div className="flex-1 space-y-4">
                                                                                 <div className="flex items-center gap-3">
-                                                                                    <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-zinc-500" /></div>
+                                                                                    <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><User className="w-6 h-6 text-zinc-500" /></div>
                                                                                     <div>
                                                                                         <p className="text-sm font-medium text-zinc-900 dark:text-white">Sarah Johnson</p>
                                                                                         <p className="text-xs text-zinc-500">Project Manager</p>
@@ -626,7 +618,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                 <div className="p-3 bg-card rounded-xl border border-zinc-200 dark:border-white/10 shadow-sm">
                                                                                     <p className="text-xs font-medium text-zinc-500 uppercase">Alert</p>
                                                                                     <div className="mt-2 flex items-start gap-2">
-                                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                                                                                        <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                         <div>
                                                                                             <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
                                                                                             <p className="text-xs text-zinc-500 mt-1">Shipment held at port. ETA +24h.</p>
@@ -666,14 +658,14 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                         </div>
                                                         <div className="flex items-center gap-1">
                                                             <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                <DocumentTextIcon className="h-5 w-5" />
+                                                                <FileText className="h-5 w-5" />
                                                             </button>
                                                             <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                <PencilSquareIcon className="h-5 w-5" />
+                                                                <SquarePen className="h-5 w-5" />
                                                             </button>
                                                             <Menu as="div" className="relative inline-block text-left">
                                                                 <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 dark:hover:text-zinc-900">
-                                                                    <EllipsisHorizontalIcon className="h-5 w-5" />
+                                                                    <MoreHorizontal className="h-5 w-5" />
                                                                 </MenuButton>
                                                                 <Transition
                                                                     as={Fragment}
@@ -689,7 +681,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                             <MenuItem>
                                                                                 {({ active }) => (
                                                                                     <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                        <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
+                                                                                        <span className="w-4 h-4 mr-2" ><Trash2 /></span> Delete
                                                                                     </button>
                                                                                 )}
                                                                             </MenuItem>
@@ -723,7 +715,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                             <div className="flex-1 space-y-6">
                                                                 <div className="flex items-center gap-3">
                                                                     <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-card flex items-center justify-center text-zinc-500">
-                                                                        <UserIcon className="h-4 w-4" />
+                                                                        <User className="h-4 w-4" />
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-sm font-bold text-zinc-900 dark:text-white">Sarah Johnson</p>
@@ -737,7 +729,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                         {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
                                                                             <div key={i} className="flex flex-col items-center bg-card px-1">
                                                                                 <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'}`}>
-                                                                                    {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
+                                                                                    {i < 1 ? <Check className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
                                                                                 </div>
                                                                                 <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500'}`}>{step}</span>
                                                                             </div>
@@ -749,7 +741,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                             <div className="w-full md:w-[280px]">
                                                                 <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
                                                                     <div className="flex gap-3">
-                                                                        <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                                                                        <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                         <div>
                                                                             <p className="text-sm font-bold text-amber-900 dark:text-amber-100">Action Required</p>
                                                                             <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">

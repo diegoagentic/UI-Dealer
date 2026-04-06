@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    XMarkIcon,
-    WrenchScrewdriverIcon,
-    CalendarIcon
-} from '@heroicons/react/24/outline';
+import { Calendar, Wrench, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -59,7 +55,7 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-amber-50 dark:bg-amber-900/20 rounded-lg text-amber-600 dark:text-amber-400">
-                            <WrenchScrewdriverIcon className="w-5 h-5" />
+                            <Wrench className="w-5 h-5" />
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-foreground">Schedule Maintenance</h2>
@@ -67,7 +63,7 @@ export default function MaintenanceModal({ isOpen, onClose, selectedCount, onCon
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors">
-                        <XMarkIcon className="w-5 h-5" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 

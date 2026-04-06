@@ -1,16 +1,5 @@
 import React, { useState } from 'react';
-import {
-    ChatBubbleLeftEllipsisIcon,
-    EnvelopeIcon,
-    DevicePhoneMobileIcon,
-    CheckCircleIcon,
-    XCircleIcon,
-    WrenchIcon,
-    TruckIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    EllipsisHorizontalIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, CheckCircle2, Clock, Mail, MessageCircle, MoreHorizontal, Smartphone, Truck, Wrench, XCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -120,9 +109,9 @@ export default function MACRequests() {
 
     const getOriginIcon = (origin: RequestOrigin) => {
         switch (origin) {
-            case 'Slack': return <ChatBubbleLeftEllipsisIcon className="w-5 h-5 text-indigo-500" />;
-            case 'Email': return <EnvelopeIcon className="w-5 h-5 text-blue-500" />;
-            case 'MobileApp': return <DevicePhoneMobileIcon className="w-5 h-5 text-green-500" />;
+            case 'Slack': return <MessageCircle className="w-5 h-5 text-indigo-500" />;
+            case 'Email': return <Mail className="w-5 h-5 text-blue-500" />;
+            case 'MobileApp': return <Smartphone className="w-5 h-5 text-green-500" />;
         }
     };
 
@@ -154,7 +143,7 @@ export default function MACRequests() {
                 <div className="divide-y divide-border">
                     {requests.length === 0 ? (
                         <div className="p-12 text-center">
-                            <CheckCircleIcon className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
+                            <CheckCircle2 className="w-12 h-12 text-muted-foreground/50 mx-auto mb-3" />
                             <h3 className="text-lg font-medium text-foreground">All caught up!</h3>
                             <p className="text-muted-foreground">No pending requests in the queue.</p>
                         </div>
@@ -176,7 +165,7 @@ export default function MACRequests() {
                                         <span className="text-muted-foreground text-xs">{req.department}</span>
                                         <span className="text-muted-foreground text-xs">•</span>
                                         <span className="text-muted-foreground text-xs flex items-center gap-1">
-                                            <ClockIcon className="w-3 h-3" /> {req.receivedAt}
+                                            <Clock className="w-3 h-3" /> {req.receivedAt}
                                         </span>
                                     </div>
                                     <p className="text-sm text-foreground/80 line-clamp-1 group-hover:line-clamp-none transition-all">
@@ -198,28 +187,28 @@ export default function MACRequests() {
                                             title="Convert to Punch List"
                                             className="p-2 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-full transition-colors"
                                         >
-                                            <ExclamationTriangleIcon className="w-5 h-5" />
+                                            <AlertTriangle className="w-5 h-5" />
                                         </button>
                                         <button
                                             onClick={() => handleAction(req.id, 'move')}
                                             title="Convert to Move"
                                             className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-colors"
                                         >
-                                            <TruckIcon className="w-5 h-5" />
+                                            <Truck className="w-5 h-5" />
                                         </button>
                                         <button
                                             onClick={() => handleAction(req.id, 'maintenance')}
                                             title="Convert to Maintenance"
                                             className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-full transition-colors"
                                         >
-                                            <WrenchIcon className="w-5 h-5" />
+                                            <Wrench className="w-5 h-5" />
                                         </button>
                                         <button
                                             onClick={() => handleAction(req.id, 'reject')}
                                             title="Reject Request"
                                             className="p-2 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
                                         >
-                                            <XCircleIcon className="w-5 h-5" />
+                                            <XCircle className="w-5 h-5" />
                                         </button>
                                     </div>
                                 </div>

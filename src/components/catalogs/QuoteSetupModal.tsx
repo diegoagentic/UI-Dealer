@@ -1,17 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Dialog, Transition, Switch, Popover } from '@headlessui/react';
-import {
-    XMarkIcon,
-    SparklesIcon,
-    CalculatorIcon,
-    ClockIcon,
-    CurrencyDollarIcon,
-    ScaleIcon,
-    CheckIcon,
-    ShieldCheckIcon,
-    DocumentCheckIcon,
-    ExclamationTriangleIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, Calculator, Check, Clock, DollarSign, FileCheck, Scale, ShieldCheck, Sparkles, X } from 'lucide-react';
 import clsx from 'clsx';
 
 interface QuoteSetupModalProps {
@@ -21,10 +10,10 @@ interface QuoteSetupModalProps {
 }
 
 const AVAILABLE_RULES = [
-    { id: 'margin', name: 'Margin Protection', desc: 'Enforce min 20% margin', icon: ShieldCheckIcon },
-    { id: 'contract', name: 'Contract Compliance', desc: 'Validates against master agreement', icon: DocumentCheckIcon },
-    { id: 'approval', name: 'Force Approval > $10k', desc: 'Requires manager sign-off', icon: ExclamationTriangleIcon },
-    { id: 'finishes', name: 'Standard Finishes Only', desc: 'Restrict custom finish options', icon: ScaleIcon },
+    { id: 'margin', name: 'Margin Protection', desc: 'Enforce min 20% margin', icon: ShieldCheck },
+    { id: 'contract', name: 'Contract Compliance', desc: 'Validates against master agreement', icon: DocumentCheck },
+    { id: 'approval', name: 'Force Approval > $10k', desc: 'Requires manager sign-off', icon: AlertTriangle },
+    { id: 'finishes', name: 'Standard Finishes Only', desc: 'Restrict custom finish options', icon: Scale },
 ];
 
 export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteSetupModalProps) {
@@ -85,7 +74,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                     <p className="text-sm text-zinc-400 mt-1">Configure initial settings and AI assistance.</p>
                                 </div>
                                 <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors">
-                                    <XMarkIcon className="w-6 h-6" />
+                                    <X className="w-6 h-6" />
                                 </button>
                             </div>
 
@@ -125,7 +114,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 <div>
                                     <div className="flex items-center justify-between mb-3">
                                         <div className="flex items-center gap-2">
-                                            <SparklesIcon className="w-4 h-4 text-indigo-400" />
+                                            <Sparkles className="w-4 h-4 text-indigo-400" />
                                             <div className="text-sm font-medium text-indigo-100">Copilot Suggestions</div>
                                         </div>
 
@@ -137,7 +126,7 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                                         "flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-lg transition-colors outline-none",
                                                         open || activeRules.length > 0 ? "bg-blue-500/20 text-blue-300 border border-blue-500/30" : "bg-zinc-800 text-zinc-400 hover:text-white border border-transparent"
                                                     )}>
-                                                        <ScaleIcon className="w-3.5 h-3.5" />
+                                                        <Scale className="w-3.5 h-3.5" />
                                                         Business Rules
                                                         {activeRules.length > 0 && <span className="bg-blue-500 text-white text-[9px] px-1 rounded-full">{activeRules.length}</span>}
                                                     </Popover.Button>
@@ -242,20 +231,20 @@ export default function QuoteSetupModal({ isOpen, onClose, catalogName }: QuoteS
                                 {/* Forecasting Widget */}
                                 <div>
                                     <div className="flex items-center gap-2 mb-3">
-                                        <CalculatorIcon className="w-4 h-4 text-green-400" />
+                                        <Calculator className="w-4 h-4 text-green-400" />
                                         <div className="text-sm font-medium text-green-100">Forecast</div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50 text-center">
                                             <div className="flex items-center justify-center gap-1.5 text-zinc-400 text-xs mb-1">
-                                                <ClockIcon className="w-3.5 h-3.5" />
+                                                <Clock className="w-3.5 h-3.5" />
                                                 Est. Lead Time
                                             </div>
                                             <div className="text-xl font-semibold text-white">{leadTime}</div>
                                         </div>
                                         <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50 text-center">
                                             <div className="flex items-center justify-center gap-1.5 text-zinc-400 text-xs mb-1">
-                                                <CurrencyDollarIcon className="w-3.5 h-3.5" />
+                                                <DollarSign className="w-3.5 h-3.5" />
                                                 Proj. Margin
                                             </div>
                                             <div className="text-xl font-semibold text-green-400">{volumeDiscount ? '22%' : '26%'}</div>

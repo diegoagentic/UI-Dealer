@@ -1,14 +1,6 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-    XMarkIcon,
-    ArrowUpOnSquareIcon,
-    ArrowRightIcon,
-    LinkIcon,
-    PencilSquareIcon,
-    DocumentMagnifyingGlassIcon
-} from '@heroicons/react/24/outline'
-
+import { ArrowRight, ExternalLink, FileSearch, Link2, SquarePen, X } from 'lucide-react';
 interface AcknowledgementUploadModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -19,7 +11,7 @@ const ackOptions = [
         id: 'upload',
         title: 'Upload File',
         description: 'Upload PDF or Excel acknowledgement files. We\'ll parse the data automatically.',
-        icon: ArrowUpOnSquareIcon,
+        icon: ExternalLink,
         estimatedTime: '1-2 mins',
         color: 'text-blue-600', // Kept for future use or internal logic
         bgColor: 'bg-blue-100',
@@ -30,7 +22,7 @@ const ackOptions = [
         id: 'order',
         title: 'From Order',
         description: 'Select an existing Purchase Order to convert into an acknowledgement.',
-        icon: LinkIcon,
+        icon: Link2,
         estimatedTime: '2-3 mins',
         color: 'text-indigo-600',
         bgColor: 'bg-indigo-100',
@@ -41,7 +33,7 @@ const ackOptions = [
         id: 'manual',
         title: 'Manual Entry',
         description: 'Enter acknowledgement details line-by-line. Best for corrections or non-standard formats.',
-        icon: PencilSquareIcon,
+        icon: SquarePen,
         estimatedTime: '5-10 mins',
         color: 'text-zinc-600',
         bgColor: 'bg-zinc-100',
@@ -128,7 +120,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                 className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
                                                 onClick={onClose}
                                             >
-                                                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                                <X className="h-6 w-6" aria-hidden="true" />
                                             </button>
                                         </div>
 
@@ -154,7 +146,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                     </div>
 
                                                     <div className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity translate-x-[-10px] group-hover:translate-x-0 duration-300">
-                                                        <ArrowRightIcon className="h-5 w-5 text-primary" />
+                                                        <ArrowRight className="h-5 w-5 text-primary" />
                                                     </div>
                                                 </div>
                                             ))}
@@ -172,7 +164,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                 className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
                                                 onClick={onClose}
                                             >
-                                                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                                <X className="h-6 w-6" aria-hidden="true" />
                                             </button>
                                         </div>
 
@@ -198,7 +190,7 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                                         <span className="font-bold text-foreground block">{order.amount}</span>
                                                         {selectedOrder === order.id && (
                                                             <span className="text-xs font-medium text-primary flex items-center justify-end gap-1 mt-1">
-                                                                Selected <ArrowRightIcon className="w-3 h-3" />
+                                                                Selected <ArrowRight className="w-3 h-3" />
                                                             </span>
                                                         )}
                                                     </div>
@@ -231,11 +223,11 @@ export default function AcknowledgementUploadModal({ isOpen, onClose }: Acknowle
                                             className="absolute right-6 top-6 rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
                                             onClick={onClose}
                                         >
-                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                            <X className="h-6 w-6" aria-hidden="true" />
                                         </button>
 
                                         <div className="bg-muted/50 p-6 rounded-full mb-6 animate-pulse">
-                                            <DocumentMagnifyingGlassIcon className="h-12 w-12 text-muted-foreground" />
+                                            <FileSearch className="h-12 w-12 text-muted-foreground" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground mb-2">
                                             {step === 'upload' ? 'Upload Interface' : 'Manual Entry Form'}

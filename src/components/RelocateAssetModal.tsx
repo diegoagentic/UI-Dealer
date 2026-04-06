@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    XMarkIcon,
-    MapPinIcon,
-    CalendarIcon,
-    TruckIcon
-} from '@heroicons/react/24/outline';
+import { Calendar, MapPin, Truck, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -71,7 +66,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                 <div className="flex items-center justify-between p-6 border-b border-border">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400">
-                            <TruckIcon className="w-5 h-5" />
+                            <Truck className="w-5 h-5" />
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-foreground">Relocate Assets</h2>
@@ -82,7 +77,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                         onClick={onClose}
                         className="p-2 text-muted-foreground hover:text-foreground rounded-full hover:bg-accent transition-colors"
                     >
-                        <XMarkIcon className="w-5 h-5" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
 
@@ -93,7 +88,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-foreground">New Location</label>
                         <div className="relative">
-                            <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                             <select
                                 required
                                 value={targetLocation}
@@ -115,7 +110,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                     <div className="space-y-2">
                         <label className="block text-sm font-medium text-foreground">Scheduled Date</label>
                         <div className="relative">
-                            <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
                             <input
                                 type="date"
                                 required
@@ -154,7 +149,7 @@ export default function RelocateAssetModal({ isOpen, onClose, selectedCount, onC
                         disabled={!targetLocation || !moveDate}
                         className="px-4 py-2 text-sm font-medium text-zinc-900 bg-primary hover:bg-primary/90 rounded-lg shadow-sm shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                     >
-                        <TruckIcon className="w-4 h-4" />
+                        <Truck className="w-4 h-4" />
                         Create Movement
                     </button>
                 </div>

@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import {
-    PlusIcon,
-    MagnifyingGlassIcon,
-    BuildingOfficeIcon,
-    MapPinIcon,
-    UserIcon,
-    CubeIcon,
-    PencilSquareIcon,
-    TrashIcon
-} from '@heroicons/react/24/outline';
+import { Box, Building2, MapPin, Plus, Search, SquarePen, Trash2, User } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import LocationModal from './LocationModal';
@@ -150,7 +141,7 @@ export default function InventoryLocations() {
                 <div className="flex items-center gap-3 w-full md:w-auto">
                     {/* Search */}
                     <div className="relative flex-1 md:w-64">
-                        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                         <input
                             type="text"
                             placeholder={`Search ${activeTab.toLowerCase()}s...`}
@@ -165,7 +156,7 @@ export default function InventoryLocations() {
                         onClick={handleAddClick}
                         className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm"
                     >
-                        <PlusIcon className="w-4 h-4" />
+                        <Plus className="w-4 h-4" />
                         Add {activeTab}
                     </button>
                 </div>
@@ -187,13 +178,13 @@ export default function InventoryLocations() {
                                     onClick={() => handleEditClick(loc)}
                                     className="p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
                                 >
-                                    <PencilSquareIcon className="w-4 h-4" />
+                                    <SquarePen className="w-4 h-4" />
                                 </button>
                                 <button
                                     onClick={() => handleDeleteClick(loc.id)}
                                     className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                                 >
-                                    <TrashIcon className="w-4 h-4" />
+                                    <Trash2 className="w-4 h-4" />
                                 </button>
                             </div>
                         </div>
@@ -201,15 +192,15 @@ export default function InventoryLocations() {
                         {/* Details */}
                         <div className="space-y-3 text-sm">
                             <div className="flex items-center gap-3 text-muted-foreground">
-                                <MapPinIcon className="w-4 h-4 shrink-0" />
+                                <MapPin className="w-4 h-4 shrink-0" />
                                 <span className="text-foreground">{loc.address}</span>
                             </div>
                             <div className="flex items-center gap-3 text-muted-foreground">
-                                <UserIcon className="w-4 h-4 shrink-0" />
+                                <User className="w-4 h-4 shrink-0" />
                                 <span>{loc.manager}</span>
                             </div>
                             <div className="flex items-center gap-3 text-muted-foreground">
-                                <CubeIcon className="w-4 h-4 shrink-0" />
+                                <Box className="w-4 h-4 shrink-0" />
                                 <span>Capacity: <span className="font-medium text-foreground">{loc.capacity}</span></span>
                             </div>
                         </div>
@@ -232,7 +223,7 @@ export default function InventoryLocations() {
                 {/* Empty State */}
                 {filteredLocations.length === 0 && (
                     <div className="col-span-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-border rounded-xl bg-muted/30">
-                        <BuildingOfficeIcon className="w-12 h-12 text-zinc-300 mb-3" />
+                        <Building2 className="w-12 h-12 text-zinc-300 mb-3" />
                         <h3 className="text-lg font-medium text-foreground">No {activeTab}s found</h3>
                         <p className="text-muted-foreground text-sm mt-1 max-w-xs">
                             Try adjusting your search or add a new {activeTab.toLowerCase()} to get started.

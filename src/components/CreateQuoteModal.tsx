@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
+import { X } from 'lucide-react';
 import QuoteGenerationFlow from './QuoteGenerationFlow';
 
 interface CreateQuoteModalProps {
@@ -43,7 +43,7 @@ export default function CreateQuoteModal({ isOpen, onClose, onNavigate }: Create
                                         onClick={onClose}
                                         className="rounded-full p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                                     >
-                                        <XMarkIcon className="h-5 w-5" />
+                                        <X className="h-5 w-5" />
                                     </button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-6 bg-zinc-50/50 dark:bg-zinc-900/50">

@@ -1,21 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Transition, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Fragment } from 'react'
-import {
-    HomeIcon, CubeIcon, ClipboardDocumentListIcon, ArrowTrendingUpIcon,
-    Squares2X2Icon, SunIcon, MoonIcon, ChevronDownIcon,
-    UserIcon, DocumentTextIcon, ChartBarIcon, ExclamationCircleIcon,
-    CalendarIcon, EllipsisHorizontalIcon, ArrowRightOnRectangleIcon, BriefcaseIcon, CheckIcon,
-    BookOpenIcon, TruckIcon, TagIcon, UsersIcon,
-    CalculatorIcon, CubeTransparentIcon,
-    BanknotesIcon,
-    UserGroupIcon,
-    CurrencyDollarIcon,
-    FolderIcon,
-    WrenchScrewdriverIcon,
-    PhotoIcon,
-    CreditCardIcon,
-    ArrowPathRoundedSquareIcon
-} from '@heroicons/react/24/outline';
+import { AlertCircle, Banknote, BarChart3, BookOpen, Box, BoxSelect, Briefcase, Calculator, Calendar, Check, ChevronDown, ClipboardList, CreditCard, DollarSign, FileText, Home, ImageIcon, LayoutGrid, LogOut, Moon, MoreHorizontal, RefreshCcw, Sun, Tag, TrendingUp, Truck, User, Users, Wrench } from 'lucide-react';
 import { useTheme } from 'strata-design-system'
 import { useTenant } from '../TenantContext'
 import { useAuth } from '../context/AuthContext'
@@ -59,13 +44,13 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
     const userEmail = user?.email || ''
 
     const navigation = [
-        { name: 'Dashboard', page: 'dashboard', icon: HomeIcon },
-        { name: 'Catalogs', page: 'catalogs', icon: BookOpenIcon },
-        { name: 'Inventory', page: 'inventory', icon: CubeTransparentIcon },
-        { name: 'MAC', page: 'mac', icon: ArrowPathRoundedSquareIcon },
-        { name: 'Transactions', page: 'transactions', icon: BanknotesIcon },
-        { name: 'CRM', page: 'crm', icon: UserGroupIcon },
-        { name: 'Pricing', page: 'pricing', icon: CurrencyDollarIcon },
+        { name: 'Dashboard', page: 'dashboard', icon: Home },
+        { name: 'Catalogs', page: 'catalogs', icon: BookOpen },
+        { name: 'Inventory', page: 'inventory', icon: BoxSelect },
+        { name: 'MAC', page: 'mac', icon: RefreshCcw },
+        { name: 'Transactions', page: 'transactions', icon: Banknote },
+        { name: 'CRM', page: 'crm', icon: Users },
+        { name: 'Pricing', page: 'pricing', icon: DollarSign },
     ];
 
     return (
@@ -89,7 +74,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                 <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">Tenant</span>
                                 <div className="flex items-center gap-1">
                                     <span className="text-sm font-bold text-foreground leading-tight">{currentTenant}</span>
-                                    <ChevronDownIcon className="w-3 h-3 text-muted-foreground" />
+                                    <ChevronDown className="w-3 h-3 text-muted-foreground" />
                                 </div>
                             </div>
                         </MenuButton>
@@ -111,7 +96,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                                 className={`${focus ? 'bg-accent' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground rounded-lg transition-colors hover:bg-accent`}
                                             >
                                                 {tenant}
-                                                {currentTenant === tenant && <CheckIcon className="ml-auto w-4 h-4 text-foreground" />}
+                                                {currentTenant === tenant && <Check className="ml-auto w-4 h-4 text-foreground" />}
                                             </button>
                                         )}
                                     </MenuItem>
@@ -147,7 +132,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
 
                     <Popover className="relative">
                         <PopoverButton className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors outline-none">
-                            <Squares2X2Icon className="w-5 h-5" />
+                            <LayoutGrid className="w-5 h-5" />
                         </PopoverButton>
                         <Transition
                             as={Fragment}
@@ -182,31 +167,31 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                             {
                                                 title: "Platform",
                                                 apps: [
-                                                    { icon: <BriefcaseIcon className="w-6 h-6" />, label: "My Work Space", color: "text-zinc-900", bg: "bg-primary", isHighlighted: true, onClick: onNavigateToWorkspace },
-                                                    { icon: <HomeIcon className="w-6 h-6" />, label: "Portal", color: "text-zinc-900 dark:text-primary", bg: "bg-primary/10", onClick: () => onNavigate('dashboard') },
+                                                    { icon: <Briefcase className="w-6 h-6" />, label: "My Work Space", color: "text-zinc-900", bg: "bg-primary", isHighlighted: true, onClick: onNavigateToWorkspace },
+                                                    { icon: <Home className="w-6 h-6" />, label: "Portal", color: "text-zinc-900 dark:text-primary", bg: "bg-primary/10", onClick: () => onNavigate('dashboard') },
                                                 ]
                                             },
                                             {
                                                 title: "Sales Tools",
                                                 apps: [
-                                                    { icon: <CalculatorIcon className="w-6 h-6" />, label: "Quoting", color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/10" },
-                                                    { icon: <WrenchScrewdriverIcon className="w-6 h-6" />, label: "Configurator", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-                                                    { icon: <PhotoIcon className="w-6 h-6" />, label: "Marketing", color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-500/10" },
+                                                    { icon: <Calculator className="w-6 h-6" />, label: "Quoting", color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/10" },
+                                                    { icon: <Wrench className="w-6 h-6" />, label: "Configurator", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                                                    { icon: <ImageIcon className="w-6 h-6" />, label: "Marketing", color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-500/10" },
                                                 ]
                                             },
                                             {
                                                 title: "Finance",
                                                 apps: [
-                                                    { icon: <CreditCardIcon className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
-                                                    { icon: <DocumentTextIcon className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
-                                                    { icon: <BanknotesIcon className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
+                                                    { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+                                                    { icon: <FileText className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
+                                                    { icon: <Banknote className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
                                                 ]
                                             },
                                             {
                                                 title: "Support",
                                                 apps: [
-                                                    { icon: <BookOpenIcon className="w-6 h-6" />, label: "Academy", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-                                                    { icon: <ExclamationCircleIcon className="w-6 h-6" />, label: "Service", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/10" },
+                                                    { icon: <BookOpen className="w-6 h-6" />, label: "Academy", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                                                    { icon: <AlertCircle className="w-6 h-6" />, label: "Service", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/10" },
                                                 ]
                                             }
                                         ].map((category, idx) => (
@@ -255,16 +240,16 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                     {/* Desktop View: Unified Grid without Titles */}
                                     <div className="hidden lg:grid grid-cols-3 gap-2">
                                         {[
-                                            { icon: <BriefcaseIcon className="w-6 h-6" />, label: "My Work Space", color: "text-zinc-900", bg: "bg-primary", isHighlighted: true, onClick: onNavigateToWorkspace },
-                                            { icon: <HomeIcon className="w-6 h-6" />, label: "Portal", color: "text-zinc-900 dark:text-primary", bg: "bg-primary/10", onClick: () => onNavigate('dashboard') },
-                                            { icon: <CalculatorIcon className="w-6 h-6" />, label: "Quoting", color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/10" },
-                                            { icon: <WrenchScrewdriverIcon className="w-6 h-6" />, label: "Configurator", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-                                            { icon: <PhotoIcon className="w-6 h-6" />, label: "Marketing", color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-500/10" },
-                                            { icon: <CreditCardIcon className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
-                                            { icon: <DocumentTextIcon className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
-                                            { icon: <BanknotesIcon className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
-                                            { icon: <BookOpenIcon className="w-6 h-6" />, label: "Academy", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
-                                            { icon: <ExclamationCircleIcon className="w-6 h-6" />, label: "Service", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/10" },
+                                            { icon: <Briefcase className="w-6 h-6" />, label: "My Work Space", color: "text-zinc-900", bg: "bg-primary", isHighlighted: true, onClick: onNavigateToWorkspace },
+                                            { icon: <Home className="w-6 h-6" />, label: "Portal", color: "text-zinc-900 dark:text-primary", bg: "bg-primary/10", onClick: () => onNavigate('dashboard') },
+                                            { icon: <Calculator className="w-6 h-6" />, label: "Quoting", color: "text-green-600 dark:text-green-400", bg: "bg-green-50 dark:bg-green-500/10" },
+                                            { icon: <Wrench className="w-6 h-6" />, label: "Configurator", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                                            { icon: <ImageIcon className="w-6 h-6" />, label: "Marketing", color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-500/10" },
+                                            { icon: <CreditCard className="w-6 h-6" />, label: "Credit", color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+                                            { icon: <FileText className="w-6 h-6" />, label: "Invoices", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-500/10" },
+                                            { icon: <Banknote className="w-6 h-6" />, label: "Rebates", color: "text-teal-600 dark:text-teal-400", bg: "bg-teal-50 dark:bg-teal-500/10" },
+                                            { icon: <BookOpen className="w-6 h-6" />, label: "Academy", color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-500/10" },
+                                            { icon: <AlertCircle className="w-6 h-6" />, label: "Service", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 dark:bg-red-500/10" },
                                         ]
                                             .map((app, i) => (
                                                 <button
@@ -303,7 +288,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                         {/* More Button - Desktop Only */}
                                         <button className="relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all group outline-none hover:bg-primary hover:text-primary-foreground hover:shadow-md">
                                             <div className="p-2 rounded-2xl bg-muted text-muted-foreground group-hover:bg-transparent group-hover:text-primary-foreground transition-all shadow-sm">
-                                                <EllipsisHorizontalIcon className="w-6 h-6" />
+                                                <MoreHorizontal className="w-6 h-6" />
                                             </div>
                                             <span className="text-[10px] font-semibold text-muted-foreground group-hover:text-primary-foreground">More</span>
                                         </button>
@@ -314,7 +299,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                     </Popover>
 
                     <button onClick={toggleTheme} className="hidden lg:flex p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors">
-                        {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+                        {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                     </button>
 
                     <div className="relative group">
@@ -326,7 +311,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-sm shrink-0">
                                 {userInitials}
                             </div>
-                            <ChevronDownIcon className="w-3 h-3 text-muted-foreground" />
+                            <ChevronDown className="w-3 h-3 text-muted-foreground" />
                         </button>
                         {/* User Dropdown */}
                         <div className="absolute top-full right-0 mt-2 w-56 py-2 rounded-xl bg-card/90 backdrop-blur-xl border border-border shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
@@ -347,7 +332,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                         className="w-full flex items-center justify-between px-2 py-1.5 text-xs text-foreground rounded-lg hover:bg-muted transition-colors"
                                     >
                                         <span>{tenant}</span>
-                                        {currentTenant === tenant && <CheckIcon className="w-3 h-3 text-primary" />}
+                                        {currentTenant === tenant && <Check className="w-3 h-3 text-primary" />}
                                     </button>
                                 ))}
                                 <div className="h-px bg-border my-1 mx-2"></div>
@@ -356,7 +341,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                             {/* Theme Toggle */}
                             <div className="p-1 lg:hidden">
                                 <button onClick={toggleTheme} className="w-full text-left px-3 py-2 text-xs font-medium text-foreground hover:bg-muted rounded-lg flex items-center gap-2 transition-colors">
-                                    {theme === 'dark' ? <SunIcon className="w-4 h-4" /> : <MoonIcon className="w-4 h-4" />}
+                                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
                                     <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
                                 </button>
                                 <div className="h-px bg-border my-1 mx-2"></div>
@@ -364,7 +349,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
 
                             {/* Sign Out */}
                             <button onClick={onLogout} className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-muted flex items-center gap-2">
-                                <ArrowRightOnRectangleIcon className="w-4 h-4" />
+                                <LogOut className="w-4 h-4" />
                                 Sign Out
                             </button>
                         </div>

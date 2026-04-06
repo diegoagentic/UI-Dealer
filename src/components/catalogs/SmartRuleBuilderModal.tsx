@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Switch } from '@headlessui/react';
-import {
-    SparklesIcon,
-    XMarkIcon,
-    ChartBarIcon,
-    ExclamationTriangleIcon,
-    CheckCircleIcon,
-    AdjustmentsHorizontalIcon,
-    ArrowPathIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, BarChart3, CheckCircle2, RefreshCw, SlidersHorizontal, Sparkles, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -164,12 +156,12 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                             {/* Header */}
                             <div className="flex items-center justify-between p-5 border-b border-border bg-muted/30">
                                 <Dialog.Title className="text-lg font-semibold text-foreground flex items-center gap-2">
-                                    <SparklesIcon className="w-5 h-5 text-indigo-500" />
+                                    <Sparkles className="w-5 h-5 text-indigo-500" />
                                     A.I. Rule Builder
                                 </Dialog.Title>
                                 {step !== 'analyzing' && (
                                     <button onClick={onClose} className="p-1.5 rounded-full hover:bg-muted text-zinc-500 transition-colors">
-                                        <XMarkIcon className="w-5 h-5" />
+                                        <X className="w-5 h-5" />
                                     </button>
                                 )}
                             </div>
@@ -179,7 +171,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                     <div className="space-y-6">
                                         <div className="text-center space-y-2 mb-8 animate-in fade-in slide-in-from-bottom-2">
                                             <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
-                                                <SparklesIcon className="w-6 h-6" />
+                                                <Sparkles className="w-6 h-6" />
                                             </div>
                                             <h3 className="text-xl font-bold text-foreground">Describe your business rule</h3>
                                             <p className="text-muted-foreground text-sm max-w-sm mx-auto">
@@ -207,7 +199,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                         <div className="relative">
                                             <div className="absolute inset-0 bg-indigo-500/20 rounded-full animate-ping" />
                                             <div className="relative bg-background p-4 rounded-full border border-indigo-500/20 shadow-xl shadow-indigo-500/10">
-                                                <ArrowPathIcon className="w-8 h-8 text-indigo-500 animate-spin" />
+                                                <RefreshCw className="w-8 h-8 text-indigo-500 animate-spin" />
                                             </div>
                                         </div>
                                         <div>
@@ -229,7 +221,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                                             <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 p-4 rounded-xl">
                                                 <div className="flex items-center gap-2 text-indigo-700 dark:text-indigo-400 font-semibold mb-2">
-                                                    <ChartBarIcon className="w-5 h-5" />
+                                                    <BarChart3 className="w-5 h-5" />
                                                     Forecasted Impact
                                                 </div>
                                                 <p className="text-sm text-indigo-900/80 dark:text-indigo-200/80 mb-3">
@@ -251,7 +243,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                             <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30 p-4 rounded-xl flex flex-col justify-between">
                                                 <div>
                                                     <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold mb-2">
-                                                        <ExclamationTriangleIcon className="w-5 h-5" />
+                                                        <AlertTriangle className="w-5 h-5" />
                                                         Conflict Analysis
                                                     </div>
                                                     <p className="text-sm text-amber-800 dark:text-amber-200/80 mt-2">
@@ -277,7 +269,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                         {/* Configuration Tweaks */}
                                         <div>
                                             <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                                                <AdjustmentsHorizontalIcon className="w-5 h-5" />
+                                                <SlidersHorizontal className="w-5 h-5" />
                                                 Rule Configuration
                                             </h4>
 
@@ -341,7 +333,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                 {step === 'success' && (
                                     <div className="flex flex-col items-center justify-center py-16 text-center animate-in zoom-in-95 duration-300">
                                         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-400 mb-6">
-                                            <CheckCircleIcon className="w-8 h-8" />
+                                            <CheckCircle2 className="w-8 h-8" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground mb-2">Rule Added!</h3>
                                         <p className="text-muted-foreground text-sm">
@@ -368,7 +360,7 @@ export default function SmartRuleBuilderModal({ isOpen, onClose, onSaveRule, cur
                                             className="px-6 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 flex items-center gap-2"
                                         >
                                             Generate Rule
-                                            <SparklesIcon className="w-4 h-4" />
+                                            <Sparkles className="w-4 h-4" />
                                         </button>
                                     ) : (
                                         <button

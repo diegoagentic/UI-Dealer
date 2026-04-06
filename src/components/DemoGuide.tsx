@@ -1,15 +1,6 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import {
-    XMarkIcon,
-    PlayCircleIcon,
-    DocumentCheckIcon,
-    WrenchScrewdriverIcon,
-    CalculatorIcon,
-    ArrowRightIcon,
-    PencilSquareIcon,
-    SparklesIcon
-} from '@heroicons/react/24/outline';
+import { ArrowRight, Calculator, FileCheck, PlayCircle, Sparkles, SquarePen, Wrench, X } from 'lucide-react';
 
 interface DemoGuideProps {
     isOpen: boolean;
@@ -22,7 +13,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "Quote Generation Flow",
             description: "End-to-end quote creation with AI analysis, catalog configuration, and PDF generation.",
-            icon: CalculatorIcon,
+            icon: Calculator,
             color: "text-blue-500",
             bg: "bg-blue-50 dark:bg-blue-500/10",
             action: () => {
@@ -34,7 +25,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "PO vs ACK Discrepancy",
             description: "AI Assistant resolution flow for acknowledgment exceptions (ship date & finish substitution).",
-            icon: DocumentCheckIcon,
+            icon: DocumentCheck,
             color: "text-amber-500",
             bg: "bg-amber-50 dark:bg-amber-500/10",
             action: () => {
@@ -46,7 +37,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "MAC & Punch List",
             description: "Moves, Adds, Changes, and warranty claim tracking with logistics assignment.",
-            icon: WrenchScrewdriverIcon,
+            icon: Wrench,
             color: "text-green-500",
             bg: "bg-green-50 dark:bg-green-500/10",
             action: () => {
@@ -58,7 +49,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "Gen UI Scenarios",
             description: "Explore generative UI workflows using conversational prompts and pre-built scenarios.",
-            icon: SparklesIcon,
+            icon: Sparkles,
             color: "text-purple-500",
             bg: "bg-purple-50 dark:bg-purple-500/10",
             action: () => {
@@ -70,7 +61,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "Dashboard Customization",
             description: "Personalize your workspace by configuring visible widgets and tools.",
-            icon: PencilSquareIcon,
+            icon: SquarePen,
             color: "text-pink-500",
             bg: "bg-pink-50 dark:bg-pink-500/10",
             action: () => {
@@ -114,7 +105,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
                                             <div className="flex items-start justify-between">
                                                 <div className="flex items-center gap-3">
                                                     <div className="p-2 bg-brand-100 dark:bg-brand-900/30 rounded-lg">
-                                                        <PlayCircleIcon className="w-6 h-6 text-brand-600 dark:text-brand-400" />
+                                                        <PlayCircle className="w-6 h-6 text-brand-600 dark:text-brand-400" />
                                                     </div>
                                                     <Dialog.Title className="text-lg font-semibold leading-6 text-foreground">
                                                         MM Demo Guide
@@ -128,7 +119,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
                                                     >
                                                         <span className="absolute -inset-2.5" />
                                                         <span className="sr-only">Close panel</span>
-                                                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                                        <X className="h-6 w-6" aria-hidden="true" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -157,7 +148,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
                                                             </p>
                                                         </div>
                                                         <div className="absolute top-1/2 -translate-y-1/2 right-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-brand-600 dark:text-brand-400">
-                                                            <ArrowRightIcon className="w-5 h-5" />
+                                                            <ArrowRight className="w-5 h-5" />
                                                         </div>
                                                     </button>
                                                 ))}

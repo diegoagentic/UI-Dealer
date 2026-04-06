@@ -1,4 +1,4 @@
-import { CheckCircleIcon, DocumentTextIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
+import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
 import type { ToastMessage } from '../hooks/useToast';
 
 interface ToastNotificationProps {
@@ -21,11 +21,11 @@ export default function ToastNotification({ show, message, onDismiss }: ToastNot
             <div className="bg-popover rounded-xl shadow-2xl shadow-black/10 border border-border p-4 flex items-start gap-4 max-w-sm">
                 <div className={`mt-0.5 p-1 rounded-full ${iconStyles[message.type]}`}>
                     {message.type === 'success' ? (
-                        <CheckCircleIcon className="w-5 h-5" />
+                        <CheckCircle2 className="w-5 h-5" />
                     ) : message.type === 'info' ? (
-                        <DocumentTextIcon className="w-5 h-5" />
+                        <FileText className="w-5 h-5" />
                     ) : (
-                        <ExclamationCircleIcon className="w-5 h-5" />
+                        <AlertCircle className="w-5 h-5" />
                     )}
                 </div>
                 <div className="flex-1">

@@ -1,11 +1,4 @@
-import {
-    ChevronRightIcon, MagnifyingGlassIcon, FunnelIcon, ArrowDownTrayIcon,
-    PlusIcon, CheckCircleIcon, DocumentTextIcon, CubeIcon,
-    ExclamationTriangleIcon, ChevronDownIcon, ChevronUpIcon, EllipsisHorizontalIcon, SunIcon, MoonIcon,
-    XMarkIcon, HomeIcon, Squares2X2Icon, ArrowTrendingUpIcon, ClipboardDocumentListIcon,
-    UserIcon, CalendarIcon, ChartBarIcon, ExclamationCircleIcon, ArrowRightOnRectangleIcon, PencilSquareIcon, EnvelopeIcon, SparklesIcon, ArrowPathIcon,
-    PaperAirplaneIcon, ChatBubbleLeftRightIcon, PhotoIcon, PaperClipIcon, ClockIcon, CheckIcon, PencilIcon, DocumentChartBarIcon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useState } from 'react'
@@ -73,14 +66,14 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium tracking-tight">
-                    <SparklesIcon className="w-5 h-5 text-primary" />
+                    <Sparkles className="w-5 h-5 text-primary" />
                     Found 2 discrepancies against PO #ORD-2055.
                 </div>
 
                 {/* Side-by-Side Comparison UI for Delta 1 */}
                 <div className="border border-zinc-200 dark:border-zinc-700/50 rounded-xl overflow-hidden bg-white dark:bg-zinc-800/50 my-2">
                     <div className="px-3 py-2 bg-muted/30 border-b border-border text-xs font-bold text-foreground flex items-center gap-2">
-                        <ExclamationTriangleIcon className="w-4 h-4 text-amber-500" />
+                        <AlertTriangle className="w-4 h-4 text-amber-500" />
                         Exception 1: Finish Backordered / Substitution Proposed
                     </div>
                     <div className="p-3 grid grid-cols-2 gap-4 text-xs">
@@ -103,7 +96,7 @@ const DiscrepancyResolutionFlow = () => {
                 {/* Side-by-Side Comparison UI for Delta 2 */}
                 <div className="border border-zinc-200 dark:border-zinc-700/50 rounded-xl overflow-hidden bg-white dark:bg-zinc-800/50 mb-2">
                     <div className="px-3 py-2 bg-muted/30 border-b border-border text-xs font-bold text-foreground flex items-center gap-2">
-                        <ClockIcon className="w-4 h-4 text-amber-500" />
+                        <Clock className="w-4 h-4 text-amber-500" />
                         Exception 2: Ship Date Slipped
                     </div>
                     <div className="p-3 grid grid-cols-2 gap-4 text-xs">
@@ -141,13 +134,13 @@ const DiscrepancyResolutionFlow = () => {
                         onClick={handleRequest}
                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-primary text-zinc-900 hover:bg-primary/90 hover:shadow-md text-xs font-bold rounded-lg transition-all"
                     >
-                        <PaperAirplaneIcon className="w-4 h-4" /> Send Request
+                        <Send className="w-4 h-4" /> Send Request
                     </button>
                     <button
                         onClick={() => setStatus('requesting')}
                         className="flex items-center justify-center gap-1.5 px-3 py-2 border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 text-xs font-medium rounded-lg hover:bg-muted transition-colors"
                     >
-                        <PencilIcon className="w-3.5 h-3.5" /> Request Revisions
+                        <Pencil className="w-3.5 h-3.5" /> Request Revisions
                     </button>
                 </div>
             </div>
@@ -167,7 +160,7 @@ const DiscrepancyResolutionFlow = () => {
                 />
                 <div className="flex justify-between items-center">
                     <button className="flex items-center gap-1 text-xs text-zinc-500 hover:text-primary transition-colors">
-                        <PaperClipIcon className="w-4 h-4" /> Attach File
+                        <Paperclip className="w-4 h-4" /> Attach File
                     </button>
                     <div className="flex gap-2">
                         <button
@@ -192,7 +185,7 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="flex flex-col gap-3 animate-in fade-in">
                 <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
-                    <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin" />
                     <span>Requesting approval from Logistics Manager...</span>
                 </div>
             </div>
@@ -203,7 +196,7 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2">
                 <div className="flex items-start gap-2 text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-900/30">
-                    <CheckCircleIcon className="h-5 w-5 mt-0.5 flex-shrink-0" />
+                    <CheckCircle2 className="h-5 w-5 mt-0.5 flex-shrink-0" />
                     <div className="text-sm">
                         <p className="text-zinc-900 dark:text-zinc-100 font-bold mb-1">Exceptions approved. Records updated.</p>
                         <p className="text-zinc-700 dark:text-zinc-300">The Delivery Date has been updated to <span className="font-bold underline decoration-green-300 underline-offset-2">{shipmentResolution === 'expedite' ? 'Nov 20, 2025' : shipmentResolution === 'cancel' ? 'N/A' : 'Nov 27, 2025'}</span>.</p>
@@ -214,21 +207,21 @@ const DiscrepancyResolutionFlow = () => {
                     {status === 'sent' ? (
                         <div className="p-6 flex flex-col items-center justify-center gap-2 text-center text-zinc-900 dark:text-white animate-in zoom-in duration-300">
                             <div className="h-10 w-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center text-green-600 dark:text-green-400">
-                                <PaperAirplaneIcon className="h-5 w-5" />
+                                <Send className="h-5 w-5" />
                             </div>
                             <p className="font-bold">Client Update Sent</p>
                             <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[280px]">The client has been notified of the adjustments and new estimated delivery date.</p>
                         </div>
                     ) : status === 'sending' ? (
                         <div className="p-10 flex flex-col items-center justify-center gap-3 animate-in fade-in">
-                            <ArrowPathIcon className="w-6 h-6 animate-spin text-primary" />
+                            <RefreshCw className="w-6 h-6 animate-spin text-primary" />
                             <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">Sending Client Update...</p>
                         </div>
                     ) : (
                         <>
                             <div className="px-3 py-2 bg-muted/30 border-b border-border flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-xs font-bold text-foreground">
-                                    <DocumentTextIcon className="w-4 h-4 text-primary" />
+                                    <FileText className="w-4 h-4 text-primary" />
                                     Auto-Drafted Client Update
                                 </div>
                                 <span className="bg-primary/10 text-primary-foreground px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wide">Ready to Send</span>
@@ -244,10 +237,10 @@ const DiscrepancyResolutionFlow = () => {
                                         onClick={handleSendUpdate}
                                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs font-bold rounded shadow-sm transition-all"
                                     >
-                                        <PaperAirplaneIcon className="w-3.5 h-3.5" /> Send Update
+                                        <Send className="w-3.5 h-3.5" /> Send Update
                                     </button>
                                     <button className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 border border-zinc-200 dark:border-zinc-700 hover:bg-muted text-foreground text-xs font-medium rounded transition-all">
-                                        <PencilSquareIcon className="w-3.5 h-3.5" /> Edit Draft
+                                        <SquarePen className="w-3.5 h-3.5" /> Edit Draft
                                     </button>
                                 </div>
                             </div>
@@ -257,14 +250,14 @@ const DiscrepancyResolutionFlow = () => {
 
                 <div className="bg-zinc-50 dark:bg-white/5 rounded-xl border border-zinc-200 dark:border-white/10 p-3 flex items-center gap-3">
                     <div className="h-10 w-10 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-red-600 dark:text-red-400">
-                        <DocumentTextIcon className="h-6 w-6" />
+                        <FileText className="h-6 w-6" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">PO_Revised_ORD-2055.pdf</p>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400">Updated just now</p>
                     </div>
                     <button className="p-2 hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary dark:hover:text-zinc-900 rounded-lg transition-colors group">
-                        <ArrowDownTrayIcon className="h-5 w-5 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900" />
+                        <Download className="h-5 w-5 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900" />
                     </button>
                 </div>
             </div>
@@ -293,7 +286,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                 "rounded-2xl p-4 shadow-sm bg-green-50 dark:bg-green-900/20 text-zinc-900 dark:text-zinc-100 border border-green-100 dark:border-green-800"
             )}>
                 <div className="flex items-center gap-2">
-                    <ArrowPathIcon className="h-5 w-5 text-green-600 dark:text-green-400 animate-spin" />
+                    <RefreshCw className="h-5 w-5 text-green-600 dark:text-green-400 animate-spin" />
                     <span className="text-sm font-medium text-green-700 dark:text-green-400">Requesting approval from Logistics Manager...</span>
                 </div>
             </div>
@@ -313,19 +306,19 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                     <span className="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide">Action Updated</span>
                 </div>
                 <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium mb-3">
-                    <CheckCircleIcon className="h-5 w-5" />
+                    <CheckCircle2 className="h-5 w-5" />
                     <p>Changes approved. PO updated.</p>
                 </div>
                 <div className="flex items-center gap-3 bg-white dark:bg-zinc-800/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
                     <div className="h-10 w-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center border border-red-100 dark:border-red-800/30">
-                        <DocumentTextIcon className="h-5 w-5 text-red-500" />
+                        <FileText className="h-5 w-5 text-red-500" />
                     </div>
                     <div className="flex-1">
                         <p className="text-sm font-medium text-zinc-900 dark:text-white">PO_Revised_Final.pdf</p>
                         <p className="text-xs text-zinc-500">2.4 MB • Generated just now</p>
                     </div>
                     <button className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-zinc-600 transition-colors">
-                        <ArrowDownTrayIcon className="h-5 w-5" />
+                        <Download className="h-5 w-5" />
                     </button>
                 </div>
             </div>
@@ -352,14 +345,14 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                         {/* PDF File */}
                         <div className="flex items-center gap-3 bg-white dark:bg-zinc-800/50 p-3 rounded-xl border border-green-200 dark:border-green-800/50 shadow-sm">
                             <div className="h-10 w-10 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-center justify-center border border-red-100 dark:border-red-800/30">
-                                <DocumentTextIcon className="h-5 w-5 text-red-500" />
+                                <FileText className="h-5 w-5 text-red-500" />
                             </div>
                             <div className="flex-1">
                                 <p className="text-sm font-medium text-zinc-900 dark:text-white">PO_ORD-2055_Final.pdf</p>
                                 <p className="text-xs text-zinc-500">2.4 MB • Generated just now</p>
                             </div>
                             <button className="p-2 hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary dark:hover:text-zinc-900 rounded-lg text-zinc-400 transition-colors group">
-                                <ArrowDownTrayIcon className="h-5 w-5 group-hover:text-zinc-900" />
+                                <Download className="h-5 w-5 group-hover:text-zinc-900" />
                             </button>
                         </div>
 
@@ -368,7 +361,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                             <div className="flex items-start gap-3">
                                 <div className="flex-1">
                                     <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                                        <ExclamationTriangleIcon className="h-4 w-4 text-amber-500" />
+                                        <AlertTriangle className="h-4 w-4 text-amber-500" />
                                         Attention Needed
                                     </p>
                                     <p className="text-sm text-zinc-900 dark:text-zinc-300 mt-1">
@@ -401,7 +394,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                                 onClick={() => setIsRequesting(true)}
                                 className="px-3 py-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-900 hover:bg-primary dark:hover:bg-primary rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 ml-auto group"
                             >
-                                <PencilIcon className="w-3.5 h-3.5" />
+                                <Pencil className="w-3.5 h-3.5" />
                                 Request Changes
                             </button>
                         </div>
@@ -426,7 +419,7 @@ const DiscrepancyActionCard = ({ msg }: { msg: Message }) => {
                     />
                     <div className="flex items-center justify-between">
                         <button className="text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200 flex items-center gap-1.5 px-2 py-1.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                            <PaperClipIcon className="w-3.5 h-3.5" />
+                            <Paperclip className="w-3.5 h-3.5" />
                             Attach File
                         </button>
                         <div className="flex items-center gap-2">
@@ -531,7 +524,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <div className="pt-24 px-6 pb-4 flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
-                        <ChevronRightIcon className="h-4 w-4 rotate-180" />
+                        <ChevronRight className="h-4 w-4 rotate-180" />
                     </button>
                     <Breadcrumbs
                         items={[
@@ -544,10 +537,10 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 <div className="flex items-center gap-3">
                     <FilterPopover onApply={(filters) => triggerToast('Filters Applied', `${filters.statuses.length + filters.categories.length} filters active`, 'info')} />
                     <button onClick={() => { triggerToast('Preparing Export', 'Generating CSV file...', 'info'); setTimeout(() => triggerToast('Export Complete', 'ACK_ACK-3099_items.csv downloaded', 'success'), 1500); }} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border border-input rounded-md hover:bg-primary hover:text-zinc-900 group transition-colors">
-                        <ArrowDownTrayIcon className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
+                        <Download className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
                     </button>
                     <button onClick={() => setIsAddItemOpen(true)} className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:opacity-90">
-                        <PlusIcon className="h-4 w-4" /> Add New Item
+                        <Plus className="h-4 w-4" /> Add New Item
                     </button>
                 </div>
             </div>
@@ -559,7 +552,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                         <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-white/10 ring-1 ring-black/5 dark:ring-0 transition-all duration-300">
                             <div className="flex justify-end mb-4">
                                 <button onClick={() => setIsSummaryExpanded(false)} className="flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-900 transition-colors bg-zinc-100 dark:bg-zinc-800 hover:bg-primary dark:hover:bg-primary px-2.5 py-1.5 rounded-lg">
-                                    Hide Details <ChevronUpIcon className="w-3.5 h-3.5" />
+                                    Hide Details <ChevronUp className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 animate-in fade-in zoom-in duration-300">
@@ -612,7 +605,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                             ? 'bg-primary text-primary-foreground'
                                                             : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'
                                                     )}>
-                                                        {isCompleted ? <CheckIcon className="w-4 h-4" /> :
+                                                        {isCompleted ? <Check className="w-4 h-4" /> :
                                                             isCurrent ? <div className="w-2 h-2 rounded-full bg-primary-foreground" /> :
                                                                 <div className="w-2 h-2 rounded-full bg-white/50 dark:bg-zinc-600" />}
                                                     </div>
@@ -655,7 +648,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                             <div className="hidden lg:flex flex-col items-end">
                                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolution Time</span>
                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                    <ClockIcon className="w-4 h-4 text-primary" />
+                                    <Clock className="w-4 h-4 text-primary" />
                                     <span className="text-sm font-bold text-zinc-900 dark:text-white">Under 10 mins</span>
                                     <span className="text-[10px] text-muted-foreground ml-1">(Industry Avg: 2-3 days)</span>
                                 </div>
@@ -681,7 +674,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                 className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
                             >
                                 <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                    <ChevronDownIcon className="w-4 h-4" />
+                                    <ChevronDown className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Show Details</span>
                             </button>
@@ -731,7 +724,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <div className="flex-1 max-w-lg relative">
                                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                    <MagnifyingGlassIcon className="h-5 w-5 text-muted-foreground" />
+                                                    <Search className="h-5 w-5 text-muted-foreground" />
                                                 </div>
                                                 <input
                                                     type="text"
@@ -742,11 +735,11 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                             <div className="flex gap-2 ml-4">
                                                 <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
                                                     All Materials
-                                                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                                                    <ChevronDown className="ml-2 h-4 w-4" />
                                                 </button>
                                                 <button className="inline-flex items-center px-3 py-2 border border-input shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-background hover:bg-muted focus:outline-none">
                                                     Stock Status
-                                                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                                                    <ChevronDown className="ml-2 h-4 w-4" />
                                                 </button>
                                             </div>
                                         </div>
@@ -783,7 +776,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{item.id}</td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
-                                                                    <CubeIcon className="h-5 w-5 text-muted-foreground" />
+                                                                    <Box className="h-5 w-5 text-muted-foreground" />
                                                                 </div>
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -838,19 +831,19 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Preview Document">
-                                                    <DocumentChartBarIcon className="h-4 w-4" />
+                                                    <DocumentBarChart3 className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <PencilSquareIcon className="h-4 w-4" />
+                                                    <SquarePen className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', `ACK_ACK-3099_${selectedItem.id}.pdf downloaded`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <ArrowDownTrayIcon className="h-4 w-4" />
+                                                    <Download className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <PaperAirplaneIcon className="h-4 w-4" />
+                                                    <Send className="h-4 w-4" />
                                                 </button>
                                                 <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-indigo-600 hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <SparklesIcon className="h-4 w-4" />
+                                                    <Sparkles className="h-4 w-4" />
                                                     <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
@@ -867,14 +860,14 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                         className="flex items-center justify-between w-full mb-2 group"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <SparklesIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                                                            <Sparkles className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
                                                             <span className="text-sm font-bold text-foreground">AI Suggestions</span>
                                                             <span className="relative flex h-2 w-2">
                                                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                                                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                                                             </span>
                                                         </div>
-                                                        <ChevronDownIcon
+                                                        <ChevronDown
                                                             className={cn(
                                                                 "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                                 sections.aiSuggestions ? "transform rotate-0" : "transform -rotate-90"
@@ -925,7 +918,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                         ) : (
                                                             <div className="bg-zinc-50 dark:bg-zinc-800/40 border border-zinc-200 dark:border-zinc-700 rounded-lg p-3">
                                                                 <div className="flex gap-3">
-                                                                    <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                                                                    <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                     <div className="w-full">
                                                                         <div className="flex justify-between items-start">
                                                                             <div>
@@ -949,7 +942,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                                                         <div className="text-[10px] text-muted-foreground uppercase font-medium">Local</div>
                                                                                         <div className="text-sm font-bold text-foreground">{selectedItem.stock}</div>
                                                                                     </div>
-                                                                                    <ArrowPathIcon className="h-4 w-4 text-muted-foreground" />
+                                                                                    <RefreshCw className="h-4 w-4 text-muted-foreground" />
                                                                                     <div className="text-center">
                                                                                         <div className="text-[10px] text-muted-foreground uppercase font-medium">Remote</div>
                                                                                         <div className="text-sm font-bold text-amber-600 dark:text-amber-400">{(selectedItem.stock || 0) + 5}</div>
@@ -1028,7 +1021,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                     className="flex items-center justify-between w-full mb-2 group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Product Overview</span>
-                                                    <ChevronDownIcon
+                                                    <ChevronDown
                                                         className={cn(
                                                             "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                             sections.productOverview ? "transform rotate-0" : "transform -rotate-90"
@@ -1038,7 +1031,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                 {sections.productOverview && (
                                                     <div className="space-y-4 animate-in fade-in slide-in-from-top-1 duration-200 bg-zinc-50 dark:bg-zinc-800 border border-border rounded-lg p-4">
                                                         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
-                                                            <CubeIcon className="h-12 w-12 text-muted-foreground/50" />
+                                                            <Box className="h-12 w-12 text-muted-foreground/50" />
                                                         </div>
                                                         <div>
                                                             <h4 className="text-base font-semibold text-foreground">{selectedItem.name}</h4>
@@ -1068,7 +1061,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                     className="flex items-center justify-between w-full mb-2 group"
                                                 >
                                                     <span className="text-sm font-medium text-foreground">Lifecycle Status</span>
-                                                    <ChevronDownIcon
+                                                    <ChevronDown
                                                         className={cn(
                                                             "h-4 w-4 text-muted-foreground transition-transform duration-200",
                                                             sections.lifecycle ? "transform rotate-0" : "transform -rotate-90"
@@ -1142,7 +1135,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                 ))}
                                             </div>
                                             <button className="h-8 w-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                                                <PlusIcon className="h-4 w-4" />
+                                                <Plus className="h-4 w-4" />
                                             </button>
                                         </div>
                                     </div>
@@ -1154,21 +1147,21 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                 <div className="flex-shrink-0">
                                                     {msg.type === 'action_processing' ? (
                                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
-                                                            <DocumentTextIcon className="h-5 w-5 text-zinc-900 dark:text-primary" />
+                                                            <FileText className="h-5 w-5 text-zinc-900 dark:text-primary" />
                                                         </div>
                                                     ) : msg.type === 'action_success' ? (
                                                         <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border border-green-200 dark:border-green-800">
-                                                            <CheckCircleIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                         </div>
                                                     ) : msg.avatar === 'AI' ? (
                                                         <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center border border-indigo-200 dark:border-indigo-800">
-                                                            <SparklesIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                            <Sparkles className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                         </div>
                                                     ) : msg.avatar ? (
                                                         <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />
                                                     ) : (
                                                         <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                                            <ExclamationTriangleIcon className="h-5 w-5 text-zinc-900 dark:text-primary" />
+                                                            <AlertTriangle className="h-5 w-5 text-zinc-900 dark:text-primary" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -1190,7 +1183,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                             {msg.content}
                                                             {msg.type === 'action_processing' && (
                                                                 <div className="mt-3 flex items-center gap-2 text-zinc-900 dark:text-primary font-medium">
-                                                                    <ArrowPathIcon className="h-4 w-4 animate-spin" />
+                                                                    <RefreshCw className="h-4 w-4 animate-spin" />
                                                                     <span>Processing request...</span>
                                                                 </div>
                                                             )}
@@ -1211,12 +1204,12 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                 />
                                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                                     <button className="p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted">
-                                                        <PaperClipIcon className="h-5 w-5" />
+                                                        <Paperclip className="h-5 w-5" />
                                                     </button>
                                                 </div>
                                             </div>
                                             <button className="p-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity shadow-sm">
-                                                <PaperAirplaneIcon className="h-5 w-5" />
+                                                <Send className="h-5 w-5" />
                                             </button>
                                         </div>
                                     </div>
@@ -1231,7 +1224,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center border border-amber-200 dark:border-amber-500/30">
-                                                <ClockIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                                <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                             </div>
                                             <div>
                                                 <p className="text-sm font-bold text-foreground">Pending Review</p>
@@ -1246,7 +1239,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                             <div className="space-y-3">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors text-zinc-900 dark:text-primary">
-                                                        <DocumentTextIcon className="h-5 w-5" />
+                                                        <FileText className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-zinc-900 dark:group-hover:text-primary transition-colors">Process Quote</p>
@@ -1256,7 +1249,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                                                 <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-green-500/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors text-green-600 dark:text-green-400">
-                                                        <CheckIcon className="h-5 w-5" />
+                                                        <Check className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Approve Order</p>
@@ -1266,7 +1259,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                                                 <button className="w-full group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:shadow-md transition-all text-left">
                                                     <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600 dark:text-amber-400">
-                                                        <PencilIcon className="h-5 w-5" />
+                                                        <Pencil className="h-5 w-5" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm font-medium text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Request Changes</p>
@@ -1295,7 +1288,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                                     <div className="p-4 border-t border-border bg-muted/50">
                                         <button className="w-full py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1">
-                                            View Activity Log <ArrowRightOnRectangleIcon className="h-3 w-3" />
+                                            View Activity Log <LogOut className="h-3 w-3" />
                                         </button>
                                     </div>
                                 </div>
@@ -1341,7 +1334,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                             </p>
                                         </div>
                                         <button onClick={() => setIsDocumentModalOpen(false)} className="text-muted-foreground hover:text-foreground">
-                                            <XMarkIcon className="h-6 w-6" />
+                                            <X className="h-6 w-6" />
                                         </button>
                                     </div>
 
@@ -1388,7 +1381,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         </div>
 
                                         <div className="mb-6 p-3 bg-green-50 border border-green-200 rounded text-sm flex items-center gap-2">
-                                            <CheckCircleIcon className="h-5 w-5 text-green-600" />
+                                            <CheckCircle2 className="h-5 w-5 text-green-600" />
                                             <div>
                                                 <span className="font-bold text-green-800">Order Confirmed</span>
                                                 <span className="text-green-700 ml-2">All items verified and scheduled for production.</span>

@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import {
-    BookOpenIcon,
-    WrenchScrewdriverIcon,
-    CubeTransparentIcon
-} from '@heroicons/react/24/outline';
+import { BookOpen, BoxSelect, Wrench } from 'lucide-react';
 import CatalogLibrary from './components/catalogs/CatalogLibrary';
 import ClientPolicyManager from './components/catalogs/ClientPolicyManager';
 
@@ -37,8 +33,8 @@ export default function Catalogs({ onNavigate }: PageProps) {
     }, []);
 
     const tabs = [
-        { id: 'library', label: 'Catalog Library', icon: BookOpenIcon },
-        { id: 'rules', label: 'Client Rules & Pricing', icon: WrenchScrewdriverIcon },
+        { id: 'library', label: 'Catalog Library', icon: BookOpen },
+        { id: 'rules', label: 'Client Rules & Pricing', icon: Wrench },
     ];
 
     return (
@@ -49,7 +45,7 @@ export default function Catalogs({ onNavigate }: PageProps) {
                     <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                             <div className="p-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                                <CubeTransparentIcon className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
+                                <BoxSelect className="w-5 h-5 text-zinc-900 dark:text-zinc-100" />
                             </div>
                             <h1 className="text-xl font-bold tracking-tight text-foreground">Catalog Management</h1>
                         </div>

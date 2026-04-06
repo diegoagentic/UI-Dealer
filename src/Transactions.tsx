@@ -1,16 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, Transition, TransitionChild, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Fragment } from 'react'
-import {
-    HomeIcon, CubeIcon, ClipboardDocumentListIcon, TruckIcon,
-    ArrowRightOnRectangleIcon, MagnifyingGlassIcon, BellIcon, CalendarIcon,
-    CurrencyDollarIcon, ChartBarIcon, ArrowTrendingUpIcon, ExclamationCircleIcon,
-    PlusIcon, DocumentDuplicateIcon, DocumentTextIcon, EnvelopeIcon, Squares2X2Icon,
-    EllipsisHorizontalIcon, ListBulletIcon, SunIcon, MoonIcon,
-    ChevronDownIcon, ChevronRightIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
-    CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon, CheckCircleIcon,
-    ShoppingCartIcon, ClipboardDocumentCheckIcon, WrenchScrewdriverIcon, ChevronLeftIcon, CloudArrowUpIcon, DocumentPlusIcon,
-    FunnelIcon, ArrowRightIcon, SparklesIcon, CheckBadgeIcon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, ArrowRight, BadgeCheck, BarChart3, Bell, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudUpload, Copy, DollarSign, Eye, FilePlus, FileText, Filter, LayoutGrid, List, LogOut, Mail, MapPin, MoreHorizontal, Pencil, Plus, Search, ShoppingBag, ShoppingCart, Sparkles, SquarePen, Trash2, TrendingUp, Truck, User, Wrench } from 'lucide-react';
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
@@ -102,27 +92,27 @@ const solidColorStyles: Record<string, string> = {
 
 // Summary Data matching Wireframe
 const ordersSummary = {
-    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <CubeIcon className="w-5 h-5" />, color: 'blue' },
-    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
-    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <WrenchScrewdriverIcon className="w-5 h-5" />, color: 'purple' },
-    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <TruckIcon className="w-5 h-5" />, color: 'indigo' },
-    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'green' },
+    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <Box className="w-5 h-5" />, color: 'blue' },
+    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <Clock className="w-5 h-5" />, color: 'orange' },
+    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <Wrench className="w-5 h-5" />, color: 'purple' },
+    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <Truck className="w-5 h-5" />, color: 'indigo' },
+    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <DollarSign className="w-5 h-5" />, color: 'green' },
 }
 
 const quotesSummary = {
-    open_quotes: { label: 'Open Quotes', value: '14', sub: 'Draft or Sent', icon: <DocumentTextIcon className="w-5 h-5" />, color: 'blue' },
-    negotiating: { label: 'Negotiating', value: '5', sub: 'Client review', icon: <UserIcon className="w-5 h-5" />, color: 'orange' },
-    approved_ytd: { label: 'Approved', value: '42', sub: 'This year', icon: <CheckIcon className="w-5 h-5" />, color: 'green' },
-    win_rate: { label: 'Win Rate', value: '68%', sub: 'vs Last Quarter', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple' },
-    pipeline_val: { label: 'Pipeline Val', value: '$2.1M', sub: 'Potential revenue', icon: <CurrencyDollarIcon className="w-5 h-5" />, color: 'indigo' },
+    open_quotes: { label: 'Open Quotes', value: '14', sub: 'Draft or Sent', icon: <FileText className="w-5 h-5" />, color: 'blue' },
+    negotiating: { label: 'Negotiating', value: '5', sub: 'Client review', icon: <User className="w-5 h-5" />, color: 'orange' },
+    approved_ytd: { label: 'Approved', value: '42', sub: 'This year', icon: <Check className="w-5 h-5" />, color: 'green' },
+    win_rate: { label: 'Win Rate', value: '68%', sub: 'vs Last Quarter', icon: <TrendingUp className="w-5 h-5" />, color: 'purple' },
+    pipeline_val: { label: 'Pipeline Val', value: '$2.1M', sub: 'Potential revenue', icon: <DollarSign className="w-5 h-5" />, color: 'indigo' },
 }
 
 const acksSummary = {
-    pending_acks: { label: 'Pending Acks', value: '8', sub: 'Awaiting vendor', icon: <ClockIcon className="w-5 h-5" />, color: 'orange' },
-    discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <ExclamationTriangleIcon className="w-5 h-5" />, color: 'red' },
-    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardDocumentCheckIcon className="w-5 h-5" />, color: 'green' },
-    avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <CalendarIcon className="w-5 h-5" />, color: 'blue' },
-    on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <ArrowTrendingUpIcon className="w-5 h-5" />, color: 'purple' },
+    pending_acks: { label: 'Pending Acks', value: '8', sub: 'Awaiting vendor', icon: <Clock className="w-5 h-5" />, color: 'orange' },
+    discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <AlertTriangle className="w-5 h-5" />, color: 'red' },
+    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardDocumentCheck className="w-5 h-5" />, color: 'green' },
+    avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <Calendar className="w-5 h-5" />, color: 'blue' },
+    on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <TrendingUp className="w-5 h-5" />, color: 'purple' },
 }
 
 import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
@@ -376,7 +366,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     : "text-muted-foreground hover:bg-white/50 dark:hover:bg-zinc-700/50 hover:text-foreground"
                             )}
                         >
-                            <DocumentTextIcon className="w-4 h-4" />
+                            <FileText className="w-4 h-4" />
                             Quotes
                         </button>
                         <button
@@ -389,7 +379,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <ShoppingCartIcon className="w-4 h-4" />
+                            <ShoppingCart className="w-4 h-4" />
                             Orders
                         </button>
                         <button
@@ -402,7 +392,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <ClipboardDocumentCheckIcon className="w-4 h-4" />
+                            <ClipboardDocumentCheck className="w-4 h-4" />
                             Acknowledgments
                         </button>
                     </div>
@@ -416,7 +406,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUpIcon className="w-4 h-4" />
+                                        Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
                                 <div className="relative">
@@ -448,10 +438,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
                                     <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
-                                        { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
-                                        { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
-                                        { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
+                                        { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
+                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Send to Client" },
                                     ].map((action, i) => (
                                         <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
@@ -486,10 +476,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     {/* Quick Actions Integrated - Compact */}
                                     <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                         {[
-                                            { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
-                                            { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
-                                            { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send to Client" },
+                                            { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
+                                            { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                            { icon: <FileText className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
+                                            { icon: <Mail className="w-5 h-5" />, label: "Send to Client" },
                                         ].map((action, i) => (
                                             <button key={i} onClick={() => action.action && action.action()} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title={action.label}>
                                                 {action.icon}
@@ -501,7 +491,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                     >
-                                        <ChevronDownIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+                                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
                                         <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                     </button>
                                 </div>
@@ -519,7 +509,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUpIcon className="w-4 h-4" />
+                                        Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
                                 <div className="relative">
@@ -551,10 +541,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
                                     <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
-                                        { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement", action: () => handleExportSIF('Acknowledgement') },
-                                        { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Email Vendor" },
-                                        { icon: <CheckBadgeIcon className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
+                                        { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export Acknowledgement", action: () => handleExportSIF('Acknowledgement') },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
+                                        { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                                     ].map((action, i) => (
                                         <button key={i} onClick={() => action.action ? action.action() : null} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
@@ -589,10 +579,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     {/* Quick Actions Integrated - Compact */}
                                     <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                         {[
-                                            { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack" },
-                                            { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement" },
-                                            { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Email Vendor" },
-                                            { icon: <CheckBadgeIcon className="w-5 h-5" />, label: "Approve Orders" },
+                                            { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack" },
+                                            { icon: <FileText className="w-5 h-5" />, label: "Export Acknowledgement" },
+                                            { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
+                                            { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders" },
                                         ].map((action, i) => (
                                             <button key={i} onClick={() => {
                                                 if (action.label === 'Upload Ack') setIsAckModalOpen(true);
@@ -608,7 +598,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                     >
-                                        <ChevronDownIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+                                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
                                         <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                     </button>
                                 </div>
@@ -626,7 +616,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <>
                                 <div className="flex justify-end mb-2">
                                     <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUpIcon className="w-4 h-4" />
+                                        Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
                                 <div className="relative">
@@ -661,10 +651,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
                                     <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
-                                        { icon: <PlusIcon className="w-5 h-5" />, label: "New Order" },
-                                        { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Order", action: () => handleExportSIF('Order') },
-                                        { icon: <EnvelopeIcon className="w-5 h-5" />, label: "Send Email" },
+                                        { icon: <Plus className="w-5 h-5" />, label: "New Order" },
+                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export Order", action: () => handleExportSIF('Order') },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
                                     ].map((action, i) => (
                                         <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
                                             {action.icon}
@@ -682,7 +672,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => scroll(scrollContainerRef, 'left')}
                                         className="p-1.5 rounded-full hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors shrink-0"
                                     >
-                                        <ChevronLeftIcon className="w-4 h-4" />
+                                        <ChevronLeft className="w-4 h-4" />
                                     </button>
 
                                     <div
@@ -720,7 +710,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => scroll(scrollContainerRef, 'right')}
                                         className="p-1.5 rounded-full hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors shrink-0"
                                     >
-                                        <ChevronRightIcon className="w-4 h-4" />
+                                        <ChevronRight className="w-4 h-4" />
                                     </button>
                                 </div>
 
@@ -729,10 +719,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 {/* Quick Actions Integrated - Compact */}
                                 <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                                     {[
-                                        { icon: <DocumentPlusIcon className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
-                                        { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock", color: "text-amber-500" },
-                                        { icon: <ChartBarIcon className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
-                                        { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "ERP Sync", color: "text-indigo-500" },
+                                        { icon: <FilePlus className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
+                                        { icon: <Box className="w-5 h-5" />, label: "Check Stock", color: "text-amber-500" },
+                                        { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
+                                        { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", color: "text-indigo-500" },
                                     ].map((action, i) => (
                                         <button
                                             key={i}
@@ -747,7 +737,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     ))}
                                     <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                                     <button onClick={() => handleExportSIF('Order')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title="Export Order">
-                                        <DocumentTextIcon className="w-5 h-5" />
+                                        <FileText className="w-5 h-5" />
                                     </button>
                                 </div>
 
@@ -757,7 +747,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                 >
                                     <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                                        <ChevronDownIcon className="w-4 h-4" />
+                                        <ChevronDown className="w-4 h-4" />
                                     </div>
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
                                 </button>
@@ -803,7 +793,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                             : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                                                     )}
                                                 >
-                                                    {tab.id === 'metrics' && <ChartBarIcon className="w-4 h-4" />}
+                                                    {tab.id === 'metrics' && <BarChart3 className="w-4 h-4" />}
                                                     {tab.label}
                                                     {tab.count !== null && (
                                                         <span className={cn(
@@ -825,7 +815,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         {/* Filters Container */}
                                         <div className="flex flex-col sm:flex-row items-center gap-2 w-full xl:w-auto">
                                             <div className="relative group w-full sm:w-auto">
-                                                <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                 <input
                                                     type="text"
                                                     placeholder={lifecycleTab === 'quotes' ? "Search quotes..." : lifecycleTab === 'acknowledgments' ? "Search acknowledgments..." : "Search orders..."}
@@ -866,7 +856,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     )}
                                                     title="List View"
                                                 >
-                                                    <ListBulletIcon className="w-5 h-5" />
+                                                    <List className="w-5 h-5" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1"></div>
                                                 <button
@@ -877,7 +867,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     )}
                                                     title="Pipeline View"
                                                 >
-                                                    <FunnelIcon className="w-5 h-5" />
+                                                    <Filter className="w-5 h-5" />
                                                 </button>
                                             </div>
 
@@ -897,7 +887,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 }}
                                                 className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
                                             >
-                                                <PlusIcon className="w-4 h-4" />
+                                                <Plus className="w-4 h-4" />
                                                 <span>
                                                     {lifecycleTab === 'quotes' ? 'Create Quote' : lifecycleTab === 'acknowledgments' ? 'Upload Ack' : 'Create Order'}
                                                 </span>
@@ -966,7 +956,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <p className="text-sm font-medium text-green-700 dark:text-green-400">
                                                         {lifecycleTab === 'quotes' ? 'Quote Value' : lifecycleTab === 'acknowledgments' ? 'Pending Value' : 'Total Revenue'}
                                                     </p>
-                                                    <CurrencyDollarIcon className="h-5 w-5 text-green-600 dark:text-green-400" />
+                                                    <DollarSign className="h-5 w-5 text-green-600 dark:text-green-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-green-700 dark:text-green-300">{metricsData.revenue}</p>
@@ -980,7 +970,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
                                                         {lifecycleTab === 'quotes' ? 'Active Quotes' : lifecycleTab === 'acknowledgments' ? 'Pending Acks' : 'Active Orders'}
                                                     </p>
-                                                    <ShoppingBagIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                                    <ShoppingBag className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{metricsData.activeOrders}</p>
@@ -996,7 +986,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     <p className="text-sm font-medium text-indigo-700 dark:text-indigo-400">
                                                         {lifecycleTab === 'quotes' ? 'Win Rate' : lifecycleTab === 'acknowledgments' ? 'Conf. Rate' : 'Completion Rate'}
                                                     </p>
-                                                    <ChartBarIcon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                                                    <BarChart3 className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-indigo-700 dark:text-indigo-300">{metricsData.efficiency}%</p>
@@ -1010,7 +1000,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             <div className="bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 rounded-2xl p-6 border border-amber-200 dark:border-amber-800/20 shadow-sm">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Project Count</p>
-                                                    <ClipboardDocumentListIcon className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                                                    <ClipboardList className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                                                 </div>
                                                 <div>
                                                     <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
@@ -1080,7 +1070,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                     <div className="flex flex-col">
                                                                         <span className="text-sm text-foreground">{lifecycleTab === 'acknowledgments' ? order.relatedPo : order.project}</span>
                                                                         <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                                                            <MapPinIcon className="w-3 h-3" /> {order.location}
+                                                                            <MapPin className="w-3 h-3" /> {order.location}
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -1103,20 +1093,20 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             onClick={(e) => { e.stopPropagation(); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
                                                                             className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                                                                         >
-                                                                            <DocumentTextIcon className="h-4 w-4" />
+                                                                            <FileText className="h-4 w-4" />
                                                                         </button>
                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
                                                                             className="p-1.5 rounded-lg text-muted-foreground hover:text-blue-500 hover:bg-blue-50/50 transition-colors"
                                                                             title="Track Order"
                                                                         >
-                                                                            <MapPinIcon className="h-4 w-4" />
+                                                                            <MapPin className="h-4 w-4" />
                                                                         </button>
                                                                         <button
                                                                             onClick={(e) => { e.stopPropagation(); toggleExpand(order.id); }}
                                                                             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground transition-colors"
                                                                         >
-                                                                            {expandedIds.has(order.id) ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
+                                                                            {expandedIds.has(order.id) ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                                                         </button>
                                                                     </div>
                                                                 </td>
@@ -1168,7 +1158,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                             <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{stageOrders.length}</span>
                                                         </h4>
                                                         <button className="text-muted-foreground hover:text-foreground">
-                                                            <EllipsisHorizontalIcon className="w-5 h-5" />
+                                                            <MoreHorizontal className="w-5 h-5" />
                                                         </button>
                                                     </div>
 
@@ -1238,7 +1228,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                                                                                     title="View Full Details"
                                                                                 >
-                                                                                    <ArrowRightIcon className="h-4 w-4" />
+                                                                                    <ArrowRight className="h-4 w-4" />
                                                                                 </button>
                                                                             </div>
                                                                         </div>
@@ -1257,7 +1247,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <div className="space-y-1.5">
                                                                                     <p className="text-[10px] uppercase tracking-wider text-zinc-500 font-bold">Location</p>
                                                                                     <div className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-200">
-                                                                                        <MapPinIcon className="h-4 w-4 text-zinc-400" />
+                                                                                        <MapPin className="h-4 w-4 text-zinc-400" />
                                                                                         <span className="truncate">{order.location}</span>
                                                                                     </div>
                                                                                 </div>
@@ -1279,7 +1269,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
                                                                                     className="w-full py-3 text-sm font-bold text-zinc-950 bg-brand-400 hover:bg-brand-300 rounded-lg shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
                                                                                 >
-                                                                                    <MapPinIcon className="h-4 w-4" />
+                                                                                    <MapPin className="h-4 w-4" />
                                                                                     {lifecycleTab === 'quotes' ? 'Analyze Quote' : lifecycleTab === 'acknowledgments' ? 'Resolve Discrepancy' : 'Track Shipment'}
                                                                                 </button>
                                                                             </div>
@@ -1421,7 +1411,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
                                             <div className="flex flex-col h-full bg-primary/5 p-5 rounded-xl border border-primary/10">
                                                 <div className="flex items-center gap-2 mb-3 text-brand-700 dark:text-brand-300">
-                                                    <SparklesIcon className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+                                                    <Sparkles className="w-5 h-5 text-brand-600 dark:text-brand-400" />
                                                     <span className="font-semibold text-sm">AI Pricing Insight</span>
                                                 </div>
                                                 <p className="text-sm text-brand-900/80 dark:text-zinc-300 leading-relaxed mb-4">
@@ -1436,7 +1426,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         /* Ack Details View */
                                         <div className="space-y-6">
                                             <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg p-4 flex gap-3">
-                                                <ExclamationTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
+                                                <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
                                                 <div>
                                                     <h4 className="text-sm font-semibold text-red-700 dark:text-red-400">Price Discrepancy Detected</h4>
                                                     <p className="text-sm text-red-600/90 dark:text-red-400/90 mt-1">Vendor acknowledgement is <span className="font-bold">$500 higher</span> than the Purchase Order.</p>
@@ -1492,7 +1482,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 {/* Map Placeholder */}
                                                 <div className="bg-muted rounded-lg h-40 w-full mb-4 flex items-center justify-center border border-border">
                                                     <div className="text-center">
-                                                        <MapPinIcon className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
+                                                        <MapPin className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
                                                         <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Map Preview Unavailable</span>
                                                     </div>
                                                 </div>
@@ -1508,7 +1498,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                         className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-300 dark:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                                                         onClick={() => console.log('Contacting support...')}
                                                     >
-                                                        <EnvelopeIcon className="h-4 w-4" />
+                                                        <Mail className="h-4 w-4" />
                                                         Contact Support
                                                     </button>
                                                 </div>
@@ -1532,11 +1522,11 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                     <div className="bg-popover rounded-xl shadow-2xl shadow-black/10 border border-border p-4 flex items-start gap-4 max-w-sm">
                         <div className={`mt-0.5 p-1 rounded-full ${toastMessage.type === 'success' ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' : toastMessage.type === 'info' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'}`}>
                             {toastMessage.type === 'success' ? (
-                                <CheckCircleIcon className="w-5 h-5" />
+                                <CheckCircle2 className="w-5 h-5" />
                             ) : toastMessage.type === 'info' ? (
-                                <DocumentTextIcon className="w-5 h-5" />
+                                <FileText className="w-5 h-5" />
                             ) : (
-                                <ExclamationCircleIcon className="w-5 h-5" />
+                                <AlertCircle className="w-5 h-5" />
                             )}
                         </div>
                         <div className="flex-1">

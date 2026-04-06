@@ -1,8 +1,7 @@
 
 import { Fragment } from 'react'
 import { Dialog, Transition, Switch } from '@headlessui/react'
-import { XMarkIcon, PlusIcon } from '@heroicons/react/24/outline'
-
+import { Plus, X } from 'lucide-react';
 export interface Feature {
     id: string;
     title: string;
@@ -63,7 +62,7 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                         onClick={onClose}
                                         className="rounded-full p-1 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors focus:outline-none"
                                     >
-                                        <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                        <X className="h-6 w-6" aria-hidden="true" />
                                     </button>
                                 </div>
 
@@ -129,7 +128,7 @@ export default function FeatureManager({ isOpen, onClose, features, onToggleFeat
                                         type="button"
                                         className="inline-flex items-center gap-2 rounded-lg bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
                                     >
-                                        <PlusIcon className="w-4 h-4" />
+                                        <Plus className="w-4 h-4" />
                                         Browse App Marketplace
                                     </button>
                                     <button

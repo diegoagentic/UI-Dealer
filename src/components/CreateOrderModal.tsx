@@ -1,15 +1,6 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import {
-    XMarkIcon,
-    PencilSquareIcon,
-    DocumentTextIcon,
-    DocumentDuplicateIcon,
-    ArrowUpOnSquareIcon,
-    CheckIcon,
-    ArrowRightIcon
-} from '@heroicons/react/24/outline'
-
+import { ArrowRight, Check, Copy, ExternalLink, FileText, SquarePen, X } from 'lucide-react';
 interface CreateOrderModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -20,7 +11,7 @@ const creationOptions = [
         id: 'import',
         title: 'Import Files',
         description: 'Import order data from Excel, CSV, or PDF files. Ideal for bulk orders or external sources.',
-        icon: ArrowUpOnSquareIcon,
+        icon: ExternalLink,
         actionLabel: 'Upload Files',
         estimatedTime: '3-5 minutes',
         color: 'text-green-600',
@@ -32,7 +23,7 @@ const creationOptions = [
         id: 'quote',
         title: 'From Quote',
         description: 'Convert an accepted quote directly into a purchase order. All details are automatically transferred.',
-        icon: DocumentTextIcon,
+        icon: FileText,
         actionLabel: 'Select Quote',
         estimatedTime: '2-3 minutes',
         color: 'text-blue-600',
@@ -44,7 +35,7 @@ const creationOptions = [
         id: 'template',
         title: 'From Template',
         description: 'Use a pre-configured template or previous order as a starting point. Perfect for recurring orders.',
-        icon: DocumentDuplicateIcon,
+        icon: Copy,
         actionLabel: 'Browse Templates',
         estimatedTime: '5-8 minutes',
         color: 'text-indigo-600',
@@ -56,7 +47,7 @@ const creationOptions = [
         id: 'manual',
         title: 'Manual Creation',
         description: 'Create an order from scratch by entering all details manually. Best for custom or unique orders.',
-        icon: PencilSquareIcon,
+        icon: SquarePen,
         actionLabel: 'Start Manual Creation',
         estimatedTime: '10-15 minutes',
         color: 'text-zinc-600',
@@ -235,7 +226,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                             className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
                                             onClick={onClose}
                                         >
-                                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                                            <X className="h-6 w-6" aria-hidden="true" />
                                         </button>
                                     </div>
                                 )}
@@ -275,7 +266,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                     <div className="mt-auto">
                                                         <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-foreground/10 hover:border-foreground text-foreground font-medium transition-all group-hover:bg-foreground group-hover:text-background text-sm">
                                                             <span>{option.actionLabel}</span>
-                                                            <ArrowRightIcon className="h-4 w-4" />
+                                                            <ArrowRight className="h-4 w-4" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -289,7 +280,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                 onClick={() => setStep('selection')}
                                                 className="p-2 -ml-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                                             >
-                                                <ArrowRightIcon className="h-5 w-5 rotate-180 text-muted-foreground" />
+                                                <ArrowRight className="h-5 w-5 rotate-180 text-muted-foreground" />
                                             </button>
                                             <div>
                                                 <Dialog.Title as="h3" className="text-2xl font-brand font-bold text-foreground">
@@ -311,7 +302,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                     >
                                                         <div className="flex items-center gap-4">
                                                             <div className="h-10 w-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                                                                <DocumentDuplicateIcon className="h-5 w-5" />
+                                                                <Copy className="h-5 w-5" />
                                                             </div>
                                                             <div>
                                                                 <h4 className="font-semibold text-foreground">{template.name}</h4>
@@ -326,7 +317,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                         <div className="flex items-center gap-4">
                                                             <span className="font-medium text-foreground">{template.totalValue}</span>
                                                             <button className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-colors opacity-0 group-hover:opacity-100">
-                                                                <ArrowRightIcon className="h-5 w-5" />
+                                                                <ArrowRight className="h-5 w-5" />
                                                             </button>
                                                         </div>
                                                     </div>

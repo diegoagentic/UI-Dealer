@@ -1,4 +1,4 @@
-import { ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronRight } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -23,7 +23,7 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
             {items.map((item, index) => (
                 <div key={index} className="flex items-center gap-2">
                     {index > 0 && (
-                        <ChevronRightIcon className="h-4 w-4 text-muted-foreground/50" />
+                        <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
                     )}
                     <button
                         onClick={item.onClick}

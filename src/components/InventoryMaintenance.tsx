@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
 import AssignTeamModal from './AssignTeamModal';
 import TrackingModal, { type TrackingStep } from './TrackingModal';
-import {
-    WrenchScrewdriverIcon,
-    CalendarIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ClipboardDocumentCheckIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    UserCircleIcon,
-    CurrencyDollarIcon,
-    DocumentTextIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, Calendar, CheckCircle2, ChevronDown, ChevronUp, ClipboardCheck, Clock, DollarSign, FileText, Wrench } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -166,15 +154,15 @@ export default function InventoryMaintenance() {
     };
 
     const getPriorityIcon = (priority: string) => {
-        if (priority === 'High' || priority === 'Critical') return <ExclamationTriangleIcon className="w-4 h-4 text-red-500" />;
-        return <WrenchScrewdriverIcon className="w-4 h-4 text-zinc-400" />;
+        if (priority === 'High' || priority === 'Critical') return <AlertTriangle className="w-4 h-4 text-red-500" />;
+        return <Wrench className="w-4 h-4 text-zinc-400" />;
     };
 
     return (
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Legend/Info (Optional) */}
             <div className="bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800 rounded-lg p-3 flex items-start gap-3">
-                <WrenchScrewdriverIcon className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <Wrench className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                 <p className="text-sm text-amber-700 dark:text-amber-300">
                     Track asset repairs and maintenance costs. Expand any card to view the full service history and audit trail.
                 </p>
@@ -210,11 +198,11 @@ export default function InventoryMaintenance() {
 
                                 <div className="flex items-center gap-6 text-sm text-muted-foreground">
                                     <div className="flex items-center gap-2">
-                                        <ClockIcon className="w-4 h-4" />
+                                        <Clock className="w-4 h-4" />
                                         <span>{task.scheduledDate}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <WrenchScrewdriverIcon className="w-4 h-4" />
+                                        <Wrench className="w-4 h-4" />
                                         <span>{task.provider}</span>
                                         {task.assignedTeam && <span className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-1.5 py-0.5 rounded ml-1">Assigned: {task.assignedTeam}</span>}
                                     </div>
@@ -231,7 +219,7 @@ export default function InventoryMaintenance() {
                                     className="px-4 py-2 bg-background border border-border text-foreground rounded-lg text-sm font-medium hover:bg-accent transition-colors flex items-center gap-2"
                                 >
                                     View History
-                                    {expandedIds.has(task.id) ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
+                                    {expandedIds.has(task.id) ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                 </button>
                                 <button
                                     onClick={(e) => { e.stopPropagation(); handleTrackClick(task); }}
@@ -251,7 +239,7 @@ export default function InventoryMaintenance() {
                     {expandedIds.has(task.id) && (
                         <div className="border-t border-border bg-muted/30 p-6 animate-in slide-in-from-top-2 duration-300">
                             <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                                <ClipboardDocumentCheckIcon className="w-4 h-4 text-primary" />
+                                <ClipboardDocumentCheck className="w-4 h-4 text-primary" />
                                 Service History & Audit Trail
                             </h4>
 

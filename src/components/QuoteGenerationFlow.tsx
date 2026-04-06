@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { SparklesIcon } from '@heroicons/react/24/outline';
+import { Sparkles } from 'lucide-react';
 import SmartQuoteHub from './widgets/SmartQuoteHub';
 import QuoteExtractionArtifact from './gen-ui/artifacts/QuoteExtractionArtifact';
 import AssetReviewArtifact from './gen-ui/artifacts/AssetReviewArtifact';
@@ -92,7 +92,7 @@ export default function QuoteGenerationFlow({ onNavigate, onComplete }: QuoteGen
         return (
             <div className="h-full flex flex-col items-center justify-center p-8 bg-card rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm animate-in fade-in zoom-in duration-500">
                 <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-6 animate-bounce">
-                    <SparklesIcon className="w-12 h-12 text-primary" />
+                    <Sparkles className="w-12 h-12 text-primary" />
                 </div>
                 <h3 className="text-3xl font-bold font-brand text-foreground mb-4">Order Placed Successfully!</h3>
                 <p className="text-muted-foreground text-center max-w-md mb-8">

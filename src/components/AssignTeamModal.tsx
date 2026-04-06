@@ -1,16 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import {
-    XMarkIcon,
-    UserGroupIcon,
-    CalendarIcon,
-    ClockIcon,
-    ExclamationTriangleIcon,
-    CheckCircleIcon,
-    MapPinIcon,
-    ArrowRightIcon
-} from '@heroicons/react/24/outline';
+import { AlertTriangle, ArrowRight, Calendar, CheckCircle2, Clock, MapPin, Users, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -87,7 +78,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                                            <UserGroupIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                            <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
                                             <h3 className="text-lg font-semibold text-foreground">
@@ -102,7 +93,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                         onClick={onClose}
                                         className="p-1 rounded-full hover:bg-muted transition-colors"
                                     >
-                                        <XMarkIcon className="w-5 h-5 text-muted-foreground" />
+                                        <X className="w-5 h-5 text-muted-foreground" />
                                     </button>
                                 </Dialog.Title>
 
@@ -168,7 +159,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                         <option key={team} value={team}>{team}</option>
                                                     ))}
                                                 </select>
-                                                <UserGroupIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
+                                                <Users className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
                                             </div>
                                         </div>
 
@@ -178,9 +169,9 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                             </label>
                                             <div className="grid grid-cols-3 gap-3">
                                                 {[
-                                                    { value: 'Low', icon: CheckCircleIcon, color: 'text-green-600', border: 'peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20' },
-                                                    { value: 'Medium', icon: ClockIcon, color: 'text-amber-600', border: 'peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20' },
-                                                    { value: 'High', icon: ExclamationTriangleIcon, color: 'text-red-600', border: 'peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20' }
+                                                    { value: 'Low', icon: CheckCircle2, color: 'text-green-600', border: 'peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-900/20' },
+                                                    { value: 'Medium', icon: Clock, color: 'text-amber-600', border: 'peer-checked:border-amber-500 peer-checked:bg-amber-50 dark:peer-checked:bg-amber-900/20' },
+                                                    { value: 'High', icon: AlertTriangle, color: 'text-red-600', border: 'peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-900/20' }
                                                 ].map((p) => (
                                                     <label key={p.value} className="cursor-pointer">
                                                         <input
@@ -215,7 +206,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                         onChange={(e) => setScheduledDate(e.target.value)}
                                                         className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                     />
-                                                    <CalendarIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
+                                                    <Calendar className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
                                                 </div>
                                             </div>
                                             <div>
@@ -229,7 +220,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                                         onChange={(e) => setScheduledTime(e.target.value)}
                                                         className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                     />
-                                                    <ClockIcon className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
+                                                    <Clock className="w-5 h-5 text-zinc-400 absolute left-3 top-2.5 pointer-events-none" />
                                                 </div>
                                             </div>
                                         </div>
@@ -260,7 +251,7 @@ export default function AssignTeamModal({ isOpen, onClose, onConfirm, item, type
                                         disabled={!assignedTeam || !scheduledDate || !scheduledTime}
                                         className="px-6 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                                     >
-                                        <CheckCircleIcon className="w-4 h-4" />
+                                        <CheckCircle2 className="w-4 h-4" />
                                         Assign & Schedule
                                     </button>
                                 </div>

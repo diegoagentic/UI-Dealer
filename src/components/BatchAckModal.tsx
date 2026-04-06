@@ -1,12 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Transition, Tab } from '@headlessui/react'
-import {
-    XMarkIcon,
-    CheckCircleIcon,
-    ExclamationTriangleIcon,
-    ArrowPathIcon
-} from '@heroicons/react/24/outline'
-
+import { AlertTriangle, CheckCircle2, RefreshCw, X } from 'lucide-react';
 interface BatchAckModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -94,7 +88,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                 {showSuccess ? (
                                     <div className="p-12 flex flex-col items-center justify-center text-center">
                                         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center mb-4">
-                                            <CheckCircleIcon className="w-10 h-10" />
+                                            <CheckCircle2 className="w-10 h-10" />
                                         </div>
                                         <h3 className="text-xl font-bold text-foreground">Success!</h3>
                                         <p className="text-muted-foreground mt-2">
@@ -115,7 +109,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                 className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors outline-none"
                                                 onClick={onClose}
                                             >
-                                                <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                                                <X className="h-5 w-5" aria-hidden="true" />
                                             </button>
                                         </div>
 
@@ -227,7 +221,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                                     : 'bg-muted text-muted-foreground cursor-not-allowed'
                                                                     }`}
                                                             >
-                                                                {isProcessing && <ArrowPathIcon className="w-4 h-4 animate-spin" />}
+                                                                {isProcessing && <RefreshCw className="w-4 h-4 animate-spin" />}
                                                                 {isProcessing ? 'Processing...' : `Approve (${selectedReady.length})`}
                                                             </button>
                                                         </div>
@@ -239,7 +233,7 @@ export default function BatchAckModal({ isOpen, onClose }: BatchAckModalProps) {
                                                     <div className="space-y-3">
                                                         {attentionOrders.map((order) => (
                                                             <div key={order.id} className="p-4 rounded-xl border border-destructive/20 bg-destructive/10 flex items-start gap-4">
-                                                                <ExclamationTriangleIcon className="w-5 h-5 text-red-600 mt-0.5" />
+                                                                <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
                                                                 <div className="flex-1">
                                                                     <div className="flex justify-between items-start mb-1">
                                                                         <h4 className="font-semibold text-foreground">{order.id}</h4>

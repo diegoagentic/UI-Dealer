@@ -1,35 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, Transition, TransitionChild, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Fragment } from 'react'
-import {
-    HomeIcon, CubeIcon, ClipboardDocumentListIcon, TruckIcon,
-    ArrowRightOnRectangleIcon, MagnifyingGlassIcon, BellIcon, CalendarIcon,
-    CurrencyDollarIcon, ChartBarIcon, ArrowTrendingUpIcon, ExclamationCircleIcon,
-    PlusIcon, DocumentDuplicateIcon, DocumentTextIcon, EnvelopeIcon, Squares2X2Icon,
-    EllipsisHorizontalIcon, ListBulletIcon, SunIcon, MoonIcon,
-    ChevronDownIcon, ChevronUpIcon, EyeIcon, PencilIcon, TrashIcon,
-    CheckIcon, MapPinIcon, UserIcon, ClockIcon, ShoppingBagIcon, ExclamationTriangleIcon, PencilSquareIcon,
-    BookOpenIcon, UsersIcon, TagIcon,
-    ArrowPathIcon,
-    CheckCircleIcon,
-    SparklesIcon,
-    ArrowRightIcon,
-    BanknotesIcon,
-    WrenchScrewdriverIcon,
-    ArrowDownTrayIcon,
-
-    ChatBubbleLeftRightIcon,
-    CloudArrowUpIcon,
-    LinkIcon,
-    BuildingStorefrontIcon,
-    ComputerDesktopIcon,
-    DocumentPlusIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-
-    LightBulbIcon,
-    Bars3BottomLeftIcon,
-    Bars3Icon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, ArrowRight, Banknote, BarChart3, Bell, BookOpen, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardList, Clock, CloudUpload, Copy, DollarSign, Download, Eye, FilePlus, FileText, LayoutGrid, List, LogOut, Mail, MapPin, Menu as MenuIcon, MessageSquare, MoreHorizontal, Pencil, Plus, RefreshCw, Search, ShoppingBag, Sparkles, SquarePen, Tag, Trash2, TrendingUp, Truck, User, Users, Wrench } from 'lucide-react';
 import { Reorder } from 'framer-motion'
 import { useState, useMemo, useEffect, useRef } from 'react'
 
@@ -62,7 +33,7 @@ const urgentActions = [
         time: 'Under 10 mins',
         type: 'critical',
         action: 'Review Exceptions',
-        icon: SparklesIcon
+        icon: Sparkles
     },
     {
         id: 1,
@@ -71,7 +42,7 @@ const urgentActions = [
         time: '2h remaining',
         type: 'critical',
         action: 'Renew Quote',
-        icon: ClockIcon
+        icon: Clock
     },
     {
         id: 2,
@@ -80,7 +51,7 @@ const urgentActions = [
         time: 'Urgent',
         type: 'warning',
         action: 'Restock',
-        icon: ExclamationTriangleIcon
+        icon: AlertTriangle
     },
     {
         id: 3,
@@ -89,7 +60,7 @@ const urgentActions = [
         time: '14m ago',
         type: 'info',
         action: 'Approve',
-        icon: CheckCircleIcon
+        icon: CheckCircle2
     }
 ]
 
@@ -101,10 +72,10 @@ const recentActivity = [
         related: '#QT-2841',
         time: '2 hours ago',
         type: 'success',
-        icon: CheckCircleIcon,
+        icon: CheckCircle2,
         actions: [
-            { label: 'View PO', icon: EyeIcon, primary: true },
-            { label: 'Download PDF', icon: ArrowDownTrayIcon, primary: false }
+            { label: 'View PO', icon: Eye, primary: true },
+            { label: 'Download PDF', icon: Download, primary: false }
         ]
     },
     {
@@ -114,10 +85,10 @@ const recentActivity = [
         meta: 'Payment for USD 245.00 was received',
         time: '3 hours ago',
         type: 'info',
-        icon: BanknotesIcon,
+        icon: Banknote,
         actions: [
-            { label: 'View Invoice', icon: EyeIcon, primary: true },
-            { label: 'Email Receipt', icon: EnvelopeIcon, primary: false }
+            { label: 'View Invoice', icon: Eye, primary: true },
+            { label: 'Email Receipt', icon: Mail, primary: false }
         ]
     },
     {
@@ -126,11 +97,11 @@ const recentActivity = [
         related: '#OR-9823',
         time: '4 hours ago',
         type: 'warning',
-        icon: ExclamationTriangleIcon,
+        icon: AlertTriangle,
         aiSuggestion: 'AI Suggests: Review shipping logs for weight mismatch.',
         actions: [
-            { label: 'Review Issue', icon: WrenchScrewdriverIcon, primary: true },
-            { label: 'Contact Support', icon: ChatBubbleLeftRightIcon, primary: false }
+            { label: 'Review Issue', icon: Wrench, primary: true },
+            { label: 'Contact Support', icon: MessageSquare, primary: false }
         ]
     },
     {
@@ -140,10 +111,10 @@ const recentActivity = [
         meta: 'Shipment delayed due to bad weather',
         time: '5 hours ago',
         type: 'error',
-        icon: TruckIcon,
+        icon: Truck,
         actions: [
-            { label: 'Track Shipment', icon: MapPinIcon, primary: true },
-            { label: 'Notify Client', icon: ChatBubbleLeftRightIcon, primary: false }
+            { label: 'Track Shipment', icon: MapPin, primary: true },
+            { label: 'Notify Client', icon: MessageSquare, primary: false }
         ]
     }
 ]
@@ -203,7 +174,7 @@ const aiSuggestions = [
         title: 'Consolidate Shipments',
         description: 'Combine 3 pending orders for "TechDealer" to save 12% on shipping.',
         impact: 'Save $450',
-        icon: TruckIcon,
+        icon: Truck,
         type: 'savings'
     },
     {
@@ -211,7 +182,7 @@ const aiSuggestions = [
         title: 'Bulk Discount Available',
         description: 'Order 5 more "ErgoChairs" to unlock tier-2 pricing (-5%).',
         impact: 'Margin +2%',
-        icon: TagIcon,
+        icon: Tag,
         type: 'opportunity'
     },
     {
@@ -219,7 +190,7 @@ const aiSuggestions = [
         title: 'Renew Service Agreement',
         description: 'Tenant "Global Logistics" contract expires in 15 days.',
         impact: 'Retention',
-        icon: DocumentTextIcon,
+        icon: FileText,
         type: 'action'
     }
 ]
@@ -246,12 +217,12 @@ const solidColorStyles: Record<string, string> = {
 
 // Simulate Platform Summary Data
 const platformSummary = {
-    inventory: { label: 'Inventory', value: '$1.2M', sub1: '4.5x Turnover', sub2: '15 Low Stock', icon: <CubeIcon className="w-5 h-5" />, color: 'blue', change: '+0.2%', positive: true },
-    catalogs: { label: 'Catalogs', value: '12 Active', sub1: '450 New Items', sub2: '8.5k Views', icon: <BookOpenIcon className="w-5 h-5" />, color: 'purple', change: '+15%', positive: true },
-    mac: { label: 'MAC', value: '8 Pending', sub1: '12 Scheduled', sub2: '45 Completed', icon: <TruckIcon className="w-5 h-5" />, color: 'orange', change: '-2%', positive: false },
-    transactions: { label: 'Transactions', value: '$385k Rev', sub1: '12 Pending', sub2: '$4.2k Avg Order', icon: <ClipboardDocumentListIcon className="w-5 h-5" />, color: 'green', change: '+3.5%', positive: true },
-    crm: { label: 'CRM', value: '45 Leads', sub1: '22% Conv. Rate', sub2: '4.8/5 CSAT', icon: <UsersIcon className="w-5 h-5" />, color: 'pink', change: '+1.2%', positive: true },
-    pricing: { label: 'Pricing', value: '24% Margin', sub1: '3 Discounts', sub2: '150 Updates', icon: <TagIcon className="w-5 h-5" />, color: 'indigo', change: '0%', positive: true },
+    inventory: { label: 'Inventory', value: '$1.2M', sub1: '4.5x Turnover', sub2: '15 Low Stock', icon: <Box className="w-5 h-5" />, color: 'blue', change: '+0.2%', positive: true },
+    catalogs: { label: 'Catalogs', value: '12 Active', sub1: '450 New Items', sub2: '8.5k Views', icon: <BookOpen className="w-5 h-5" />, color: 'purple', change: '+15%', positive: true },
+    mac: { label: 'MAC', value: '8 Pending', sub1: '12 Scheduled', sub2: '45 Completed', icon: <Truck className="w-5 h-5" />, color: 'orange', change: '-2%', positive: false },
+    transactions: { label: 'Transactions', value: '$385k Rev', sub1: '12 Pending', sub2: '$4.2k Avg Order', icon: <ClipboardList className="w-5 h-5" />, color: 'green', change: '+3.5%', positive: true },
+    crm: { label: 'CRM', value: '45 Leads', sub1: '22% Conv. Rate', sub2: '4.8/5 CSAT', icon: <Users className="w-5 h-5" />, color: 'pink', change: '+1.2%', positive: true },
+    pricing: { label: 'Pricing', value: '24% Margin', sub1: '3 Discounts', sub2: '150 Updates', icon: <Tag className="w-5 h-5" />, color: 'indigo', change: '0%', positive: true },
 }
 
 // Define props interface if not heavily inferred or complex
@@ -456,7 +427,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-semibold text-foreground">Platform Executive Summary</h2>
                             <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                Collapse Summary <ChevronUpIcon className="w-4 h-4" />
+                                Collapse Summary <ChevronUp className="w-4 h-4" />
                             </button>
                         </div>
                         <div className="flex flex-col xl:flex-row gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
@@ -467,7 +438,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     onClick={() => scroll(expandedScrollRef, 'left')}
                                     className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all disabled:opacity-0"
                                 >
-                                    <ChevronLeftIcon className="w-5 h-5" />
+                                    <ChevronLeft className="w-5 h-5" />
                                 </button>
 
                                 <div
@@ -540,12 +511,12 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     onClick={() => setExpandedCardId(expandedCardId === key ? null : key)}
                                                     className="p-1 -ml-1 hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50 dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 text-[10px] font-medium"
                                                 >
-                                                    <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${expandedCardId === key ? 'rotate-180' : ''}`} />
+                                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expandedCardId === key ? 'rotate-180' : ''}`} />
                                                     {expandedCardId === key ? 'Less' : 'Details'}
                                                 </button>
 
                                                 <button className={`p-1.5 rounded-full transition-all hover:scale-105 border ${solidColorStyles[data.color]}`} title={`Go to ${data.label}`}>
-                                                    <ArrowRightIcon className="w-3.5 h-3.5" />
+                                                    <ArrowRight className="w-3.5 h-3.5" />
                                                 </button>
                                             </div>
                                         </div>
@@ -557,7 +528,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     onClick={() => scroll(expandedScrollRef, 'right')}
                                     className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all"
                                 >
-                                    <ChevronRightIcon className="w-5 h-5" />
+                                    <ChevronRight className="w-5 h-5" />
                                 </button>
                             </div>
 
@@ -566,10 +537,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 <h3 className="text-sm font-semibold text-foreground mb-3 px-1">Quick Actions</h3>
                                 <div className="grid grid-cols-2 gap-3 h-full">
                                     {[
-                                        { icon: <DocumentPlusIcon className="w-6 h-6" />, label: "New Quote", desc: "Create a new quote" },
-                                        { icon: <CubeIcon className="w-6 h-6" />, label: "Check Stock", desc: "View inventory" },
-                                        { icon: <ChartBarIcon className="w-6 h-6" />, label: "Gen. Report", desc: "Analytics summary" },
-                                        { icon: <CloudArrowUpIcon className="w-6 h-6" />, label: "ERP Sync", desc: "Sync with ERP", action: () => setIsERPSyncModalOpen(true) },
+                                        { icon: <FilePlus className="w-6 h-6" />, label: "New Quote", desc: "Create a new quote" },
+                                        { icon: <Box className="w-6 h-6" />, label: "Check Stock", desc: "View inventory" },
+                                        { icon: <BarChart3 className="w-6 h-6" />, label: "Gen. Report", desc: "Analytics summary" },
+                                        { icon: <CloudUpload className="w-6 h-6" />, label: "ERP Sync", desc: "Sync with ERP", action: () => setIsERPSyncModalOpen(true) },
                                     ].map((action, i) => (
                                         <button
                                             key={i}
@@ -598,7 +569,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 onClick={() => scroll(scrollContainerRef, 'left')}
                                 className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
                             >
-                                <ChevronLeftIcon className="w-4 h-4" />
+                                <ChevronLeft className="w-4 h-4" />
                             </button>
 
                             <div
@@ -635,7 +606,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 onClick={() => scroll(scrollContainerRef, 'right')}
                                 className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
                             >
-                                <ChevronRightIcon className="w-4 h-4" />
+                                <ChevronRight className="w-4 h-4" />
                             </button>
                         </div>
 
@@ -644,10 +615,10 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                         {/* Quick Actions Integrated - Compact */}
                         <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
                             {[
-                                { icon: <DocumentPlusIcon className="w-5 h-5" />, label: "New Quote" },
-                                { icon: <CubeIcon className="w-5 h-5" />, label: "Check Stock" },
-                                { icon: <ChartBarIcon className="w-5 h-5" />, label: "Gen. Report" },
-                                { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
+                                { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
+                                { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
+                                { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
+                                { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
                             ].map((action, i) => (
                                 <button
                                     key={i}
@@ -660,7 +631,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             ))}
                             <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
                             <button className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title="View All & Manage">
-                                <Squares2X2Icon className="w-5 h-5" />
+                                <LayoutGrid className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -671,7 +642,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white transition-colors"
                             title="Expand Summary"
                         >
-                            <ChevronDownIcon className="w-5 h-5" />
+                            <ChevronDown className="w-5 h-5" />
                         </button>
                     </div>
                 )
@@ -690,7 +661,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <ListBulletIcon className="w-4 h-4" />
+                            <List className="w-4 h-4" />
                             Follow Up
                         </button>
                         <button
@@ -703,7 +674,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <WrenchScrewdriverIcon className="w-4 h-4" />
+                            <Wrench className="w-4 h-4" />
                             Your tools
                         </button>
                         <button
@@ -716,7 +687,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <ChartBarIcon className="w-4 h-4" />
+                            <BarChart3 className="w-4 h-4" />
                             Metrics
                         </button>
                     </div>
@@ -733,7 +704,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 <div className="bg-card rounded-2xl border border-border shadow-sm p-6">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
-                                            <ExclamationTriangleIcon className="w-5 h-5 text-amber-500" />
+                                            <AlertTriangle className="w-5 h-5 text-amber-500" />
                                             Urgent Actions
                                         </h3>
                                         <span className="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-bold">
@@ -770,7 +741,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                 }`}>
                                                                 {action.time}
                                                             </span>
-                                                            <ChevronDownIcon className={`w-4 h-4 text-muted-foreground transition-transform ${expandedActionId === action.id ? 'rotate-180' : ''}`} />
+                                                            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${expandedActionId === action.id ? 'rotate-180' : ''}`} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -791,7 +762,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                             className="text-xs font-bold bg-primary text-zinc-900 px-4 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all flex items-center gap-1.5"
                                                         >
                                                             {action.action}
-                                                            <ArrowRightIcon className="w-3 h-3" />
+                                                            <ArrowRight className="w-3 h-3" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -805,12 +776,12 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
                                             {/* Changed from text-primary (lime) to text-zinc-500 for better visibility in light mode */}
-                                            <ClockIcon className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
+                                            <Clock className="w-5 h-5 text-zinc-500 dark:text-zinc-400" />
                                             Recent Activity
                                         </h3>
                                         <button className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg px-2 py-1 transition-colors">
                                             Related to You
-                                            <ChevronDownIcon className="w-3 h-3" />
+                                            <ChevronDown className="w-3 h-3" />
                                         </button>
                                     </div>
 
@@ -848,7 +819,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         <span className="font-mono">{item.related}</span>
                                                                     </p>
                                                                 </div>
-                                                                <ChevronDownIcon className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${expandedActivityId === item.id ? 'rotate-180' : ''}`} />
+                                                                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-300 shrink-0 ${expandedActivityId === item.id ? 'rotate-180' : ''}`} />
                                                             </div>
                                                         </div>
                                                     </div>
@@ -885,7 +856,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                         {item.aiSuggestion && (
                                                             <div className="rounded-lg bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-500/10 p-3">
                                                                 <div className="flex items-start gap-3">
-                                                                    <SparklesIcon className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
+                                                                    <Sparkles className="w-4 h-4 text-indigo-500 mt-0.5 shrink-0" />
                                                                     <div className="flex-1">
                                                                         <p className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 mb-1">
                                                                             AI Insight
@@ -912,7 +883,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                             }}
                                                                             className="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded-md hover:bg-indigo-200 dark:hover:bg-indigo-500/30 transition-colors flex items-center gap-1"
                                                                         >
-                                                                            Resolve Issue <SparklesIcon className="w-3 h-3" />
+                                                                            Resolve Issue <Sparkles className="w-3 h-3" />
                                                                         </button>
                                                                     </div>
                                                                 </div>
@@ -936,7 +907,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 <div className="bg-card rounded-2xl border border-border shadow-sm p-6 flex flex-col h-full">
                                     <div className="flex items-center justify-between mb-6">
                                         <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2">
-                                            <SparklesIcon className="w-5 h-5 text-indigo-500" />
+                                            <Sparkles className="w-5 h-5 text-indigo-500" />
                                             AI Suggestions
                                         </h3>
                                         <span className="px-2.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-bold">
@@ -964,7 +935,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                             onClick={() => handleGenUIAction(`Apply Suggestion: ${suggestion.title}`)}
                                                             className="mt-3 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 group/btn"
                                                         >
-                                                            Apply Suggestion <ArrowRightIcon className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
+                                                            Apply Suggestion <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1038,7 +1009,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                         isCustomizeHighlighted && "ring-2 ring-purple-500 animate-pulse relative z-50"
                                     )}
                                 >
-                                    <PencilSquareIcon className="w-3.5 h-3.5" />
+                                    <SquarePen className="w-3.5 h-3.5" />
                                     Customize
                                 </button>
                             </div>
@@ -1077,7 +1048,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     <div className="p-6 border-b border-border">
                                                         <div className="flex items-center justify-between mb-4">
                                                             <h3 className="text-lg font-brand font-semibold text-foreground flex items-center gap-2 cursor-grab active:cursor-grabbing">
-                                                                <Bars3Icon className="w-5 h-5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400 transition-colors" />
+                                                                <MenuIcon className="w-5 h-5 text-zinc-400 hover:text-zinc-600 dark:text-zinc-600 dark:hover:text-zinc-400 transition-colors" />
                                                                 Recent Orders
                                                             </h3>
                                                         </div>
@@ -1100,7 +1071,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                 : "text-muted-foreground hover:text-foreground"
                                                                         )}
                                                                     >
-                                                                        {tab.id === 'metrics' && <ChartBarIcon className="w-4 h-4" />}
+                                                                        {tab.id === 'metrics' && <BarChart3 className="w-4 h-4" />}
                                                                         {tab.label}
                                                                         {tab.count !== null && (
                                                                             <span className={cn(
@@ -1118,7 +1089,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
                                                             <div className="flex flex-wrap items-center gap-2">
                                                                 <div className="relative group">
-                                                                    <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                                                     <input
                                                                         type="text"
                                                                         placeholder="Search orders..."
@@ -1153,13 +1124,13 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         onClick={() => setViewMode('list')}
                                                                         className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                                                     >
-                                                                        <ListBulletIcon className="h-4 w-4" />
+                                                                        <List className="h-4 w-4" />
                                                                     </button>
                                                                     <button
                                                                         onClick={() => setViewMode('grid')}
                                                                         className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                                                                     >
-                                                                        <Squares2X2Icon className="h-4 w-4" />
+                                                                        <LayoutGrid className="h-4 w-4" />
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -1191,7 +1162,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     onClick={() => toggleExpand(order.id)}
                                                                                 >
                                                                                     <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-foreground flex items-center gap-2">
-                                                                                        {expandedIds.has(order.id) ? <ChevronDownIcon className="h-4 w-4 text-foreground" /> : <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />}
+                                                                                        {expandedIds.has(order.id) ? <ChevronDown className="h-4 w-4 text-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
                                                                                         {order.id}
                                                                                     </td>
                                                                                     <td className="whitespace-nowrap px-3 py-4 text-sm text-foreground/80">
@@ -1210,7 +1181,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     <td className="whitespace-nowrap px-3 py-4 text-right text-sm font-medium">
                                                                                         <Menu as="div" className="relative inline-block text-left">
                                                                                             <MenuButton onClick={(e) => e.stopPropagation()} className="bg-transparent p-1 rounded-full text-muted-foreground hover:text-foreground">
-                                                                                                <EllipsisHorizontalIcon className="h-5 w-5" />
+                                                                                                <MoreHorizontal className="h-5 w-5" />
                                                                                             </MenuButton>
                                                                                             <Transition
                                                                                                 as={Fragment}
@@ -1226,28 +1197,28 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
                                                                                                                 <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className={`${active ? 'bg-muted' : ''} group flex w-full items-center px-4 py-2 text-sm text-foreground`}>
-                                                                                                                    <span className="w-4 h-4 mr-2" ><DocumentTextIcon /></span> View Details
+                                                                                                                    <span className="w-4 h-4 mr-2" ><FileText /></span> View Details
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
                                                                                                                 <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200`}>
-                                                                                                                    <span className="w-4 h-4 mr-2" ><PencilSquareIcon /></span> Edit
+                                                                                                                    <span className="w-4 h-4 mr-2" ><SquarePen /></span> Edit
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
                                                                                                                 <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                                                    <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
+                                                                                                                    <span className="w-4 h-4 mr-2" ><Trash2 /></span> Delete
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
                                                                                                                 <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200`}>
-                                                                                                                    <span className="w-4 h-4 mr-2" ><EnvelopeIcon /></span> Contact
+                                                                                                                    <span className="w-4 h-4 mr-2" ><Mail /></span> Contact
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
@@ -1265,7 +1236,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                 <div className="flex items-start gap-4">
                                                                                                     <div className="flex-1 space-y-4">
                                                                                                         <div className="flex items-center gap-3">
-                                                                                                            <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-zinc-500" /></div>
+                                                                                                            <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><User className="w-6 h-6 text-zinc-500" /></div>
                                                                                                             <div>
                                                                                                                 <p className="text-sm font-medium text-zinc-900 dark:text-white">Sarah Johnson</p>
                                                                                                                 <p className="text-xs text-zinc-500">Project Manager</p>
@@ -1289,7 +1260,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                         <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-white/10 shadow-sm">
                                                                                                             <p className="text-xs font-medium text-zinc-500 uppercase">Alert</p>
                                                                                                             <div className="mt-2 flex items-start gap-2">
-                                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
+                                                                                                                <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                                                 <div>
                                                                                                                     <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
                                                                                                                     <p className="text-xs text-zinc-500 mt-1">Shipment held at port. ETA +24h.</p>
@@ -1329,14 +1300,14 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                 </div>
                                                                                 <div className="flex items-center gap-1">
                                                                                     <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                                        <DocumentTextIcon className="h-5 w-5" />
+                                                                                        <FileText className="h-5 w-5" />
                                                                                     </button>
                                                                                     <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
-                                                                                        <PencilSquareIcon className="h-5 w-5" />
+                                                                                        <SquarePen className="h-5 w-5" />
                                                                                     </button>
                                                                                     <Menu as="div" className="relative inline-block text-left">
                                                                                         <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 dark:hover:text-zinc-900">
-                                                                                            <EllipsisHorizontalIcon className="h-5 w-5" />
+                                                                                            <MoreHorizontal className="h-5 w-5" />
                                                                                         </MenuButton>
                                                                                         <Transition
                                                                                             as={Fragment}
@@ -1352,7 +1323,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                     <MenuItem>
                                                                                                         {({ active }) => (
                                                                                                             <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
-                                                                                                                <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
+                                                                                                                <span className="w-4 h-4 mr-2" ><Trash2 /></span> Delete
                                                                                                             </button>
                                                                                                         )}
                                                                                                     </MenuItem>
@@ -1386,7 +1357,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     <div className="flex-1 space-y-6">
                                                                                         <div className="flex items-center gap-3">
                                                                                             <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500">
-                                                                                                <UserIcon className="h-4 w-4" />
+                                                                                                <User className="h-4 w-4" />
                                                                                             </div>
                                                                                             <div>
                                                                                                 <p className="text-sm font-bold text-zinc-900 dark:text-white">Sarah Johnson</p>
@@ -1400,7 +1371,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                 {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
                                                                                                     <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1">
                                                                                                         <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'}`}>
-                                                                                                            {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
+                                                                                                            {i < 1 ? <Check className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
                                                                                                         </div>
                                                                                                         <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500'}`}>{step}</span>
                                                                                                     </div>
@@ -1412,7 +1383,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                     <div className="w-full md:w-[280px]">
                                                                                         <div className="rounded-xl border border-amber-200 dark:border-amber-500/20 bg-amber-50 dark:bg-amber-500/10 p-4">
                                                                                             <div className="flex gap-3">
-                                                                                                <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 shrink-0" />
+                                                                                                <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0" />
                                                                                                 <div>
                                                                                                     <h5 className="text-sm font-bold text-amber-700 dark:text-amber-400">Alert: Customs Delay</h5>
                                                                                                     <p className="mt-1 text-xs text-amber-600/80 dark:text-amber-400/70">Held at port. ETA +24h.</p>
@@ -1430,7 +1401,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         {expandedIds.has(order.id) && (
                                                                             <div className="mt-6 bg-zinc-50 dark:bg-white/5 p-4 border-t border-zinc-200 dark:border-white/10">
                                                                                 <div className="flex items-center gap-2 mb-3">
-                                                                                    <ShoppingBagIcon className="h-4 w-4 text-zinc-400" />
+                                                                                    <ShoppingBag className="h-4 w-4 text-zinc-400" />
                                                                                     <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Order Items (3)</span>
                                                                                 </div>
                                                                                 <div className="space-y-2">
@@ -1449,7 +1420,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                 onClick={(e) => { e.stopPropagation(); setTrackingOrder(order); }}
                                                                                 className="w-full py-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg text-xs font-medium shadow-sm transition-all flex items-center justify-center gap-2"
                                                                             >
-                                                                                <MapPinIcon className="h-3 w-3" /> Track Shipment
+                                                                                <MapPin className="h-3 w-3" /> Track Shipment
                                                                             </button>
                                                                         </div>
                                                                     </div>
@@ -1477,7 +1448,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                     <div key={quote.id} className="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 hover:border-primary/30 transition-colors cursor-pointer group">
                                                                         <div className="flex items-center gap-3">
                                                                             <div className="w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center shrink-0">
-                                                                                <DocumentTextIcon className="w-5 h-5 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors" />
+                                                                                <FileText className="w-5 h-5 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300 transition-colors" />
                                                                             </div>
                                                                             <div>
                                                                                 <p className="text-sm font-semibold text-foreground">{quote.id}</p>
@@ -1516,7 +1487,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 /* Placeholder for New B2B Widgets */
                                                 <div className="bg-card rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 flex flex-col items-center justify-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
                                                     <div className="w-12 h-12 rounded-full bg-muted dark:bg-secondary flex items-center justify-center mb-4">
-                                                        <CubeIcon className="w-6 h-6 text-zinc-400" />
+                                                        <Box className="w-6 h-6 text-zinc-400" />
                                                     </div>
                                                     <h3 className="text-lg font-brand font-semibold text-foreground">{feature?.title}</h3>
                                                     <p className="text-sm text-muted-foreground mt-1 max-w-md">{feature?.description}</p>
@@ -1611,7 +1582,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                             {/* Map Placeholder */}
                                             <div className="bg-zinc-100 dark:bg-zinc-800 rounded-lg h-40 w-full mb-4 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                                                 <div className="text-center">
-                                                    <MapPinIcon className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
+                                                    <MapPin className="h-8 w-8 text-zinc-400 mx-auto mb-2" />
                                                     <span className="text-xs text-zinc-500 dark:text-zinc-400 block">Map Preview Unavailable</span>
                                                 </div>
                                             </div>
@@ -1627,7 +1598,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                     className="w-full inline-flex justify-center items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm hover:bg-brand-300 dark:bg-brand-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                                                     onClick={() => console.log('Contacting support...')}
                                                 >
-                                                    <EnvelopeIcon className="h-4 w-4" />
+                                                    <Mail className="h-4 w-4" />
                                                     Contact Support
                                                 </button>
                                             </div>

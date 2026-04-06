@@ -1,20 +1,6 @@
 import React, { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import {
-    XMarkIcon,
-    CheckCircleIcon,
-    TruckIcon,
-    WrenchScrewdriverIcon,
-    MapPinIcon,
-    CameraIcon,
-    DocumentTextIcon,
-    UserIcon,
-    ClockIcon,
-    SparklesIcon,
-    ChatBubbleLeftRightIcon,
-    PhoneIcon,
-    EnvelopeIcon,
-} from '@heroicons/react/24/outline';
+import { Camera, CheckCircle2, Clock, FileText, Mail, MapPin, MessageSquare, Phone, Sparkles, Truck, User, Wrench, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -79,7 +65,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                 <div className="flex justify-between items-start mb-6">
                                     <div>
                                         <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-foreground flex items-center gap-2">
-                                            {type === 'movement' ? <TruckIcon className="w-5 h-5 text-blue-500" /> : <WrenchScrewdriverIcon className="w-5 h-5 text-amber-500" />}
+                                            {type === 'movement' ? <Truck className="w-5 h-5 text-blue-500" /> : <Wrench className="w-5 h-5 text-amber-500" />}
                                             Tracking Progress
                                         </Dialog.Title>
                                         <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
@@ -90,14 +76,14 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button className="flex items-center gap-1.5 px-3 py-1.5 bg-muted hover:bg-muted/80 rounded-full text-xs font-medium text-foreground transition-colors">
-                                            <PhoneIcon className="w-3.5 h-3.5" />
+                                            <Phone className="w-3.5 h-3.5" />
                                             Contact Team
                                         </button>
                                         <button
                                             onClick={onClose}
                                             className="rounded-full p-1 hover:bg-muted/80 transition-colors"
                                         >
-                                            <XMarkIcon className="w-5 h-5 text-zinc-500" />
+                                            <X className="w-5 h-5 text-zinc-500" />
                                         </button>
                                     </div>
                                 </div>
@@ -105,11 +91,11 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                 {/* AI Forecast Section */}
                                 <div className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 border border-indigo-100 dark:border-indigo-800/30 rounded-xl p-4 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-4 opacity-5">
-                                        <SparklesIcon className="w-24 h-24 text-indigo-500" />
+                                        <Sparkles className="w-24 h-24 text-indigo-500" />
                                     </div>
                                     <div className="relative z-10 flex items-start gap-3">
                                         <div className="p-2 bg-card rounded-lg shadow-sm border border-indigo-100 dark:border-indigo-800/50">
-                                            <SparklesIcon className="w-5 h-5 text-indigo-500" />
+                                            <Sparkles className="w-5 h-5 text-indigo-500" />
                                         </div>
                                         <div>
                                             <h4 className="text-sm font-semibold text-indigo-900 dark:text-indigo-200 mb-1">AI Smart Forecast</h4>
@@ -122,7 +108,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                     98% Probability
                                                 </div>
                                                 <div className="flex items-center gap-1 text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                                                    <ClockIcon className="w-3.5 h-3.5" />
+                                                    <Clock className="w-3.5 h-3.5" />
                                                     ETA: 2:45 PM
                                                 </div>
                                             </div>
@@ -144,7 +130,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                         step.status === 'current' ? "border-blue-500 text-blue-500 animate-pulse" :
                                                             "border-zinc-300 dark:border-zinc-600 text-zinc-300 dark:text-zinc-600"
                                                 )}>
-                                                    {step.status === 'completed' ? <CheckCircleIcon className="w-5 h-5" /> :
+                                                    {step.status === 'completed' ? <CheckCircle2 className="w-5 h-5" /> :
                                                         step.status === 'current' ? <div className="w-2.5 h-2.5 rounded-full bg-blue-500" /> :
                                                             <div className="w-2.5 h-2.5 rounded-full bg-zinc-300 dark:bg-zinc-600" />}
                                                 </div>
@@ -164,7 +150,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                         </div>
                                                         {step.timestamp && (
                                                             <div className="flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap bg-muted/50 px-2 py-1 rounded border border-border">
-                                                                <ClockIcon className="w-3.5 h-3.5" />
+                                                                <Clock className="w-3.5 h-3.5" />
                                                                 {step.timestamp}
                                                             </div>
                                                         )}
@@ -175,13 +161,13 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                         <div className="flex flex-wrap gap-3 mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                                                             {step.actor && (
                                                                 <span className="flex items-center gap-1">
-                                                                    <UserIcon className="w-3.5 h-3.5" />
+                                                                    <User className="w-3.5 h-3.5" />
                                                                     {step.actor}
                                                                 </span>
                                                             )}
                                                             {step.location && (
                                                                 <span className="flex items-center gap-1">
-                                                                    <MapPinIcon className="w-3.5 h-3.5" />
+                                                                    <MapPin className="w-3.5 h-3.5" />
                                                                     {step.location}
                                                                 </span>
                                                             )}
@@ -194,9 +180,9 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                             {step.evidence.map((ev, idx) => (
                                                                 <div key={idx} className="bg-muted/50 rounded-lg p-3 border border-border flex items-start gap-3">
                                                                     <div className="shrink-0 mt-0.5">
-                                                                        {ev.type === 'photo' && <CameraIcon className="w-4 h-4 text-indigo-500" />}
-                                                                        {ev.type === 'signature' && <DocumentTextIcon className="w-4 h-4 text-blue-500" />}
-                                                                        {ev.type === 'note' && <DocumentTextIcon className="w-4 h-4 text-amber-500" />}
+                                                                        {ev.type === 'photo' && <Camera className="w-4 h-4 text-indigo-500" />}
+                                                                        {ev.type === 'signature' && <FileText className="w-4 h-4 text-blue-500" />}
+                                                                        {ev.type === 'note' && <FileText className="w-4 h-4 text-amber-500" />}
                                                                     </div>
                                                                     <div className="flex-1 min-w-0">
                                                                         <p className="text-xs font-medium text-foreground mb-1">{ev.label}</p>
@@ -244,7 +230,7 @@ export default function TrackingModal({ isOpen, onClose, title, trackingId, type
                                                                     onClick={() => setActiveCommentStep(step.id)}
                                                                     className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline"
                                                                 >
-                                                                    <ChatBubbleLeftRightIcon className="w-4 h-4" />
+                                                                    <MessageSquare className="w-4 h-4" />
                                                                     Add Comment
                                                                 </button>
                                                             )}

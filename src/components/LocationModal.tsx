@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon, BuildingOfficeIcon, MapPinIcon, UserIcon, CubeIcon } from '@heroicons/react/24/outline';
+import { Box, Building2, MapPin, User, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -91,7 +91,7 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                     {isEdit ? 'Edit Location' : 'Create Location'}
                                 </Dialog.Title>
                                 <button onClick={onClose} className="p-1 rounded-full hover:bg-accent text-muted-foreground transition-colors">
-                                    <XMarkIcon className="w-5 h-5" />
+                                    <X className="w-5 h-5" />
                                 </button>
                             </div>
 
@@ -108,7 +108,7 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                                 value={formData.name}
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                             />
-                                            <BuildingOfficeIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <Building2 className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                         </div>
                                     </div>
 
@@ -133,7 +133,7 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                                 value={formData.address}
                                                 onChange={e => setFormData({ ...formData, address: e.target.value })}
                                             />
-                                            <MapPinIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                                            <MapPin className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                         </div>
                                     </div>
 
@@ -148,7 +148,7 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                                     value={formData.manager}
                                                     onChange={e => setFormData({ ...formData, manager: e.target.value })}
                                                 />
-                                                <UserIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <User className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                             </div>
                                         </div>
                                         <div>
@@ -161,7 +161,7 @@ export default function LocationModal({ isOpen, onClose, onConfirm, location, ty
                                                     value={formData.capacity}
                                                     onChange={e => setFormData({ ...formData, capacity: e.target.value })}
                                                 />
-                                                <CubeIcon className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                                                <Box className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                                             </div>
                                         </div>
                                     </div>

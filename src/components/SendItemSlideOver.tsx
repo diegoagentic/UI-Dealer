@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PaperClipIcon, PlusIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Paperclip, Plus, Search, X } from 'lucide-react';
 import { SlideOver, SlideOverHeader, SlideOverTitle, SlideOverDescription, SlideOverBody } from 'strata-design-system';
 import { Button, Input } from 'strata-design-system';
 
@@ -100,7 +100,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                                         </span>
                                         <span className="text-foreground text-xs font-medium">{s.name}</span>
                                         <button onClick={() => toggleStakeholder(s.id)} className="text-muted-foreground hover:text-foreground transition-colors">
-                                            <XMarkIcon className="h-3 w-3" />
+                                            <X className="h-3 w-3" />
                                         </button>
                                     </span>
                                 ))}
@@ -109,7 +109,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
 
                         {/* Search */}
                         <div className="relative mb-2">
-                            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <input
                                 type="text"
                                 placeholder="Search stakeholders..."
@@ -155,7 +155,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                                 onClick={() => setShowAddNew(true)}
                                 className="mt-2 flex items-center gap-1.5 text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium transition-colors"
                             >
-                                <PlusIcon className="h-4 w-4" />
+                                <Plus className="h-4 w-4" />
                                 Add new recipient
                             </button>
                         ) : (
@@ -163,7 +163,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                                 <div className="flex items-center justify-between mb-1">
                                     <span className="text-xs font-semibold uppercase text-muted-foreground">New Recipient</span>
                                     <button onClick={() => setShowAddNew(false)} className="text-muted-foreground hover:text-foreground">
-                                        <XMarkIcon className="h-4 w-4" />
+                                        <X className="h-4 w-4" />
                                     </button>
                                 </div>
                                 <Input placeholder="Full name" value={newName} onChange={(e) => setNewName(e.target.value)} />
@@ -199,7 +199,7 @@ export default function SendItemSlideOver({ open, onClose, transactionType, tran
                     <div>
                         <label className="block text-sm font-medium text-foreground mb-1.5">Attachments</label>
                         <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-2.5">
-                            <PaperClipIcon className="h-4 w-4 text-muted-foreground" />
+                            <Paperclip className="h-4 w-4 text-muted-foreground" />
                             <span className="text-sm text-foreground">{label.replace(/\s/g, '_')}_{transactionId}_{itemId}.pdf</span>
                             <span className="ml-auto text-xs text-muted-foreground">Auto-attached</span>
                         </div>

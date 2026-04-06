@@ -1,26 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import {
-    PaperAirplaneIcon,
-    SparklesIcon,
-    ArrowPathIcon,
-    DocumentChartBarIcon,
-    CpuChipIcon,
-    ChevronLeftIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    ArchiveBoxIcon,
-    BeakerIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    XCircleIcon,
-    ChartBarIcon,
-    UsersIcon,
-    CommandLineIcon,
-    ExclamationTriangleIcon,
-    ExclamationCircleIcon,
-    PencilIcon,
-    PaperClipIcon
-} from '@heroicons/react/24/outline'
+import { AlertCircle, AlertTriangle, Archive, BarChart3, CheckCircle2, ChevronDown, ChevronLeft, ChevronUp, Clock, Cpu, FileBarChart, Paperclip, Pencil, RefreshCw, Send, Sparkles, Terminal, Users, XCircle } from 'lucide-react';
 import { Dialog } from '@headlessui/react'
 import Navbar from './components/Navbar'
 import { useTenant } from './TenantContext'
@@ -48,7 +27,7 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-medium">
-                    <ExclamationTriangleIcon className="w-5 h-5" />
+                    <AlertTriangle className="w-5 h-5" />
                     Found 3 discrepancies in recent shipments.
                 </div>
                 <ul className="list-disc pl-5 text-sm space-y-1 text-zinc-600 dark:text-zinc-300">
@@ -58,13 +37,13 @@ const DiscrepancyResolutionFlow = () => {
                 </ul>
                 <div className="flex gap-2 mt-2">
                     <button className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-zinc-900 dark:text-primary hover:bg-primary/20 text-xs font-medium rounded-lg transition-colors">
-                        <ArrowPathIcon className="w-3.5 h-3.5" /> Sync & Report
+                        <RefreshCw className="w-3.5 h-3.5" /> Sync & Report
                     </button>
                     <button
                         onClick={() => setStatus('requesting')}
                         className="flex items-center gap-1.5 px-3 py-1.5 border border-border text-muted-foreground text-xs font-medium rounded-lg hover:bg-accent transition-colors"
                     >
-                        <PencilIcon className="w-3.5 h-3.5" /> Request Changes
+                        <Pencil className="w-3.5 h-3.5" /> Request Changes
                     </button>
                 </div>
             </div>
@@ -84,7 +63,7 @@ const DiscrepancyResolutionFlow = () => {
                 />
                 <div className="flex justify-between items-center">
                     <button className="flex items-center gap-1 text-xs text-zinc-500 hover:text-primary transition-colors">
-                        <PaperClipIcon className="w-4 h-4" /> Attach File
+                        <Paperclip className="w-4 h-4" /> Attach File
                     </button>
                     <div className="flex gap-2">
                         <button
@@ -109,7 +88,7 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="flex flex-col gap-3 animate-in fade-in">
                 <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
-                    <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                    <RefreshCw className="w-4 h-4 animate-spin" />
                     <span>Requesting approval from Logistics Manager...</span>
                 </div>
             </div>
@@ -120,13 +99,13 @@ const DiscrepancyResolutionFlow = () => {
         return (
             <div className="flex flex-col gap-3 animate-in fade-in">
                 <div className="flex items-center gap-2 text-green-600 dark:text-green-400 font-medium">
-                    <CheckCircleIcon className="w-5 h-5" />
+                    <CheckCircle2 className="w-5 h-5" />
                     Changes approved. PO updated.
                 </div>
                 <div className="p-3 bg-card rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                            <DocumentChartBarIcon className="w-6 h-6" />
+                            <DocumentBarChart3 className="w-6 h-6" />
                         </div>
                         <div>
                             <p className="font-medium text-sm text-zinc-900 dark:text-white">PO_Revised_Final.pdf</p>
@@ -162,7 +141,7 @@ const PendingOrders = () => {
     if (activeOrders.length === 0) {
         return (
             <div className="flex items-center gap-2 text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
-                <CheckCircleIcon className="h-5 w-5" />
+                <CheckCircle2 className="h-5 w-5" />
                 <span className="font-medium">All pending orders processed!</span>
             </div>
         )
@@ -189,7 +168,7 @@ const PendingOrders = () => {
                                 <div className="text-xs text-zinc-500">{order.amount}</div>
                             </div>
                         </div>
-                        {expanded === order.id ? <ChevronUpIcon className="h-4 w-4 text-zinc-400" /> : <ChevronDownIcon className="h-4 w-4 text-zinc-400" />}
+                        {expanded === order.id ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
                     </button>
 
                     {expanded === order.id && (
@@ -200,13 +179,13 @@ const PendingOrders = () => {
                                     className="flex items-center gap-1 px-2 py-1 text-xs border border-red-200 text-red-600 rounded hover:bg-red-50"
                                     onClick={() => handleAction(order.id, 'reject')}
                                 >
-                                    <XCircleIcon className="h-3 w-3" /> Request Changes
+                                    <XCircle className="h-3 w-3" /> Request Changes
                                 </button>
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
                                     onClick={() => handleAction(order.id, 'approve')}
                                 >
-                                    <CheckCircleIcon className="h-3 w-3" /> Approve
+                                    <CheckCircle2 className="h-3 w-3" /> Approve
                                 </button>
                             </div>
                         </div>
@@ -266,10 +245,10 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
 
     // Activity Log State
     const [appActivities, setAppActivities] = useState<AppActivity[]>([
-        { id: 1, app: 'Inventory', text: "Assets updated in Inventory App (Order #ORD-2054)", time: "10:45 AM", icon: ArchiveBoxIcon },
-        { id: 2, app: 'Analytics', text: "Data extracted for Analytics Report", time: "10:15 AM", icon: ChartBarIcon },
-        { id: 3, app: 'CRM', text: "Client record updated 'TechDealer'", time: "09:30 AM", icon: UsersIcon },
-        { id: 4, app: 'Analytics', text: "Report created from Analytics", time: "09:00 AM", icon: DocumentChartBarIcon },
+        { id: 1, app: 'Inventory', text: "Assets updated in Inventory App (Order #ORD-2054)", time: "10:45 AM", icon: Archive },
+        { id: 2, app: 'Analytics', text: "Data extracted for Analytics Report", time: "10:15 AM", icon: BarChart3 },
+        { id: 3, app: 'CRM', text: "Client record updated 'TechDealer'", time: "09:30 AM", icon: Users },
+        { id: 4, app: 'Analytics', text: "Report created from Analytics", time: "09:00 AM", icon: DocumentBarChart3 },
     ])
 
     const [systemLogs, setSystemLogs] = useState<SystemLog[]>([
@@ -355,7 +334,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="flex flex-col gap-2">
                         <span className="flex items-center gap-2">
-                            <ArrowPathIcon className="w-4 h-4 animate-spin" />
+                            <RefreshCw className="w-4 h-4 animate-spin" />
                             Scanning recent orders for "TechDealer Solutions"...
                         </span>
                     </div>
@@ -386,7 +365,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="flex flex-col gap-2">
                         <span className="flex items-center gap-2">
-                            <SparklesIcon className="w-4 h-4 animate-pulse text-zinc-900 dark:text-primary" />
+                            <Sparkles className="w-4 h-4 animate-pulse text-zinc-900 dark:text-primary" />
                             Analyzing recent activity for "TechDealer Solutions"...
                         </span>
                     </div>
@@ -403,7 +382,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-medium">
-                            <DocumentChartBarIcon className="w-5 h-5" />
+                            <DocumentBarChart3 className="w-5 h-5" />
                             Analysis Complete. Found 3 orders under $1M.
                         </div>
                         <ul className="list-disc pl-5 text-sm space-y-1 text-zinc-600 dark:text-zinc-300">
@@ -438,17 +417,17 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                            <ArrowPathIcon className="w-4 h-4" />
+                            <RefreshCw className="w-4 h-4" />
                             <span>Syncing 3 records to Central DB... Done.</span>
                         </div>
                         <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
-                            <DocumentChartBarIcon className="w-4 h-4" />
+                            <DocumentBarChart3 className="w-4 h-4" />
                             <span>Generating Reconciliation Report... Done.</span>
                         </div>
                         <div className="mt-3 p-3 bg-card rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                                    <DocumentChartBarIcon className="w-6 h-6" />
+                                    <DocumentBarChart3 className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <p className="font-medium text-sm text-zinc-900 dark:text-white">Reconciliation_Report.pdf</p>
@@ -484,11 +463,11 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 content: (
                     <div className="space-y-2">
                         <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                            <CpuChipIcon className="w-4 h-4" />
+                            <Cpu className="w-4 h-4" />
                             <span>Logistics Provider "FastTrack" assigned.</span>
                         </div>
                         <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
-                            <PaperAirplaneIcon className="w-4 h-4" />
+                            <Send className="w-4 h-4" />
                             <span>Dispatch signal sent to warehouse. Order is now processing.</span>
                         </div>
                     </div>
@@ -506,7 +485,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 <div className="fixed inset-0 flex items-center justify-center p-4">
                     <Dialog.Panel className="w-full max-w-lg rounded-2xl bg-card p-6 shadow-xl border border-border">
                         <Dialog.Title className="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2 mb-4">
-                            <CommandLineIcon className="w-5 h-5 text-zinc-500" />
+                            <Terminal className="w-5 h-5 text-zinc-500" />
                             System Logs
                         </Dialog.Title>
                         <div className="h-[300px] overflow-y-auto space-y-3 pr-2">
@@ -546,11 +525,11 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                 <div className="flex items-center justify-between px-6 py-3 bg-background/80 backdrop-blur-xl border-b border-border z-10">
                     <div className="flex items-center gap-4">
                         <button onClick={onBack} className="p-1.5 rounded-lg hover:bg-accent text-muted-foreground transition-colors">
-                            <ChevronLeftIcon className="w-5 h-5" />
+                            <ChevronLeft className="w-5 h-5" />
                         </button>
                         <h1 className="text-sm font-bold flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
                             <div className="bg-primary text-zinc-900 p-1 rounded-md">
-                                <CpuChipIcon className="w-5 h-5" />
+                                <Cpu className="w-5 h-5" />
                             </div>
                             {currentTenant} Workspace
                         </h1>
@@ -567,7 +546,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                     title="Analyze Discrepancies"
                                 >
                                     <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                        <ExclamationTriangleIcon className="w-4 h-4" />
+                                        <AlertTriangle className="w-4 h-4" />
                                     </div>
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Analyze</span>
                                 </button>
@@ -577,7 +556,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                     title="Summarize Activity"
                                 >
                                     <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                        <SparklesIcon className="w-4 h-4" />
+                                        <Sparkles className="w-4 h-4" />
                                     </div>
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Summarize</span>
                                 </button>
@@ -587,7 +566,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                     title="Check Inventory"
                                 >
                                     <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                        <ArchiveBoxIcon className="w-4 h-4" />
+                                        <Archive className="w-4 h-4" />
                                     </div>
                                     <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Inventory</span>
                                 </button>
@@ -604,7 +583,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 title="Show Pending"
                             >
                                 <div className="text-amber-500 group-hover:text-amber-600 dark:text-amber-400 dark:group-hover:text-amber-300 transition-colors">
-                                    <ExclamationCircleIcon className="w-4 h-4" />
+                                    <AlertCircle className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">3 Pending</span>
                             </button>
@@ -614,7 +593,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 title="Show Urgent"
                             >
                                 <div className="text-red-500 group-hover:text-red-600 dark:text-red-400 dark:group-hover:text-red-300 transition-colors">
-                                    <ExclamationTriangleIcon className="w-4 h-4" />
+                                    <AlertTriangle className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-bold text-red-600 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors">1 Urgent</span>
                             </button>
@@ -625,7 +604,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 title="System Logs"
                             >
                                 <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                    <CommandLineIcon className="w-4 h-4" />
+                                    <Terminal className="w-4 h-4" />
                                 </div>
                                 <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Logs</span>
                             </button>
@@ -635,7 +614,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 title="Toggle Recent Activity"
                             >
                                 <div className={`transition-colors ${showActivity ? 'text-zinc-900 dark:text-primary' : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900'}`}>
-                                    <ClockIcon className="w-4 h-4" />
+                                    <Clock className="w-4 h-4" />
                                 </div>
                                 <span className={`text-[10px] font-medium transition-colors ${showActivity ? 'text-zinc-900 dark:text-primary' : 'text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900'}`}>Activity</span>
                             </button>
@@ -648,7 +627,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                     <div className={`${showActivity ? 'w-[280px] border-r' : 'w-0 border-r-0'} hidden md:flex flex-col border-border bg-background/50 backdrop-blur-xl transition-all duration-300 overflow-hidden`}>
                         <div className="p-4 border-b border-zinc-200 dark:border-white/10 min-w-[280px]">
                             <h3 className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
-                                <ClockIcon className="w-3.5 h-3.5" /> Recent Activity
+                                <Clock className="w-3.5 h-3.5" /> Recent Activity
                             </h3>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -689,7 +668,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                     `}>
                                         {msg.role === 'assistant' && (
                                             <div className="flex items-center gap-2 mb-2 text-zinc-900 dark:text-primary font-medium text-xs">
-                                                <SparklesIcon className="w-3 h-3" />
+                                                <Sparkles className="w-3 h-3" />
                                                 <span>AI Copilot</span>
                                             </div>
                                         )}
@@ -701,14 +680,14 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                         {msg.role === 'assistant' && msg.id === 'step-2' && (
                                             <div className="mt-4 flex gap-2">
                                                 <button onClick={handleSyncAndReport} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-zinc-900 dark:text-primary hover:bg-primary/20 text-xs font-medium rounded-lg transition-colors">
-                                                    <ArrowPathIcon className="w-3.5 h-3.5" /> Sync & Report
+                                                    <RefreshCw className="w-3.5 h-3.5" /> Sync & Report
                                                 </button>
                                             </div>
                                         )}
                                         {msg.role === 'assistant' && msg.id === 'summary-step-2' && (
                                             <div className="mt-4 flex gap-2">
                                                 <button onClick={handleAssignAndDispatch} className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-zinc-900 dark:text-primary hover:bg-primary/20 text-xs font-medium rounded-lg transition-colors">
-                                                    <PaperAirplaneIcon className="w-3.5 h-3.5" /> Assign & Execute
+                                                    <Send className="w-3.5 h-3.5" /> Assign & Execute
                                                 </button>
                                             </div>
                                         )}
@@ -735,7 +714,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                 <div className="absolute inset-0 bg-primary/10 rounded-full blur-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                                 <div className="relative flex items-center gap-2 bg-card p-2 pr-2 rounded-full border border-border shadow-sm transition-all focus-within:ring-2 ring-primary/20 focus-within:border-primary">
                                     <div className="pl-3 text-zinc-400">
-                                        <SparklesIcon className="w-5 h-5" />
+                                        <Sparkles className="w-5 h-5" />
                                     </div>
                                     <input
                                         type="text"
@@ -753,7 +732,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                             : 'bg-zinc-100 dark:bg-white/10 text-zinc-400 scale-95'
                                             }`}
                                     >
-                                        <PaperAirplaneIcon className="w-5 h-5" />
+                                        <Send className="w-5 h-5" />
                                     </button>
                                 </div>
                             </div>

@@ -1,14 +1,5 @@
 import { useState, useEffect } from 'react'
-import {
-    CalendarIcon,
-    MapPinIcon,
-    PlusIcon,
-    TrashIcon,
-    UserIcon,
-    DocumentTextIcon,
-    BuildingOfficeIcon,
-    TruckIcon
-} from '@heroicons/react/24/outline'
+import { Building2, Calendar, FileText, MapPin, Plus, Trash2, Truck, User } from 'lucide-react';
 import Select from '../Select'
 import { clsx } from 'clsx'
 
@@ -136,7 +127,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                     {/* Customer & Project Info */}
                     <section className="bg-card rounded-xl border border-border p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-6">
-                            <UserIcon className="w-5 h-5 text-primary" />
+                            <User className="w-5 h-5 text-primary" />
                             <h3 className="text-lg font-semibold text-foreground">Customer Information</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -161,7 +152,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-foreground">PO Number</label>
                                 <div className="relative">
-                                    <DocumentTextIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                    <FileText className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <input
                                         type="text"
                                         placeholder="e.g. PO-2024-001"
@@ -174,7 +165,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                             <div className="space-y-2 md:col-span-2">
                                 <label className="text-sm font-medium text-foreground">Project Reference</label>
                                 <div className="relative">
-                                    <BuildingOfficeIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                    <Building2 className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <input
                                         type="text"
                                         placeholder="Project Name or ID"
@@ -190,14 +181,14 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                     {/* Logistics */}
                     <section className="bg-card rounded-xl border border-border p-6 shadow-sm">
                         <div className="flex items-center gap-2 mb-6">
-                            <TruckIcon className="w-5 h-5 text-amber-500" />
+                            <Truck className="w-5 h-5 text-amber-500" />
                             <h3 className="text-lg font-semibold text-foreground">Logistics & Delivery</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-foreground">Requested Delivery Date</label>
                                 <div className="relative">
-                                    <CalendarIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                                    <Calendar className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                                     <input
                                         type="date"
                                         className="w-full pl-9 pr-4 py-2 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
@@ -209,7 +200,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-foreground">Shipping Address</label>
                                 <div className="relative">
-                                    <MapPinIcon className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
+                                    <MapPin className="w-4 h-4 absolute left-3 top-3 text-muted-foreground" />
                                     <textarea
                                         rows={2}
                                         placeholder="Enter full shipping address"
@@ -230,7 +221,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                                 onClick={handleAddItem}
                                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground hover:bg-secondary/80 transition-colors text-sm font-medium"
                             >
-                                <PlusIcon className="w-4 h-4" />
+                                <Plus className="w-4 h-4" />
                                 Add Item
                             </button>
                         </div>
@@ -296,7 +287,7 @@ export default function OrderCreationForm({ initialData, onSubmit, onCancel, isT
                                                         className="p-1 rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                                                         title="Remove Item"
                                                     >
-                                                        <TrashIcon className="w-4 h-4" />
+                                                        <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 </td>
                                             </tr>

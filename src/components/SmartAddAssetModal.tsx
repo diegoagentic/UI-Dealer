@@ -1,17 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    XMarkIcon,
-    DocumentTextIcon,
-    QrCodeIcon,
-    TableCellsIcon,
-    PencilSquareIcon,
-    CheckCircleIcon,
-
-    ArrowPathIcon,
-    CameraIcon,
-    ChevronRightIcon,
-    ChevronLeftIcon
-} from '@heroicons/react/24/outline';
+import { Camera, CheckCircle2, ChevronLeft, ChevronRight, FileText, QrCode, RefreshCw, SquarePen, Table, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -202,10 +190,10 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
         return (
             <div className="flex p-1 bg-muted rounded-xl mb-6">
                 {[
-                    { id: 'manual', label: 'Manual', icon: PencilSquareIcon, tooltip: 'Fill in asset details manually' },
-                    { id: 'template', label: 'Template', icon: DocumentTextIcon, tooltip: 'Use a pre-defined template' },
-                    { id: 'csv', label: 'CSV', icon: TableCellsIcon, tooltip: 'Bulk upload via CSV file' },
-                    { id: 'qr', label: 'QR', icon: QrCodeIcon, tooltip: 'Scan asset QR code' },
+                    { id: 'manual', label: 'Manual', icon: SquarePen, tooltip: 'Fill in asset details manually' },
+                    { id: 'template', label: 'Template', icon: FileText, tooltip: 'Use a pre-defined template' },
+                    { id: 'csv', label: 'CSV', icon: Table, tooltip: 'Bulk upload via CSV file' },
+                    { id: 'qr', label: 'QR', icon: QrCode, tooltip: 'Scan asset QR code' },
                 ].map(tab => (
                     <div key={tab.id} className="relative flex-1 group/tooltip">
                         <button
@@ -234,10 +222,10 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
     const renderModeSelection = () => (
         <div className="grid grid-cols-2 gap-4 animate-in fade-in zoom-in-95 duration-300">
             {[
-                { id: 'manual', label: 'Manual Entry', icon: PencilSquareIcon, desc: 'Fill in asset details manually step-by-step.' },
-                { id: 'template', label: 'Use Template', icon: DocumentTextIcon, desc: 'Upload a spec sheet or invoice to extract data.' },
-                { id: 'csv', label: 'Upload CSV', icon: TableCellsIcon, desc: 'Bulk create assets using a spreadsheet file.' },
-                { id: 'qr', label: 'Scan QR Code', icon: QrCodeIcon, desc: 'Quickly add an asset by scanning its label.' },
+                { id: 'manual', label: 'Manual Entry', icon: SquarePen, desc: 'Fill in asset details manually step-by-step.' },
+                { id: 'template', label: 'Use Template', icon: FileText, desc: 'Upload a spec sheet or invoice to extract data.' },
+                { id: 'csv', label: 'Upload CSV', icon: Table, desc: 'Bulk create assets using a spreadsheet file.' },
+                { id: 'qr', label: 'Scan QR Code', icon: QrCode, desc: 'Quickly add an asset by scanning its label.' },
             ].map((mode) => (
                 <button
                     key={mode.id}
@@ -267,7 +255,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-muted text-muted-foreground border border-border"
                         )}>
-                            {currentStep > step.id ? <CheckCircleIcon className="w-5 h-5" /> : step.id}
+                            {currentStep > step.id ? <CheckCircle2 className="w-5 h-5" /> : step.id}
                         </div>
                         <span className={cn(
                             "absolute top-10 text-[10px] whitespace-nowrap font-medium transition-colors duration-300",
@@ -498,7 +486,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                 : "text-zinc-500 hover:text-foreground hover:bg-muted"
                         )}
                     >
-                        <ChevronLeftIcon className="w-4 h-4" />
+                        <ChevronLeft className="w-4 h-4" />
                         Previous
                     </button>
                     <button
@@ -506,7 +494,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                         className="px-6 py-2 bg-primary text-zinc-900 text-sm font-medium rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all flex items-center gap-2"
                     >
                         {currentStep === 4 ? 'Create Asset' : 'Next'}
-                        {currentStep !== 4 && <ChevronRightIcon className="w-4 h-4" />}
+                        {currentStep !== 4 && <ChevronRight className="w-4 h-4" />}
                     </button>
                 </div>
             </div>
@@ -525,7 +513,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                     >
                         <div className="flex items-center justify-between w-full mb-2">
                             <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                                <DocumentTextIcon className="w-5 h-5" />
+                                <FileText className="w-5 h-5" />
                             </span>
                             <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-full">{template.category}</span>
                         </div>
@@ -549,7 +537,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                             onChange={handleCsvUpload}
                             accept=".csv"
                         />
-                        <TableCellsIcon className="w-16 h-16 text-zinc-300 mx-auto mb-4 group-hover:text-primary transition-colors" />
+                        <Table className="w-16 h-16 text-zinc-300 mx-auto mb-4 group-hover:text-primary transition-colors" />
                         <h3 className="text-lg font-semibold text-foreground">Upload CSV File</h3>
                         <p className="text-sm text-muted-foreground">Drag and drop or click to browse</p>
                         <button className="mt-4 text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-300 hover:underline z-10 relative">
@@ -563,7 +551,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
 
             {csvState === 'validating' && (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
-                    <ArrowPathIcon className="w-8 h-8 text-primary animate-spin" />
+                    <RefreshCw className="w-8 h-8 text-primary animate-spin" />
                     <p className="text-sm font-medium text-zinc-600">Validating records...</p>
                 </div>
             )}
@@ -572,7 +560,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                 <div className="h-full flex flex-col">
                     <div className="flex-1 space-y-6 pt-4">
                         <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-start gap-3">
-                            <CheckCircleIcon className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
+                            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
                             <div>
                                 <h4 className="text-sm font-semibold text-green-800 dark:text-green-300">Validation Successful</h4>
                                 <p className="text-xs text-green-600 dark:text-green-400 mt-1">Found 7 rows. 6 valid assets ready to create.</p>
@@ -632,7 +620,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                     <div className="w-full max-w-xs mx-auto aspect-square bg-black rounded-3xl relative overflow-hidden flex items-center justify-center group cursor-pointer" onClick={startQrScan}>
                         <div className="absolute inset-0 opacity-50 bg-[url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=400')] bg-cover bg-center mix-blend-overlay"></div>
                         <div className="relative z-10 w-16 h-16 border-2 border-white/50 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                            <CameraIcon className="w-8 h-8 text-white" />
+                            <Camera className="w-8 h-8 text-white" />
                         </div>
                         <div className="absolute bottom-4 text-white/80 text-xs font-medium">Click to activate camera</div>
                     </div>
@@ -657,7 +645,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
 
                     <div className="absolute bottom-8 left-0 right-0 text-center">
                         <span className="inline-flex items-center gap-2 px-3 py-1 bg-black/60 backdrop-blur rounded-full text-white text-xs">
-                            <ArrowPathIcon className="w-3 h-3 animate-spin" />
+                            <RefreshCw className="w-3 h-3 animate-spin" />
                             Detecting QR code...
                         </span>
                     </div>
@@ -692,7 +680,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                                 // Hidden functionality as Selection mode is bypassed
                                 style={{ display: 'none' }}
                             >
-                                <ChevronLeftIcon className="w-5 h-5" />
+                                <ChevronLeft className="w-5 h-5" />
                             </button>
                         )}
                         <div>
@@ -703,7 +691,7 @@ export default function SmartAddAssetModal({ isOpen, onClose, onConfirm }: Smart
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 text-muted-foreground hover:text-zinc-600 hover:bg-muted rounded-full transition-colors">
-                        <XMarkIcon className="w-6 h-6" />
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
 

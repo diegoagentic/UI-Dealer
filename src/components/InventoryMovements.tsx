@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
 import AssignTeamModal from './AssignTeamModal';
 import TrackingModal, { type TrackingStep } from './TrackingModal';
-import {
-    MapPinIcon,
-    ArrowRightIcon,
-    CalendarIcon,
-    UserIcon,
-    ClockIcon,
-    CheckCircleIcon,
-    ExclamationCircleIcon,
-    TruckIcon,
-    ChevronDownIcon,
-    ChevronUpIcon,
-    ChartBarIcon,
-    CurrencyDollarIcon,
-    PresentationChartLineIcon
-} from '@heroicons/react/24/outline';
+import { AlertCircle, ArrowRight, BarChart3, Calendar, CheckCircle2, ChevronDown, ChevronUp, Clock, DollarSign, MapPin, Presentation, Truck, User } from 'lucide-react';
 import {
     BarChart,
     Bar,
@@ -226,12 +212,12 @@ export default function InventoryMovements() {
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'Ordered': return <ClockIcon className="w-3 h-3" />;
-            case 'Assigned': return <UserIcon className="w-3 h-3" />;
-            case 'Scheduled': return <CalendarIcon className="w-3 h-3" />;
-            case 'In-Progress': return <TruckIcon className="w-3 h-3" />;
-            case 'Completed': return <CheckCircleIcon className="w-3 h-3" />;
-            default: return <ClockIcon className="w-3 h-3" />;
+            case 'Ordered': return <Clock className="w-3 h-3" />;
+            case 'Assigned': return <User className="w-3 h-3" />;
+            case 'Scheduled': return <Calendar className="w-3 h-3" />;
+            case 'In-Progress': return <Truck className="w-3 h-3" />;
+            case 'Completed': return <CheckCircle2 className="w-3 h-3" />;
+            default: return <Clock className="w-3 h-3" />;
         }
     }
 
@@ -239,7 +225,7 @@ export default function InventoryMovements() {
         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Legend */}
             <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800 rounded-lg p-3 flex items-start gap-3">
-                <ExclamationCircleIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                     Click on any movement card to view detailed analytics, cost breakdown, and SLA tracking for Product Owners.
                 </p>
@@ -279,14 +265,14 @@ export default function InventoryMovements() {
                                         <div className="space-y-1">
                                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">From</p>
                                             <div className="flex items-center gap-2 text-sm text-foreground">
-                                                <MapPinIcon className="w-4 h-4 text-zinc-400" />
+                                                <MapPin className="w-4 h-4 text-zinc-400" />
                                                 <span className="font-medium">{move.fromLocation}</span>
                                             </div>
                                         </div>
                                         <div className="space-y-1">
                                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">To</p>
                                             <div className="flex items-center gap-2 text-sm text-foreground">
-                                                <ArrowRightIcon className="w-4 h-4 text-zinc-400" />
+                                                <ArrowRight className="w-4 h-4 text-zinc-400" />
                                                 <span className="font-medium">{move.toLocation}</span>
                                             </div>
                                         </div>
@@ -314,7 +300,7 @@ export default function InventoryMovements() {
                                         <button
                                             onClick={(e) => handleAssignClick(move, e)}
                                             className="flex-1 lg:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm shadow-primary/20">
-                                            <UserIcon className="w-4 h-4" />
+                                            <User className="w-4 h-4" />
                                             {move.assignedTeam ? 'Reassign' : 'Assign'}
                                         </button>
                                         <button
@@ -336,7 +322,7 @@ export default function InventoryMovements() {
                                     <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="p-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg">
-                                                <CurrencyDollarIcon className="w-4 h-4" />
+                                                <DollarSign className="w-4 h-4" />
                                             </div>
                                             <h4 className="text-sm font-semibold text-foreground">Est. Cost Breakdown</h4>
                                         </div>
@@ -376,7 +362,7 @@ export default function InventoryMovements() {
                                     <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg">
-                                                <ClockIcon className="w-4 h-4" />
+                                                <Clock className="w-4 h-4" />
                                             </div>
                                             <h4 className="text-sm font-semibold text-foreground">SLA Performance (Hrs)</h4>
                                         </div>
@@ -404,7 +390,7 @@ export default function InventoryMovements() {
                                     <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
                                         <div className="flex items-center gap-2 mb-4">
                                             <div className="p-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg">
-                                                <PresentationChartLineIcon className="w-4 h-4" />
+                                                <Presentation className="w-4 h-4" />
                                             </div>
                                             <h4 className="text-sm font-semibold text-foreground">Movement History (6 Mo)</h4>
                                         </div>
