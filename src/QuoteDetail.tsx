@@ -1,4 +1,4 @@
-import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Copy, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, Printer, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useState } from 'react'
@@ -270,7 +270,47 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-
+                {/* Quick Actions Bar — aligned with Figma UI-Reps Quote Detail */}
+                <div className="flex items-center justify-center gap-1 bg-card rounded-xl border border-border p-1.5 shadow-sm">
+                    <button className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
+                        <div className="w-px h-4 bg-border" />
+                    </button>
+                    <button
+                        onClick={() => { triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success'); }}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Copy className="h-4 w-4" />
+                        <span className="hidden sm:inline">Duplicate</span>
+                    </button>
+                    <button
+                        onClick={() => { triggerToast('Preparing Print', 'Opening print preview...', 'info'); }}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Printer className="h-4 w-4" />
+                        <span className="hidden sm:inline">Print</span>
+                    </button>
+                    <button
+                        onClick={() => setIsEditOpen(true)}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <SquarePen className="h-4 w-4" />
+                        <span className="hidden sm:inline">Edit</span>
+                    </button>
+                    <button
+                        onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); }}
+                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Download className="h-4 w-4" />
+                        <span className="hidden sm:inline">Download PDF</span>
+                    </button>
+                    <button
+                        onClick={() => setIsSendOpen(true)}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand-300 dark:bg-brand-500 text-zinc-900 hover:bg-brand-400 dark:hover:bg-brand-600/50 rounded-lg transition-colors shadow-sm"
+                    >
+                        <Send className="h-4 w-4" />
+                        Send to Customer
+                    </button>
+                </div>
 
                 {/* Main Content Area */}
                 <div className="flex flex-col">
@@ -419,7 +459,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <DocumentBarChart3 className="h-4 w-4" title="Preview Document" />
+                                                    <FileBarChart className="h-4 w-4" title="Preview Document" />
                                                 </button>
                                                 <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
                                                     <SquarePen className="h-4 w-4" />

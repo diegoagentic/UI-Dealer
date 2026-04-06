@@ -11,7 +11,7 @@ interface QuoteSetupModalProps {
 
 const AVAILABLE_RULES = [
     { id: 'margin', name: 'Margin Protection', desc: 'Enforce min 20% margin', icon: ShieldCheck },
-    { id: 'contract', name: 'Contract Compliance', desc: 'Validates against master agreement', icon: DocumentCheck },
+    { id: 'contract', name: 'Contract Compliance', desc: 'Validates against master agreement', icon: FileCheck },
     { id: 'approval', name: 'Force Approval > $10k', desc: 'Requires manager sign-off', icon: AlertTriangle },
     { id: 'finishes', name: 'Standard Finishes Only', desc: 'Restrict custom finish options', icon: Scale },
 ];

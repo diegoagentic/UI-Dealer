@@ -18,7 +18,7 @@ export default function WarrantyClaimArtifact({ data }: { data: any }) {
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 flex flex-col gap-3 animate-in fade-in zoom-in duration-300">
                 <div className="flex items-start gap-3">
                     <div className="p-1 bg-green-100 dark:bg-green-900/40 rounded-full text-green-600 dark:text-green-400">
-                        <ClipboardDocumentCheck className="w-5 h-5" />
+                        <ClipboardCheck className="w-5 h-5" />
                     </div>
                     <div>
                         <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm">Claim Initialized</h4>
@@ -76,7 +76,7 @@ export default function WarrantyClaimArtifact({ data }: { data: any }) {
                     onClick={handleDraft}
                     className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2"
                 >
-                    <ClipboardDocumentCheck className="w-4 h-4" />
+                    <ClipboardCheck className="w-4 h-4" />
                     Draft Claim Form
                 </button>
             </div>

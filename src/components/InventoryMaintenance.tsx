@@ -239,7 +239,7 @@ export default function InventoryMaintenance() {
                     {expandedIds.has(task.id) && (
                         <div className="border-t border-border bg-muted/30 p-6 animate-in slide-in-from-top-2 duration-300">
                             <h4 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
-                                <ClipboardDocumentCheck className="w-4 h-4 text-primary" />
+                                <ClipboardCheck className="w-4 h-4 text-primary" />
                                 Service History & Audit Trail
                             </h4>
 

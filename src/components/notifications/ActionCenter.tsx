@@ -60,7 +60,7 @@ export default function ActionCenter() {
             id: 'approval',
             label: 'Approvals',
             count: mockNotifications.filter(n => n.type === 'approval' && n.unread).length,
-            icon: ClipboardDocumentCheck,
+            icon: ClipboardCheck,
             colorTheme: {
                 activeBg: 'bg-blue-500/15',
                 activeText: 'text-blue-500',

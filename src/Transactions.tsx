@@ -110,7 +110,7 @@ const quotesSummary = {
 const acksSummary = {
     pending_acks: { label: 'Pending Acks', value: '8', sub: 'Awaiting vendor', icon: <Clock className="w-5 h-5" />, color: 'orange' },
     discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <AlertTriangle className="w-5 h-5" />, color: 'red' },
-    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardDocumentCheck className="w-5 h-5" />, color: 'green' },
+    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardCheck className="w-5 h-5" />, color: 'green' },
     avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <Calendar className="w-5 h-5" />, color: 'blue' },
     on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <TrendingUp className="w-5 h-5" />, color: 'purple' },
 }
@@ -392,7 +392,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
                             )}
                         >
-                            <ClipboardDocumentCheck className="w-4 h-4" />
+                            <ClipboardCheck className="w-4 h-4" />
                             Acknowledgments
                         </button>
                     </div>

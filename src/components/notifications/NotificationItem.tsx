@@ -7,7 +7,7 @@ const PriorityIcon = ({ priority, type }: { priority: Notification['priority'], 
     if (type === 'discrepancy') return <AlertTriangle className="w-4 h-4" />;
     if (type === 'payment') return <CreditCard className="w-4 h-4" />;
     if (type === 'invoice') return <FileText className="w-4 h-4" />;
-    if (type === 'approval') return <ClipboardDocumentCheck className="w-4 h-4" />;
+    if (type === 'approval') return <ClipboardCheck className="w-4 h-4" />;
     if (type === 'announcement') return <Megaphone className="w-4 h-4" />;
     if (type === 'live_chat') return <MessageSquare className="w-4 h-4" />;
 

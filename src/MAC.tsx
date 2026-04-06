@@ -55,7 +55,7 @@ export default function MAC({ onLogout, onNavigateToDetail, onNavigateToWorkspac
                 {/* Tabs */}
                 <div className="flex gap-1 bg-card/50 p-1 rounded-lg w-fit overflow-x-auto max-w-full border border-zinc-200 dark:border-zinc-800">
                     {[
-                        { id: 'requests', label: 'Requests', count: 12, icon: ClipboardDocumentCheck },
+                        { id: 'requests', label: 'Requests', count: 12, icon: ClipboardCheck },
                         { id: 'movements', label: 'Movements', count: 4, icon: RefreshCcw },
                         { id: 'maintenance', label: 'Maintenance', count: 3, icon: Wrench },
                         { id: 'punchlist', label: 'Punch List', count: 3, icon: AlertTriangle }

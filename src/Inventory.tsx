@@ -498,7 +498,7 @@ export default function Inventory({ onLogout, onNavigateToDetail, onNavigateToWo
                             {[
                                 { icon: <QrCode className="w-5 h-5" />, label: "Scan Item" },
                                 { icon: <RefreshCcw className="w-5 h-5" />, label: "Quick Transfer", onClick: () => setIsQuickMovementsModalOpen(true) },
-                                { icon: <ClipboardDocumentCheck className="w-5 h-5" />, label: "Start Audit" },
+                                { icon: <ClipboardCheck className="w-5 h-5" />, label: "Start Audit" },
                                 { icon: <Plus className="w-5 h-5" />, label: "Add Stock", onClick: () => setIsAddAssetModalOpen(true) },
                             ].map((action, i) => (
                                 <button key={i} onClick={action.onClick} className="p-2 rounded-lg hover:bg-brand-50 dark:hover:bg-brand-500/15 text-muted-foreground hover:text-foreground transition-colors relative group" title={action.label}>

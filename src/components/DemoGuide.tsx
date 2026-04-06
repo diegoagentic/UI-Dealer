@@ -25,7 +25,7 @@ export default function DemoGuide({ isOpen, onClose, onNavigate }: DemoGuideProp
         {
             title: "PO vs ACK Discrepancy",
             description: "AI Assistant resolution flow for acknowledgment exceptions (ship date & finish substitution).",
-            icon: DocumentCheck,
+            icon: FileCheck,
             color: "text-amber-500",
             bg: "bg-amber-50 dark:bg-amber-500/10",
             action: () => {

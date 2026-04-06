@@ -102,7 +102,7 @@ const DiscrepancyResolutionFlow = () => {
                 <div className="p-3 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                            <DocumentBarChart3 className="w-6 h-6" />
+                            <FileBarChart className="w-6 h-6" />
                         </div>
                         <div>
                             <p className="font-medium text-sm text-zinc-900 dark:text-white">PO_Revised_Final.pdf</p>
@@ -233,7 +233,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
         { id: 1, app: 'Inventory', text: "Assets updated in Inventory App (Order #ORD-2054)", time: "10:45 AM", icon: Archive },
         { id: 2, app: 'Analytics', text: "Data extracted for Analytics Report", time: "10:15 AM", icon: BarChart3 },
         { id: 3, app: 'CRM', text: "Client record updated 'TechDealer'", time: "09:30 AM", icon: Users },
-        { id: 4, app: 'Analytics', text: "Report created from Analytics", time: "09:00 AM", icon: DocumentBarChart3 },
+        { id: 4, app: 'Analytics', text: "Report created from Analytics", time: "09:00 AM", icon: FileBarChart },
     ])
 
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -357,7 +357,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                 content: (
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-medium">
-                            <DocumentBarChart3 className="w-5 h-5" />
+                            <FileBarChart className="w-5 h-5" />
                             Analysis Complete. Found 3 orders under $1M.
                         </div>
                         <ul className="list-disc pl-5 text-sm space-y-1 text-zinc-600 dark:text-zinc-300">
@@ -396,13 +396,13 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                             <span>Syncing 3 records to Central DB... Done.</span>
                         </div>
                         <div className="flex items-center gap-2 text-zinc-900 dark:text-primary">
-                            <DocumentBarChart3 className="w-4 h-4" />
+                            <FileBarChart className="w-4 h-4" />
                             <span>Generating Reconciliation Report... Done.</span>
                         </div>
                         <div className="mt-3 p-3 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                                    <DocumentBarChart3 className="w-6 h-6" />
+                                    <FileBarChart className="w-6 h-6" />
                                 </div>
                                 <div>
                                     <p className="font-medium text-sm text-zinc-900 dark:text-white">Reconciliation_Report.pdf</p>
