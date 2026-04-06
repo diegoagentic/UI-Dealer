@@ -683,7 +683,7 @@ export default function Workspace({ onBack, onLogout, onNavigateToWorkspace, onN
                                     <div className={`
                                         max-w-[85%] sm:max-w-[70%] rounded-2xl p-4 shadow-sm backdrop-blur-sm border
                                         ${msg.role === 'user'
-                                            ? 'bg-brand-400 text-primary-foreground rounded-br-none border-primary'
+                                            ? 'bg-brand-300 dark:bg-brand-500 text-primary-foreground rounded-br-none border-primary'
                                             : 'bg-card text-card-foreground rounded-bl-none border-border'
                                         }
                                     `}>

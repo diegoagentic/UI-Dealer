@@ -774,7 +774,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         <div className={cn(
                                                             "p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
                                                             msg.type === 'user'
-                                                                ? "bg-brand-400 text-primary-foreground rounded-tr-sm"
+                                                                ? "bg-brand-300 dark:bg-brand-500 text-primary-foreground rounded-tr-sm"
                                                                 : "bg-card border border-border rounded-tl-sm text-foreground"
                                                         )}>
                                                             {msg.content}
