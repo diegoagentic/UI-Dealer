@@ -147,7 +147,7 @@ export default function OrderSimulationArtifact({ onBack, onGeneratePO }: OrderS
 
                         {/* Interactive Visual Document Layout */}
                         <div className="flex-1 p-8 overflow-y-auto bg-zinc-50 dark:bg-zinc-950/50 flex flex-col items-center">
-                            <div className="w-full max-w-md bg-white border border-zinc-200 shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg p-8 rounded-sm">
+                            <div className="w-full max-w-md bg-card border border-border shadow-md transform transition-all hover:-translate-y-1 hover:shadow-lg p-8 rounded-sm">
                                 {activeRole === 'manufacturer' && (
                                     <div className="text-zinc-900 text-[10px] space-y-4">
                                         <div className="flex justify-between items-start border-b border-zinc-300 pb-4 mb-4">

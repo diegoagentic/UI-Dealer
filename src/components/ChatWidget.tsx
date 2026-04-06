@@ -173,7 +173,7 @@ const PendingOrders = () => {
                 <span className="text-sm font-semibold text-zinc-500">Pending Review ({activeOrders.length})</span>
             </div>
             {activeOrders.map(order => (
-                <div key={order.id} className="border border-zinc-200 rounded-lg bg-white overflow-hidden shadow-sm">
+                <div key={order.id} className="border border-zinc-200 dark:border-zinc-700 rounded-lg bg-card overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleExpand(order.id)}
                         className="w-full flex items-center justify-between p-3 hover:bg-zinc-50 transition-colors"
