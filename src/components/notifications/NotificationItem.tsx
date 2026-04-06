@@ -110,7 +110,7 @@ export default function NotificationItem({ notification, onActionClick }: { noti
                             "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm",
                             action.primary
                                 ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
-                                : "bg-muted text-zinc-900 dark:text-gray-200 hover:bg-accent",
+                                : "bg-muted text-zinc-900 dark:text-zinc-200 hover:bg-accent",
                             actionState[i] === 'Sent!' && "!bg-green-500 !text-white"
                         )}
                         onClick={() => handleActionClick(action.label, i)}

@@ -54,7 +54,7 @@ const recentOrders = [
     { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Order Received", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
     { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20", location: "London" },
     { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Ready to Ship", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20", location: "Austin" },
-    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700", location: "Berlin" },
+    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-zinc-100 text-zinc-700", location: "Berlin" },
     { id: "#ORD-2051", customer: "City Builders", client: "City Builders", project: "City Center", amount: "$120,000", status: "Order Received", date: "Jan 05, 2026", initials: "CB", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
     { id: "#ORD-2050", customer: "Modern Homes", client: "Modern Homes", project: "Residential A", amount: "$85,000", status: "Acknowledgement", date: "Jan 02, 2026", initials: "MH", statusColor: "bg-blue-50 text-blue-700", location: "Austin" },
     { id: "#ORD-2049", customer: "Coastal Props", client: "Coastal Props", project: "Beach House", amount: "$210,000", status: "In Production", date: "Dec 10, 2025", initials: "CP", statusColor: "bg-indigo-50 text-indigo-700", location: "London" },
@@ -446,7 +446,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                                 {/* Quick Actions for Quotes */}
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Quick Actions:</span>
+                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
                                         { icon: <PlusIcon className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
                                         { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
@@ -469,7 +469,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             {Object.entries(quotesSummary).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                                     <div
-                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
+                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
                                                         title={data.label}
                                                     >
                                                         {data.icon}
@@ -501,8 +501,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                     >
-                                        <ChevronDownIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
-                                        <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
+                                        <ChevronDownIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+                                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                     </button>
                                 </div>
                             </>
@@ -549,7 +549,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                                 {/* Quick Actions for Acks */}
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Quick Actions:</span>
+                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
                                         { icon: <CloudArrowUpIcon className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
                                         { icon: <DocumentTextIcon className="w-5 h-5" />, label: "Export Acknowledgement", action: () => handleExportSIF('Acknowledgement') },
@@ -572,7 +572,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             {Object.entries(acksSummary).map(([key, data]) => (
                                                 <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                                     <div
-                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
+                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
                                                         title={data.label}
                                                     >
                                                         {data.icon}
@@ -608,8 +608,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onClick={() => setShowMetrics(true)}
                                         className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                     >
-                                        <ChevronDownIcon className="w-4 h-4 text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
-                                        <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
+                                        <ChevronDownIcon className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
+                                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
                                     </button>
                                 </div>
                             </>
@@ -659,7 +659,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 </div>
                                 {/* Quick Actions below grid when expanded */}
                                 <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Quick Actions:</span>
+                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                                     {[
                                         { icon: <PlusIcon className="w-5 h-5" />, label: "New Order" },
                                         { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
@@ -695,7 +695,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                 {/* Icon with Floating Tooltip */}
                                                 {/* Icon with Floating Tooltip */}
                                                 <div
-                                                    className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-card'}`}
+                                                    className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
                                                     title={data.label}
                                                 >
                                                     {data.icon}
@@ -756,10 +756,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     onClick={() => setShowMetrics(true)}
                                     className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
                                 >
-                                    <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                                    <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                                         <ChevronDownIcon className="w-4 h-4" />
                                     </div>
-                                    <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
+                                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
                                 </button>
                             </div>
                         )}

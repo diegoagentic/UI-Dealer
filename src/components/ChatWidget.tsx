@@ -50,7 +50,7 @@ const DiscrepancyResolutionFlow = () => {
                     <ExclamationTriangleIcon className="w-5 h-5" />
                     Found 3 discrepancies in recent shipments.
                 </div>
-                <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600 dark:text-gray-300">
+                <ul className="list-disc pl-5 text-sm space-y-1 text-zinc-600 dark:text-zinc-300">
                     <li>Order #ORD-2054: Weight mismatch (Logs: 50kg vs Gateway: 48kg)</li>
                     <li>Order #ORD-2051: Timestamp sync error</li>
                     <li>Order #ORD-2048: Missing carrier update</li>
@@ -61,7 +61,7 @@ const DiscrepancyResolutionFlow = () => {
                     </button>
                     <button
                         onClick={() => setStatus('requesting')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 dark:border-white/10 text-gray-600 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-300 text-xs font-medium rounded-lg hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors"
                     >
                         <PencilIcon className="w-3.5 h-3.5" /> Request Changes
                     </button>
@@ -73,22 +73,22 @@ const DiscrepancyResolutionFlow = () => {
     if (status === 'requesting') {
         return (
             <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-bottom-2">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Describe required changes:</p>
+                <p className="text-sm font-medium text-zinc-900 dark:text-white">Describe required changes:</p>
                 <textarea
-                    className="w-full text-sm p-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-gray-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-gray-400"
+                    className="w-full text-sm p-3 rounded-lg border border-zinc-200 dark:border-white/10 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 ring-primary outline-none transition-all placeholder:text-zinc-400"
                     rows={3}
                     placeholder="E.g., Update weight for ORD-2054 to 48kg..."
                     value={requestText}
                     onChange={(e) => setRequestText(e.target.value)}
                 />
                 <div className="flex justify-between items-center">
-                    <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary transition-colors">
+                    <button className="flex items-center gap-1 text-xs text-zinc-500 hover:text-primary transition-colors">
                         <PaperClipIcon className="w-4 h-4" /> Attach File
                     </button>
                     <div className="flex gap-2">
                         <button
                             onClick={() => setStatus('initial')}
-                            className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
+                            className="px-3 py-1.5 text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
                         >
                             Cancel
                         </button>
@@ -122,14 +122,14 @@ const DiscrepancyResolutionFlow = () => {
                     <CheckCircleIcon className="w-5 h-5" />
                     Changes approved. PO updated.
                 </div>
-                <div className="p-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
+                <div className="p-3 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
                             <DocumentChartBarIcon className="w-6 h-6" />
                         </div>
                         <div>
-                            <p className="font-medium text-sm text-gray-900 dark:text-white">PO_Revised_Final.pdf</p>
-                            <p className="text-xs text-gray-500">Updated just now</p>
+                            <p className="font-medium text-sm text-zinc-900 dark:text-white">PO_Revised_Final.pdf</p>
+                            <p className="text-xs text-zinc-500">Updated just now</p>
                         </div>
                     </div>
                     <button className="text-xs font-medium text-zinc-900 dark:text-primary hover:underline">Download</button>
@@ -170,30 +170,30 @@ const PendingOrders = () => {
     return (
         <div className="flex flex-col gap-2 w-full max-w-md">
             <div className="flex justify-between mb-1">
-                <span className="text-sm font-semibold text-gray-500">Pending Review ({activeOrders.length})</span>
+                <span className="text-sm font-semibold text-zinc-500">Pending Review ({activeOrders.length})</span>
             </div>
             {activeOrders.map(order => (
-                <div key={order.id} className="border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm">
+                <div key={order.id} className="border border-zinc-200 rounded-lg bg-white overflow-hidden shadow-sm">
                     <button
                         onClick={() => toggleExpand(order.id)}
-                        className="w-full flex items-center justify-between p-3 hover:bg-gray-50 transition-colors"
+                        className="w-full flex items-center justify-between p-3 hover:bg-zinc-50 transition-colors"
                     >
                         <div className="flex items-center gap-3">
-                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${order.status === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700'
+                            <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold ${order.status === 'urgent' ? 'bg-red-100 text-red-700' : 'bg-zinc-100 text-zinc-700'
                                 }`}>
                                 {order.status}
                             </span>
                             <div className="text-left">
-                                <div className="text-sm font-medium text-gray-900">{order.id} - {order.client}</div>
-                                <div className="text-xs text-gray-500">{order.amount}</div>
+                                <div className="text-sm font-medium text-zinc-900">{order.id} - {order.client}</div>
+                                <div className="text-xs text-zinc-500">{order.amount}</div>
                             </div>
                         </div>
-                        {expanded === order.id ? <ChevronUpIcon className="h-4 w-4 text-gray-400" /> : <ChevronDownIcon className="h-4 w-4 text-gray-400" />}
+                        {expanded === order.id ? <ChevronUpIcon className="h-4 w-4 text-zinc-400" /> : <ChevronDownIcon className="h-4 w-4 text-zinc-400" />}
                     </button>
 
                     {expanded === order.id && (
-                        <div className="p-3 bg-gray-50 border-t border-gray-200">
-                            <p className="text-sm text-gray-700 mb-3">{order.details}</p>
+                        <div className="p-3 bg-zinc-50 border-t border-zinc-200">
+                            <p className="text-sm text-zinc-700 mb-3">{order.details}</p>
                             <div className="flex gap-2 justify-end">
                                 <button
                                     className="flex items-center gap-1 px-2 py-1 text-xs border border-red-200 text-red-600 rounded hover:bg-red-50"
@@ -379,11 +379,11 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                 role: 'assistant',
                 content: (
                     <div className="flex flex-col gap-3">
-                        <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200 font-medium">
+                        <div className="flex items-center gap-2 text-zinc-800 dark:text-zinc-200 font-medium">
                             <DocumentChartBarIcon className="w-5 h-5" />
                             Analysis Complete. Found 3 orders under $1M.
                         </div>
-                        <ul className="list-disc pl-5 text-sm space-y-1 text-gray-600 dark:text-gray-300">
+                        <ul className="list-disc pl-5 text-sm space-y-1 text-zinc-600 dark:text-zinc-300">
                             <li>Order #ORD-2054: $850k - <span className="text-amber-500 font-medium">Missing Logistics Provider</span></li>
                             <li>Order #ORD-2051: $420k - In Transit</li>
                             <li>Order #ORD-2048: $120k - Delivered</li>
@@ -422,14 +422,14 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                             <DocumentChartBarIcon className="w-4 h-4" />
                             <span>Generating Reconciliation Report... Done.</span>
                         </div>
-                        <div className="mt-3 p-3 bg-white dark:bg-zinc-800 rounded-lg border border-gray-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
+                        <div className="mt-3 p-3 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-white/10 shadow-sm flex items-center justify-between group cursor-pointer hover:border-primary transition-colors">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
                                     <DocumentChartBarIcon className="w-6 h-6" />
                                 </div>
                                 <div>
-                                    <p className="font-medium text-sm text-gray-900 dark:text-white">Reconciliation_Report.pdf</p>
-                                    <p className="text-xs text-gray-500">1.2 MB • Generated just now</p>
+                                    <p className="font-medium text-sm text-zinc-900 dark:text-white">Reconciliation_Report.pdf</p>
+                                    <p className="text-xs text-zinc-500">1.2 MB • Generated just now</p>
                                 </div>
                             </div>
                             <button className="text-xs font-medium text-zinc-900 dark:text-primary hover:underline">Download</button>
@@ -499,30 +499,30 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                             className="flex flex-col items-center justify-center gap-1 group p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-lg transition-colors min-w-[50px]"
                             title="Analyze Discrepancies"
                         >
-                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                                 <ExclamationTriangleIcon className="w-4 h-4" />
                             </div>
-                            <span className="text-[9px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Analyze</span>
+                            <span className="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Analyze</span>
                         </button>
                         <button
                             onClick={() => handleSendMessage("Summarize recent activity")}
                             className="flex flex-col items-center justify-center gap-1 group p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-lg transition-colors min-w-[50px]"
                             title="Summarize Activity"
                         >
-                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                                 <SparklesIcon className="w-4 h-4" />
                             </div>
-                            <span className="text-[9px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Summarize</span>
+                            <span className="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Summarize</span>
                         </button>
                         <button
                             onClick={() => handleSendMessage("Check inventory levels")}
                             className="flex flex-col items-center justify-center gap-1 group p-1.5 hover:bg-primary/10 dark:hover:bg-primary/20 rounded-lg transition-colors min-w-[50px]"
                             title="Check Inventory"
                         >
-                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
                                 <ArchiveBoxIcon className="w-4 h-4" />
                             </div>
-                            <span className="text-[9px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Inventory</span>
+                            <span className="text-[9px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">Inventory</span>
                         </button>
                     </div>
 
@@ -553,7 +553,7 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                         <div className="w-px h-6 bg-border mx-1"></div>
                         <button
                             onClick={() => setShowActivity(!showActivity)}
-                            className={`p-1.5 rounded-lg transition-colors border ${showActivity ? 'bg-primary/10 border-primary text-zinc-900 dark:text-primary' : 'bg-transparent border-transparent text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 hover:text-gray-900 dark:hover:text-white'}`}
+                            className={`p-1.5 rounded-lg transition-colors border ${showActivity ? 'bg-primary/10 border-primary text-zinc-900 dark:text-primary' : 'bg-transparent border-transparent text-zinc-400 hover:bg-zinc-100 dark:hover:bg-white/5 hover:text-zinc-900 dark:hover:text-white'}`}
                             title="Toggle Recent Activity"
                         >
                             <ClockIcon className="w-5 h-5" />
@@ -564,9 +564,9 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
 
             <div className="flex-1 flex overflow-hidden">
                 {/* Activity Sidebar (Left) - Collapsible */}
-                <div className={`${showActivity ? 'w-[240px] border-r' : 'w-0 border-r-0'} flex flex-col border-border bg-gray-50/50 dark:bg-zinc-800/30 backdrop-blur-sm transition-all duration-300 overflow-hidden`}>
+                <div className={`${showActivity ? 'w-[240px] border-r' : 'w-0 border-r-0'} flex flex-col border-border bg-zinc-50/50 dark:bg-zinc-800/30 backdrop-blur-sm transition-all duration-300 overflow-hidden`}>
                     <div className="p-3 border-b border-border min-w-[240px]">
-                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                        <h3 className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
                             <ClockIcon className="w-3.5 h-3.5" /> Recent Activity
                         </h3>
                     </div>
@@ -578,15 +578,15 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                             if (activity.app === 'CRM') iconColorClass = "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
 
                             return (
-                                <div key={activity.id} className="relative pl-0 pb-2 border-b border-gray-100 dark:border-white/5 last:border-0 hover:bg-white dark:hover:bg-white/5 p-2 rounded-md transition-colors group">
+                                <div key={activity.id} className="relative pl-0 pb-2 border-b border-zinc-100 dark:border-white/5 last:border-0 hover:bg-white dark:hover:bg-white/5 p-2 rounded-md transition-colors group">
                                     <div className="flex items-center gap-3 mb-1">
                                         <div className={`p-1.5 rounded-md ${iconColorClass} transition-colors`}>
                                             <activity.icon className="w-3.5 h-3.5" />
                                         </div>
-                                        <span className="text-[9px] uppercase font-bold text-gray-400 tracking-wider">{activity.app}</span>
+                                        <span className="text-[9px] uppercase font-bold text-zinc-400 tracking-wider">{activity.app}</span>
                                     </div>
-                                    <p className="text-xs font-medium leading-tight text-gray-700 dark:text-gray-300">{activity.text}</p>
-                                    <p className="text-[10px] text-gray-400 mt-1 font-mono">{activity.time}</p>
+                                    <p className="text-xs font-medium leading-tight text-zinc-700 dark:text-zinc-300">{activity.text}</p>
+                                    <p className="text-[10px] text-zinc-400 mt-1 font-mono">{activity.time}</p>
                                 </div>
                             )
                         })}
@@ -594,14 +594,14 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                 </div>
 
                 {/* Chat Area */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth bg-gray-50/50 dark:bg-black/20">
+                <div className="flex-1 overflow-y-auto p-4 space-y-6 scroll-smooth bg-zinc-50/50 dark:bg-black/20">
                     {messages.map((msg) => (
                         <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             <div className={`
                                 max-w-[85%] rounded-2xl p-4 shadow-sm border
                                 ${msg.role === 'user'
                                     ? 'bg-primary text-zinc-900 rounded-br-none border-primary/50'
-                                    : 'bg-white dark:bg-zinc-800 text-gray-800 dark:text-gray-100 rounded-bl-none border-gray-100 dark:border-white/5'
+                                    : 'bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100 rounded-bl-none border-zinc-100 dark:border-white/5'
                                 }
                             `}>
                                 {msg.role === 'assistant' && (
@@ -634,11 +634,11 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                     ))}
                     {isTyping && (
                         <div className="flex justify-start">
-                            <div className="bg-white dark:bg-zinc-800 border border-gray-100 dark:border-white/5 rounded-2xl rounded-bl-none p-3 shadow-sm">
+                            <div className="bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-white/5 rounded-2xl rounded-bl-none p-3 shadow-sm">
                                 <div className="flex gap-1">
-                                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" />
-                                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-75" />
-                                    <div className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-150" />
+                                    <div className="w-2 h-2 rounded-full bg-zinc-400 animate-bounce" />
+                                    <div className="w-2 h-2 rounded-full bg-zinc-400 animate-bounce delay-75" />
+                                    <div className="w-2 h-2 rounded-full bg-zinc-400 animate-bounce delay-150" />
                                 </div>
                             </div>
                         </div>
@@ -648,8 +648,8 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
             </div>
 
             <div className="p-4 bg-white dark:bg-zinc-800 border-t border-border">
-                <div className="relative flex items-center gap-2 bg-gray-50 dark:bg-zinc-800 p-2 pr-2 rounded-full border border-gray-200 dark:border-white/10 focus-within:ring-2 ring-primary/20 focus-within:border-primary transition-all">
-                    <div className="pl-3 text-gray-400">
+                <div className="relative flex items-center gap-2 bg-zinc-50 dark:bg-zinc-800 p-2 pr-2 rounded-full border border-zinc-200 dark:border-white/10 focus-within:ring-2 ring-primary/20 focus-within:border-primary transition-all">
+                    <div className="pl-3 text-zinc-400">
                         <SparklesIcon className="w-5 h-5" />
                     </div>
                     <input
@@ -658,14 +658,14 @@ export default function ChatWidget({ className }: ChatWidgetProps) {
                         onChange={(e) => setInputValue(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(inputValue)}
                         placeholder="Ask copilot..."
-                        className="flex-1 bg-transparent border-none outline-none text-sm text-gray-900 dark:text-white placeholder-gray-400 h-10"
+                        className="flex-1 bg-transparent border-none outline-none text-sm text-zinc-900 dark:text-white placeholder-zinc-400 h-10"
                     />
                     <button
                         onClick={() => handleSendMessage(inputValue)}
                         disabled={!inputValue.trim()}
                         className={`p-2 rounded-full transition-all duration-200 ${inputValue.trim()
                             ? 'bg-primary text-zinc-900 shadow-md transform scale-100'
-                            : 'bg-gray-200 dark:bg-white/10 text-gray-400 scale-95'
+                            : 'bg-zinc-200 dark:bg-white/10 text-zinc-400 scale-95'
                             }`}
                     >
                         <PaperAirplaneIcon className="w-5 h-5" />

@@ -34,7 +34,7 @@ const recentOrders = [
     { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Pending Review", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20" },
     { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Shipped", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20" },
-    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700" },
+    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-zinc-100 text-zinc-700" },
 ]
 
 // Color Mapping for Status Icons
@@ -273,7 +273,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                         </div>
                         {/* Quick Actions below grid when expanded */}
                         <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Quick Actions:</span>
+                            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
                             {[
                                 { icon: <PlusIcon className="w-5 h-5" />, label: "New Order" },
                                 { icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: "Duplicate" },
@@ -291,31 +291,31 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                     <div className="bg-card/60 backdrop-blur-md rounded-2xl p-4 border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
                         <div className="flex items-center gap-6 overflow-x-auto w-full scrollbar-minimal">
                             <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Inventory:</span>
-                                <span className="text-lg font-semibold text-gray-900 dark:text-white">$1.2M</span>
+                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Inventory:</span>
+                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">$1.2M</span>
                                 <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+0.2%</span>
                             </div>
                             <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Efficiency:</span>
-                                <span className="text-lg font-semibold text-gray-900 dark:text-white">88%</span>
+                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Efficiency:</span>
+                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">88%</span>
                                 <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+3.5%</span>
                             </div>
                             <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Pending:</span>
-                                <span className="text-lg font-semibold text-gray-900 dark:text-white">142</span>
+                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Pending:</span>
+                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">142</span>
                             </div>
                             <div className="w-px h-8 bg-border hidden sm:block"></div>
                             <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-gray-500 dark:text-gray-400">Low Stock:</span>
-                                <span className="text-lg font-semibold text-gray-900 dark:text-white">15</span>
+                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Low Stock:</span>
+                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">15</span>
                                 <span className="text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded-md self-center">Alert</span>
                             </div>
                         </div>
                         <div className="w-px h-12 bg-border hidden xl:block mx-2"></div>
                         {/* Quick Actions Integrated */}
-                        <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-gray-200 dark:border-white/10 xl:border-none xl:pl-0">
+                        <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-white/10 xl:border-none xl:pl-0">
                             {[
                                 { icon: <PlusIcon className="w-4 h-4" />, label: "New" },
                                 { icon: <DocumentDuplicateIcon className="w-4 h-4" />, label: "Copy" },
@@ -323,10 +323,10 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 { icon: <EnvelopeIcon className="w-4 h-4" />, label: "Email" },
                             ].map((action, i) => (
                                 <button key={i} className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors">
-                                    <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
+                                    <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
                                         {action.icon}
                                     </div>
-                                    <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">{action.label}</span>
+                                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">{action.label}</span>
                                 </button>
                             ))}
                         </div>
@@ -335,10 +335,10 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                             onClick={() => setShowMetrics(true)}
                             className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
                         >
-                            <div className="text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
+                            <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
                                 <ChevronDownIcon className="w-4 h-4" />
                             </div>
-                            <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Details</span>
+                            <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Details</span>
                         </button>
                     </div>
                 )}
@@ -597,25 +597,25 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                         {/* Details Row */}
                                                         {expandedIds.has(order.id) && (
                                                             <tr>
-                                                                <td colSpan={6} className="px-0 py-0 border-b border-gray-200 dark:border-white/10">
+                                                                <td colSpan={6} className="px-0 py-0 border-b border-zinc-200 dark:border-white/10">
                                                                     <div className="p-4 bg-muted/50 pl-12">
                                                                         <div className="flex items-start gap-4">
                                                                             <div className="flex-1 space-y-4">
                                                                                 <div className="flex items-center gap-3">
-                                                                                    <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-gray-500" /></div>
+                                                                                    <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-zinc-500" /></div>
                                                                                     <div>
-                                                                                        <p className="text-sm font-medium text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                                        <p className="text-xs text-gray-500">Project Manager</p>
+                                                                                        <p className="text-sm font-medium text-zinc-900 dark:text-white">Sarah Johnson</p>
+                                                                                        <p className="text-xs text-zinc-500">Project Manager</p>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="h-px bg-border w-full"></div>
                                                                                 {/* Progress Bar Simple */}
                                                                                 <div className="relative">
-                                                                                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 -translate-y-1/2"></div>
+                                                                                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-zinc-200 dark:bg-zinc-700 -translate-y-1/2"></div>
                                                                                     <div className="relative flex justify-between">
                                                                                         {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
-                                                                                            <div key={i} className={`flex flex-col items-center gap-2 ${i < 2 ? 'text-zinc-900 dark:text-white' : 'text-gray-400'}`}>
-                                                                                                <div className={`w-3 h-3 rounded-full ${i < 2 ? 'bg-primary ring-4 ring-brand-100 dark:ring-brand-900/30' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                                                            <div key={i} className={`flex flex-col items-center gap-2 ${i < 2 ? 'text-zinc-900 dark:text-white' : 'text-zinc-400'}`}>
+                                                                                                <div className={`w-3 h-3 rounded-full ${i < 2 ? 'bg-primary ring-4 ring-brand-100 dark:ring-brand-900/30' : 'bg-zinc-300 dark:bg-zinc-600'}`}></div>
                                                                                                 <span className="text-xs font-medium">{step}</span>
                                                                                             </div>
                                                                                         ))}
@@ -623,13 +623,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                                 </div>
                                                                             </div>
                                                                             <div className="w-64">
-                                                                                <div className="p-3 bg-card rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
-                                                                                    <p className="text-xs font-medium text-gray-500 uppercase">Alert</p>
+                                                                                <div className="p-3 bg-card rounded-xl border border-zinc-200 dark:border-white/10 shadow-sm">
+                                                                                    <p className="text-xs font-medium text-zinc-500 uppercase">Alert</p>
                                                                                     <div className="mt-2 flex items-start gap-2">
                                                                                         <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                         <div>
                                                                                             <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
-                                                                                            <p className="text-xs text-gray-500 mt-1">Shipment held at port. ETA +24h.</p>
+                                                                                            <p className="text-xs text-zinc-500 mt-1">Shipment held at port. ETA +24h.</p>
                                                                                             <button onClick={() => setTrackingOrder(order)} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">Track Shipment</button>
                                                                                         </div>
                                                                                     </div>
@@ -650,7 +650,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                         {filteredOrders.map((order) => (
                                             <div
                                                 key={order.id}
-                                                className={`group relative bg-card rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
+                                                className={`group relative bg-card rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-zinc-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
                                                 onClick={() => toggleExpand(order.id)}
                                             >
                                                 <div className="p-5">
@@ -660,19 +660,19 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                 {order.initials}
                                                             </div>
                                                             <div>
-                                                                <h4 className="text-sm font-bold text-gray-900 dark:text-white">{order.customer}</h4>
-                                                                <p className="text-xs text-gray-500">{order.id}</p>
+                                                                <h4 className="text-sm font-bold text-zinc-900 dark:text-white">{order.customer}</h4>
+                                                                <p className="text-xs text-zinc-500">{order.id}</p>
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-1">
-                                                            <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
+                                                            <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
                                                                 <DocumentTextIcon className="h-5 w-5" />
                                                             </button>
-                                                            <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
+                                                            <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
                                                                 <PencilSquareIcon className="h-5 w-5" />
                                                             </button>
                                                             <Menu as="div" className="relative inline-block text-left">
-                                                                <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 dark:hover:text-zinc-900">
+                                                                <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 dark:hover:text-zinc-900">
                                                                     <EllipsisHorizontalIcon className="h-5 w-5" />
                                                                 </MenuButton>
                                                                 <Transition
@@ -684,7 +684,7 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                                     leaveFrom="transform opacity-100 scale-100"
                                                                     leaveTo="transform opacity-0 scale-95"
                                                                 >
-                                                                    <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-card shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 dark:border-white/10">
+                                                                    <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-card shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-zinc-100 dark:border-white/10">
                                                                         <div className="py-1">
                                                                             <MenuItem>
                                                                                 {({ active }) => (
@@ -701,13 +701,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                     </div>
 
                                                     <div className="space-y-3">
-                                                        <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                            <span className="text-xs text-gray-500">Amount</span>
-                                                            <span className="text-sm font-semibold text-gray-900 dark:text-white">{order.amount}</span>
+                                                        <div className="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-white/5">
+                                                            <span className="text-xs text-zinc-500">Amount</span>
+                                                            <span className="text-sm font-semibold text-zinc-900 dark:text-white">{order.amount}</span>
                                                         </div>
-                                                        <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                            <span className="text-xs text-gray-500">Date</span>
-                                                            <span className="text-sm text-gray-700 dark:text-gray-300">{order.date}</span>
+                                                        <div className="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-white/5">
+                                                            <span className="text-xs text-zinc-500">Date</span>
+                                                            <span className="text-sm text-zinc-700 dark:text-zinc-300">{order.date}</span>
                                                         </div>
                                                         <div className="flex justify-between items-center pt-2">
                                                             <span className={cn("inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
@@ -718,28 +718,28 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                                 </div>
 
                                                 {expandedIds.has(order.id) && (
-                                                    <div className="mt-4 pt-4 px-5 border-t border-gray-100 dark:border-white/5">
+                                                    <div className="mt-4 pt-4 px-5 border-t border-zinc-100 dark:border-white/5">
                                                         <div className="flex flex-col md:flex-row gap-8">
                                                             <div className="flex-1 space-y-6">
                                                                 <div className="flex items-center gap-3">
-                                                                    <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-card flex items-center justify-center text-gray-500">
+                                                                    <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-card flex items-center justify-center text-zinc-500">
                                                                         <UserIcon className="h-4 w-4" />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-sm font-bold text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                        <p className="text-xs text-gray-500">Project Manager</p>
+                                                                        <p className="text-sm font-bold text-zinc-900 dark:text-white">Sarah Johnson</p>
+                                                                        <p className="text-xs text-zinc-500">Project Manager</p>
                                                                     </div>
                                                                 </div>
 
                                                                 <div className="relative py-2">
-                                                                    <div className="absolute top-3 left-0 w-full h-0.5 bg-gray-200 dark:bg-zinc-700" />
+                                                                    <div className="absolute top-3 left-0 w-full h-0.5 bg-zinc-200 dark:bg-zinc-700" />
                                                                     <div className="relative z-10 flex justify-between">
                                                                         {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
                                                                             <div key={i} className="flex flex-col items-center bg-card px-1">
-                                                                                <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-gray-200 dark:bg-zinc-700 text-gray-400'}`}>
+                                                                                <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'}`}>
                                                                                     {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
                                                                                 </div>
-                                                                                <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-gray-500'}`}>{step}</span>
+                                                                                <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500'}`}>{step}</span>
                                                                             </div>
                                                                         ))}
                                                                     </div>

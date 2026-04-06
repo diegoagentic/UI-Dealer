@@ -182,7 +182,7 @@ const recentOrders = [
     { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Pending Review", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700" },
     { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20" },
     { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Shipped", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20" },
-    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-gray-100 text-gray-700" },
+    { id: "#ORD-2052", customer: "Global Logistics", client: "Global Logistics", project: "Warehouse Expansion", amount: "$45,000", status: "Delivered", date: "Oct 15, 2025", initials: "GL", statusColor: "bg-zinc-100 text-zinc-700" },
 ]
 
 
@@ -465,7 +465,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 {/* Left Scroll Button (Expanded) */}
                                 <button
                                     onClick={() => scroll(expandedScrollRef, 'left')}
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-gray-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all disabled:opacity-0"
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all disabled:opacity-0"
                                 >
                                     <ChevronLeftIcon className="w-5 h-5" />
                                 </button>
@@ -485,7 +485,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                 <div className="flex items-center justify-between mb-2">
                                                     <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{data.label}</span>
                                                     <div
-                                                        className={`p-1 rounded-md ${colorStyles[data.color]?.replace('ring-1', '') || 'bg-gray-100 dark:bg-zinc-800'} bg-opacity-50 relative group`}
+                                                        className={`p-1 rounded-md ${colorStyles[data.color]?.replace('ring-1', '') || 'bg-zinc-100 dark:bg-zinc-800'} bg-opacity-50 relative group`}
                                                         title={data.label}
                                                     >
                                                         <div className="w-3.5 h-3.5 child-svg:w-full child-svg:h-full">
@@ -555,7 +555,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                 {/* Right Scroll Button (Expanded) */}
                                 <button
                                     onClick={() => scroll(expandedScrollRef, 'right')}
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-gray-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all"
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all"
                                 >
                                     <ChevronRightIcon className="w-5 h-5" />
                                 </button>
@@ -610,7 +610,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                     <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
                                         {/* Icon with Floating Tooltip */}
                                         <div
-                                            className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-gray-100 dark:bg-zinc-800'}`}
+                                            className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-zinc-800'}`}
                                             title={data.label}
                                         >
                                             {data.icon}
@@ -1027,14 +1027,14 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                     mainTab === 'your_tools' && (
                         <div className="lg:col-span-3 space-y-6">
                             {/* Config Bar - Optimized for Contrast */}
-                            <div className="flex items-center justify-between px-4 py-3 bg-gray-50/50 dark:bg-zinc-900/10 border border-gray-200/50 dark:border-white/5 rounded-lg backdrop-blur-sm animate-in fade-in slide-in-from-top-2">
+                            <div className="flex items-center justify-between px-4 py-3 bg-zinc-50/50 dark:bg-zinc-900/10 border border-zinc-200/50 dark:border-white/5 rounded-lg backdrop-blur-sm animate-in fade-in slide-in-from-top-2">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium text-gray-900 dark:text-white">Tools configured for you</span>
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-white">Tools configured for you</span>
                                 </div>
                                 <button
                                     onClick={() => setIsFeatureManagerOpen(true)}
                                     className={cn(
-                                        "flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-white/10 rounded-md shadow-sm text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-all",
+                                        "flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 rounded-md shadow-sm text-xs font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-all",
                                         isCustomizeHighlighted && "ring-2 ring-purple-500 animate-pulse relative z-50"
                                     )}
                                 >
@@ -1232,21 +1232,21 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
-                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
+                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200`}>
                                                                                                                     <span className="w-4 h-4 mr-2" ><PencilSquareIcon /></span> Edit
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
-                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
+                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
                                                                                                                     <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
                                                                                                                 </button>
                                                                                                             )}
                                                                                                         </MenuItem>
                                                                                                         <MenuItem>
                                                                                                             {({ active }) => (
-                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200`}>
+                                                                                                                <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-zinc-700 dark:text-zinc-200`}>
                                                                                                                     <span className="w-4 h-4 mr-2" ><EnvelopeIcon /></span> Contact
                                                                                                                 </button>
                                                                                                             )}
@@ -1260,25 +1260,25 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                 {/* Details Row */}
                                                                                 {expandedIds.has(order.id) && (
                                                                                     <tr>
-                                                                                        <td colSpan={6} className="px-0 py-0 border-b border-gray-200 dark:border-white/10">
+                                                                                        <td colSpan={6} className="px-0 py-0 border-b border-zinc-200 dark:border-white/10">
                                                                                             <div className="p-4 bg-muted dark:bg-secondary pl-12">
                                                                                                 <div className="flex items-start gap-4">
                                                                                                     <div className="flex-1 space-y-4">
                                                                                                         <div className="flex items-center gap-3">
-                                                                                                            <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-gray-500" /></div>
+                                                                                                            <div className="h-10 w-10 rounded-full bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center"><UserIcon className="w-6 h-6 text-zinc-500" /></div>
                                                                                                             <div>
-                                                                                                                <p className="text-sm font-medium text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                                                                <p className="text-xs text-gray-500">Project Manager</p>
+                                                                                                                <p className="text-sm font-medium text-zinc-900 dark:text-white">Sarah Johnson</p>
+                                                                                                                <p className="text-xs text-zinc-500">Project Manager</p>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                        <div className="h-px bg-gray-200 dark:bg-white/10 w-full"></div>
+                                                                                                        <div className="h-px bg-zinc-200 dark:bg-white/10 w-full"></div>
                                                                                                         {/* Progress Bar Simple */}
                                                                                                         <div className="relative">
-                                                                                                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-200 dark:bg-gray-700 -translate-y-1/2"></div>
+                                                                                                            <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-zinc-200 dark:bg-zinc-700 -translate-y-1/2"></div>
                                                                                                             <div className="relative flex justify-between">
                                                                                                                 {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
-                                                                                                                    <div key={i} className={`flex flex-col items-center gap-2 ${i < 2 ? 'text-zinc-900 dark:text-white' : 'text-gray-400'}`}>
-                                                                                                                        <div className={`w-3 h-3 rounded-full ${i < 2 ? 'bg-primary ring-4 ring-brand-100 dark:ring-brand-900/30' : 'bg-gray-300 dark:bg-gray-600'}`}></div>
+                                                                                                                    <div key={i} className={`flex flex-col items-center gap-2 ${i < 2 ? 'text-zinc-900 dark:text-white' : 'text-zinc-400'}`}>
+                                                                                                                        <div className={`w-3 h-3 rounded-full ${i < 2 ? 'bg-primary ring-4 ring-brand-100 dark:ring-brand-900/30' : 'bg-zinc-300 dark:bg-zinc-600'}`}></div>
                                                                                                                         <span className="text-xs font-medium">{step}</span>
                                                                                                                     </div>
                                                                                                                 ))}
@@ -1286,13 +1286,13 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div className="w-64">
-                                                                                                        <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-gray-200 dark:border-white/10 shadow-sm">
-                                                                                                            <p className="text-xs font-medium text-gray-500 uppercase">Alert</p>
+                                                                                                        <div className="p-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-white/10 shadow-sm">
+                                                                                                            <p className="text-xs font-medium text-zinc-500 uppercase">Alert</p>
                                                                                                             <div className="mt-2 flex items-start gap-2">
                                                                                                                 <ExclamationTriangleIcon className="h-5 w-5 text-amber-500 flex-shrink-0" />
                                                                                                                 <div>
                                                                                                                     <p className="text-sm font-medium text-amber-700 dark:text-amber-400">Customs Delay</p>
-                                                                                                                    <p className="text-xs text-gray-500 mt-1">Shipment held at port. ETA +24h.</p>
+                                                                                                                    <p className="text-xs text-zinc-500 mt-1">Shipment held at port. ETA +24h.</p>
                                                                                                                     <button onClick={() => setTrackingOrder(order)} className="mt-2 text-xs font-medium text-zinc-900 dark:text-primary decoration-primary underline-offset-2 hover:underline">Track Shipment</button>
                                                                                                                 </div>
                                                                                                             </div>
@@ -1313,7 +1313,7 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                 {filteredOrders.map((order) => (
                                                                     <div
                                                                         key={order.id}
-                                                                        className={`group relative bg-secondary rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-gray-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
+                                                                        className={`group relative bg-secondary rounded-2xl border ${expandedIds.has(order.id) ? 'border-zinc-300 dark:border-zinc-600 ring-1 ring-zinc-300 dark:ring-zinc-600' : 'border-zinc-200 dark:border-white/10'} shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden flex flex-col`}
                                                                         onClick={() => toggleExpand(order.id)}
                                                                     >
                                                                         <div className="p-5">
@@ -1323,19 +1323,19 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                         {order.initials}
                                                                                     </div>
                                                                                     <div>
-                                                                                        <h4 className="text-sm font-bold text-gray-900 dark:text-white">{order.customer}</h4>
-                                                                                        <p className="text-xs text-gray-500">{order.id}</p>
+                                                                                        <h4 className="text-sm font-bold text-zinc-900 dark:text-white">{order.customer}</h4>
+                                                                                        <p className="text-xs text-zinc-500">{order.id}</p>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="flex items-center gap-1">
-                                                                                    <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
+                                                                                    <button onClick={(e) => { e.stopPropagation(); onNavigateToDetail(); }} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
                                                                                         <DocumentTextIcon className="h-5 w-5" />
                                                                                     </button>
-                                                                                    <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
+                                                                                    <button onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-900 transition-colors">
                                                                                         <PencilSquareIcon className="h-5 w-5" />
                                                                                     </button>
                                                                                     <Menu as="div" className="relative inline-block text-left">
-                                                                                        <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-gray-400 dark:hover:text-zinc-900">
+                                                                                        <MenuButton onClick={(e) => e.stopPropagation()} className="p-1 rounded-full hover:bg-primary hover:text-zinc-900 dark:hover:bg-primary text-zinc-400 dark:hover:text-zinc-900">
                                                                                             <EllipsisHorizontalIcon className="h-5 w-5" />
                                                                                         </MenuButton>
                                                                                         <Transition
@@ -1347,11 +1347,11 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                                             leaveFrom="transform opacity-100 scale-100"
                                                                                             leaveTo="transform opacity-0 scale-95"
                                                                                         >
-                                                                                            <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-gray-100 dark:border-white/10">
+                                                                                            <MenuItems className="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-xl bg-white dark:bg-zinc-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-zinc-100 dark:border-white/10">
                                                                                                 <div className="py-1">
                                                                                                     <MenuItem>
                                                                                                         {({ active }) => (
-                                                                                                            <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-gray-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
+                                                                                                            <button onClick={(e) => e.stopPropagation()} className={`${active ? 'bg-zinc-50 dark:bg-white/5' : ''} group flex w-full items-center px-4 py-2 text-sm text-red-600 dark:text-red-400`}>
                                                                                                                 <span className="w-4 h-4 mr-2" ><TrashIcon /></span> Delete
                                                                                                             </button>
                                                                                                         )}
@@ -1364,13 +1364,13 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                             </div>
 
                                                                             <div className="space-y-3">
-                                                                                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                                                    <span className="text-xs text-gray-500">Amount</span>
-                                                                                    <span className="text-sm font-semibold text-gray-900 dark:text-white">{order.amount}</span>
+                                                                                <div className="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-white/5">
+                                                                                    <span className="text-xs text-zinc-500">Amount</span>
+                                                                                    <span className="text-sm font-semibold text-zinc-900 dark:text-white">{order.amount}</span>
                                                                                 </div>
-                                                                                <div className="flex justify-between items-center py-2 border-b border-gray-100 dark:border-white/5">
-                                                                                    <span className="text-xs text-gray-500">Date</span>
-                                                                                    <span className="text-sm text-gray-700 dark:text-gray-300">{order.date}</span>
+                                                                                <div className="flex justify-between items-center py-2 border-b border-zinc-100 dark:border-white/5">
+                                                                                    <span className="text-xs text-zinc-500">Date</span>
+                                                                                    <span className="text-sm text-zinc-700 dark:text-zinc-300">{order.date}</span>
                                                                                 </div>
                                                                                 <div className="flex justify-between items-center pt-2">
                                                                                     <span className={cn("inline-flex items-center rounded-full px-2 py-1 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
@@ -1381,28 +1381,28 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         </div>
 
                                                                         {expandedIds.has(order.id) && (
-                                                                            <div className="mt-4 pt-4 px-5 border-t border-gray-100 dark:border-white/5">
+                                                                            <div className="mt-4 pt-4 px-5 border-t border-zinc-100 dark:border-white/5">
                                                                                 <div className="flex flex-col md:flex-row gap-8">
                                                                                     <div className="flex-1 space-y-6">
                                                                                         <div className="flex items-center gap-3">
-                                                                                            <div className="h-8 w-8 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-500">
+                                                                                            <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500">
                                                                                                 <UserIcon className="h-4 w-4" />
                                                                                             </div>
                                                                                             <div>
-                                                                                                <p className="text-sm font-bold text-gray-900 dark:text-white">Sarah Johnson</p>
-                                                                                                <p className="text-xs text-gray-500">Project Manager</p>
+                                                                                                <p className="text-sm font-bold text-zinc-900 dark:text-white">Sarah Johnson</p>
+                                                                                                <p className="text-xs text-zinc-500">Project Manager</p>
                                                                                             </div>
                                                                                         </div>
 
                                                                                         <div className="relative py-2">
-                                                                                            <div className="absolute top-3 left-0 w-full h-0.5 bg-gray-200 dark:bg-zinc-700" />
+                                                                                            <div className="absolute top-3 left-0 w-full h-0.5 bg-zinc-200 dark:bg-zinc-700" />
                                                                                             <div className="relative z-10 flex justify-between">
                                                                                                 {['Placed', 'Mfg', 'Qual', 'Ship'].map((step, i) => (
                                                                                                     <div key={i} className="flex flex-col items-center bg-white dark:bg-zinc-900 px-1">
-                                                                                                        <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-gray-200 dark:bg-zinc-700 text-gray-400'}`}>
+                                                                                                        <div className={`h-6 w-6 rounded-full flex items-center justify-center ${i <= 1 ? 'bg-primary text-primary-foreground' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-400'}`}>
                                                                                                             {i < 1 ? <CheckIcon className="h-4 w-4" /> : <div className={`h-2 w-2 rounded-full ${i <= 1 ? 'bg-primary-foreground' : 'bg-white/50'}`} />}
                                                                                                         </div>
-                                                                                                        <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-gray-500'}`}>{step}</span>
+                                                                                                        <span className={`mt-2 text-xs font-medium ${i <= 1 ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-500'}`}>{step}</span>
                                                                                                     </div>
                                                                                                 ))}
                                                                                             </div>
@@ -1428,16 +1428,16 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                                                                         )}
 
                                                                         {expandedIds.has(order.id) && (
-                                                                            <div className="mt-6 bg-gray-50 dark:bg-white/5 p-4 border-t border-gray-200 dark:border-white/10">
+                                                                            <div className="mt-6 bg-zinc-50 dark:bg-white/5 p-4 border-t border-zinc-200 dark:border-white/10">
                                                                                 <div className="flex items-center gap-2 mb-3">
-                                                                                    <ShoppingBagIcon className="h-4 w-4 text-gray-400" />
-                                                                                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Order Items (3)</span>
+                                                                                    <ShoppingBagIcon className="h-4 w-4 text-zinc-400" />
+                                                                                    <span className="text-xs font-medium text-zinc-600 dark:text-zinc-300">Order Items (3)</span>
                                                                                 </div>
                                                                                 <div className="space-y-2">
                                                                                     {['Office Chair Ergonomic', 'Standing Desk Motorized'].map((item, i) => (
                                                                                         <div key={i} className="flex justify-between text-xs">
-                                                                                            <span className="text-gray-500">{item}</span>
-                                                                                            <span className="text-gray-900 dark:text-white font-medium">x1</span>
+                                                                                            <span className="text-zinc-500">{item}</span>
+                                                                                            <span className="text-zinc-900 dark:text-white font-medium">x1</span>
                                                                                         </div>
                                                                                     ))}
                                                                                 </div>

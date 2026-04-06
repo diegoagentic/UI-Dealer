@@ -221,7 +221,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                                             className={`relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all group outline-none focus:ring-2 focus:ring-primary ${
                                                                 // @ts-ignore
                                                                 app.isHighlighted
-                                                                    ? 'ring-1 ring-gray-200 dark:ring-zinc-700 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:ring-0'
+                                                                    ? 'ring-1 ring-zinc-200 dark:ring-zinc-700 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:ring-0'
                                                                     : 'hover:bg-primary hover:text-primary-foreground hover:shadow-md'
                                                                 }`}>
                                                             {/* Badge */}
@@ -274,7 +274,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
                                                     className={`relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all group outline-none focus:ring-2 focus:ring-primary ${
                                                         // @ts-ignore
                                                         app.isHighlighted
-                                                            ? 'ring-1 ring-gray-200 dark:ring-zinc-700 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:ring-0'
+                                                            ? 'ring-1 ring-zinc-200 dark:ring-zinc-700 hover:bg-primary hover:text-primary-foreground hover:shadow-md hover:ring-0'
                                                             : 'hover:bg-primary hover:text-primary-foreground hover:shadow-md'
                                                         }`}>
                                                     {/* Badge */}

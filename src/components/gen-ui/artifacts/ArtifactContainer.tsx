@@ -25,7 +25,7 @@ import OrderPlacedArtifact from './OrderPlacedArtifact';
 // Artifacts are fully implemented in separate files
 
 const DefaultArtifact = ({ data }: { data: any }) => (
-    <div className="p-4 bg-gray-100 rounded-lg text-sm text-gray-600">
+    <div className="p-4 bg-zinc-100 rounded-lg text-sm text-zinc-600">
         {JSON.stringify(data, null, 2)}
     </div>
 );

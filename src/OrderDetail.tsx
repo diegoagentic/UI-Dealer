@@ -516,7 +516,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             // Dashboard uses index logic (i <= 1), here we use status.
                                             // Dashboard classes: h-6 w-6 rounded-full flex items-center justify-center
                                             // Active/Completed: bg-primary text-primary-foreground
-                                            // Pending: bg-gray-200 dark:bg-zinc-700 text-gray-400
+                                            // Pending: bg-zinc-200 dark:bg-zinc-700 text-zinc-400
 
                                             // However, for correct visual flow in this context:
                                             // Completed: Primary Background, Check Icon
