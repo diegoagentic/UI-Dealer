@@ -747,7 +747,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <Button variant="ghost" onClick={() => setIsDocumentModalOpen(true)} className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Preview Document">
-                                                    <DocumentBarChart3 className="h-4 w-4" />
+                                                    <BarChart3 className="h-4 w-4" />
                                                 </Button>
                                                 <Button variant="ghost" onClick={() => setIsEditOpen(true)} className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
                                                     <SquarePen className="h-4 w-4" />

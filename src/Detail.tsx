@@ -730,7 +730,7 @@ export default function Detail({ onBack, onLogout, onNavigateToWorkspace, onNavi
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
                                             <div className="flex gap-1">
                                                 <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <DocumentBarChart3 className="h-4 w-4" title="Preview Document" />
+                                                    <BarChart3 className="h-4 w-4" title="Preview Document" />
                                                 </button>
                                                 <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
                                                     <SquarePen className="h-4 w-4" />
