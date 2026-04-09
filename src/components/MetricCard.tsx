@@ -10,7 +10,7 @@ interface MetricCardProps {
 
 export function MetricCard({ value, label, icon, trend }: MetricCardProps) {
     return (
-        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm flex flex-col justify-between p-5 min-w-[180px] h-[112px]">
+        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm flex flex-col justify-between p-5 min-w-[200px] flex-1 shrink-0 h-[112px]">
             <div className="flex items-center justify-between">
                 <span className="text-2xl font-semibold text-foreground tracking-tight">{value}</span>
                 <div className="h-8 w-8 rounded-full bg-brand-300 dark:bg-brand-500 text-zinc-900 flex items-center justify-center shrink-0">
@@ -47,7 +47,7 @@ interface MetricGridProps {
 
 export function MetricGrid({ metrics }: MetricGridProps) {
     return (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="flex gap-4 overflow-x-auto scrollbar-micro pb-1">
             {metrics.map((m, i) => (
                 <MetricCard key={i} {...m} />
             ))}
