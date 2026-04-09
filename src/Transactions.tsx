@@ -53,10 +53,22 @@ const recentOrders = [
 ]
 
 const recentQuotes = [
-    { id: "QT-1025", customer: "Apex Tech", project: "New HQ", amount: "$1,200,000", status: "Negotiating", date: "Jan 12, 2026", validUntil: "Feb 12, 2026", probability: "High", initials: "AT", statusColor: "bg-ai-light text-ai", location: "Austin" },
-    { id: "QT-1024", customer: "BioLife Inc", project: "Lab Expansion", amount: "$540,000", status: "Draft", date: "Jan 10, 2026", validUntil: "Draft", probability: "N/A", initials: "BL", statusColor: "bg-zinc-100 text-zinc-700", location: "Boston" },
-    { id: "QT-1023", customer: "FinServe Corp", project: "Branch Rollout", amount: "$890,000", status: "Sent", date: "Jan 08, 2026", validUntil: "Feb 08, 2026", probability: "Medium", initials: "FS", statusColor: "bg-blue-50 text-blue-700", location: "New York" },
-    { id: "QT-1022", customer: "Redwood School", project: "Classroom Refresh", amount: "$150,000", status: "Approved", date: "Dec 28, 2025", validUntil: "Jan 28, 2026", probability: "Closed", initials: "RS", statusColor: "bg-green-50 text-green-700", location: "Portland" },
+    // Ingesting
+    { id: "#IMP-0042", customer: "Urban Living Inc.", project: "Lobby Refresh", amount: "—", status: "Ingesting", date: "09 Apr", initials: "UL", statusColor: "bg-amber-50 text-amber-700", location: "New York", tags: ["AI assisted"], actionLabel: "AI extracting…" },
+    { id: "#IMP-0041", customer: "Coastal Props", project: "Office Fit-out", amount: "$210,000", status: "Ingesting", date: "09 Apr", initials: "CP", statusColor: "bg-amber-50 text-amber-700", location: "Miami", tags: ["AI assisted"], actionLabel: "3 fields — review pending" },
+    // Draft
+    { id: "#QUO-3021", customer: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "Draft", date: "09 Apr", initials: "TS", statusColor: "bg-zinc-100 text-zinc-700", location: "San Jose", tags: ["In edit"] },
+    { id: "#QUO-3023", customer: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Draft", date: "09 Apr", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700", location: "Detroit", tags: ["Action required"], actionLabel: "Duplicated" },
+    { id: "#QUO-3018", customer: "City Builders", project: "City Center", amount: "$120,000", status: "Draft", date: "05 Apr", initials: "CB", statusColor: "bg-zinc-100 text-zinc-700", location: "Chicago", tags: ["Post-validation edit"], actionLabel: "STALE — re-validate" },
+    // Validation
+    { id: "#QUO-3015", customer: "Harbor Group", project: "Marina Office", amount: "$87,000", status: "Validation", date: "03 Apr", initials: "HG", statusColor: "bg-blue-50 text-blue-700", location: "Seattle", tags: ["Action required"], actionLabel: "2 warnings — ack pending" },
+    { id: "#QUO-3016", customer: "Metro Supply", project: "Warehouse HQ", amount: "$44,500", status: "Validation", date: "06 Apr", initials: "MS", statusColor: "bg-blue-50 text-blue-700", location: "Dallas", tags: ["Ready to advance"], actionLabel: "READY_TO_SEND" },
+    // Approval
+    { id: "#QUO-3017", customer: "Elite Builders", project: "Sky Tower", amount: "$112,000", status: "Approval", date: "04 Apr", initials: "EB", statusColor: "bg-amber-50 text-amber-700", location: "New York", tags: ["Action required"], actionLabel: "-8% pending approval" },
+    // Send
+    { id: "#QUO-3014", customer: "Pacific Dealers", project: "West Coast", amount: "$73,000", status: "Send", date: "08 Apr", initials: "PD", statusColor: "bg-green-50 text-green-700", location: "Portland", tags: [], actionLabel: "Sending…" },
+    { id: "#QUO-3010", customer: "Green Tech", project: "Eco Campus", amount: "$156,000", status: "Send", date: "02 Apr", initials: "GT", statusColor: "bg-green-50 text-green-700", location: "Denver", tags: ["Ready to advance"], actionLabel: "Delivered · opened" },
+    { id: "#QUO-3011", customer: "North Star Grp.", project: "Regional Office", amount: "$31,200", status: "Send", date: "03 Apr", initials: "NS", statusColor: "bg-green-50 text-green-700", location: "Minneapolis", tags: [], actionLabel: "Delivered" },
 ]
 
 const recentAcknowledgments = [
@@ -67,7 +79,15 @@ const recentAcknowledgments = [
 
 // Pipeline stages
 const pipelineStages = ['Order Received', 'In Production', 'Ready to Ship', 'In Transit', 'Delivered']
-const quoteStages = ['Draft', 'Sent', 'Negotiating', 'Approved', 'Lost']
+const quoteStages = ['Ingesting', 'Draft', 'Validation', 'Approval', 'Send']
+
+const quoteStagesMeta: Record<string, { dot: string; subtitle: string }> = {
+    'Ingesting': { dot: 'bg-amber-500', subtitle: 'Import async · AI extracts · Dealer confirms' },
+    'Draft': { dot: 'bg-green-500', subtitle: 'New · Duplicate · Full authoring' },
+    'Validation': { dot: 'bg-blue-500', subtitle: 'Rules engine · inputs_snapshot · Ack' },
+    'Approval': { dot: 'bg-amber-500', subtitle: 'Discount exceeds policy · Manager reviews' },
+    'Send': { dot: 'bg-green-500', subtitle: 'Immutable PDF · SendGrid · Delivery tracking' },
+}
 const ackStages = ['Pending', 'Discrepancy', 'Partial', 'Confirmed']
 
 
@@ -280,13 +300,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         }, 0)
 
         const activeCount = dataToAnalyze.filter(o => {
-            if (lifecycleTab === 'quotes') return !['Approved', 'Lost'].includes((o as any).status);
+            if (lifecycleTab === 'quotes') return !['Send'].includes((o as any).status);
             if (lifecycleTab === 'acknowledgments') return !['Confirmed'].includes((o as any).status);
             return !['Delivered', 'Completed'].includes(o.status);
         }).length
 
         const completedCount = dataToAnalyze.filter(o => {
-            if (lifecycleTab === 'quotes') return ['Approved', 'Lost'].includes((o as any).status);
+            if (lifecycleTab === 'quotes') return ['Send'].includes((o as any).status);
             if (lifecycleTab === 'acknowledgments') return ['Confirmed'].includes((o as any).status);
             return ['Delivered', 'Completed'].includes(o.status);
         }).length
@@ -1147,16 +1167,34 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </div>
                                 ) : (
                                     /* Pipeline View */
+                                    <>
+                                    {lifecycleTab === 'quotes' && (
+                                        <div className="flex items-center gap-3 px-2 py-2 text-[10px] text-muted-foreground flex-wrap">
+                                            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-500 inline-block" /> Expert intervention required</span>
+                                            <span className="px-2 py-0.5 rounded-full bg-ai/10 text-ai border border-ai/20 font-semibold">AI assisted</span>
+                                            <span className="px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-500/20 font-semibold">STALE</span>
+                                            <span className="px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/20 font-semibold">Action required</span>
+                                            <span className="text-muted-foreground/60">Click any card to see the full column definition</span>
+                                        </div>
+                                    )}
                                     <div className="flex gap-6 overflow-x-auto pb-4 scale-y-[-1] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted/50 hover:[&::-webkit-scrollbar-thumb]:bg-muted dark:[&::-webkit-scrollbar-thumb]:bg-muted/50 dark:hover:[&::-webkit-scrollbar-thumb]:bg-muted">
                                         {(lifecycleTab === 'quotes' ? quoteStages : lifecycleTab === 'acknowledgments' ? ackStages : pipelineStages).map((stage) => {
                                             const stageOrders = filteredData.filter((o: any) => o.status === stage);
                                             return (
                                                 <div key={stage} className="min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col h-full scale-y-[-1] pt-4">
                                                     <div className="flex items-center justify-between mb-4 px-2">
-                                                        <h4 className="font-medium text-foreground flex items-center gap-2">
-                                                            {stage}
-                                                            <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{stageOrders.length}</span>
-                                                        </h4>
+                                                        <div>
+                                                            <h4 className="font-medium text-foreground flex items-center gap-2">
+                                                                {lifecycleTab === 'quotes' && quoteStagesMeta[stage] && (
+                                                                    <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${quoteStagesMeta[stage].dot}`} />
+                                                                )}
+                                                                {stage}
+                                                                <span className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full">{stageOrders.length}</span>
+                                                            </h4>
+                                                            {lifecycleTab === 'quotes' && quoteStagesMeta[stage] && (
+                                                                <p className="text-[10px] text-muted-foreground mt-0.5 pl-[18px]">{quoteStagesMeta[stage].subtitle}</p>
+                                                            )}
+                                                        </div>
                                                         <button className="text-muted-foreground hover:text-foreground">
                                                             <MoreHorizontal className="w-5 h-5" />
                                                         </button>
@@ -1204,8 +1242,38 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             <span className="text-foreground">{order.date}</span>
                                                                         </div>
 
+                                                                        {/* Quote tags */}
+                                                                        {lifecycleTab === 'quotes' && (order as any).tags?.length > 0 && (
+                                                                            <div className="flex flex-wrap gap-1 mt-1">
+                                                                                {(order as any).tags.map((tag: string) => (
+                                                                                    <span key={tag} className={cn("text-[9px] font-semibold px-2 py-0.5 rounded-full border",
+                                                                                        tag === 'AI assisted' ? 'bg-ai/10 text-ai border-ai/20' :
+                                                                                        tag === 'Action required' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' :
+                                                                                        tag === 'Ready to advance' ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
+                                                                                        tag === 'Post-validation edit' ? 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/20' :
+                                                                                        'bg-muted text-muted-foreground border-border'
+                                                                                    )}>{tag}</span>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+
                                                                         {/* Use a simple divider */}
                                                                         <div className="h-px bg-border w-full my-2" />
+
+                                                                        {/* Quote action label */}
+                                                                        {lifecycleTab === 'quotes' && (order as any).actionLabel && (
+                                                                            <div className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-lg border text-center",
+                                                                                (order as any).actionLabel.includes('STALE') || (order as any).actionLabel.includes('re-validate') ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20' :
+                                                                                (order as any).actionLabel.includes('READY') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
+                                                                                (order as any).actionLabel.includes('Delivered') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
+                                                                                (order as any).actionLabel.includes('Sending') || (order as any).actionLabel.includes('extracting') ? 'bg-ai/10 text-ai border-ai/20' :
+                                                                                (order as any).actionLabel.includes('warning') || (order as any).actionLabel.includes('pending') ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' :
+                                                                                (order as any).actionLabel.includes('fields') ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' :
+                                                                                'bg-muted text-muted-foreground border-border'
+                                                                            )}>
+                                                                                {(order as any).actionLabel}
+                                                                            </div>
+                                                                        )}
 
                                                                         {/* Inline Actions Row */}
                                                                         <div className="flex items-center justify-between">
@@ -1288,6 +1356,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             )
                                         })}
                                     </div>
+                                    </>
                                 )}
                             </div>
                         </div>
