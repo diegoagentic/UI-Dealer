@@ -866,11 +866,11 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             <span className="text-muted-foreground/60">Click any card to see the full column definition</span>
                                         </div>
                                     )}
-                                    <div className="flex gap-6 overflow-x-auto pb-4 scale-y-[-1] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-muted/50 hover:[&::-webkit-scrollbar-thumb]:bg-muted dark:[&::-webkit-scrollbar-thumb]:bg-muted/50 dark:hover:[&::-webkit-scrollbar-thumb]:bg-muted">
+                                    <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-micro">
                                         {(lifecycleTab === 'quotes' ? quoteStages : lifecycleTab === 'acknowledgments' ? ackStages : pipelineStages).map((stage) => {
                                             const stageOrders = filteredData.filter((o: any) => o.status === stage);
                                             return (
-                                                <div key={stage} className="min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col h-full scale-y-[-1] pt-4">
+                                                <div key={stage} className="min-w-[320px] max-w-[320px] flex-shrink-0 flex flex-col h-full pt-4">
                                                     <div className="flex items-center justify-between mb-4 px-2">
                                                         <div>
                                                             <h4 className="font-medium text-foreground flex items-center gap-2">
