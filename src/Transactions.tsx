@@ -422,117 +422,46 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 {/* Quotes Tab Content */}
                 {lifecycleTab === 'quotes' && (
                     <>
-                        {/* KPI Cards for Quotes */}
-                        {showMetrics ? (
-                            <>
-                                <div className="flex justify-end mb-2">
-                                    <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUp className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <MetricGrid metrics={quotesSummary} />
-                                <div className="mt-6">
-                                    <QuickActions actions={[
-                                        { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
-                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                                        { icon: <Sparkles className="w-5 h-5" />, label: "Templates" },
-                                    ]} />
-                                </div>
-                            </>
-                        ) : (
-                            /* Collapsed Quotes Metrics */
-                            <>
-                                <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
-                                    <MetricGrid metrics={quotesSummary} compact />
-                                    <div className="w-px h-12 bg-border shrink-0" />
-                                    <QuickActions compact actions={[
-                                        { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
-                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                                    ]} />
-                                </div>
-                            </>
-                        )}
-                        <div className="mt-6"></div> {/* Spacer */}
+                        <MetricGrid metrics={quotesSummary} />
+                        <div className="mt-4">
+                            <QuickActions actions={[
+                                { icon: <Plus className="w-4 h-4" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
+                                { icon: <Copy className="w-4 h-4" />, label: "Duplicate" },
+                                { icon: <FileText className="w-4 h-4" />, label: "Export PDF" },
+                                { icon: <Mail className="w-4 h-4" />, label: "Send Email" },
+                                { icon: <Sparkles className="w-4 h-4" />, label: "Templates" },
+                            ]} />
+                        </div>
                     </>
                 )}
 
                 {/* Acknowledgments Tab Content */}
                 {lifecycleTab === 'acknowledgments' && (
                     <>
-                        {/* KPI Cards for Acks */}
-                        {showMetrics ? (
-                            <>
-                                <div className="flex justify-end mb-2">
-                                    <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUp className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <MetricGrid metrics={acksSummary} />
-                                <div className="mt-6">
-                                    <QuickActions actions={[
-                                        { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
-                                        { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
-                                    ]} />
-                                </div>
-                            </>
-                        ) : (
-                            /* Collapsed Acks Metrics */
-                            <>
-                                <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
-                                    <MetricGrid metrics={acksSummary} compact />
-                                    <div className="w-px h-12 bg-border shrink-0" />
-                                    <QuickActions compact actions={[
-                                        { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
-                                        { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
-                                    ]} />
-                                </div>
-                            </>
-                        )}
-                        <div className="mt-6"></div> {/* Spacer */}
+                        <MetricGrid metrics={acksSummary} />
+                        <div className="mt-4">
+                            <QuickActions actions={[
+                                { icon: <CloudUpload className="w-4 h-4" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
+                                { icon: <FileText className="w-4 h-4" />, label: "Export PDF" },
+                                { icon: <Mail className="w-4 h-4" />, label: "Email Vendor" },
+                                { icon: <BadgeCheck className="w-4 h-4" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
+                            ]} />
+                        </div>
                     </>
                 )}
 
                 {/* Orders Content (Existing) */}
                 {lifecycleTab === 'orders' && (
                     <>
-                        {/* KPI Cards / Summary Panel */}
-                        {showMetrics ? (
-                            <>
-                                <div className="flex justify-end mb-2">
-                                    <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                        Hide Details <ChevronUp className="w-4 h-4" />
-                                    </button>
-                                </div>
-                                <MetricGrid metrics={ordersSummary} />
-                                <div className="mt-6">
-                                    <QuickActions actions={[
-                                        { icon: <Plus className="w-5 h-5" />, label: "New Order", action: () => setIsCreateOrderOpen(true) },
-                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                                    ]} />
-                                </div>
-                            </>
-                        ) : (
-                            <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
-                                <MetricGrid metrics={ordersSummary} compact />
-                                <div className="w-px h-12 bg-border shrink-0" />
-                                <QuickActions compact actions={[
-                                    { icon: <Plus className="w-5 h-5" />, label: "New Order", action: () => setIsCreateOrderOpen(true) },
-                                    { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                    { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
-                                    { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                                ]} />
-                            </div>
-                        )}
+                        <MetricGrid metrics={ordersSummary} />
+                        <div className="mt-4">
+                            <QuickActions actions={[
+                                { icon: <Plus className="w-4 h-4" />, label: "New Order", action: () => setIsCreateOrderOpen(true) },
+                                { icon: <Copy className="w-4 h-4" />, label: "Duplicate" },
+                                { icon: <FileText className="w-4 h-4" />, label: "Export PDF" },
+                                { icon: <Mail className="w-4 h-4" />, label: "Send Email" },
+                            ]} />
+                        </div>
 
 
 

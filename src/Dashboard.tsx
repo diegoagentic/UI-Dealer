@@ -433,60 +433,18 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
 
 
                 {/* KPI Cards / Executive Summary */}
-                {showMetrics ? (
-                    <>
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold text-foreground">Platform Executive Summary</h2>
-                            <button onClick={() => setShowMetrics(false)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                                Collapse Summary <ChevronUp className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <div className="flex flex-col xl:flex-row gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                            {/* Left Column: Metrics */}
-                            <div className="flex-1 min-w-0">
-                                <MetricGrid metrics={platformMetrics} />
-                            </div>
-
-                            {/* Right Column: Quick Actions */}
-                            <div className="w-full xl:w-[400px] shrink-0">
-                                <QuickActions actions={[
-                                    { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
-                                    { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
-                                    { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
-                                    { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
-                                ]} />
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                        {/* Collapsed Ticker View - Compact Metrics */}
-                        <div className="flex-1 min-w-0">
-                            <MetricGrid metrics={platformMetrics} compact />
-                        </div>
-
-                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-
-                        {/* Quick Actions Integrated - Compact */}
-                        <QuickActions compact actions={[
-                            { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
-                            { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
-                            { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
-                            { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
-                        ]} />
-
-                        <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-
-                        <button
-                            onClick={() => setShowMetrics(true)}
-                            className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white transition-colors"
-                            title="Expand Summary"
-                        >
-                            <ChevronDown className="w-5 h-5" />
-                        </button>
-                    </div>
-                )
-                }
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-lg font-semibold text-foreground">Platform Executive Summary</h2>
+                </div>
+                <MetricGrid metrics={platformMetrics} />
+                <div className="mt-4">
+                    <QuickActions actions={[
+                        { icon: <FilePlus className="w-4 h-4" />, label: "New Quote" },
+                        { icon: <Box className="w-4 h-4" />, label: "Check Stock" },
+                        { icon: <BarChart3 className="w-4 h-4" />, label: "Gen. Report" },
+                        { icon: <CloudUpload className="w-4 h-4" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
+                    ]} />
+                </div>
 
                 {/* Main Tabs Navigation */}
                 <div className="flex items-center mt-8 mb-6">
