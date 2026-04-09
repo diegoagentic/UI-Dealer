@@ -111,32 +111,33 @@ const solidColorStyles: Record<string, string> = {
 }
 
 // Summary Data matching Wireframe
-const ordersSummary = {
-    active_orders: { label: 'Active Orders', value: '89', sub: 'In production/transit', icon: <Box className="w-5 h-5" />, color: 'blue' },
-    pending_approval: { label: 'Pending Approval', value: '12', sub: 'Awaiting authorization', icon: <Clock className="w-5 h-5" />, color: 'orange' },
-    in_production: { label: 'In Production', value: '34', sub: 'Manufacturing stage', icon: <Wrench className="w-5 h-5" />, color: 'purple' },
-    ready_to_ship: { label: 'Ready to Ship', value: '23', sub: 'Awaiting dispatch', icon: <Truck className="w-5 h-5" />, color: 'indigo' },
-    total_value: { label: 'Total Value', value: '$3.8M', sub: 'Active orders value', icon: <DollarSign className="w-5 h-5" />, color: 'green' },
-}
+const ordersSummary = [
+    { label: 'Active Orders', value: '89', icon: <Box className="w-5 h-5" />, trend: { value: '3.2%', positive: true } },
+    { label: 'Pending Approval', value: '12', icon: <Clock className="w-5 h-5" /> },
+    { label: 'In Production', value: '34', icon: <Wrench className="w-5 h-5" />, trend: { value: '5%', positive: true } },
+    { label: 'Ready to Ship', value: '23', icon: <Truck className="w-5 h-5" /> },
+    { label: 'Total Value', value: '$3.8M', icon: <DollarSign className="w-5 h-5" />, trend: { value: '8%', positive: true } },
+]
 
-const quotesSummary = {
-    open_quotes: { label: 'Open Quotes', value: '14', sub: 'Draft or Sent', icon: <FileText className="w-5 h-5" />, color: 'blue' },
-    negotiating: { label: 'Negotiating', value: '5', sub: 'Client review', icon: <User className="w-5 h-5" />, color: 'orange' },
-    approved_ytd: { label: 'Approved', value: '42', sub: 'This year', icon: <Check className="w-5 h-5" />, color: 'green' },
-    win_rate: { label: 'Win Rate', value: '68%', sub: 'vs Last Quarter', icon: <TrendingUp className="w-5 h-5" />, color: 'purple' },
-    pipeline_val: { label: 'Pipeline Val', value: '$2.1M', sub: 'Potential revenue', icon: <DollarSign className="w-5 h-5" />, color: 'indigo' },
-}
+const quotesSummary = [
+    { label: 'Active Quotes', value: '47', icon: <FileText className="w-5 h-5" />, trend: { value: '12%', positive: true } },
+    { label: 'Total Quote Value', value: '$2.4M', icon: <DollarSign className="w-5 h-5" />, trend: { value: '8%', positive: true } },
+    { label: 'Expiring Soon', value: '12', icon: <Clock className="w-5 h-5" /> },
+    { label: 'Win Rate', value: '68%', icon: <TrendingUp className="w-5 h-5" />, trend: { value: '5%', positive: false } },
+]
 
-const acksSummary = {
-    pending_acks: { label: 'Pending Acks', value: '8', sub: 'Awaiting vendor', icon: <Clock className="w-5 h-5" />, color: 'orange' },
-    discrepancies: { label: 'Discrepancies', value: '3', sub: 'Action required', icon: <AlertTriangle className="w-5 h-5" />, color: 'red' },
-    confirmed: { label: 'Confirmed', value: '156', sub: 'On track', icon: <ClipboardCheck className="w-5 h-5" />, color: 'green' },
-    avg_lead: { label: 'Avg Lead Time', value: '4.2w', sub: 'Weeks to ship', icon: <Calendar className="w-5 h-5" />, color: 'blue' },
-    on_time: { label: 'On Time Rate', value: '94%', sub: 'Vendor perf.', icon: <TrendingUp className="w-5 h-5" />, color: 'purple' },
-}
+const acksSummary = [
+    { label: 'Pending Acks', value: '8', icon: <Clock className="w-5 h-5" />, trend: { value: '2%', positive: false } },
+    { label: 'Discrepancies', value: '3', icon: <AlertTriangle className="w-5 h-5" /> },
+    { label: 'Confirmed', value: '156', icon: <ClipboardCheck className="w-5 h-5" />, trend: { value: '4%', positive: true } },
+    { label: 'Avg Lead Time', value: '4.2w', icon: <Calendar className="w-5 h-5" /> },
+    { label: 'On Time Rate', value: '94%', icon: <TrendingUp className="w-5 h-5" />, trend: { value: '2%', positive: true } },
+]
 
 import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 import CreateQuoteModal from './components/CreateQuoteModal'
+import { MetricGrid } from './components/MetricCard'
+import { QuickActions } from './components/QuickActions'
 
 interface TransactionsProps {
     onLogout: () => void;
@@ -429,91 +430,29 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <div className="relative">
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
-                                        {Object.entries(quotesSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
-                                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
-                                                    </div>
-                                                    <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
-                                                                data.color === 'indigo' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
-                                                                    'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
-                                                        }`}>
-                                                        {data.icon}
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                                                    <span className="font-medium">{data.sub}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {/* Quick Actions for Quotes */}
-                                <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
-                                    {[
+                                <MetricGrid metrics={quotesSummary} />
+                                <div className="mt-6">
+                                    <QuickActions actions={[
                                         { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
                                         { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
-                                        { icon: <Mail className="w-5 h-5" />, label: "Send to Client" },
-                                    ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
-                                            {action.icon}
-                                            <span>{action.label}</span>
-                                        </button>
-                                    ))}
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
+                                        { icon: <Sparkles className="w-5 h-5" />, label: "Templates" },
+                                    ]} />
                                 </div>
                             </>
                         ) : (
                             /* Collapsed Quotes Metrics */
                             <>
-                                <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
-                                            {Object.entries(quotesSummary).map(([key, data]) => (
-                                                <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                    <div
-                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
-                                                        title={data.label}
-                                                    >
-                                                        {data.icon}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
-                                                        <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-                                    {/* Quick Actions Integrated - Compact */}
-                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
-                                        {[
-                                            { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
-                                            { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                            { icon: <FileText className="w-5 h-5" />, label: "Export SIF", action: () => handleExportSIF('Quote') },
-                                            { icon: <Mail className="w-5 h-5" />, label: "Send to Client" },
-                                        ].map((action, i) => (
-                                            <button key={i} onClick={() => action.action && action.action()} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title={action.label}>
-                                                {action.icon}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-                                    <button
-                                        onClick={() => setShowMetrics(true)}
-                                        className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
-                                    >
-                                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
-                                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
-                                    </button>
+                                <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
+                                    <MetricGrid metrics={quotesSummary} compact />
+                                    <div className="w-px h-12 bg-border shrink-0" />
+                                    <QuickActions compact actions={[
+                                        { icon: <Plus className="w-5 h-5" />, label: "New Quote", action: () => setIsQuoteWidgetOpen(true) },
+                                        { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
+                                    ]} />
                                 </div>
                             </>
                         )}
@@ -532,95 +471,28 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <div className="relative">
-                                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4">
-                                        {Object.entries(acksSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
-                                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
-                                                    </div>
-                                                    <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
-                                                                data.color === 'red' ? 'bg-red-50 text-red-600 dark:bg-red-500/10 dark:text-red-400' :
-                                                                    'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
-                                                        }`}>
-                                                        {data.icon}
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                                                    <span className="font-medium">{data.sub}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {/* Quick Actions for Acks */}
-                                <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
-                                    {[
+                                <MetricGrid metrics={acksSummary} />
+                                <div className="mt-6">
+                                    <QuickActions actions={[
                                         { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export Acknowledgement", action: () => handleExportSIF('Acknowledgement') },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
                                         { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
                                         { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
-                                    ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action ? action.action() : null} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
-                                            {action.icon}
-                                            <span>{action.label}</span>
-                                        </button>
-                                    ))}
+                                    ]} />
                                 </div>
                             </>
                         ) : (
                             /* Collapsed Acks Metrics */
                             <>
-                                <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                                        <div className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth">
-                                            {Object.entries(acksSummary).map(([key, data]) => (
-                                                <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                    <div
-                                                        className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
-                                                        title={data.label}
-                                                    >
-                                                        {data.icon}
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
-                                                        <span className="text-[10px] text-muted-foreground mt-1 font-medium">{data.label}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-                                    {/* Quick Actions Integrated - Compact */}
-                                    <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
-                                        {[
-                                            { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack" },
-                                            { icon: <FileText className="w-5 h-5" />, label: "Export Acknowledgement" },
-                                            { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
-                                            { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders" },
-                                        ].map((action, i) => (
-                                            <button key={i} onClick={() => {
-                                                if (action.label === 'Upload Ack') setIsAckModalOpen(true);
-                                                if (action.label === 'Approve Orders') setIsBatchAckOpen(true);
-                                                if (action.label === 'Export Acknowledgement') handleExportSIF('Acknowledgement');
-                                            }} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title={action.label}>
-                                                {action.icon}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-                                    <button
-                                        onClick={() => setShowMetrics(true)}
-                                        className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
-                                    >
-                                        <ChevronDown className="w-4 h-4 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white" />
-                                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white">Details</span>
-                                    </button>
+                                <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
+                                    <MetricGrid metrics={acksSummary} compact />
+                                    <div className="w-px h-12 bg-border shrink-0" />
+                                    <QuickActions compact actions={[
+                                        { icon: <CloudUpload className="w-5 h-5" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                                        { icon: <Mail className="w-5 h-5" />, label: "Email Vendor" },
+                                        { icon: <BadgeCheck className="w-5 h-5" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
+                                    ]} />
                                 </div>
                             </>
                         )}
@@ -639,138 +511,26 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         Hide Details <ChevronUp className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <div className="relative">
-                                    <div
-                                        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 overflow-x-auto pb-4"
-                                        ref={expandedScrollRef}
-                                    >
-                                        {Object.entries(ordersSummary).map(([key, data]) => (
-                                            <div key={key} className="bg-white dark:bg-zinc-800 rounded-2xl p-6 border border-zinc-200 dark:border-zinc-700 shadow-sm hover:shadow-md transition-all group min-w-[200px]">
-                                                <div className="flex items-center justify-between">
-                                                    <div>
-                                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{data.label}</p>
-                                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">{data.value}</p>
-                                                    </div>
-                                                    <div className={`p-3 rounded-xl ${data.color === 'blue' ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400' :
-                                                        data.color === 'orange' ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
-                                                            data.color === 'purple' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
-                                                                data.color === 'indigo' ? 'bg-ai-light text-ai dark:bg-ai/10 dark:text-ai' :
-                                                                    'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400'
-                                                        }`}>
-                                                        {data.icon}
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                                                    <span className="font-medium">{data.sub}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {/* Quick Actions below grid when expanded */}
-                                <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                                    <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
-                                    {[
-                                        { icon: <Plus className="w-5 h-5" />, label: "New Order" },
+                                <MetricGrid metrics={ordersSummary} />
+                                <div className="mt-6">
+                                    <QuickActions actions={[
+                                        { icon: <Plus className="w-5 h-5" />, label: "New Order", action: () => setIsCreateOrderOpen(true) },
                                         { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
-                                        { icon: <FileText className="w-5 h-5" />, label: "Export Order", action: () => handleExportSIF('Order') },
+                                        { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
                                         { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                                    ].map((action, i) => (
-                                        <button key={i} onClick={() => action.action && action.action()} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
-                                            {action.icon}
-                                            <span>{action.label}</span>
-                                        </button>
-                                    ))}
+                                    ]} />
                                 </div>
                             </>
                         ) : (
-                            <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                                {/* Collapsed Ticker View - Carousel */}
-                                <div className="flex items-center gap-2 flex-1 min-w-0">
-                                    {/* Left Scroll Button */}
-                                    <button
-                                        onClick={() => scroll(scrollContainerRef, 'left')}
-                                        className="p-1.5 rounded-full hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors shrink-0"
-                                    >
-                                        <ChevronLeft className="w-4 h-4" />
-                                    </button>
-
-                                    <div
-                                        ref={scrollContainerRef}
-                                        className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
-                                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                    >
-                                        {Object.entries(ordersSummary).map(([key, data]) => (
-                                            <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                                {/* Icon with Floating Tooltip */}
-                                                {/* Icon with Floating Tooltip */}
-                                                <div
-                                                    className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-card'}`}
-                                                    title={data.label}
-                                                >
-                                                    {data.icon}
-                                                </div>
-
-                                                {/* Stacked Value & Change */}
-                                                <div className="flex flex-col">
-                                                    <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
-                                                    <span className="text-[10px] text-muted-foreground mt-1 font-medium">
-                                                        {data.label}
-                                                    </span>
-                                                </div>
-
-                                                {/* Divider (except last) */}
-                                                <div className="h-8 w-px bg-border/50 ml-4 hidden md:block lg:hidden xl:block opacity-50"></div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Right Scroll Button */}
-                                    <button
-                                        onClick={() => scroll(scrollContainerRef, 'right')}
-                                        className="p-1.5 rounded-full hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors shrink-0"
-                                    >
-                                        <ChevronRight className="w-4 h-4" />
-                                    </button>
-                                </div>
-
-                                <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-
-                                {/* Quick Actions Integrated - Compact */}
-                                <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
-                                    {[
-                                        { icon: <FilePlus className="w-5 h-5" />, label: "New Quote", color: "text-blue-500" },
-                                        { icon: <Box className="w-5 h-5" />, label: "Check Stock", color: "text-amber-500" },
-                                        { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report", color: "text-green-500" },
-                                        { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", color: "text-ai" },
-                                    ].map((action, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={() => {
-                                                if (action.label === 'New Quote') setIsQuoteWidgetOpen(true);
-                                            }}
-                                            className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group"
-                                            title={action.label}
-                                        >
-                                            {action.icon}
-                                        </button>
-                                    ))}
-                                    <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
-                                    <button onClick={() => handleExportSIF('Order')} className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 text-muted-foreground hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title="Export Order">
-                                        <FileText className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
-                                <button
-                                    onClick={() => setShowMetrics(true)}
-                                    className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-brand-300 dark:hover:bg-brand-600/50 rounded-lg transition-colors"
-                                >
-                                    <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                                        <ChevronDown className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">Details</span>
-                                </button>
+                            <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
+                                <MetricGrid metrics={ordersSummary} compact />
+                                <div className="w-px h-12 bg-border shrink-0" />
+                                <QuickActions compact actions={[
+                                    { icon: <Plus className="w-5 h-5" />, label: "New Order", action: () => setIsCreateOrderOpen(true) },
+                                    { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                                    { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                                    { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
+                                ]} />
                             </div>
                         )}
 

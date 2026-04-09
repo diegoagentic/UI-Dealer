@@ -8,6 +8,8 @@ import Breadcrumbs from './components/Breadcrumbs'
 import Select from './components/Select'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { MetricGrid } from './components/MetricCard'
+import { QuickActions } from './components/QuickActions'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -139,6 +141,13 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
         }
     }, [selectedProject, selectedClient])
 
+    const pricingMetrics = [
+        { label: 'Revenue', value: metricsData.revenue, icon: <DollarSign className="w-5 h-5" />, trend: { value: '8%', positive: true } },
+        { label: 'Active Orders', value: String(metricsData.activeOrders), icon: <Box className="w-5 h-5" />, trend: { value: '3%', positive: true } },
+        { label: 'Completion Rate', value: `${metricsData.efficiency}%`, icon: <TrendingUp className="w-5 h-5" /> },
+        { label: 'Projects', value: String(availableProjects.length), icon: <ClipboardList className="w-5 h-5" /> },
+    ]
+
     const filteredOrders = useMemo(() => {
         return recentOrders.filter(order => {
             const matchesSearch = order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -200,138 +209,26 @@ export default function Pricing({ onLogout, onNavigateToDetail, onNavigateToWork
                                 Hide Details <ChevronUp className="w-4 h-4" />
                             </button>
                         </div>
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 animate-in fade-in zoom-in duration-300">
-                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Inventory</p>
-                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">$1.2M</p>
-                                    </div>
-                                    <div className="p-3 bg-blue-50 dark:bg-blue-500/10 rounded-xl text-blue-600 dark:text-blue-400">
-                                        <DollarSign className="w-6 h-6" />
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex items-center text-sm text-green-600">
-                                    <TrendingUp className="w-4 h-4 mr-1" />
-                                    <span className="font-medium">+0.2%</span> <span className="text-muted-foreground ml-1">vs last month</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Efficiency</p>
-                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">88%</p>
-                                    </div>
-                                    <div className="p-3 bg-ai-light dark:bg-ai/10 rounded-xl text-ai">
-                                        <BarChart3 className="w-6 h-6" />
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex items-center text-sm text-green-600">
-                                    <TrendingUp className="w-4 h-4 mr-1" />
-                                    <span className="font-medium">+3.5%</span> <span className="text-muted-foreground ml-1">vs last month</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Pending Orders</p>
-                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">142</p>
-                                    </div>
-                                    <div className="p-3 bg-amber-50 dark:bg-amber-500/10 rounded-xl text-amber-600 dark:text-amber-400">
-                                        <ClipboardList className="w-6 h-6" />
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex items-center text-sm text-muted-foreground">
-                                    <span className="font-medium">-12</span> <span className="ml-1">vs yesterday</span>
-                                </div>
-                            </div>
-
-                            <div className="bg-card rounded-2xl p-6 border border-border shadow-sm hover:shadow-md transition-all group">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Low Stock</p>
-                                        <p className="mt-1 text-3xl font-semibold text-foreground group-hover:scale-105 transition-transform origin-left">15</p>
-                                    </div>
-                                    <div className="p-3 bg-red-50 dark:bg-red-500/10 rounded-xl text-red-600 dark:text-red-400">
-                                        <AlertCircle className="w-6 h-6" />
-                                    </div>
-                                </div>
-                                <div className="mt-4 flex items-center text-sm text-red-500">
-                                    <span className="font-medium">Requires attention</span>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Quick Actions below grid when expanded */}
-                        <div className="flex items-center gap-4 mt-6 animate-in fade-in slide-in-from-top-2 duration-500">
-                            <span className="text-sm font-medium text-zinc-500 dark:text-zinc-400">Quick Actions:</span>
-                            {[
+                        <MetricGrid metrics={pricingMetrics} />
+                        <div className="mt-6">
+                            <QuickActions actions={[
                                 { icon: <Plus className="w-5 h-5" />, label: "New Order" },
                                 { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
                                 { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
                                 { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
-                            ].map((action, i) => (
-                                <button key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border hover:border-primary hover:bg-primary hover:text-primary-foreground text-muted-foreground transition-all text-xs font-medium">
-                                    {action.icon}
-                                    <span>{action.label}</span>
-                                </button>
-                            ))}
+                            ]} />
                         </div>
                     </>
                 ) : (
-                    <div className="bg-card/60 backdrop-blur-md rounded-2xl p-4 border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                        <div className="flex items-center gap-6 overflow-x-auto w-full scrollbar-minimal">
-                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Inventory:</span>
-                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">$1.2M</span>
-                                <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+0.2%</span>
-                            </div>
-                            <div className="w-px h-8 bg-border hidden sm:block"></div>
-                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Efficiency:</span>
-                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">88%</span>
-                                <span className="text-xs text-green-500 font-medium bg-green-50 dark:bg-green-900/20 px-1.5 py-0.5 rounded-md self-center">+3.5%</span>
-                            </div>
-                            <div className="w-px h-8 bg-border hidden sm:block"></div>
-                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Pending:</span>
-                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">142</span>
-                            </div>
-                            <div className="w-px h-8 bg-border hidden sm:block"></div>
-                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                <span className="text-sm text-zinc-500 dark:text-zinc-400">Low Stock:</span>
-                                <span className="text-lg font-semibold text-zinc-900 dark:text-white">15</span>
-                                <span className="text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-1.5 py-0.5 rounded-md self-center">Alert</span>
-                            </div>
-                        </div>
-                        <div className="w-px h-12 bg-border hidden xl:block mx-2"></div>
-                        {/* Quick Actions Integrated */}
-                        <div className="flex items-center gap-3 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-white/10 xl:border-none xl:pl-0">
-                            {[
-                                { icon: <Plus className="w-4 h-4" />, label: "New" },
-                                { icon: <Copy className="w-4 h-4" />, label: "Copy" },
-                                { icon: <FileText className="w-4 h-4" />, label: "PDF" },
-                                { icon: <Mail className="w-4 h-4" />, label: "Email" },
-                            ].map((action, i) => (
-                                <button key={i} className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors">
-                                    <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                        {action.icon}
-                                    </div>
-                                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">{action.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <div className="w-px h-12 bg-border hidden xl:block mx-2"></div>
-                        <button
-                            onClick={() => setShowMetrics(true)}
-                            className="flex flex-col items-center justify-center gap-1 group p-2 hover:bg-primary dark:hover:bg-primary rounded-lg transition-colors"
-                        >
-                            <div className="text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">
-                                <ChevronDown className="w-4 h-4" />
-                            </div>
-                            <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-900 transition-colors">Details</span>
-                        </button>
+                    <div className="bg-card dark:bg-zinc-800 rounded-2xl p-4 border border-border shadow-sm flex items-center justify-between gap-4">
+                        <MetricGrid metrics={pricingMetrics} compact />
+                        <div className="w-px h-12 bg-border shrink-0" />
+                        <QuickActions compact actions={[
+                            { icon: <Plus className="w-5 h-5" />, label: "New Order" },
+                            { icon: <Copy className="w-5 h-5" />, label: "Duplicate" },
+                            { icon: <FileText className="w-5 h-5" />, label: "Export PDF" },
+                            { icon: <Mail className="w-5 h-5" />, label: "Send Email" },
+                        ]} />
                     </div>
                 )}
 

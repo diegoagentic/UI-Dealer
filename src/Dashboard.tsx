@@ -23,6 +23,8 @@ import QuoteGenerationFlow from './components/QuoteGenerationFlow';
 import { useGenUI } from './context/GenUIContext'
 import DashboardMetricsGrid from './components/DashboardMetricsGrid';
 import { Card } from 'strata-design-system';
+import { MetricGrid } from './components/MetricCard'
+import { QuickActions } from './components/QuickActions'
 
 // Urgent Actions Data (Dealer Persona)
 const urgentActions = [
@@ -224,6 +226,15 @@ const platformSummary = {
     crm: { label: 'CRM', value: '45 Leads', sub1: '22% Conv. Rate', sub2: '4.8/5 CSAT', icon: <Users className="w-5 h-5" />, color: 'pink', change: '+1.2%', positive: true },
     pricing: { label: 'Pricing', value: '24% Margin', sub1: '3 Discounts', sub2: '150 Updates', icon: <Tag className="w-5 h-5" />, color: 'indigo', change: '0%', positive: true },
 }
+
+const platformMetrics = [
+    { label: 'Inventory', value: '$1.2M', icon: <Box className="w-5 h-5" />, trend: { value: '0.2%', positive: true } },
+    { label: 'Catalogs', value: '12 Active', icon: <BookOpen className="w-5 h-5" />, trend: { value: '15%', positive: true } },
+    { label: 'MAC', value: '8 Pending', icon: <Truck className="w-5 h-5" />, trend: { value: '2%', positive: false } },
+    { label: 'Transactions', value: '$385k', icon: <ClipboardList className="w-5 h-5" />, trend: { value: '3.5%', positive: true } },
+    { label: 'CRM', value: '45 Leads', icon: <Users className="w-5 h-5" />, trend: { value: '1.2%', positive: true } },
+    { label: 'Pricing', value: '24% Margin', icon: <Tag className="w-5 h-5" /> },
+]
 
 // Define props interface if not heavily inferred or complex
 interface DashboardProps {
@@ -431,209 +442,38 @@ export default function Dashboard({ onLogout, onNavigateToDetail, onNavigateToWo
                             </button>
                         </div>
                         <div className="flex flex-col xl:flex-row gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                            {/* Left Column: Carousel */}
-                            <div className="relative group/expanded flex-1 min-w-0">
-                                {/* Left Scroll Button (Expanded) */}
-                                <button
-                                    onClick={() => scroll(expandedScrollRef, 'left')}
-                                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all disabled:opacity-0"
-                                >
-                                    <ChevronLeft className="w-5 h-5" />
-                                </button>
-
-                                <div
-                                    ref={expandedScrollRef}
-                                    className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide scroll-smooth"
-                                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                                >
-                                    {Object.entries(platformSummary).map(([key, data]) => (
-                                        <div
-                                            key={key}
-                                            className={`min-w-[230px] max-w-[230px] h-[200px] flex flex-col justify-between bg-white dark:bg-zinc-800 backdrop-blur-sm rounded-xl p-3 border border-zinc-200 dark:border-zinc-700 transition-all duration-300 group/card ${expandedCardId === key ? 'ring-1 ring-primary/20 shadow-md' : 'shadow-sm hover:shadow-md'}`}
-                                        >
-                                            <div className="flex-1 flex flex-col">
-                                                {/* Header: Label + Icon */}
-                                                <div className="flex items-center justify-between mb-2">
-                                                    <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">{data.label}</span>
-                                                    <div
-                                                        className={`p-1 rounded-md ${colorStyles[data.color]?.replace('ring-1', '') || 'bg-zinc-100 dark:bg-zinc-800'} bg-opacity-50 relative group`}
-                                                        title={data.label}
-                                                    >
-                                                        <div className="w-3.5 h-3.5 child-svg:w-full child-svg:h-full">
-                                                            {data.icon}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* Main Value */}
-                                                <div className="flex items-baseline gap-2 mb-2">
-                                                    <span className="text-xl font-bold text-foreground tracking-tight">{data.value}</span>
-                                                    <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${data.positive ? 'bg-green-50 text-green-700 dark:bg-green-500/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-500/20 dark:text-red-400'}`}>
-                                                        {data.change}
-                                                    </span>
-                                                </div>
-
-                                                {/* Footer: Sub Metrics (Visible by default) */}
-                                                <div className={`space-y-0.5 mb-2 ${expandedCardId === key ? 'hidden' : 'block'}`}>
-                                                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                                                        <div className={`w-1 h-1 rounded-full bg-${data.color}-500 shrink-0`}></div>
-                                                        <span className="truncate">{data.sub1}</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                                                        <div className={`w-1 h-1 rounded-full bg-${data.color}-500 shrink-0`}></div>
-                                                        <span className="truncate">{data.sub2}</span>
-                                                    </div>
-                                                </div>
-
-                                                {/* Expanded Details (Conditional) */}
-                                                {expandedCardId === key && (
-                                                    <div className="mt-auto animate-in fade-in slide-in-from-top-1 flex-1 flex flex-col justify-end">
-                                                        <div className="space-y-1.5 mb-2">
-                                                            <div className="flex justify-between text-[10px]">
-                                                                <span className="text-muted-foreground">Trend (30d)</span>
-                                                                <span className="font-medium text-foreground">+12%</span>
-                                                            </div>
-                                                            <div className="flex justify-between text-[10px]">
-                                                                <span className="text-muted-foreground">Projection</span>
-                                                                <span className="font-medium text-foreground">On Track</span>
-                                                            </div>
-                                                        </div>
-                                                        <button className={`w-full py-1.5 text-[10px] font-semibold rounded-lg transition-all text-center border ${solidColorStyles[data.color]}`}>
-                                                            View Report
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Action Buttons Row */}
-                                            <div className="flex items-center justify-between mt-1 pt-2 border-t border-transparent group-hover/card:border-border/50 transition-colors">
-                                                <button
-                                                    onClick={() => setExpandedCardId(expandedCardId === key ? null : key)}
-                                                    className="p-1 -ml-1 hover:text-zinc-900 hover:bg-brand-300 dark:hover:bg-brand-600/50 dark:hover:text-white rounded-lg transition-colors flex items-center gap-1 text-[10px] font-medium"
-                                                >
-                                                    <ChevronDown className={`w-3.5 h-3.5 transition-transform ${expandedCardId === key ? 'rotate-180' : ''}`} />
-                                                    {expandedCardId === key ? 'Less' : 'Details'}
-                                                </button>
-
-                                                <button className={`p-1.5 rounded-full transition-all hover:scale-105 border ${solidColorStyles[data.color]}`} title={`Go to ${data.label}`}>
-                                                    <ArrowRight className="w-3.5 h-3.5" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Right Scroll Button (Expanded) */}
-                                <button
-                                    onClick={() => scroll(expandedScrollRef, 'right')}
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 p-2 rounded-full bg-white dark:bg-zinc-800 shadow-lg border border-zinc-200 dark:border-white/10 text-zinc-500 hover:text-foreground opacity-0 group-hover/expanded:opacity-100 transition-all"
-                                >
-                                    <ChevronRight className="w-5 h-5" />
-                                </button>
+                            {/* Left Column: Metrics */}
+                            <div className="flex-1 min-w-0">
+                                <MetricGrid metrics={platformMetrics} />
                             </div>
 
-                            {/* Right Column: Quick Actions Grid */}
-                            <div className="w-full xl:w-[400px] shrink-0 flex flex-col h-[200px] xl:h-[200px]">
-                                <h3 className="text-sm font-semibold text-foreground mb-3 px-1">Quick Actions</h3>
-                                <div className="grid grid-cols-2 gap-3 h-full">
-                                    {[
-                                        { icon: <FilePlus className="w-6 h-6" />, label: "New Quote", desc: "Create a new quote" },
-                                        { icon: <Box className="w-6 h-6" />, label: "Check Stock", desc: "View inventory" },
-                                        { icon: <BarChart3 className="w-6 h-6" />, label: "Gen. Report", desc: "Analytics summary" },
-                                        { icon: <CloudUpload className="w-6 h-6" />, label: "ERP Sync", desc: "Sync with ERP", action: () => setIsERPSyncModalOpen(true) },
-                                    ].map((action, i) => (
-                                        <button
-                                            key={i}
-                                            onClick={action.action}
-                                            className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-border bg-white/50 dark:bg-zinc-800/50 hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:border-brand-400 hover:text-zinc-900 transition-all group"
-                                        >
-                                            <div className="p-2.5 rounded-full bg-zinc-100 dark:bg-zinc-900 text-zinc-500 group-hover:text-zinc-900 group-hover:bg-brand-100 dark:group-hover:bg-brand-900/20 transition-colors">
-                                                {action.icon}
-                                            </div>
-                                            <div className="text-center">
-                                                <span className="text-xs font-semibold text-foreground group-hover:text-zinc-900 block">{action.label}</span>
-                                                <span className="text-[10px] text-muted-foreground hidden sm:block">{action.desc}</span>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* Right Column: Quick Actions */}
+                            <div className="w-full xl:w-[400px] shrink-0">
+                                <QuickActions actions={[
+                                    { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
+                                    { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
+                                    { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
+                                    { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
+                                ]} />
                             </div>
                         </div>
                     </>
                 ) : (
                     <div className="bg-white/60 dark:bg-zinc-800 backdrop-blur-md rounded-2xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm flex flex-col xl:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                        {/* Collapsed Ticker View - Carousel */}
-                        <div className="flex items-center gap-2 flex-1 min-w-0">
-                            {/* Left Scroll Button */}
-                            <button
-                                onClick={() => scroll(scrollContainerRef, 'left')}
-                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-
-                            <div
-                                ref={scrollContainerRef}
-                                className="flex items-center gap-8 overflow-x-auto w-full scrollbar-hide px-2 scroll-smooth"
-                                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Ensure scrollbar is hidden
-                            >
-                                {Object.entries(platformSummary).map(([key, data]) => (
-                                    <div key={key} className="flex items-center gap-3 min-w-fit group cursor-default">
-                                        {/* Icon with Floating Tooltip */}
-                                        <div
-                                            className={`relative flex items-center justify-center w-10 h-10 rounded-full transition-colors ${colorStyles[data.color] || 'bg-zinc-100 dark:bg-zinc-800'}`}
-                                            title={data.label}
-                                        >
-                                            {data.icon}
-                                        </div>
-
-                                        {/* Stacked Value & Change */}
-                                        <div className="flex flex-col">
-                                            <span className="text-lg font-bold text-foreground leading-none">{data.value}</span>
-                                            <span className={`text-[10px] font-bold mt-1 ${data.positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                {data.change}
-                                            </span>
-                                        </div>
-
-                                        {/* Divider (except last) */}
-                                        <div className="h-8 w-px bg-border/50 ml-4 hidden md:block lg:hidden xl:block opacity-50"></div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Right Scroll Button */}
-                            <button
-                                onClick={() => scroll(scrollContainerRef, 'right')}
-                                className="p-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-foreground transition-colors shrink-0"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
+                        {/* Collapsed Ticker View - Compact Metrics */}
+                        <div className="flex-1 min-w-0">
+                            <MetricGrid metrics={platformMetrics} compact />
                         </div>
 
                         <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
                         {/* Quick Actions Integrated - Compact */}
-                        <div className="flex items-center gap-1 overflow-x-auto min-w-max pl-4 border-l border-zinc-200 dark:border-zinc-700 xl:border-none xl:pl-0">
-                            {[
-                                { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
-                                { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
-                                { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
-                                { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
-                            ].map((action, i) => (
-                                <button
-                                    key={i}
-                                    onClick={action.action}
-                                    className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white transition-colors relative group"
-                                    title={action.label}
-                                >
-                                    {action.icon}
-                                </button>
-                            ))}
-                            <div className="w-px h-6 bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
-                            <button className="p-2 rounded-lg hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white transition-colors relative group" title="View All & Manage">
-                                <LayoutGrid className="w-5 h-5" />
-                            </button>
-                        </div>
+                        <QuickActions compact actions={[
+                            { icon: <FilePlus className="w-5 h-5" />, label: "New Quote" },
+                            { icon: <Box className="w-5 h-5" />, label: "Check Stock" },
+                            { icon: <BarChart3 className="w-5 h-5" />, label: "Gen. Report" },
+                            { icon: <CloudUpload className="w-5 h-5" />, label: "ERP Sync", action: () => setIsERPSyncModalOpen(true) },
+                        ]} />
 
                         <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
 
