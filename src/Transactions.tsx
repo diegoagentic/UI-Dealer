@@ -478,7 +478,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-3">
                         <div className={cn(
-                            "bg-card rounded-2xl border border-border shadow-sm overflow-hidden transition-all duration-700",
+                            "bg-card rounded-2xl border border-border shadow-sm transition-all duration-700",
                             highlightedSection === 'orders' && "ring-4 ring-brand-500 shadow-[0_0_30px_rgba(var(--brand-500),0.6)] animate-pulse"
                         )}>
                             {/* Header for Orders */}
