@@ -1243,10 +1243,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
 
                                             <div className="flex gap-3 justify-end pt-4 border-t border-border">
-                                                <button className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-accent">
+                                                <button className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
                                                     Contact Rep
                                                 </button>
-                                                <button className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90">
+                                                <button className="px-4 py-2 text-sm font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors">
                                                     Update PO to Match
                                                 </button>
                                             </div>
