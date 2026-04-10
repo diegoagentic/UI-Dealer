@@ -143,6 +143,107 @@ import { MetricGrid } from './components/MetricCard'
 import ComparisonStatusBadge from './components/ack-comparison/ComparisonStatusBadge'
 import { QuickActions } from './components/QuickActions'
 
+// ── Discrepancy Resolver View (inline in modal) ──
+function DiscrepancyResolverView({ onClose, triggerToast }: { onClose: () => void; triggerToast: (t: string, d: string, type: 'success' | 'error' | 'info') => void }) {
+    const [selected, setSelected] = useState<'po' | 'ack' | null>(null)
+    const [resolved, setResolved] = useState(false)
+
+    const handleResolve = () => {
+        setResolved(true)
+        setTimeout(() => {
+            onClose()
+            triggerToast('Discrepancy Resolved', selected === 'ack' ? 'PO updated to match vendor ACK ($13,000.00)' : 'PO value kept ($12,500.00) — vendor notified', 'success')
+        }, 1200)
+    }
+
+    return (
+        <div className="space-y-5">
+            {/* Alert Banner */}
+            <div className="bg-red-50 dark:bg-red-500/5 border border-red-200 dark:border-red-500/20 rounded-xl p-4 flex gap-3">
+                <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                <div>
+                    <h4 className="text-sm font-semibold text-foreground">Price Discrepancy Detected</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Vendor acknowledgement is <span className="font-bold text-red-600 dark:text-red-400">$500 higher</span> than the Purchase Order.</p>
+                </div>
+            </div>
+
+            {/* Selectable Options */}
+            <div className="grid grid-cols-2 gap-4">
+                <button
+                    onClick={() => setSelected('po')}
+                    className={cn(
+                        "p-4 rounded-xl border-2 text-left transition-all",
+                        selected === 'po'
+                            ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-400/20 bg-brand-300/5 dark:bg-brand-500/5"
+                            : "border-border hover:border-muted-foreground/30"
+                    )}
+                >
+                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider">Your PO</span>
+                    <div className="text-xl font-bold text-foreground mt-1">$12,500.00</div>
+                    <div className="text-xs text-muted-foreground mt-1">Unit Price: $250.00 × 50 units</div>
+                    {selected === 'po' && <div className="mt-2 text-[10px] font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Selected — keep PO value</div>}
+                </button>
+                <button
+                    onClick={() => setSelected('ack')}
+                    className={cn(
+                        "p-4 rounded-xl border-2 text-left transition-all",
+                        selected === 'ack'
+                            ? "border-brand-400 dark:border-brand-500 ring-2 ring-brand-400/20 bg-brand-300/5 dark:bg-brand-500/5"
+                            : "border-red-200 dark:border-red-500/20 bg-red-50/30 dark:bg-red-500/5"
+                    )}
+                >
+                    <span className="text-[10px] uppercase font-bold text-red-600 dark:text-red-400 tracking-wider">Vendor ACK</span>
+                    <div className="text-xl font-bold text-red-700 dark:text-red-400 mt-1">$13,000.00</div>
+                    <div className="text-xs text-red-600/80 dark:text-red-400/80 mt-1">Unit Price: $260.00 × 50 units</div>
+                    {selected === 'ack' && <div className="mt-2 text-[10px] font-semibold text-brand-600 dark:text-brand-400 flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Selected — update PO to match</div>}
+                </button>
+            </div>
+
+            {/* AI Suggestion */}
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-ai/5 border border-ai/10">
+                <Sparkles className="w-5 h-5 text-ai shrink-0 mt-0.5" />
+                <div>
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-ai">AI Recommendation</span>
+                        <span className="text-[9px] font-semibold px-2 py-0.5 rounded-full bg-ai/10 text-ai border border-ai/20">94% confidence</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                        Vendor applied 2026 price list increase (+4%). This matches the manufacturer's published price adjustment effective Jan 1, 2026.
+                        Recommend <span className="font-semibold text-foreground">accepting ACK value</span> and updating your PO to reflect current pricing. SPA contract #SPA-2025-112 allows annual adjustments up to 5%.
+                    </p>
+                </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 justify-end pt-3 border-t border-border">
+                {resolved ? (
+                    <div className="flex items-center gap-2 text-sm font-semibold text-green-600 dark:text-green-400">
+                        <CheckCircle2 className="h-4 w-4" /> Resolved — {selected === 'ack' ? 'PO updated' : 'PO value kept'}
+                    </div>
+                ) : (
+                    <>
+                        <button onClick={onClose} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleResolve}
+                            disabled={!selected}
+                            className={cn(
+                                "px-5 py-2 text-sm font-bold rounded-lg transition-colors",
+                                selected
+                                    ? "text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600"
+                                    : "text-muted-foreground bg-muted cursor-not-allowed"
+                            )}
+                        >
+                            {selected === 'ack' ? 'Update PO to Match' : selected === 'po' ? 'Keep PO Value' : 'Select an option'}
+                        </button>
+                    </>
+                )}
+            </div>
+        </div>
+    )
+}
+
 interface TransactionsProps {
     onLogout: () => void;
     onNavigateToDetail: (type: string) => void;
@@ -1219,38 +1320,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             </div>
                                         </div>
                                     ) : lifecycleTab === 'acknowledgments' ? (
-                                        /* Ack Details View */
-                                        <div className="space-y-6">
-                                            <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg p-4 flex gap-3">
-                                                <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
-                                                <div>
-                                                    <h4 className="text-sm font-semibold text-red-700 dark:text-red-400">Price Discrepancy Detected</h4>
-                                                    <p className="text-sm text-red-600/90 dark:text-red-400/90 mt-1">Vendor acknowledgement is <span className="font-bold">$500 higher</span> than the Purchase Order.</p>
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-4 text-sm">
-                                                <div className="p-4 border border-zinc-200 dark:border-zinc-700 rounded-lg">
-                                                    <span className="block text-xs uppercase text-muted-foreground mb-1">Your PO</span>
-                                                    <div className="font-semibold text-lg">$12,500.00</div>
-                                                    <div className="text-xs text-muted-foreground mt-2">Unit Price: $250.00</div>
-                                                </div>
-                                                <div className="p-4 border border-red-200 dark:border-red-900/30 bg-red-50/50 dark:bg-red-900/5 rounded-lg">
-                                                    <span className="block text-xs uppercase text-red-600 dark:text-red-400 mb-1">Vendor Ack</span>
-                                                    <div className="font-semibold text-lg text-red-700 dark:text-red-400">$13,000.00</div>
-                                                    <div className="text-xs text-red-600/80 mt-2">Unit Price: $260.00</div>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex gap-3 justify-end pt-4 border-t border-border">
-                                                <button className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
-                                                    Contact Rep
-                                                </button>
-                                                <button className="px-4 py-2 text-sm font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors">
-                                                    Update PO to Match
-                                                </button>
-                                            </div>
-                                        </div>
+                                        /* Ack Discrepancy Resolver */
+                                        <DiscrepancyResolverView onClose={() => setTrackingOrder(null)} triggerToast={triggerToast} />
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             {/* Left Col: Timeline */}
