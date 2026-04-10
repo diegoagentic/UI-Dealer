@@ -137,6 +137,7 @@ const acksSummary = [
 import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 import CreateQuoteModal from './components/CreateQuoteModal'
 import { MetricGrid } from './components/MetricCard'
+import DealerDiscrepancyQueue from './components/ack-comparison/DealerDiscrepancyQueue'
 import { QuickActions } from './components/QuickActions'
 
 interface TransactionsProps {
@@ -446,6 +447,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 { icon: <Mail className="w-4 h-4" />, label: "Email Vendor" },
                                 { icon: <BadgeCheck className="w-4 h-4" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                             ]} />
+                        </div>
+                        <div className="mt-4">
+                            <DealerDiscrepancyQueue onNavigateToAck={() => onNavigateToDetail('ack-detail')} />
                         </div>
                     </>
                 )}
