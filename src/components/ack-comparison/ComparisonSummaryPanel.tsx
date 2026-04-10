@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, XCircle, Sparkles } from 'lucide-react'
+import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, XCircle, Sparkles, Check } from 'lucide-react'
 import { clsx } from 'clsx'
 import ComparisonStatusBadge, { type ComparisonStatus } from './ComparisonStatusBadge'
 
@@ -29,7 +29,6 @@ interface ComparisonSummaryPanelProps {
     loading?: boolean
 }
 
-// ── Skeleton ──
 function PanelSkeleton() {
     return (
         <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-5 animate-pulse">
@@ -46,7 +45,6 @@ function PanelSkeleton() {
     )
 }
 
-// ── Severity badge ──
 function SeverityBadge({ severity }: { severity: 'low' | 'medium' | 'high' }) {
     const styles = {
         high: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
@@ -60,10 +58,11 @@ function SeverityBadge({ severity }: { severity: 'low' | 'medium' | 'high' }) {
     )
 }
 
-// ── Main Component ──
 export default function ComparisonSummaryPanel({ report, loading }: ComparisonSummaryPanelProps) {
     const shouldAutoExpand = report?.comparisonStatus === 'MISMATCH' || report?.comparisonStatus === 'PARTIAL_MATCH'
     const [expanded, setExpanded] = useState(shouldAutoExpand)
+    const [fixes, setFixes] = useState<Record<number, 'accept' | 'keep'>>({})
+    const [showFullReport, setShowFullReport] = useState(false)
 
     if (loading) return <PanelSkeleton />
 
@@ -79,7 +78,9 @@ export default function ComparisonSummaryPanel({ report, loading }: ComparisonSu
     const mismatchCount = report.fields.filter(f => f.status === 'mismatch').length
     const partialCount = report.fields.filter(f => f.status === 'partial').length
     const criticalFields = report.fields.filter(f => f.severity === 'high' && f.status !== 'match')
+    const allDiscrepancies = report.fields.filter(f => f.status !== 'match')
     const totalFields = report.fields.length
+    const resolvedCount = Object.keys(fixes).length
 
     return (
         <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden">
@@ -94,6 +95,11 @@ export default function ComparisonSummaryPanel({ report, loading }: ComparisonSu
                     {mismatchCount > 0 && (
                         <span className="text-xs text-muted-foreground">
                             {mismatchCount} discrepanc{mismatchCount === 1 ? 'y' : 'ies'}
+                        </span>
+                    )}
+                    {resolvedCount > 0 && (
+                        <span className="text-[10px] font-medium text-green-600 dark:text-green-400">
+                            {resolvedCount} resolved
                         </span>
                     )}
                 </div>
@@ -140,35 +146,81 @@ export default function ComparisonSummaryPanel({ report, loading }: ComparisonSu
                         </div>
                     </div>
 
-                    {/* Critical Discrepancies List */}
-                    {criticalFields.length > 0 && (
+                    {/* Discrepancies List — Critical by default, full report shows all */}
+                    {(showFullReport ? allDiscrepancies : criticalFields).length > 0 && (
                         <div className="px-5 pb-4 pt-2">
                             <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
-                                Critical Discrepancies
+                                {showFullReport ? `All Discrepancies (${allDiscrepancies.length})` : 'Critical Discrepancies'}
                             </h4>
-                            <div className="space-y-2">
-                                {criticalFields.map((field, i) => (
-                                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl border border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5">
-                                        <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <span className="text-xs font-semibold text-foreground">{field.field}</span>
-                                                <SeverityBadge severity={field.severity!} />
-                                            </div>
-                                            <div className="flex items-center gap-3 mt-1 text-[11px]">
-                                                <span className="text-muted-foreground">PO: <span className="font-medium text-foreground">{field.poValue}</span></span>
-                                                <span className="text-muted-foreground">→</span>
-                                                <span className="text-red-600 dark:text-red-400 font-medium">ACK: {field.ackValue}</span>
-                                            </div>
-                                            {field.autoFixSuggestion && (
-                                                <div className="flex items-start gap-1.5 mt-2 text-[10px] text-ai">
-                                                    <Sparkles className="h-3 w-3 mt-0.5 shrink-0" />
-                                                    <span className="text-muted-foreground">{field.autoFixSuggestion}</span>
+                            <div className="space-y-2 max-h-[400px] overflow-y-auto scrollbar-micro">
+                                {(showFullReport ? allDiscrepancies : criticalFields).map((field, i) => {
+                                    const globalIdx = report.fields.indexOf(field)
+                                    const fix = fixes[globalIdx]
+                                    return (
+                                        <div key={i} className={clsx(
+                                            "p-3 rounded-xl border transition-all",
+                                            fix
+                                                ? "border-green-200 dark:border-green-500/20 bg-green-50/30 dark:bg-green-500/5"
+                                                : field.status === 'mismatch'
+                                                    ? "border-red-200 dark:border-red-500/20 bg-red-50/50 dark:bg-red-500/5"
+                                                    : "border-amber-200 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5"
+                                        )}>
+                                            <div className="flex items-start gap-3">
+                                                {fix
+                                                    ? <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                                                    : field.status === 'mismatch'
+                                                        ? <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
+                                                        : <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                                }
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span className="text-xs font-semibold text-foreground">{field.field}</span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {field.confidence && <span className="text-[9px] font-medium text-ai">{field.confidence}%</span>}
+                                                            {field.severity && <SeverityBadge severity={field.severity} />}
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3 mt-1 text-[11px]">
+                                                        <span className="text-muted-foreground">PO: <span className="font-medium text-foreground">{field.poValue}</span></span>
+                                                        <span className="text-muted-foreground">→</span>
+                                                        <span className={clsx("font-medium", field.status === 'mismatch' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400')}>
+                                                            ACK: {field.ackValue}
+                                                        </span>
+                                                    </div>
+                                                    {field.autoFixSuggestion && (
+                                                        <div className="flex items-start gap-1.5 mt-2 text-[10px]">
+                                                            <Sparkles className="h-3 w-3 mt-0.5 shrink-0 text-ai" />
+                                                            <span className="text-muted-foreground">{field.autoFixSuggestion}</span>
+                                                        </div>
+                                                    )}
+                                                    {/* Resolution Actions */}
+                                                    {!fix && (
+                                                        <div className="flex gap-2 mt-2.5">
+                                                            <button
+                                                                onClick={() => setFixes(prev => ({ ...prev, [globalIdx]: 'accept' }))}
+                                                                className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-semibold bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors"
+                                                            >
+                                                                <Check className="h-3 w-3" /> Accept ACK
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setFixes(prev => ({ ...prev, [globalIdx]: 'keep' }))}
+                                                                className="flex items-center gap-1 px-2.5 py-1.5 text-[10px] font-medium border border-border hover:bg-muted text-foreground rounded-lg transition-colors"
+                                                            >
+                                                                Keep PO
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {fix && (
+                                                        <p className="mt-2 text-[10px] font-semibold text-green-600 dark:text-green-400 flex items-center gap-1">
+                                                            <CheckCircle2 className="h-3 w-3" />
+                                                            {fix === 'accept' ? 'ACK value accepted' : 'PO value kept'}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                            )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
                         </div>
                     )}
@@ -177,10 +229,21 @@ export default function ComparisonSummaryPanel({ report, loading }: ComparisonSu
                     <div className="px-5 py-3 bg-muted/20 border-t border-border flex items-center justify-between">
                         <span className="text-[10px] text-muted-foreground">
                             Compared: {report.comparedAt} · {report.ackId} ↔ {report.poId}
+                            {resolvedCount > 0 && ` · ${resolvedCount}/${allDiscrepancies.length} resolved`}
                         </span>
-                        <button className="text-[10px] font-semibold text-primary hover:underline transition-colors">
-                            View Full Report →
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setShowFullReport(!showFullReport)}
+                                className="text-[10px] font-semibold text-primary hover:underline transition-colors"
+                            >
+                                {showFullReport ? '← Critical Only' : `View Full Report (${allDiscrepancies.length}) →`}
+                            </button>
+                            {resolvedCount === allDiscrepancies.length && allDiscrepancies.length > 0 && (
+                                <button className="px-3 py-1.5 text-[10px] font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 rounded-lg transition-colors">
+                                    Confirm All
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
