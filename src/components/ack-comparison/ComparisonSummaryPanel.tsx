@@ -178,6 +178,9 @@ export default function ComparisonSummaryPanel({ report, loading }: ComparisonSu
                         <span className="text-[10px] text-muted-foreground">
                             Compared: {report.comparedAt} · {report.ackId} ↔ {report.poId}
                         </span>
+                        <button className="text-[10px] font-semibold text-primary hover:underline transition-colors">
+                            View Full Report →
+                        </button>
                     </div>
                 </div>
             )}

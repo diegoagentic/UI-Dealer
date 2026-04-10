@@ -72,9 +72,12 @@ const recentQuotes = [
 ]
 
 const recentAcknowledgments = [
-    { id: "ACK-8839", relatedPo: "PO-2026-001", vendor: "Herman Miller", status: "Confirmed", date: "Jan 14, 2026", expShipDate: "Feb 20, 2026", discrepancy: "None", initials: "HM", statusColor: "bg-green-50 text-green-700", location: "Zeeland" },
-    { id: "ACK-8840", relatedPo: "PO-2026-002", vendor: "Steelcase", status: "Discrepancy", date: "Jan 13, 2026", expShipDate: "Pending", discrepancy: "Price Mismatch ($500)", initials: "SC", statusColor: "bg-red-50 text-red-700", location: "Grand Rapids" },
-    { id: "ACK-8841", relatedPo: "PO-2026-003", vendor: "Knoll", status: "Partial", date: "Jan 12, 2026", expShipDate: "Mar 01, 2026", discrepancy: "Backordered Items", initials: "KN", statusColor: "bg-amber-50 text-amber-700", location: "East Greenville" },
+    { id: "ACK-8839", relatedPo: "PO-2026-001", vendor: "Herman Miller", status: "Confirmed", date: "Jan 14, 2026", expShipDate: "Feb 20, 2026", discrepancy: "None", initials: "HM", statusColor: "bg-green-50 text-green-700", location: "Zeeland", severity: null, comparisonStatus: 'MATCH' as const },
+    { id: "ACK-8840", relatedPo: "PO-2026-002", vendor: "Steelcase", status: "Discrepancy", date: "Jan 13, 2026", expShipDate: "Pending", discrepancy: "Price Mismatch ($500)", initials: "SC", statusColor: "bg-red-50 text-red-700", location: "Grand Rapids", severity: 'high' as const, comparisonStatus: 'MISMATCH' as const, discrepancyCount: 5 },
+    { id: "ACK-8841", relatedPo: "PO-2026-003", vendor: "Knoll", status: "Partial", date: "Jan 12, 2026", expShipDate: "Mar 01, 2026", discrepancy: "Backordered Items", initials: "KN", statusColor: "bg-amber-50 text-amber-700", location: "East Greenville", severity: 'medium' as const, comparisonStatus: 'PARTIAL_MATCH' as const, discrepancyCount: 2 },
+    { id: "ACK-8842", relatedPo: "PO-2026-004", vendor: "Haworth", status: "Pending", date: "Jan 15, 2026", expShipDate: "Mar 10, 2026", discrepancy: "None", initials: "HW", statusColor: "bg-zinc-100 text-zinc-700", location: "Holland", severity: null, comparisonStatus: 'PENDING_SEMANTIC' as const },
+    { id: "ACK-8843", relatedPo: "PO-2026-005", vendor: "National Office", status: "Discrepancy", date: "Jan 10, 2026", expShipDate: "Feb 28, 2026", discrepancy: "Qty Mismatch (3 lines)", initials: "NO", statusColor: "bg-red-50 text-red-700", location: "Jasper", severity: 'high' as const, comparisonStatus: 'MISMATCH' as const, discrepancyCount: 3 },
+    { id: "ACK-8844", relatedPo: "PO-2026-006", vendor: "Kimball", status: "Confirmed", date: "Jan 09, 2026", expShipDate: "Feb 15, 2026", discrepancy: "None", initials: "KI", statusColor: "bg-green-50 text-green-700", location: "Jasper", severity: null, comparisonStatus: 'MATCH' as const },
 ]
 
 // Pipeline stages
@@ -137,7 +140,7 @@ const acksSummary = [
 import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 import CreateQuoteModal from './components/CreateQuoteModal'
 import { MetricGrid } from './components/MetricCard'
-import DealerDiscrepancyQueue from './components/ack-comparison/DealerDiscrepancyQueue'
+import ComparisonStatusBadge from './components/ack-comparison/ComparisonStatusBadge'
 import { QuickActions } from './components/QuickActions'
 
 interface TransactionsProps {
@@ -202,6 +205,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedStatus, setSelectedStatus] = useState('All Statuses')
     const [selectedLocation, setSelectedLocation] = useState('All Locations')
+    const [selectedSeverity, setSelectedSeverity] = useState('All Severity')
 
     const [activeTab, setActiveTab] = useState<'metrics' | 'active' | 'completed' | 'all'>('active')
     const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments'>('orders')
@@ -337,6 +341,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
             const matchesStatus = selectedStatus === 'All Statuses' || item.status === selectedStatus
             const matchesLocation = selectedLocation === 'All Locations' || (item.location || 'Unknown') === selectedLocation
+            const matchesSeverity = selectedSeverity === 'All Severity' || (item as any).severity === selectedSeverity
 
             let matchesTab = true;
             if (activeTab === 'active') {
@@ -347,9 +352,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 matchesTab = true // Metrics view handles its own data
             }
 
-            return matchesSearch && matchesStatus && matchesLocation && matchesTab
+            return matchesSearch && matchesStatus && matchesLocation && matchesTab && matchesSeverity
         })
-    }, [searchQuery, selectedStatus, selectedLocation, activeTab, lifecycleTab])
+    }, [searchQuery, selectedStatus, selectedLocation, activeTab, lifecycleTab, selectedSeverity])
 
     const counts = useMemo(() => {
         return {
@@ -447,9 +452,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 { icon: <Mail className="w-4 h-4" />, label: "Email Vendor" },
                                 { icon: <BadgeCheck className="w-4 h-4" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                             ]} />
-                        </div>
-                        <div className="mt-4">
-                            <DealerDiscrepancyQueue onNavigateToAck={() => onNavigateToDetail('ack-detail')} />
                         </div>
                     </>
                 )}
@@ -555,6 +557,17 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                     options={locations}
                                                 />
                                             </div>
+
+                                            {/* Severity Filter — ACK tab only */}
+                                            {lifecycleTab === 'acknowledgments' && (
+                                                <div className="w-full sm:w-40">
+                                                    <Select
+                                                        value={selectedSeverity}
+                                                        onChange={setSelectedSeverity}
+                                                        options={['All Severity', 'high', 'medium', 'low']}
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Actions Group: View Mode + Create Button */}
@@ -948,6 +961,27 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     )}>{tag}</span>
                                                                                 ))}
                                                                             </div>
+                                                                        )}
+
+                                                                        {/* ACK comparison tags */}
+                                                                        {lifecycleTab === 'acknowledgments' && (order as any).comparisonStatus && (order as any).comparisonStatus !== 'MATCH' && (
+                                                                            <>
+                                                                                <div className="flex items-center gap-2 mt-1">
+                                                                                    <ComparisonStatusBadge status={(order as any).comparisonStatus} />
+                                                                                    {(order as any).discrepancyCount && (
+                                                                                        <span className="text-[9px] text-muted-foreground">{(order as any).discrepancyCount} issues</span>
+                                                                                    )}
+                                                                                </div>
+                                                                                {(order as any).severity && (
+                                                                                    <button
+                                                                                        onClick={(e) => { e.stopPropagation(); onNavigateToDetail('ack-detail'); }}
+                                                                                        className="w-full flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors mt-1"
+                                                                                    >
+                                                                                        <AlertTriangle className="h-3 w-3" />
+                                                                                        Compare PO vs ACK
+                                                                                    </button>
+                                                                                )}
+                                                                            </>
                                                                         )}
 
                                                                         {/* Use a simple divider */}
