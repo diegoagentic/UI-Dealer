@@ -30,6 +30,9 @@ export { default as EstimatorDossierCard } from './EstimatorDossierCard'
 // WRG Demo v6 Origin Splash (Phase 4.6)
 export { default as WrgOriginSplash } from './WrgOriginSplash'
 
+// WRG Demo v6 Handoff Banner (Phase 4.7)
+export { default as HandoffBanner } from './HandoffBanner'
+
 // Role profiles + Step state mapping (Phase 4.5)
 export { ROLE_PROFILES, getRoleProfile } from './roles'
 export {
