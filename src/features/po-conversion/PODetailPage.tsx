@@ -305,6 +305,7 @@ function DetailsTab({ po, grandTotal }: { po: PurchaseOrderCoreV2; grandTotal: n
                         <Clock className="h-5 w-5 text-muted-foreground" />
                         <h2 className="text-base font-semibold">Timeline</h2>
                     </div>
+                    {MOCK_TIMELINE.length === 0 && <p className="text-sm text-muted-foreground py-4 text-center">No timeline events yet</p>}
                     <ol className="relative ml-3 border-l border-border">
                         {MOCK_TIMELINE.map((ev, i) => {
                             const isLatest = i === MOCK_TIMELINE.length - 1
@@ -417,6 +418,10 @@ function RevisionsTab({
         added: 'bg-green-100 text-green-800 dark:bg-green-500/10 dark:text-green-400',
         removed: 'bg-red-100 text-red-800 dark:bg-red-500/10 dark:text-red-400',
         changed: 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400',
+    }
+
+    if (MOCK_REVISIONS.length === 0) {
+        return <p className="text-sm text-muted-foreground py-8 text-center">No revisions recorded</p>
     }
 
     return (

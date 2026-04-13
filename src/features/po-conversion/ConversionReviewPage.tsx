@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { clsx } from 'clsx'
 import {
     ArrowLeft,
@@ -99,9 +99,15 @@ const usd = (v: number) =>
     v.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 })
 
 function useCountdown(expiresAt: string) {
-    const diff = Math.max(0, new Date(expiresAt).getTime() - Date.now())
+    const [now, setNow] = useState(Date.now())
+    useEffect(() => {
+        const interval = setInterval(() => setNow(Date.now()), 60_000)
+        return () => clearInterval(interval)
+    }, [])
+    const diff = Math.max(0, new Date(expiresAt).getTime() - now)
     const h = Math.floor(diff / 3_600_000)
     const m = Math.floor((diff % 3_600_000) / 60_000)
+    if (diff === 0) return 'Expired'
     return `${h}h ${m}m remaining`
 }
 

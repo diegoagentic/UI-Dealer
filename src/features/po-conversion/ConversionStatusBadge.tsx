@@ -42,11 +42,14 @@ const STATUS_CONFIG: Record<POStatus, {
  * Shows PO status on quote list/detail. Click navigates to PO page.
  */
 export default function ConversionStatusBadge({ status, poCount, size = 'sm', onClick }: ConversionStatusBadgeProps) {
+    if (!status) return null
     const config = STATUS_CONFIG[status]
+    if (!config) return null
     const Icon = config.icon
+    const Element = onClick ? 'button' : 'span'
 
     return (
-        <button
+        <Element
             onClick={onClick}
             className={clsx(
                 'inline-flex items-center gap-1.5 rounded-full border font-semibold transition-colors',
@@ -55,10 +58,10 @@ export default function ConversionStatusBadge({ status, poCount, size = 'sm', on
                 onClick && 'cursor-pointer hover:opacity-80'
             )}
         >
-            <Icon className={clsx(size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5')} />
+            <Icon className={clsx(size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5')} aria-hidden="true" />
             {config.label}
             {poCount !== undefined && <span className="opacity-70">→ {poCount} PO{poCount !== 1 ? 's' : ''}</span>}
-        </button>
+        </Element>
     )
 }
 
