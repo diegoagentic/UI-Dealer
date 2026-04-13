@@ -15,6 +15,7 @@ import { useDemo } from '../../context/DemoContext'
 import StrataEstimatorNavbar from './StrataEstimatorNavbar'
 import EstimatorDossierCard from './EstimatorDossierCard'
 import FinancialSummaryHero from './FinancialSummaryHero'
+import BillOfMaterialsTable from './BillOfMaterialsTable'
 import HandoffBanner from './HandoffBanner'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
@@ -47,10 +48,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [activeTab, setActiveTab] = useState<EstimatorTab>(getStepTab(stepId))
     const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced')
     const [customer, setCustomer] = useState<Customer>(JPS_CUSTOMER)
-    const [lineItems, _setLineItems] = useState<LineItem[]>(JPS_LINE_ITEMS)
+    const [lineItems, setLineItems] = useState<LineItem[]>(JPS_LINE_ITEMS)
     const [variables, _setVariables] = useState<OperationalVariables>(INITIAL_VARIABLES)
     const [config, _setConfig] = useState<ConfigState>(INITIAL_CONFIG)
     const [isSearchingRates, setIsSearchingRates] = useState(false)
+    const [hasLastFile, _setHasLastFile] = useState(false)
 
     // ── Derived: financial estimate (pure calc) ──────────────────────────────
     const estimate = useMemo(
@@ -110,6 +112,52 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         console.log('Generate proposal — Phase 13')
     }
 
+    // ── Line item CRUD ───────────────────────────────────────────────────────
+    const handleUpdateItem = (
+        id: string,
+        field: keyof LineItem,
+        value: string | number
+    ) => {
+        setLineItems((items) =>
+            items.map((item) => {
+                if (item.id !== id) return item
+                // Reset subcategory when the parent category changes
+                if (field === 'categoryId') {
+                    return { ...item, categoryId: String(value), subCategoryId: '' }
+                }
+                return { ...item, [field]: value }
+            })
+        )
+    }
+
+    const handleAddItem = () => {
+        const firstCategory = Object.keys(config.categories)[0] ?? ''
+        setLineItems((items) => [
+            ...items,
+            {
+                id: `item-${Date.now()}`,
+                categoryId: firstCategory,
+                subCategoryId: '',
+                description: '',
+                quantity: 1,
+            },
+        ])
+    }
+
+    const handleRemoveItem = (id: string) => {
+        setLineItems((items) => items.filter((item) => item.id !== id))
+    }
+
+    const handleAiImport = () => {
+        // Phase 8: opens the Vision Engine modal
+        console.log('AI Import — Phase 8')
+    }
+
+    const handleAiRefine = () => {
+        // Phase 8: re-runs the Vision Engine on the last imported file
+        console.log('AI Refine — Phase 8')
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-background text-foreground">
             {/* Top navbar */}
@@ -150,20 +198,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                             onGenerateProposal={handleGenerateProposal}
                         />
 
-                        {/* Phase 6: Bill of Materials — coming next */}
+                        {/* Phase 6: Bill of Materials */}
+                        <BillOfMaterialsTable
+                            lineItems={lineItems}
+                            config={config}
+                            onUpdateItem={handleUpdateItem}
+                            onAddItem={handleAddItem}
+                            onRemoveItem={handleRemoveItem}
+                            onAiImport={handleAiImport}
+                            onAiRefine={handleAiRefine}
+                            hasLastFile={hasLastFile}
+                        />
+
                         {/* Phase 7: Operational Constraints — coming next */}
 
-                        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-8 text-center">
-                            <p className="text-xs text-muted-foreground">
-                                Phase 4.8 · step <span className="font-mono font-semibold">{stepId ?? '—'}</span> · state <span className="font-mono font-semibold">{stepState}</span>
-                                {' · '}
-                                {lineItems.length} line items
-                                {' · '}
-                                {Object.keys(config.categories).length} categories
-                                {' · '}
-                                {variables.duration} day(s)
-                            </p>
-                        </div>
+                        <p className="text-[10px] text-center text-muted-foreground/60 font-mono">
+                            step {stepId ?? '—'} · state {stepState} · {variables.duration} day(s)
+                        </p>
                     </div>
                 )}
 
