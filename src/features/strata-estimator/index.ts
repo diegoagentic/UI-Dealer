@@ -23,6 +23,9 @@ export type {
 export { default as StrataEstimatorShell } from './StrataEstimatorShell'
 export { default as StrataEstimatorNavbar } from './StrataEstimatorNavbar'
 
+// Estimator sections (Phase 4+)
+export { default as EstimatorDossierCard } from './EstimatorDossierCard'
+
 // Calculations (Phase 2)
 export { calculateInstall } from './calculations'
 

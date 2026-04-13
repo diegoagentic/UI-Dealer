@@ -5,6 +5,7 @@
 
 import { useState } from 'react'
 import StrataEstimatorNavbar from './StrataEstimatorNavbar'
+import EstimatorDossierCard from './EstimatorDossierCard'
 import {
     INITIAL_CONFIG,
     INITIAL_VARIABLES,
@@ -28,10 +29,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     // ── State ────────────────────────────────────────────────────────────────
     const [activeTab, setActiveTab] = useState<EstimatorTab>('ESTIMATOR')
     const [syncStatus, setSyncStatus] = useState<SyncStatus>('synced')
-    const [customer, _setCustomer] = useState<Customer>(JPS_CUSTOMER)
+    const [customer, setCustomer] = useState<Customer>(JPS_CUSTOMER)
     const [lineItems, _setLineItems] = useState<LineItem[]>(JPS_LINE_ITEMS)
     const [variables, _setVariables] = useState<OperationalVariables>(INITIAL_VARIABLES)
     const [config, _setConfig] = useState<ConfigState>(INITIAL_CONFIG)
+    const [isSearchingRates, setIsSearchingRates] = useState(false)
 
     // ── Handlers ─────────────────────────────────────────────────────────────
     const handleSave = () => {
@@ -47,6 +49,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const handleImportBackup = () => {
         // Phase 9: wire to actual import logic
         console.log('Import backup')
+    }
+
+    const handleRateLookup = () => {
+        setIsSearchingRates(true)
+        // Simulate AI rate lookup (Phase 9 will wire to mock Gemini call)
+        setTimeout(() => setIsSearchingRates(false), 1500)
     }
 
     return (
@@ -65,12 +73,21 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             <main className="flex-1 overflow-auto">
                 {activeTab === 'ESTIMATOR' && (
                     <div className="max-w-7xl mx-auto p-6 space-y-6">
-                        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-12 text-center">
-                            <p className="text-sm text-muted-foreground">
-                                Estimator tab — content will be added in Phase 4-8
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-2">
-                                Customer: <span className="font-semibold text-foreground">{customer.name}</span>
+                        {/* Phase 4: Project Dossier */}
+                        <EstimatorDossierCard
+                            customer={customer}
+                            onCustomerChange={setCustomer}
+                            onRateLookup={handleRateLookup}
+                            isSearchingRates={isSearchingRates}
+                        />
+
+                        {/* Phase 5: Financial Summary Hero — coming next */}
+                        {/* Phase 6: Bill of Materials — coming next */}
+                        {/* Phase 7: Operational Constraints — coming next */}
+
+                        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-8 text-center">
+                            <p className="text-xs text-muted-foreground">
+                                Phase 4 complete. Sections below will be added in Phases 5-7.
                                 {' · '}
                                 {lineItems.length} line items
                                 {' · '}
