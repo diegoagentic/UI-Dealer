@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { clsx } from 'clsx'
 import {
     ArrowLeft, FileText, Building2, Package, DollarSign, Clock,
-    CheckCircle2, Download, ChevronDown, ChevronUp,
+    CheckCircle2, XCircle, Download, ChevronDown, ChevronUp,
     Send, AlertTriangle, History, File,
 } from 'lucide-react'
-import { MOCK_PO_DRAFTS, MOCK_TIMELINE, MOCK_REVISIONS, MOCK_ARTIFACTS } from './mockData'
+import { MOCK_PO_DRAFTS, MOCK_TIMELINE, MOCK_REVISIONS, MOCK_SUBMISSIONS, MOCK_ARTIFACTS } from './mockData'
 import type { PurchaseOrderCoreV2, SubmissionAdapter } from './types'
 import ConversionStatusBadge from './ConversionStatusBadge'
 
@@ -331,6 +331,49 @@ function DetailsTab({ po, grandTotal }: { po: PurchaseOrderCoreV2; grandTotal: n
                     </ol>
                 </div>
             </div>
+
+            {/* Submission History (FE-07) */}
+            {MOCK_SUBMISSIONS.length > 0 && (
+                <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Send className="h-5 w-5 text-muted-foreground" />
+                        <h2 className="text-base font-semibold">Submission History</h2>
+                    </div>
+                    <div className="overflow-x-auto scrollbar-micro">
+                        <table className="w-full text-sm">
+                            <thead>
+                                <tr className="border-b border-border text-left">
+                                    <th className="pb-2 text-xs font-medium text-muted-foreground">Timestamp</th>
+                                    <th className="pb-2 text-xs font-medium text-muted-foreground">Status</th>
+                                    <th className="pb-2 text-xs font-medium text-muted-foreground">Adapter</th>
+                                    <th className="pb-2 text-xs font-medium text-muted-foreground">Response</th>
+                                    <th className="pb-2 text-xs font-medium text-muted-foreground">Message</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-border">
+                                {MOCK_SUBMISSIONS.map(s => (
+                                    <tr key={s.id}>
+                                        <td className="py-3 text-xs text-muted-foreground whitespace-nowrap">{fmtDate(s.timestamp)}</td>
+                                        <td className="py-3">
+                                            <span className={clsx('inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border',
+                                                s.status === 'DELIVERED' ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20' :
+                                                s.status === 'FAILED' ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20' :
+                                                'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20'
+                                            )}>
+                                                {s.status === 'DELIVERED' ? <CheckCircle2 className="h-3 w-3" /> : s.status === 'FAILED' ? <XCircle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
+                                                {s.status}
+                                            </span>
+                                        </td>
+                                        <td className="py-3 text-xs uppercase font-medium text-muted-foreground">{s.adapter}</td>
+                                        <td className="py-3 text-xs font-mono text-muted-foreground">{s.responseCode ?? '—'}</td>
+                                        <td className="py-3 text-xs text-foreground">{s.message}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
 
             {/* Artifacts */}
             {MOCK_ARTIFACTS.length > 0 && (
