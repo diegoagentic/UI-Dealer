@@ -19,6 +19,10 @@ export type {
     SavedEstimate,
 } from './types'
 
+// Shell + Navbar (Phase 3)
+export { default as StrataEstimatorShell } from './StrataEstimatorShell'
+export { default as StrataEstimatorNavbar } from './StrataEstimatorNavbar'
+
 // Calculations (Phase 2)
 export { calculateInstall } from './calculations'
 
