@@ -31,6 +31,7 @@ export { default as BillOfMaterialsTable } from './BillOfMaterialsTable'
 export { default as OperationalConstraintsPanel } from './OperationalConstraintsPanel'
 export { default as VisionEngineModal } from './VisionEngineModal'
 export { default as ProjectsArchiveView } from './ProjectsArchiveView'
+export { default as EstimatorAdminView } from './EstimatorAdminView'
 
 // WRG Demo v6 Origin Splash (Phase 4.6)
 export { default as WrgOriginSplash } from './WrgOriginSplash'

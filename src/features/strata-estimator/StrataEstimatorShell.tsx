@@ -18,6 +18,7 @@ import FinancialSummaryHero from './FinancialSummaryHero'
 import BillOfMaterialsTable from './BillOfMaterialsTable'
 import OperationalConstraintsPanel from './OperationalConstraintsPanel'
 import ProjectsArchiveView from './ProjectsArchiveView'
+import EstimatorAdminView from './EstimatorAdminView'
 import VisionEngineModal from './VisionEngineModal'
 import HandoffBanner from './HandoffBanner'
 import { calculateInstall } from './calculations'
@@ -56,7 +57,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [customer, setCustomer] = useState<Customer>(JPS_CUSTOMER)
     const [lineItems, setLineItems] = useState<LineItem[]>(JPS_LINE_ITEMS)
     const [variables, setVariables] = useState<OperationalVariables>(INITIAL_VARIABLES)
-    const [config, _setConfig] = useState<ConfigState>(INITIAL_CONFIG)
+    const [config, setConfig] = useState<ConfigState>(INITIAL_CONFIG)
     const [isSearchingRates, setIsSearchingRates] = useState(false)
     const [lastFile, setLastFile] = useState<{ name: string } | null>(null)
     const [isAiModalOpen, setIsAiModalOpen] = useState(false)
@@ -270,13 +271,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 )}
 
                 {activeTab === 'CONFIG' && (
-                    <div className="max-w-7xl mx-auto p-6">
-                        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-12 text-center">
-                            <p className="text-sm text-muted-foreground">
-                                Admin configuration — content will be added in Phase 11
-                            </p>
-                        </div>
-                    </div>
+                    <EstimatorAdminView
+                        config={config}
+                        onConfigChange={setConfig}
+                    />
                 )}
             </main>
 
