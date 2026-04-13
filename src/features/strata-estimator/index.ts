@@ -22,9 +22,20 @@ export type {
 // Shell + Navbar (Phase 3)
 export { default as StrataEstimatorShell } from './StrataEstimatorShell'
 export { default as StrataEstimatorNavbar } from './StrataEstimatorNavbar'
+export type { ConnectedUser } from './StrataEstimatorNavbar'
 
 // Estimator sections (Phase 4+)
 export { default as EstimatorDossierCard } from './EstimatorDossierCard'
+
+// Role profiles + Step state mapping (Phase 4.5)
+export { ROLE_PROFILES, getRoleProfile } from './roles'
+export {
+    getStepState,
+    getStepTab,
+    getStepRole,
+    isOriginSplashStep,
+} from './stepStates'
+export type { EstimatorStepState } from './stepStates'
 
 // Calculations (Phase 2)
 export { calculateInstall } from './calculations'
