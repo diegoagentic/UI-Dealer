@@ -19,6 +19,7 @@ import BillOfMaterialsTable from './BillOfMaterialsTable'
 import OperationalConstraintsPanel from './OperationalConstraintsPanel'
 import ProjectsArchiveView from './ProjectsArchiveView'
 import EstimatorAdminView from './EstimatorAdminView'
+import PricingWaterfall from './PricingWaterfall'
 import VisionEngineModal from './VisionEngineModal'
 import HandoffBanner from './HandoffBanner'
 import { calculateInstall } from './calculations'
@@ -61,6 +62,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [isSearchingRates, setIsSearchingRates] = useState(false)
     const [lastFile, setLastFile] = useState<{ name: string } | null>(null)
     const [isAiModalOpen, setIsAiModalOpen] = useState(false)
+    const [isWaterfallOpen, setIsWaterfallOpen] = useState(false)
     const [savedEstimates, setSavedEstimates] = useState<SavedEstimate[]>(MOCK_SAVED_ESTIMATES)
 
     // ── Derived: financial estimate (pure calc) ──────────────────────────────
@@ -117,8 +119,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     }
 
     const handleGenerateProposal = () => {
-        // Phase 13: triggers the pricing waterfall modal
-        console.log('Generate proposal — Phase 13')
+        setIsWaterfallOpen(true)
+    }
+
+    const handleSendForReview = () => {
+        // Phase 14+: closes the waterfall and advances the demo to w2.4
+        setIsWaterfallOpen(false)
     }
 
     // ── Line item CRUD ───────────────────────────────────────────────────────
@@ -284,6 +290,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 onClose={() => setIsAiModalOpen(false)}
                 onItemsExtracted={handleItemsExtracted}
                 lastFile={lastFile}
+            />
+
+            {/* Phase 13: Pricing Waterfall (triggered by Generate Proposal) */}
+            <PricingWaterfall
+                isOpen={isWaterfallOpen}
+                onClose={() => setIsWaterfallOpen(false)}
+                onSendForReview={handleSendForReview}
             />
         </div>
     )
