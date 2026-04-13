@@ -22,6 +22,7 @@ import EstimatorAdminView from './EstimatorAdminView'
 import PricingWaterfall from './PricingWaterfall'
 import VisionEngineModal from './VisionEngineModal'
 import HandoffBanner from './HandoffBanner'
+import DesignerVerificationOverlay from './DesignerVerificationOverlay'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
 import {
@@ -47,7 +48,7 @@ interface StrataEstimatorShellProps {
 }
 
 export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimatorShellProps = {}) {
-    const { currentStep } = useDemo()
+    const { currentStep, nextStep } = useDemo()
     const stepId = currentStep?.id
     const stepState = getStepState(stepId)
     const connectedUser = getStepRole(stepId) ?? undefined
@@ -64,6 +65,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [isAiModalOpen, setIsAiModalOpen] = useState(false)
     const [isWaterfallOpen, setIsWaterfallOpen] = useState(false)
     const [savedEstimates, setSavedEstimates] = useState<SavedEstimate[]>(MOCK_SAVED_ESTIMATES)
+    const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsInitialLoading(false), 800)
+        return () => clearTimeout(timer)
+    }, [])
 
     // ── Derived: financial estimate (pure calc) ──────────────────────────────
     const estimate = useMemo(
@@ -125,6 +132,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const handleSendForReview = () => {
         // Phase 14+: closes the waterfall and advances the demo to w2.4
         setIsWaterfallOpen(false)
+        if (nextStep) nextStep()
     }
 
     // ── Line item CRUD ───────────────────────────────────────────────────────
@@ -225,62 +233,76 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
             {/* Tab content */}
             <main className="flex-1 overflow-auto">
-                {activeTab === 'ESTIMATOR' && (
-                    <div className="max-w-7xl mx-auto p-6 space-y-6">
-                        {/* Phase 4: Project Dossier */}
-                        <EstimatorDossierCard
-                            customer={customer}
-                            onCustomerChange={setCustomer}
-                            onRateLookup={handleRateLookup}
-                            isSearchingRates={isSearchingRates}
-                        />
-
-                        {/* Phase 5: Financial Summary Hero */}
-                        <FinancialSummaryHero
-                            estimate={estimate}
-                            onGenerateProposal={handleGenerateProposal}
-                        />
-
-                        {/* Phase 6: Bill of Materials */}
-                        <BillOfMaterialsTable
-                            lineItems={lineItems}
-                            config={config}
-                            onUpdateItem={handleUpdateItem}
-                            onAddItem={handleAddItem}
-                            onRemoveItem={handleRemoveItem}
-                            onAiImport={handleAiImport}
-                            onAiRefine={handleAiRefine}
-                            hasLastFile={!!lastFile}
-                        />
-
-                        {/* Phase 7: Operational Constraints */}
-                        <OperationalConstraintsPanel
-                            variables={variables}
-                            onVariablesChange={setVariables}
-                            crewSize={estimate.crewSize}
-                        />
-
-                        <p className="text-[10px] text-center text-muted-foreground/60 font-mono">
-                            step {stepId ?? '—'} · state {stepState} · {variables.duration} day(s)
-                        </p>
+                {isInitialLoading ? (
+                    <div className="max-w-7xl mx-auto p-6 space-y-6 animate-pulse">
+                        <div className="h-32 bg-muted/30 dark:bg-muted/10 border border-border rounded-2xl"></div>
+                        <div className="h-64 bg-muted/20 dark:bg-muted/5 border border-border rounded-2xl"></div>
+                        <div className="h-96 bg-muted/10 dark:bg-muted/5 border border-border rounded-2xl"></div>
                     </div>
-                )}
+                ) : (
+                    <>
+                        {activeTab === 'ESTIMATOR' && (
+                            <div key="ESTIMATOR" className="max-w-7xl mx-auto p-6 space-y-6 animate-fade-in">
+                                {/* Phase 4: Project Dossier */}
+                                <EstimatorDossierCard
+                                    customer={customer}
+                                    onCustomerChange={setCustomer}
+                                    onRateLookup={handleRateLookup}
+                                    isSearchingRates={isSearchingRates}
+                                />
 
-                {activeTab === 'PROJECTS' && (
-                    <ProjectsArchiveView
-                        savedEstimates={savedEstimates}
-                        onLoadEstimate={handleLoadEstimate}
-                        onDeleteEstimate={handleDeleteEstimate}
-                        onUpdateStatus={handleUpdateStatus}
-                        onUpdateActualCost={handleUpdateActualCost}
-                    />
-                )}
+                                {/* Phase 5: Financial Summary Hero */}
+                                <FinancialSummaryHero
+                                    estimate={estimate}
+                                    onGenerateProposal={handleGenerateProposal}
+                                />
 
-                {activeTab === 'CONFIG' && (
-                    <EstimatorAdminView
-                        config={config}
-                        onConfigChange={setConfig}
-                    />
+                                {/* Phase 6: Bill of Materials */}
+                                <BillOfMaterialsTable
+                                    lineItems={lineItems}
+                                    config={config}
+                                    onUpdateItem={handleUpdateItem}
+                                    onAddItem={handleAddItem}
+                                    onRemoveItem={handleRemoveItem}
+                                    onAiImport={handleAiImport}
+                                    onAiRefine={handleAiRefine}
+                                    hasLastFile={!!lastFile}
+                                />
+
+                                {/* Phase 7: Operational Constraints */}
+                                <OperationalConstraintsPanel
+                                    variables={variables}
+                                    onVariablesChange={setVariables}
+                                    crewSize={estimate.crewSize}
+                                />
+
+                                <p className="text-[10px] text-center text-muted-foreground/60 font-mono">
+                                    step {stepId ?? '—'} · state {stepState} · {variables.duration} day(s)
+                                </p>
+                            </div>
+                        )}
+
+                        {activeTab === 'PROJECTS' && (
+                            <div key="PROJECTS" className="animate-fade-in">
+                                <ProjectsArchiveView
+                                    savedEstimates={savedEstimates}
+                                    onLoadEstimate={handleLoadEstimate}
+                                    onDeleteEstimate={handleDeleteEstimate}
+                                    onUpdateStatus={handleUpdateStatus}
+                                    onUpdateActualCost={handleUpdateActualCost}
+                                />
+                            </div>
+                        )}
+
+                        {activeTab === 'CONFIG' && (
+                            <div key="CONFIG" className="animate-fade-in">
+                                <EstimatorAdminView
+                                    config={config}
+                                    onConfigChange={setConfig}
+                                />
+                            </div>
+                        )}
+                    </>
                 )}
             </main>
 
@@ -297,6 +319,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 isOpen={isWaterfallOpen}
                 onClose={() => setIsWaterfallOpen(false)}
                 onSendForReview={handleSendForReview}
+            />
+
+            {/* Phase 14: Designer Verification Overlay */}
+            <DesignerVerificationOverlay
+                isOpen={stepState === 'estimation-escalated'}
+                onSendBack={() => {
+                    if (nextStep) nextStep()
+                }}
+                onPreviewPdf={() => console.log('Preview PDF')}
             />
         </div>
     )
