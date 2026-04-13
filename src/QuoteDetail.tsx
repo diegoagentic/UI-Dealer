@@ -9,6 +9,7 @@ import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
 import { QuickActions } from './components/QuickActions'
+import { PODraftsListPage, ConversionReviewPage } from './features/po-conversion'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -103,6 +104,8 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false)
+    const [isConversionReviewOpen, setIsConversionReviewOpen] = useState(false)
+    const [showPOTab, setShowPOTab] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
@@ -308,8 +311,8 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 setIsConvertDialogOpen(false);
                                                 triggerToast('Conversion Started', 'Creating PO drafts from Quote QT-1025...', 'info');
                                                 setTimeout(() => {
-                                                    triggerToast('Conversion Complete', '3 vendor POs created. Redirecting to review...', 'success');
-                                                    setTimeout(() => onNavigate('conversion-review'), 1000);
+                                                    triggerToast('Conversion Complete', 'Opening review...', 'success');
+                                                    setIsConversionReviewOpen(true);
                                                 }, 2000);
                                             }}
                                             className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg transition-colors"
@@ -352,6 +355,20 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 >
                                     Activity Stream
                                 </Tab>
+                                {showPOTab && (
+                                    <Tab
+                                        className={({ selected }) =>
+                                            cn(
+                                                "py-4 text-sm font-medium border-b-2 outline-none transition-colors",
+                                                selected
+                                                    ? "border-green-500 text-green-700 dark:border-green-400 dark:text-green-400"
+                                                    : "border-transparent text-muted-foreground hover:text-foreground"
+                                            )
+                                        }
+                                    >
+                                        Purchase Orders
+                                    </Tab>
+                                )}
                             </TabList>
                         </div>
                         <TabPanels className="">
@@ -934,10 +951,40 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
                                 </div>
                             </TabPanel >
+                            {showPOTab && (
+                                <TabPanel className="flex flex-col focus:outline-none p-6">
+                                    <PODraftsListPage onNavigateToDetail={() => onNavigate('po-detail')} />
+                                </TabPanel>
+                            )}
                         </TabPanels >
                     </TabGroup >
                 </div >
             </div >
+
+            {/* Conversion Review Modal */}
+            <Transition show={isConversionReviewOpen} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => setIsConversionReviewOpen(false)}>
+                    <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                        <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
+                    </TransitionChild>
+                    <div className="fixed inset-0 z-10 overflow-y-auto">
+                        <div className="flex min-h-full items-start justify-center p-4 pt-16">
+                            <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                                <DialogPanel className="w-full max-w-6xl bg-background rounded-2xl border border-border shadow-2xl overflow-hidden">
+                                    <ConversionReviewPage
+                                        onBack={() => setIsConversionReviewOpen(false)}
+                                        onApprove={() => {
+                                            setIsConversionReviewOpen(false);
+                                            setShowPOTab(true);
+                                            triggerToast('POs Created', '3 vendor Purchase Orders created successfully', 'success');
+                                        }}
+                                    />
+                                </DialogPanel>
+                            </TransitionChild>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
 
             <Transition show={isDocumentModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={setIsDocumentModalOpen}>
