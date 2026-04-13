@@ -101,6 +101,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false)
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
+    const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
@@ -310,7 +311,56 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         <Send className="h-4 w-4" />
                         Send to Customer
                     </button>
+                    <div className="w-px h-6 bg-border" />
+                    <button
+                        onClick={() => { setIsConvertDialogOpen(true); }}
+                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-lg transition-colors shadow-sm"
+                    >
+                        <FileText className="h-4 w-4" />
+                        Convert to PO
+                    </button>
                 </div>
+
+                {/* Convert to PO Confirmation Dialog */}
+                <Transition show={isConvertDialogOpen} as={Fragment}>
+                    <Dialog as="div" className="relative z-50" onClose={() => setIsConvertDialogOpen(false)}>
+                        <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                            <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
+                        </TransitionChild>
+                        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
+                            <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                                <DialogPanel className="w-full max-w-md bg-card rounded-2xl border border-border shadow-2xl p-6">
+                                    <DialogTitle className="text-lg font-bold text-foreground mb-2">Convert Quote to Purchase Order</DialogTitle>
+                                    <p className="text-sm text-muted-foreground mb-4">
+                                        This will create a frozen snapshot of Quote <span className="font-semibold text-foreground">QT-1025</span> and generate vendor-specific PO drafts. You'll have 72 hours to review before auto-cancellation.
+                                    </p>
+                                    <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl p-3 mb-5 flex items-start gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                        <p className="text-xs text-muted-foreground">The quote will be locked during conversion. Any pending changes will be included in the snapshot.</p>
+                                    </div>
+                                    <div className="flex gap-3 justify-end">
+                                        <button onClick={() => setIsConvertDialogOpen(false)} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setIsConvertDialogOpen(false);
+                                                triggerToast('Conversion Started', 'Creating PO drafts from Quote QT-1025...', 'info');
+                                                setTimeout(() => {
+                                                    triggerToast('Conversion Complete', '3 vendor POs created. Redirecting to review...', 'success');
+                                                    setTimeout(() => onNavigate('conversion-review'), 1000);
+                                                }, 2000);
+                                            }}
+                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg transition-colors"
+                                        >
+                                            Start Conversion
+                                        </button>
+                                    </div>
+                                </DialogPanel>
+                            </TransitionChild>
+                        </div>
+                    </Dialog>
+                </Transition>
 
                 {/* Main Content Area */}
                 <div className="flex flex-col">

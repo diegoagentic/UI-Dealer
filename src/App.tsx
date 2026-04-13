@@ -15,6 +15,7 @@ import Transactions from "./Transactions"
 import CRM from "./CRM"
 import Pricing from "./Pricing"
 import Navbar from "./components/Navbar"
+import { PODraftsListPage, PODetailPage, ConversionReviewPage, FeatureFlagGuard } from './features/po-conversion'
 import DemoGuide from "./components/DemoGuide"
 import SessionExpiryModal from "./components/SessionExpiryModal"
 import logoLightBrand from './assets/logo-light-brand.png'
@@ -22,7 +23,7 @@ import logoDarkBrand from './assets/logo-dark-brand.png'
 
 function App() {
   const { user, initialLoading, signOut, showSessionWarning, refreshSession } = useAuth()
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'detail' | 'quote-detail' | 'order-detail' | 'ack-detail' | 'ack-detail-ai' | 'workspace' | 'inventory' | 'catalogs' | 'mac' | 'transactions' | 'crm' | 'pricing'>('dashboard')
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'detail' | 'quote-detail' | 'order-detail' | 'ack-detail' | 'ack-detail-ai' | 'workspace' | 'inventory' | 'catalogs' | 'mac' | 'transactions' | 'crm' | 'pricing' | 'po-drafts' | 'po-detail' | 'conversion-review'>('dashboard')
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false)
 
   const handleNavigate = (page: string) => {
@@ -113,6 +114,18 @@ function App() {
           <AckDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
         ) : currentPage === 'ack-detail-ai' ? (
           <AckDetail initialTab={1} onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+        ) : currentPage === 'conversion-review' ? (
+          <FeatureFlagGuard>
+            <ConversionReviewPage onBack={() => setCurrentPage('transactions')} onApprove={() => setCurrentPage('po-drafts')} />
+          </FeatureFlagGuard>
+        ) : currentPage === 'po-drafts' ? (
+          <FeatureFlagGuard>
+            <PODraftsListPage onNavigateToDetail={() => setCurrentPage('po-detail')} />
+          </FeatureFlagGuard>
+        ) : currentPage === 'po-detail' ? (
+          <FeatureFlagGuard>
+            <PODetailPage onBack={() => setCurrentPage('po-drafts')} />
+          </FeatureFlagGuard>
         ) : currentPage === 'workspace' ? (
           <Workspace onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} />
         ) : null}
