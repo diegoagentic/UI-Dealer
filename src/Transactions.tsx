@@ -536,7 +536,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 { icon: <Copy className="w-4 h-4" />, label: "Duplicate" },
                                 { icon: <FileText className="w-4 h-4" />, label: "Export PDF" },
                                 { icon: <Mail className="w-4 h-4" />, label: "Send Email" },
-                                { icon: <Sparkles className="w-4 h-4" />, label: "Templates" },
                             ]} />
                         </div>
                     </>
