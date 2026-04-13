@@ -8,6 +8,7 @@ import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
+import { QuickActions } from './components/QuickActions'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -271,55 +272,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-                {/* Quick Actions Bar — aligned with Figma UI-Reps Quote Detail */}
-                <div className="flex items-center justify-center gap-1 bg-card rounded-xl border border-border p-1.5 shadow-sm">
-                    <button className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors">
-                        <div className="w-px h-4 bg-border" />
-                    </button>
-                    <button
-                        onClick={() => { triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success'); }}
-                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                        <Copy className="h-4 w-4" />
-                        <span className="hidden sm:inline">Duplicate</span>
-                    </button>
-                    <button
-                        onClick={() => { triggerToast('Preparing Print', 'Opening print preview...', 'info'); }}
-                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                        <Printer className="h-4 w-4" />
-                        <span className="hidden sm:inline">Print</span>
-                    </button>
-                    <button
-                        onClick={() => setIsEditOpen(true)}
-                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                        <SquarePen className="h-4 w-4" />
-                        <span className="hidden sm:inline">Edit</span>
-                    </button>
-                    <button
-                        onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); }}
-                        className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-                    >
-                        <Download className="h-4 w-4" />
-                        <span className="hidden sm:inline">Download PDF</span>
-                    </button>
-                    <button
-                        onClick={() => setIsSendOpen(true)}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-brand-300 dark:bg-brand-500 text-zinc-900 hover:bg-brand-400 dark:hover:bg-brand-600/50 rounded-lg transition-colors shadow-sm"
-                    >
-                        <Send className="h-4 w-4" />
-                        Send to Customer
-                    </button>
-                    <div className="w-px h-6 bg-border" />
-                    <button
-                        onClick={() => { setIsConvertDialogOpen(true); }}
-                        className="flex items-center gap-2 px-4 py-2 text-sm font-bold bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white rounded-lg transition-colors shadow-sm"
-                    >
-                        <FileText className="h-4 w-4" />
-                        Convert to PO
-                    </button>
-                </div>
+                {/* Quick Actions Bar — uses shared QuickActions component */}
+                <QuickActions actions={[
+                    { icon: <Copy className="w-4 h-4" />, label: "Duplicate", action: () => triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success') },
+                    { icon: <Printer className="w-4 h-4" />, label: "Print", action: () => triggerToast('Preparing Print', 'Opening print preview...', 'info') },
+                    { icon: <SquarePen className="w-4 h-4" />, label: "Edit", action: () => setIsEditOpen(true) },
+                    { icon: <Download className="w-4 h-4" />, label: "Download PDF", action: () => { triggerToast('Preparing Download', 'Generating PDF...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); } },
+                    { icon: <Send className="w-4 h-4" />, label: "Send to Customer", action: () => setIsSendOpen(true) },
+                    { icon: <FileText className="w-4 h-4" />, label: "Convert to PO", action: () => setIsConvertDialogOpen(true) },
+                ]} />
 
                 {/* Convert to PO Confirmation Dialog */}
                 <Transition show={isConvertDialogOpen} as={Fragment}>
