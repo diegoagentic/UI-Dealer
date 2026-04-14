@@ -243,12 +243,14 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     <>
                         {activeTab === 'ESTIMATOR' && (
                             <div key="ESTIMATOR" className="pt-24 px-4 max-w-7xl mx-auto space-y-6 animate-fade-in">
-                                {/* Phase 4: Project Dossier */}
+                                {/* Phase 4: Project Dossier — combobox filters */}
                                 <EstimatorDossierCard
                                     customer={customer}
                                     onCustomerChange={setCustomer}
                                     onRateLookup={handleRateLookup}
                                     isSearchingRates={isSearchingRates}
+                                    presets={savedEstimates}
+                                    onLoadPreset={handleLoadEstimate}
                                 />
 
                                 {/* Phase 5: Financial Summary Hero */}
