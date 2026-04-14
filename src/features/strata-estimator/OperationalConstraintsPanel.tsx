@@ -171,7 +171,7 @@ export default function OperationalConstraintsPanel({
                         </p>
                     </div>
                     <HardHat
-                        className="w-24 h-24 text-white/5 shrink-0"
+                        className="w-24 h-24 text-zinc-700 dark:text-primary shrink-0"
                         strokeWidth={1.5}
                         aria-hidden
                     />
