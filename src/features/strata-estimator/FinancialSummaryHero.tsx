@@ -22,6 +22,12 @@ interface FinancialSummaryHeroProps {
      * (no animation).
      */
     calculationProgress?: number
+    /**
+     * When true the Generate Proposal CTA shows a simulated-press state
+     * (ring pulse + scale-95) to tell the user the demo is auto-running
+     * the action before the waterfall modal takes over.
+     */
+    pulseGenerateCTA?: boolean
 }
 
 function formatMoney(raw: string): string {
@@ -41,6 +47,7 @@ export default function FinancialSummaryHero({
     onGenerateProposal,
     hideGenerateCTA = false,
     calculationProgress = 1,
+    pulseGenerateCTA = false,
 }: FinancialSummaryHeroProps) {
     const progress = Math.max(0, Math.min(1, calculationProgress))
     const isCalculating = progress < 1
@@ -137,7 +144,12 @@ export default function FinancialSummaryHero({
                 {!hideGenerateCTA && (
                     <button
                         onClick={onGenerateProposal}
-                        className="shrink-0 flex items-center gap-2 bg-primary text-primary-foreground hover:opacity-90 rounded-xl px-6 py-3 text-xs font-bold uppercase tracking-wider transition-opacity shadow-sm"
+                        className={[
+                            'shrink-0 flex items-center gap-2 bg-primary text-primary-foreground hover:opacity-90 rounded-xl px-6 py-3 text-xs font-bold uppercase tracking-wider transition-all shadow-sm',
+                            pulseGenerateCTA
+                                ? 'scale-95 ring-4 ring-primary/50 shadow-lg shadow-primary/40 animate-pulse'
+                                : '',
+                        ].join(' ')}
                     >
                         <Receipt className="w-4 h-4" />
                         Generate Proposal

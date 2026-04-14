@@ -111,6 +111,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [dealerToastOpen, setDealerToastOpen] = useState(false)
     const [agentRoutingOpen, setAgentRoutingOpen] = useState(false)
     const [designerTaskOpened, setDesignerTaskOpened] = useState(false)
+    const [generateCtaPressed, setGenerateCtaPressed] = useState(false)
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
     // Dual-engine calculation progress (0 → 1). Default 1 = show real values.
     const [calcProgress, setCalcProgress] = useState<number>(1)
@@ -344,13 +345,25 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     // ── w2.1 auto-open waterfall ─────────────────────────────────────────────
     // The Expert's role in w2.1 is supervisory — they watch the assembly run.
     // Instead of requiring a manual click on the Generate Proposal CTA, the
-    // Shell auto-opens the PricingWaterfall ~2.6 s after entry, giving the
-    // user time to read the VerificationLogCard (Phase 7.5) that summarises
-    // what Alex just validated before the assembly animation plays.
+    // Shell simulates a click on the CTA (pulse + ring + scale-95) and then
+    // opens the waterfall. The VerificationLogCard (Phase 7.5) sits above
+    // the hero so the user reads it first.
     useEffect(() => {
-        if (stepId !== 'w2.1') return
-        const timer = setTimeout(() => setIsWaterfallOpen(true), 2600)
-        return () => clearTimeout(timer)
+        if (stepId !== 'w2.1') {
+            setGenerateCtaPressed(false)
+            return
+        }
+        // t=1800 ms — simulate the press on Generate Proposal (CTA glows)
+        // t=2600 ms — waterfall modal slides in
+        // t=2900 ms — clear the pressed state so it's ready to replay on restart
+        const pressTimer = setTimeout(() => setGenerateCtaPressed(true), 1800)
+        const openTimer = setTimeout(() => setIsWaterfallOpen(true), 2600)
+        const clearTimer = setTimeout(() => setGenerateCtaPressed(false), 2900)
+        return () => {
+            clearTimeout(pressTimer)
+            clearTimeout(openTimer)
+            clearTimeout(clearTimer)
+        }
     }, [stepId])
 
     // ── w2.2 dealer arrival toast ────────────────────────────────────────────
@@ -564,6 +577,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setAgentRoutingOpen(false)
         // v7 · reset the designer task notification gate
         setDesignerTaskOpened(false)
+        // v7 · clear any lingering Generate Proposal press animation
+        setGenerateCtaPressed(false)
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -734,12 +749,24 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     }
                                 />
 
+                                {/* Refinement Phase 7.5: Verification log card (w2.1 preamble)
+                                    — lives ABOVE the hero so it frames the Generate Proposal CTA
+                                    the designer just approved. */}
+                                {stepId === 'w2.1' && verifiedAt && (
+                                    <VerificationLogCard
+                                        verifiedByName={ROLE_PROFILES.Designer.name}
+                                        verifiedByPhoto={ROLE_PROFILES.Designer.photo}
+                                        verifiedAt={verifiedAt}
+                                    />
+                                )}
+
                                 {/* Phase 5 + Refinement 7.2: Financial Summary Hero with dual-engine calc beat */}
                                 <FinancialSummaryHero
                                     estimate={estimate}
                                     onGenerateProposal={handleGenerateProposal}
                                     hideGenerateCTA={isProposalReview}
                                     calculationProgress={calcProgress}
+                                    pulseGenerateCTA={generateCtaPressed}
                                 />
 
                                 {/* Refinement Phase 2: Scope breach alert (transient) */}
@@ -750,15 +777,6 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         count={119}
                                         limit={50}
                                         onDismiss={() => setScopeBreachOpen(false)}
-                                    />
-                                )}
-
-                                {/* Refinement Phase 7.5: Verification log card (w2.1 preamble) */}
-                                {stepId === 'w2.1' && verifiedAt && (
-                                    <VerificationLogCard
-                                        verifiedByName={ROLE_PROFILES.Designer.name}
-                                        verifiedByPhoto={ROLE_PROFILES.Designer.photo}
-                                        verifiedAt={verifiedAt}
                                     />
                                 )}
 
