@@ -43,6 +43,7 @@ export { default as RoleHandoffTransition } from './RoleHandoffTransition'
 export { default as VerificationLogCard } from './VerificationLogCard'
 export { default as DealerArrivalToast } from './DealerArrivalToast'
 export { default as AgentRoutingToast } from './AgentRoutingToast'
+export { default as ClientProposalDelivery } from './ClientProposalDelivery'
 export { default as DesignerVerificationOverlay } from './DesignerVerificationOverlay'
 
 // WRG Demo v6 Origin Splash (Phase 4.6)

@@ -35,6 +35,7 @@ import type { HandoffPerson } from './RoleHandoffTransition'
 import VerificationLogCard from './VerificationLogCard'
 import DealerArrivalToast from './DealerArrivalToast'
 import AgentRoutingToast from './AgentRoutingToast'
+import ClientProposalDelivery from './ClientProposalDelivery'
 import { ROLE_PROFILES } from './roles'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
@@ -105,6 +106,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [flaggedRowIds, setFlaggedRowIds] = useState<string[]>([])
     const [escalatedAt, setEscalatedAt] = useState<number | null>(null)
     const [verifiedAt, setVerifiedAt] = useState<number | null>(null)
+    const [approvedAt, setApprovedAt] = useState<number | null>(null)
     const [dealerToastOpen, setDealerToastOpen] = useState(false)
     const [agentRoutingOpen, setAgentRoutingOpen] = useState(false)
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
@@ -191,6 +193,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setCalcProgress(0) // hero starts at $0 and counts up during the calc beat
         setEscalatedAt(null) // drop any stale escalation context
         setVerifiedAt(null) // drop any stale verification context
+        setApprovedAt(null) // drop any stale approval context
         setAgentRoutingOpen(true) // Agent Step 1 trigger toast (Phase 7.7)
         setAuditLog([])
         logEvent(
@@ -485,8 +488,21 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         console.log('Download JPS_proposal.pdf')
     }
 
-    const handleReleaseSendEmail = () => {
-        console.log('Email proposal to JPS Health Network')
+    const handleContinueToDelivery = () => {
+        // v7 · close the release modal and trigger the Sara → Riley handoff
+        // transition. onComplete fires nextStep() → w2.3 (Client delivery).
+        setIsReleaseOpen(false)
+        setApprovedAt(Date.now())
+        logEvent(
+            'System',
+            'Proposal routed to Sales Coordinator for client delivery',
+            'ai'
+        )
+        triggerHandoff(
+            ROLE_PROFILES.Dealer,
+            ROLE_PROFILES['Sales Coordinator'],
+            'Routing approved proposal to Sales Coordinator'
+        )
     }
 
     const handleRestartDemo = () => {
@@ -520,9 +536,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         }
         // Refinement Phase 7.3: dismiss any pending handoff transition
         setHandoff2(null)
-        // Refinement Phase 7.4 + 7.5: clear the escalation + verification timestamps
+        // Refinement Phase 7.4 + 7.5 + v7: clear every handoff timestamp
         setEscalatedAt(null)
         setVerifiedAt(null)
+        setApprovedAt(null)
         // Refinement Phase 7.6: dismiss any lingering dealer toast
         setDealerToastOpen(false)
         // Refinement Phase 7.7: dismiss any lingering agent routing toast
@@ -638,7 +655,28 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     </div>
                 ) : (
                     <>
-                        {activeTab === 'ESTIMATOR' && (
+                        {activeTab === 'ESTIMATOR' && stepState === 'client-delivery' && (
+                            <div key="CLIENT-DELIVERY" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto animate-fade-in">
+                                <ClientProposalDelivery
+                                    proposalPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
+                                        maximumFractionDigits: 0,
+                                    })}
+                                    clientName={customer.name}
+                                    approvedBy={ROLE_PROFILES.Dealer.name}
+                                    approvedAt={approvedAt ?? Date.now()}
+                                    onRestart={handleRestartDemo}
+                                    onSent={() => {
+                                        logEvent(
+                                            ROLE_PROFILES['Sales Coordinator'].name,
+                                            'Client-facing PDF sent to JPS Health Network',
+                                            'edit'
+                                        )
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {activeTab === 'ESTIMATOR' && stepState !== 'client-delivery' && (
                             <div key="ESTIMATOR" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
                                 {/* Phase 4: Project Dossier — combobox filters */}
                                 <EstimatorDossierCard
@@ -836,7 +874,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 onComplete={handleApprovalChainComplete}
             />
 
-            {/* Refinement Phase 1: w2.2 — Release success + restart */}
+            {/* Refinement Phase 1 + v7: w2.2 — Release success → continue to w2.3 */}
             <ReleaseSuccessModal
                 isOpen={isReleaseOpen}
                 salesPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
@@ -844,8 +882,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 })}
                 clientName={customer.name}
                 onDownloadPdf={handleReleaseDownloadPdf}
-                onSendEmail={handleReleaseSendEmail}
-                onRestart={handleRestartDemo}
+                onContinueToDelivery={handleContinueToDelivery}
             />
 
             {/* Refinement Phase 6d: Audit trail panel — hidden during w1.2 where

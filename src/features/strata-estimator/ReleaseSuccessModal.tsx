@@ -1,29 +1,28 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // Strata Estimator — Release Success Modal
-// Refinement Phase 1 (w2.4 closure)
+// Refinement Phase 1 (w2.2 closure) · v7 re-scoped
 //
-// Fires after the approval chain completes. Sober celebration:
+// Fires after the approval chain completes in w2.2 (Dealer). Sober
+// celebration:
 //   · An SVG checkmark that strokes itself over 600 ms
 //   · A single ring pulse (no confetti)
 //   · Three metrics fade in staggered (8 hrs → 12 min, 4 tools → 1 app,
 //     100 % audit trail)
-//   · Three actions: Download PDF / Send by Email / Start new quote
-//
-// Start new quote calls onRestart which the Shell wires to goToStep(0) +
-// a full state reset so the demo replays the w0.1 origin splash.
+//   · Primary CTA: "Continue to client delivery" → advances the demo
+//     profile from w2.2 into w2.3 (Flow 2 · Client Delivery)
+//   · Secondary: Download PDF (internal audit trail)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
-import { Download, Mail, RotateCcw } from 'lucide-react'
+import { ArrowRight, Download } from 'lucide-react'
 
 interface ReleaseSuccessModalProps {
     isOpen: boolean
     salesPrice: string
     clientName: string
     onDownloadPdf: () => void
-    onSendEmail: () => void
-    onRestart: () => void
+    onContinueToDelivery: () => void
 }
 
 interface MetricCard {
@@ -43,8 +42,7 @@ export default function ReleaseSuccessModal({
     salesPrice,
     clientName,
     onDownloadPdf,
-    onSendEmail,
-    onRestart,
+    onContinueToDelivery,
 }: ReleaseSuccessModalProps) {
     const [visibleMetrics, setVisibleMetrics] = useState(0)
     const [checkDrawn, setCheckDrawn] = useState(false)
@@ -174,25 +172,18 @@ export default function ReleaseSuccessModal({
                             {/* Footer actions */}
                             <div className="flex items-center gap-2 px-6 py-4 border-t border-border bg-muted/20">
                                 <button
-                                    onClick={onRestart}
+                                    onClick={onDownloadPdf}
                                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors mr-auto"
                                 >
-                                    <RotateCcw className="w-3.5 h-3.5" />
-                                    Start new quote
+                                    <Download className="w-3.5 h-3.5" />
+                                    Audit trail PDF
                                 </button>
                                 <button
-                                    onClick={onSendEmail}
-                                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                                >
-                                    <Mail className="w-3.5 h-3.5" />
-                                    Send by email
-                                </button>
-                                <button
-                                    onClick={onDownloadPdf}
+                                    onClick={onContinueToDelivery}
                                     className="flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                                 >
-                                    <Download className="w-3.5 h-3.5" />
-                                    Download PDF
+                                    Continue to client delivery
+                                    <ArrowRight className="w-3.5 h-3.5" />
                                 </button>
                             </div>
                         </DialogPanel>
