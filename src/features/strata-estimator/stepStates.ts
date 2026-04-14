@@ -16,7 +16,7 @@ export type EstimatorStepState =
     | 'origin-splash'           // w0.1 — the Shell is NOT shown, splash overlay instead
     | 'estimation-active'       // w2.1 — Hero live, checkboxes enabled, AI import triggers stagger animation
     | 'estimation-escalated'    // w2.2 — BoM row 19 focused, other rows opacity-40
-    | 'estimation-assembly'     // w2.3 — Generate Proposal pulsing, pricing waterfall ready
+    | 'estimation-assembly'     // w2.3 — VerificationLogCard + pricing waterfall auto-opens after ~2.6s
     | 'proposal-review'         // w2.4 — read-only + approval chain modal available
 
 interface StepMapping {
