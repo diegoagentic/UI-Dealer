@@ -33,6 +33,7 @@ import type { AuditCategory, AuditEvent } from './AuditTrailPanel'
 import RoleHandoffTransition from './RoleHandoffTransition'
 import type { HandoffPerson } from './RoleHandoffTransition'
 import VerificationLogCard from './VerificationLogCard'
+import DealerArrivalToast from './DealerArrivalToast'
 import { ROLE_PROFILES } from './roles'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
@@ -103,6 +104,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [flaggedRowIds, setFlaggedRowIds] = useState<string[]>([])
     const [escalatedAt, setEscalatedAt] = useState<number | null>(null)
     const [verifiedAt, setVerifiedAt] = useState<number | null>(null)
+    const [dealerToastOpen, setDealerToastOpen] = useState(false)
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
     // Dual-engine calculation progress (0 → 1). Default 1 = show real values.
     const [calcProgress, setCalcProgress] = useState<number>(1)
@@ -338,6 +340,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         return () => clearTimeout(timer)
     }, [stepId])
 
+    // ── w2.4 dealer arrival toast ────────────────────────────────────────────
+    // When Sara lands on w2.4, surface a small 'Your turn, Sara' cue right
+    // after the RoleHandoffTransition finishes. The toast handles its own
+    // dismiss timer; this effect just opens it on step entry.
+    useEffect(() => {
+        if (stepId !== 'w2.4') {
+            setDealerToastOpen(false)
+            return
+        }
+        setDealerToastOpen(true)
+    }, [stepId])
+
     // ── w2.2 scroll-into-view ────────────────────────────────────────────────
     // When entering w2.2, scroll the BoM so the flagged OFS Serpentine row is
     // centered — otherwise the designer overlay slides in and the user has
@@ -501,6 +515,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         // Refinement Phase 7.4 + 7.5: clear the escalation + verification timestamps
         setEscalatedAt(null)
         setVerifiedAt(null)
+        // Refinement Phase 7.6: dismiss any lingering dealer toast
+        setDealerToastOpen(false)
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -840,6 +856,17 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     onComplete={handleHandoffComplete}
                 />
             )}
+
+            {/* Refinement Phase 7.6: Dealer arrival toast (w2.4 preamble) */}
+            <DealerArrivalToast
+                isOpen={dealerToastOpen && stepId === 'w2.4'}
+                dealerName={ROLE_PROFILES.Dealer.name}
+                dealerPhoto={ROLE_PROFILES.Dealer.photo}
+                salesPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
+                    maximumFractionDigits: 0,
+                })}
+                onDismiss={() => setDealerToastOpen(false)}
+            />
         </div>
     )
 }
