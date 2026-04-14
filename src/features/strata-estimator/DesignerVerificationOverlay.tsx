@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { clsx } from 'clsx'
 
 interface CheckboxModule {
     id: string
@@ -28,6 +29,21 @@ export default function DesignerVerificationOverlay({
     const [checkedModules, setCheckedModules] = useState<Record<string, boolean>>({})
     const [expandedModule, setExpandedModule] = useState<string | null>(null)
     const [comments, setComments] = useState<Record<string, string>>({})
+    const [leaving, setLeaving] = useState(false)
+
+    // Reset everything when the overlay opens fresh (new step entry)
+    useEffect(() => {
+        if (!isOpen) return
+        setLeaving(false)
+        setCheckedModules({})
+        setExpandedModule(null)
+        setComments({})
+    }, [isOpen])
+
+    const handleSendBackClick = () => {
+        setLeaving(true)
+        setTimeout(onSendBack, 400)
+    }
 
     if (!isOpen) return null
 
@@ -46,7 +62,14 @@ export default function DesignerVerificationOverlay({
     const allChecked = MODULES.every((m) => checkedModules[m.id])
 
     return (
-        <div className="absolute inset-y-0 right-0 w-96 bg-card dark:bg-zinc-900 border-l border-border shadow-2xl flex flex-col z-40 transform transition-transform duration-300">
+        <div
+            className={clsx(
+                'fixed inset-y-0 right-0 w-96 bg-card dark:bg-zinc-900 border-l border-border shadow-2xl flex flex-col z-40 transition-all duration-300 ease-out',
+                leaving
+                    ? 'translate-x-full opacity-0'
+                    : 'translate-x-0 opacity-100'
+            )}
+        >
             {/* Header */}
             <div className="p-6 border-b border-border bg-muted/20">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -123,8 +146,8 @@ export default function DesignerVerificationOverlay({
                     Preview PDF
                 </button>
                 <button
-                    onClick={onSendBack}
-                    disabled={!allChecked}
+                    onClick={handleSendBackClick}
+                    disabled={!allChecked || leaving}
                     className={`w-full py-2.5 px-4 text-sm font-semibold rounded-lg flex items-center justify-center gap-2 transition-opacity ${allChecked ? 'bg-primary text-primary-foreground hover:opacity-90' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
                 >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

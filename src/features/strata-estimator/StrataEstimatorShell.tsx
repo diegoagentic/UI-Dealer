@@ -180,6 +180,21 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         return () => clearTimeout(timer)
     }, [stepId])
 
+    // ── w2.2 scroll-into-view ────────────────────────────────────────────────
+    // When entering w2.2, scroll the BoM so the flagged OFS Serpentine row is
+    // centered — otherwise the designer overlay slides in and the user has
+    // to scroll manually to see the focused row behind it.
+    useEffect(() => {
+        if (stepState !== 'estimation-escalated') return
+        const timer = setTimeout(() => {
+            const row = document.querySelector('tr[data-row-id="li-19"]')
+            if (row) {
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            }
+        }, 350)
+        return () => clearTimeout(timer)
+    }, [stepState])
+
     // ── Handoff banner (fires when step role changes) ────────────────────────
     const prevStepIdRef = useRef<string | undefined>(undefined)
     const [handoff, setHandoff] = useState<{
@@ -438,6 +453,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     staggerImport={stepId === 'w2.1' && (w21Phase === 'importing-bom' || w21Phase === 'scope-breach')}
                                     flaggedRowIds={flaggedRowIds}
                                     importStatus={importStatus}
+                                    focusedRowId={stepState === 'estimation-escalated' ? 'li-19' : null}
                                 />
 
                                 {/* Refinement Phase 2: Flagged item banner with Escalate CTA */}

@@ -124,6 +124,8 @@ interface BillOfMaterialsTableProps {
     flaggedRowIds?: string[]
     /** Inline hint shown in the header while the AI is importing */
     importStatus?: string | null
+    /** When set, every other row is dimmed to draw attention to this one (used by w2.2) */
+    focusedRowId?: string | null
 }
 
 export default function BillOfMaterialsTable({
@@ -139,6 +141,7 @@ export default function BillOfMaterialsTable({
     staggerImport = false,
     flaggedRowIds = [],
     importStatus = null,
+    focusedRowId = null,
 }: BillOfMaterialsTableProps) {
     const categories = Object.values(config.categories)
 
@@ -220,6 +223,8 @@ export default function BillOfMaterialsTable({
                                 ? Object.values(category.subcategories ?? {})
                                 : []
                             const isFlagged = flaggedRowIds.includes(item.id)
+                            const isFocused = focusedRowId === item.id
+                            const isDimmed = focusedRowId !== null && !isFocused
                             const staggerStyle = staggerImport
                                 ? {
                                       animationDelay: `${index * 80}ms`,
@@ -230,10 +235,13 @@ export default function BillOfMaterialsTable({
                             return (
                                 <tr
                                     key={item.id}
+                                    data-row-id={item.id}
                                     className={clsx(
-                                        'transition-colors',
-                                        !isFlagged && 'hover:bg-muted/30',
+                                        'transition-all duration-500',
+                                        !isFlagged && !isDimmed && 'hover:bg-muted/30',
                                         isFlagged && 'bg-amber-500/5 dark:bg-amber-500/10 ring-1 ring-inset ring-amber-500/40',
+                                        isDimmed && 'opacity-30',
+                                        isFocused && !isFlagged && 'bg-primary/5 ring-1 ring-inset ring-primary/40',
                                         staggerImport && 'animate-in fade-in slide-in-from-left-1 duration-300'
                                     )}
                                     style={staggerStyle}
