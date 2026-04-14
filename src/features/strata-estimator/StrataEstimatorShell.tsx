@@ -84,11 +84,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [savedEstimates, setSavedEstimates] = useState<SavedEstimate[]>(MOCK_SAVED_ESTIMATES)
     const [isInitialLoading, setIsInitialLoading] = useState(true)
 
-    // ── w2.1 beat timeline state (refinement Phase 2) ────────────────────────
+    // ── w2.1 beat timeline state (refinement Phase 2 + 7.1) ──────────────────
     type W21Phase =
         | 'idle'
         | 'loading-dossier'
         | 'importing-bom'
+        | 'mapping-bom'
         | 'scope-breach'
         | 'flagged'
     const [w21Phase, setW21Phase] = useState<W21Phase>('idle')
@@ -96,6 +97,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [scopeBreachOpen, setScopeBreachOpen] = useState(false)
     const [scopeBreachActive, setScopeBreachActive] = useState(false)
     const [flaggedRowIds, setFlaggedRowIds] = useState<string[]>([])
+    const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
 
     // ── Audit trail (Pain #4 — structured data layer proof) ─────────────────
     const [auditLog, setAuditLog] = useState<AuditEvent[]>([])
@@ -153,6 +155,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setFlaggedRowIds([])
         setImportStatus(null)
         setW21Phase('loading-dossier')
+        setMappingResolvedCount(0) // all rows will first appear as chips
         setAuditLog([])
         logEvent('System', 'Session opened · JPS Health Network', 'system')
 
@@ -186,14 +189,45 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             }, 1400)
         )
 
-        // t=3600ms — stagger finishes (24 × 80ms), hide the import status
+        // t=3600ms — stagger finishes (24 × 80ms), enter the mapping beat.
+        // Every row is now showing its TEMPLATE / FALLBACK chip; we resolve
+        // them to the real category sequentially, 40ms apart.
         timers.push(
             setTimeout(() => {
-                setImportStatus(null)
+                setW21Phase('mapping-bom')
+                setImportStatus('Mapping products to labor categories…')
+                logEvent(
+                    'AI Agent',
+                    'Mapping products to labor categories',
+                    'ai'
+                )
             }, 3600)
         )
 
-        // t=3900ms — scope breach alert (Pain #6: 119 chairs > 50 limit)
+        // t=3700 → 3700 + 24×40 = 4660ms — chips resolve one by one
+        const itemCount = JPS_LINE_ITEMS.length
+        for (let i = 0; i < itemCount; i++) {
+            timers.push(
+                setTimeout(() => setMappingResolvedCount(i + 1), 3700 + i * 40)
+            )
+        }
+
+        // t=4700ms — mapping complete, drop the import status
+        timers.push(
+            setTimeout(() => {
+                setImportStatus(null)
+                logEvent(
+                    'AI Agent',
+                    'Mapped 24 items · 21 template, 3 fallback',
+                    'ai'
+                )
+            }, 4700)
+        )
+
+        // t=4900ms — scope breach alert (Pain #6: 119 chairs > 50 limit)
+        // Per the doc §3, "scope limit enforcement runs first" — so this
+        // fires after mapping resolves but before any calculation. Phase 7.2
+        // (calc count-up) will hook in right after this beat.
         timers.push(
             setTimeout(() => {
                 setW21Phase('scope-breach')
@@ -204,7 +238,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Scope override · 119 KD chairs > 50 (Delivery Pricer limit)',
                     'ai'
                 )
-            }, 3900)
+            }, 4900)
         )
 
         // t=6900ms — flag OFS Serpentine (row 19) + show Escalate banner
@@ -375,6 +409,9 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setScopeBreachOpen(false)
         setScopeBreachActive(false)
         setFlaggedRowIds([])
+        // Refinement Phase 7.1: restore mapping to "all resolved" for the
+        // next w2.1 entry (the beat effect re-sets it to 0 on its own).
+        setMappingResolvedCount(Infinity)
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -528,12 +565,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     onAiRefine={handleAiRefine}
                                     hasLastFile={!!lastFile}
                                     readOnly={isProposalReview}
-                                    staggerImport={stepId === 'w2.1' && (w21Phase === 'importing-bom' || w21Phase === 'scope-breach')}
+                                    staggerImport={stepId === 'w2.1' && (w21Phase === 'importing-bom' || w21Phase === 'mapping-bom' || w21Phase === 'scope-breach')}
                                     flaggedRowIds={flaggedRowIds}
                                     importStatus={importStatus}
                                     focusedRowId={stepState === 'estimation-escalated' ? 'li-19' : null}
                                     confidenceMap={confidenceMap}
                                     scopeBreachBadge={scopeBreachBadge}
+                                    mappingResolvedCount={mappingResolvedCount}
                                 />
 
                                 {/* Refinement Phase 2: Flagged item banner with Escalate CTA */}

@@ -140,6 +140,12 @@ interface BillOfMaterialsTableProps {
     confidenceMap?: Record<string, AiConfidence>
     /** Sticky scope-breach badge displayed in the header after the transient alert fades */
     scopeBreachBadge?: { category: string; count: number; limit: number } | null
+    /**
+     * Number of rows that have finished the Map-to-Category beat. Rows with
+     * index ≥ this value show a TEMPLATE / FALLBACK chip instead of the real
+     * category listbox. Defaults to Infinity (all rows considered resolved).
+     */
+    mappingResolvedCount?: number
 }
 
 export default function BillOfMaterialsTable({
@@ -158,6 +164,7 @@ export default function BillOfMaterialsTable({
     focusedRowId = null,
     confidenceMap,
     scopeBreachBadge = null,
+    mappingResolvedCount = Infinity,
 }: BillOfMaterialsTableProps) {
     const categories = Object.values(config.categories)
 
@@ -250,6 +257,9 @@ export default function BillOfMaterialsTable({
                             const isFlagged = flaggedRowIds.includes(item.id)
                             const isFocused = focusedRowId === item.id
                             const isDimmed = focusedRowId !== null && !isFocused
+                            const isMapping = index >= mappingResolvedCount
+                            const rowConfidence = confidenceMap?.[item.id]
+                            const chipIsFallback = rowConfidence === 'LOW'
                             const staggerStyle = staggerImport
                                 ? {
                                       animationDelay: `${index * 80}ms`,
@@ -271,19 +281,38 @@ export default function BillOfMaterialsTable({
                                     )}
                                     style={staggerStyle}
                                 >
-                                    {/* Group (category) */}
+                                    {/* Group (category) — TEMPLATE/FALLBACK chip during the mapping beat */}
                                     <td className="px-6 py-3">
-                                        <InlineListbox
-                                            value={item.categoryId}
-                                            onChange={(v) =>
-                                                onUpdateItem(item.id, 'categoryId', v)
-                                            }
-                                            options={categories.map((c) => ({
-                                                id: c.id,
-                                                label: c.label,
-                                            }))}
-                                            disabled={readOnly}
-                                        />
+                                        {isMapping ? (
+                                            <div
+                                                className={clsx(
+                                                    'inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider animate-pulse',
+                                                    chipIsFallback
+                                                        ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                                                        : 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30'
+                                                )}
+                                                title={
+                                                    chipIsFallback
+                                                        ? 'LLM fallback in progress — product code didn\'t match template'
+                                                        : 'Template lookup in progress — matched product code to category'
+                                                }
+                                            >
+                                                <Sparkles className="w-3 h-3 shrink-0" />
+                                                {chipIsFallback ? 'Fallback' : 'Template'}
+                                            </div>
+                                        ) : (
+                                            <InlineListbox
+                                                value={item.categoryId}
+                                                onChange={(v) =>
+                                                    onUpdateItem(item.id, 'categoryId', v)
+                                                }
+                                                options={categories.map((c) => ({
+                                                    id: c.id,
+                                                    label: c.label,
+                                                }))}
+                                                disabled={readOnly}
+                                            />
+                                        )}
                                     </td>
 
                                     {/* Product Line (subcategory) */}
@@ -309,7 +338,7 @@ export default function BillOfMaterialsTable({
                                     {/* Description */}
                                     <td className="px-4 py-3">
                                         <div className="flex items-start gap-2">
-                                            {confidenceMap?.[item.id] && (
+                                            {confidenceMap?.[item.id] && !isMapping && (
                                                 <span
                                                     className="shrink-0 mt-1.5 flex items-center gap-1"
                                                     title={
