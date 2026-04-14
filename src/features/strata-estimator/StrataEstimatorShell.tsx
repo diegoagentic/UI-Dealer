@@ -403,6 +403,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         fromUser: NonNullable<typeof connectedUser>
         toUser: NonNullable<typeof connectedUser>
         message: string
+        duration?: number
     } | null>(null)
 
     useEffect(() => {
@@ -503,9 +504,9 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setDavidSigned(false)
         setIsApprovalOpen(true)
 
-        // Phase 2 — after ~2 s, close the modal and redirect the Shell to
-        // David's real workspace so the audience watches the notification
-        // land in his Estimator view.
+        // Phase 2 — after ~2.5 s, close the modal and redirect the Shell
+        // to David's real workspace so the audience watches the
+        // notification land in his Estimator view.
         setTimeout(() => {
             setIsApprovalOpen(false)
             logEvent(
@@ -519,11 +520,26 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 toUser: ROLE_PROFILES.Expert,
                 message:
                     'Approval request · JPS Health Network · $202,138 awaiting your sign-off',
+                // Keep the banner visible for the entire David detour so
+                // the audience can read it at a comfortable pace.
+                duration: 7500,
             })
 
+            // Phase 2b — halfway through the detour, log David "reviewing"
+            // the proposal so the audit trail reflects a real review beat
+            // instead of an instant approval.
+            setTimeout(() => {
+                logEvent(
+                    'David Park',
+                    'Reviewing proposal line items · OFS Serpentine, Canvas workstations, freight',
+                    'edit'
+                )
+            }, 2800)
+
             // Phase 3 — after David "reviews and approves" in his own
-            // workspace, clear the redirect, mark David signed, and re-open
-            // the chain modal to auto-advance Alex / Sara / Jordan.
+            // workspace, clear the redirect, mark David signed, and
+            // re-open the chain modal to auto-advance Alex / Sara /
+            // Jordan.
             setTimeout(() => {
                 logEvent(
                     'David Park',
@@ -534,8 +550,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 setHandoff(null)
                 setDavidSigned(true)
                 setIsApprovalOpen(true)
-            }, 3800)
-        }, 2200)
+            }, 7000)
+        }, 2500)
     }
 
     const handleApprovalChainComplete = () => {
@@ -735,6 +751,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         fromUser={handoff.fromUser}
                                         toUser={handoff.toUser}
                                         message={handoff.message}
+                                        duration={handoff.duration}
                                         onDismiss={() => setHandoff(null)}
                                     />
                                 )}
@@ -766,6 +783,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         fromUser={handoff.fromUser}
                                         toUser={handoff.toUser}
                                         message={handoff.message}
+                                        duration={handoff.duration}
                                         onDismiss={() => setHandoff(null)}
                                     />
                                 )}
