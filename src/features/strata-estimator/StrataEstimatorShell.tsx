@@ -34,6 +34,7 @@ import RoleHandoffTransition from './RoleHandoffTransition'
 import type { HandoffPerson } from './RoleHandoffTransition'
 import VerificationLogCard from './VerificationLogCard'
 import DealerArrivalToast from './DealerArrivalToast'
+import AgentRoutingToast from './AgentRoutingToast'
 import { ROLE_PROFILES } from './roles'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
@@ -105,6 +106,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [escalatedAt, setEscalatedAt] = useState<number | null>(null)
     const [verifiedAt, setVerifiedAt] = useState<number | null>(null)
     const [dealerToastOpen, setDealerToastOpen] = useState(false)
+    const [agentRoutingOpen, setAgentRoutingOpen] = useState(false)
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
     // Dual-engine calculation progress (0 → 1). Default 1 = show real values.
     const [calcProgress, setCalcProgress] = useState<number>(1)
@@ -189,7 +191,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setCalcProgress(0) // hero starts at $0 and counts up during the calc beat
         setEscalatedAt(null) // drop any stale escalation context
         setVerifiedAt(null) // drop any stale verification context
+        setAgentRoutingOpen(true) // Agent Step 1 trigger toast (Phase 7.7)
         setAuditLog([])
+        logEvent(
+            'AI Agent',
+            'Agent Step 1 · Routed JPS Health Network to David Park (Dallas)',
+            'ai'
+        )
         logEvent('System', 'Session opened · JPS Health Network', 'system')
 
         const timers: ReturnType<typeof setTimeout>[] = []
@@ -517,6 +525,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setVerifiedAt(null)
         // Refinement Phase 7.6: dismiss any lingering dealer toast
         setDealerToastOpen(false)
+        // Refinement Phase 7.7: dismiss any lingering agent routing toast
+        setAgentRoutingOpen(false)
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -866,6 +876,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     maximumFractionDigits: 0,
                 })}
                 onDismiss={() => setDealerToastOpen(false)}
+            />
+
+            {/* Refinement Phase 7.7: Agent Step 1 routing toast (w2.1 preamble) */}
+            <AgentRoutingToast
+                isOpen={agentRoutingOpen && stepId === 'w2.1'}
+                project="JPS Health Network"
+                assignee={ROLE_PROFILES.Expert.name}
+                office="Dallas office"
+                onDismiss={() => setAgentRoutingOpen(false)}
             />
         </div>
     )
