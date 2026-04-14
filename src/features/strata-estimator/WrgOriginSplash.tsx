@@ -26,11 +26,12 @@ interface WrgOriginSplashProps {
 }
 
 type SplashPhase =
-    | 'title'      // 0-1s
-    | 'tools'      // 1-6s (5 tools appear sequentially)
-    | 'pain'       // 6-7.5s (red statement)
-    | 'transform'  // 7.5-9.5s (icons collapse into Strata)
-    | 'fade-out'   // 9.5-10s
+    | 'title'       // 0-1s
+    | 'tools'       // 1-6s (5 tools appear sequentially)
+    | 'pain'        // 6-7.2s (red statement, tightened from 1.5s → 1.2s)
+    | 'transform'   // 7.2-9s (icons collapse into Strata)
+    | 'continuity'  // 9-10.3s (NEW: bridge line to w2.1)
+    | 'fade-out'    // 10.3-11s (extended from 500ms → 700ms)
 
 interface ToolStep {
     icon: typeof Mail
@@ -71,8 +72,9 @@ export default function WrgOriginSplash({ onComplete }: WrgOriginSplashProps) {
     const [visibleTools, setVisibleTools] = useState(0)
 
     useEffect(() => {
-        // Timeline: title(0-1) → tools(1-6) → pain(6-7.5) → transform(7.5-9.5) → fade(9.5-10)
-        const timers: NodeJS.Timeout[] = []
+        // Timeline: title(0-1) → tools(1-6) → pain(6-7.2) → transform(7.2-9)
+        //        → continuity(9-10.3) → fade(10.3-11)
+        const timers: ReturnType<typeof setTimeout>[] = []
 
         // Phase: tools (start at 1s, reveal one every 1s)
         timers.push(setTimeout(() => setPhase('tools'), 1000))
@@ -80,17 +82,20 @@ export default function WrgOriginSplash({ onComplete }: WrgOriginSplashProps) {
             timers.push(setTimeout(() => setVisibleTools(i + 1), 1000 + i * 1000))
         }
 
-        // Phase: pain statement
+        // Phase: pain statement (tightened 1.5s → 1.2s)
         timers.push(setTimeout(() => setPhase('pain'), 6000))
 
-        // Phase: transformation
-        timers.push(setTimeout(() => setPhase('transform'), 7500))
+        // Phase: transformation (starts earlier, shrunk 2s → 1.8s)
+        timers.push(setTimeout(() => setPhase('transform'), 7200))
 
-        // Phase: fade out
-        timers.push(setTimeout(() => setPhase('fade-out'), 9500))
+        // Phase: continuity bridge line (1.3s of reading time)
+        timers.push(setTimeout(() => setPhase('continuity'), 9000))
 
-        // Complete
-        timers.push(setTimeout(() => onComplete(), 10000))
+        // Phase: fade out (extended 500ms → 700ms for a calmer exit)
+        timers.push(setTimeout(() => setPhase('fade-out'), 10300))
+
+        // Complete → hands off to w2.1's own beat timeline
+        timers.push(setTimeout(() => onComplete(), 11000))
 
         return () => {
             timers.forEach(clearTimeout)
@@ -100,7 +105,7 @@ export default function WrgOriginSplash({ onComplete }: WrgOriginSplashProps) {
     return (
         <div
             className={clsx(
-                'fixed inset-0 z-50 bg-zinc-950 text-white flex flex-col items-center justify-center overflow-hidden transition-opacity duration-500',
+                'fixed inset-0 z-50 bg-zinc-950 text-white flex flex-col items-center justify-center overflow-hidden transition-opacity duration-700',
                 phase === 'fade-out' ? 'opacity-0' : 'opacity-100'
             )}
         >
@@ -194,6 +199,26 @@ export default function WrgOriginSplash({ onComplete }: WrgOriginSplashProps) {
                     <p className="text-sm text-zinc-400 mt-3 max-w-2xl text-center leading-relaxed">
                         CORE still receives the final file — but now every calculation, every rate,
                         every decision is preserved with full audit trail.
+                    </p>
+                </div>
+            )}
+
+            {/* Continuity bridge → w2.1 */}
+            {(phase === 'continuity' || phase === 'fade-out') && (
+                <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-600">
+                    <div className="w-20 h-20 rounded-3xl bg-brand-500 flex items-center justify-center shadow-2xl shadow-brand-500/30">
+                        <Sparkles className="w-10 h-10 text-zinc-950" />
+                    </div>
+                    <p className="text-[10px] font-bold text-brand-400 uppercase tracking-[0.3em] mt-6">
+                        Next
+                    </p>
+                    <h2 className="text-2xl font-bold text-white mt-2 max-w-2xl text-center leading-snug">
+                        The same{' '}
+                        <span className="text-brand-400">$202 K</span>{' '}
+                        quote, built inside Strata.
+                    </h2>
+                    <p className="text-xs text-zinc-500 mt-4 uppercase tracking-[0.2em]">
+                        Loading JPS Health Network…
                     </p>
                 </div>
             )}

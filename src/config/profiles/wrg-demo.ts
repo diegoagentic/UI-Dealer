@@ -83,7 +83,7 @@ export const WRG_DEMO_STEPS: DemoStep[] = [
 // ─── STEP BEHAVIOR ───────────────────────────────────────────────────────────
 
 export const WRG_DEMO_STEP_BEHAVIOR: Record<string, StepBehavior> = {
-    'w0.1': { mode: 'auto', duration: 10, aiSummary: 'The Old Way — 4 disconnected tools, 8 hours of manual work' },
+    'w0.1': { mode: 'auto', duration: 11, aiSummary: 'The Old Way — 4 disconnected tools, 8 hours of manual work' },
     'w2.1': { mode: 'interactive', userAction: 'Import the BoM, review the 5 flagged items, and escalate the OFS Serpentine to the designer' },
     'w2.2': { mode: 'interactive', userAction: 'Validate the escalated module and send the verification back to the expert' },
     'w2.3': { mode: 'interactive', userAction: 'Confirm the adjustments, watch the pricing waterfall, and send the proposal to the dealer' },
