@@ -1,124 +1,102 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // Strata Estimator — Designer Task Notification
-// v7 · w1.2 preamble
+// v7 · w1.2 preamble · Dupler-style inline card
 //
-// Centered click-to-open card that appears the moment the demo enters
-// w1.2 (Designer verification). Lives on a dimmed backdrop so the user
-// has to explicitly acknowledge the task before the right-side
-// DesignerVerificationOverlay slides in. Feels like an inbox / task-list
-// notification landing in Alex's queue.
+// Adapted from src/components/simulations/DuplerPdfProcessor.tsx lines
+// 1999-2040 ("PMX Specification Ready for Pricing" notification) so the
+// visual language matches the rest of the Strata demos.
+//
+// Renders inline at the top of the ESTIMATOR tab in w1.2 (before the user
+// acknowledges the task). Once clicked, the parent Shell flips a gate and
+// DesignerVerificationOverlay slides in from the right.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useEffect, useState } from 'react'
-import { clsx } from 'clsx'
-import { ArrowRight, Bell, Clock } from 'lucide-react'
+import { ArrowRight, CheckCircle, Send, ShieldCheck } from 'lucide-react'
 import type { HandoffPerson } from './RoleHandoffTransition'
 
 interface DesignerTaskNotificationProps {
-    isOpen: boolean
     fromUser: HandoffPerson
     taskTitle: string
     taskSummary: string
     onOpen: () => void
 }
 
-function formatElapsed(ts: number): string {
-    const seconds = Math.max(0, Math.round((Date.now() - ts) / 1000))
-    if (seconds < 60) return `${seconds}s ago`
-    const minutes = Math.round(seconds / 60)
-    return `${minutes}m ago`
-}
-
 export default function DesignerTaskNotification({
-    isOpen,
     fromUser,
     taskTitle,
     taskSummary,
     onOpen,
 }: DesignerTaskNotificationProps) {
-    const [receivedAt] = useState<number>(() => Date.now())
-    const [entered, setEntered] = useState(false)
-
-    useEffect(() => {
-        if (!isOpen) {
-            setEntered(false)
-            return
-        }
-        const t = requestAnimationFrame(() => setEntered(true))
-        return () => cancelAnimationFrame(t)
-    }, [isOpen])
-
-    if (!isOpen) return null
-
     return (
-        <div
-            className={clsx(
-                'fixed inset-0 z-[240] flex items-center justify-center bg-zinc-950/60 backdrop-blur-sm transition-opacity duration-300',
-                entered ? 'opacity-100' : 'opacity-0'
-            )}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="designer-task-title"
-        >
+        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
             <button
                 type="button"
                 onClick={onOpen}
-                className={clsx(
-                    'w-full max-w-md mx-4 text-left rounded-2xl bg-card dark:bg-zinc-800 border border-border shadow-2xl overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary/40',
-                    entered ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 translate-y-2'
-                )}
+                className="w-full text-left group focus:outline-none focus:ring-2 focus:ring-primary/40"
             >
-                {/* Header */}
-                <div className="flex items-center gap-3 px-5 py-4 border-b border-border">
-                    <span className="shrink-0 w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                        <Bell className="w-4 h-4 text-foreground dark:text-primary" />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-bold uppercase tracking-wider leading-none text-muted-foreground">
-                            Strata · Inbox
-                        </p>
-                        <p className="text-sm font-bold text-foreground leading-tight mt-0.5">
-                            New verification request
-                        </p>
-                    </div>
-                    <span className="shrink-0 flex items-center gap-1 text-[10px] font-mono text-muted-foreground">
-                        <Clock className="w-3 h-3" />
-                        {formatElapsed(receivedAt)}
-                    </span>
-                </div>
+                <div className="p-5 bg-primary/5 dark:bg-primary/10 border-l-4 border-primary ring-1 ring-primary/20 rounded-r-2xl">
+                    <div className="flex items-start gap-3">
 
-                {/* Body */}
-                <div className="flex items-start gap-3 px-5 py-4">
-                    <img
-                        src={fromUser.photo}
-                        alt={fromUser.name}
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/30 shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                        <p
-                            id="designer-task-title"
-                            className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none"
-                        >
-                            From {fromUser.name} · {fromUser.role}
-                        </p>
-                        <p className="text-sm font-semibold text-foreground leading-tight mt-1">
-                            {taskTitle}
-                        </p>
-                        <p className="text-xs text-muted-foreground leading-snug mt-1">
-                            {taskSummary}
-                        </p>
-                    </div>
-                </div>
+                        {/* Sender avatar with send-badge (Dupler pattern) */}
+                        <div className="relative shrink-0">
+                            <img
+                                src={fromUser.photo}
+                                alt={fromUser.name}
+                                className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/40"
+                            />
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-2 ring-card dark:ring-zinc-800">
+                                <Send className="h-2.5 w-2.5 text-primary-foreground" />
+                            </div>
+                        </div>
 
-                {/* Footer */}
-                <div className="flex items-center justify-between gap-2 px-5 py-3 border-t border-border bg-muted/20">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-                        Click to open
-                    </span>
-                    <span className="flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-wider bg-primary text-primary-foreground">
-                        Open task
-                        <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
+                        <div className="flex-1 min-w-0">
+                            {/* Title + "Just now" pulse pill */}
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-sm font-bold text-foreground">
+                                    {taskTitle}
+                                </span>
+                                <span className="text-[9px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-bold animate-pulse">
+                                    Just now
+                                </span>
+                            </div>
+
+                            {/* Sender line */}
+                            <p className="text-xs text-muted-foreground mt-1">
+                                <span className="font-bold text-foreground">
+                                    {fromUser.name}
+                                </span>{' '}
+                                ({fromUser.role}) · {taskSummary}
+                            </p>
+
+                            {/* Status chip row */}
+                            <div className="flex items-center gap-2 flex-wrap mt-3 mb-2">
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1 ring-2 ring-amber-500/20 shadow-sm shadow-amber-500/10">
+                                    <CheckCircle className="h-3 w-3" />
+                                    CUSTOM ITEM FLAGGED
+                                </span>
+                                <span className="text-muted-foreground text-[10px]">
+                                    →
+                                </span>
+                                <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30 flex items-center gap-1">
+                                    <ShieldCheck className="h-3 w-3" />
+                                    DESIGNER VERIFICATION
+                                </span>
+                            </div>
+
+                            {/* Secondary chip */}
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[8px] px-1.5 py-0.5 rounded bg-green-500/10 text-green-700 dark:text-green-400 font-bold border border-green-500/30">
+                                    ROUTED BY EXPERT
+                                </span>
+                            </div>
+
+                            {/* Click hint */}
+                            <p className="text-[10px] text-foreground dark:text-primary mt-2 flex items-center gap-1 group-hover:underline font-semibold">
+                                Click to review
+                                <ArrowRight className="h-3 w-3" />
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </button>
         </div>

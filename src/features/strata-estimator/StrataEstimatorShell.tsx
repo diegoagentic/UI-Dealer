@@ -693,6 +693,25 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
                         {activeTab === 'ESTIMATOR' && stepState !== 'client-delivery' && (
                             <div key="ESTIMATOR" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
+
+                                {/* v7 · w1.2 · Dupler-style task notification (top of the page,
+                                    mutually exclusive with the DesignerVerificationOverlay) */}
+                                {stepId === 'w1.2' && !designerTaskOpened && (
+                                    <DesignerTaskNotification
+                                        fromUser={ROLE_PROFILES.Expert}
+                                        taskTitle="OFS Serpentine ready for verification"
+                                        taskSummary="Custom product — check connection hardware and confirm the 14 h assembly estimate. 5 modules to validate before sending back."
+                                        onOpen={() => {
+                                            logEvent(
+                                                ROLE_PROFILES.Designer.name,
+                                                'Opened verification task from inbox',
+                                                'edit'
+                                            )
+                                            setDesignerTaskOpened(true)
+                                        }}
+                                    />
+                                )}
+
                                 {/* Phase 4: Project Dossier — combobox filters */}
                                 <EstimatorDossierCard
                                     customer={customer}
@@ -868,22 +887,6 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     if (row) {
                         row.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }
-                }}
-            />
-
-            {/* v7 · w1.2 preamble · task notification before the overlay opens */}
-            <DesignerTaskNotification
-                isOpen={stepState === 'estimation-escalated' && !designerTaskOpened}
-                fromUser={ROLE_PROFILES.Expert}
-                taskTitle="Verify OFS Serpentine 12-seat curved lounge"
-                taskSummary="Custom product — check connection hardware and confirm the 14 h assembly estimate. 5 modules to validate before sending back."
-                onOpen={() => {
-                    logEvent(
-                        ROLE_PROFILES.Designer.name,
-                        'Opened verification task from inbox',
-                        'edit'
-                    )
-                    setDesignerTaskOpened(true)
                 }}
             />
 
