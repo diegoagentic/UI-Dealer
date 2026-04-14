@@ -101,7 +101,7 @@ export default function StrataEstimatorNavbar({
     return (
         <div
             className={clsx(
-                'fixed top-6 z-50 flex justify-center px-4 transition-all duration-300',
+                'fixed top-6 z-50 flex justify-center px-6 lg:px-10 transition-all duration-300',
                 sidebarExpanded ? 'left-80 right-0' : 'left-0 right-0'
             )}
         >

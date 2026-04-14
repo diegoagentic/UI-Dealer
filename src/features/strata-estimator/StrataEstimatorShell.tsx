@@ -234,7 +234,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             {/* Tab content */}
             <main>
                 {isInitialLoading ? (
-                    <div className="pt-24 px-4 max-w-7xl mx-auto space-y-6 animate-pulse">
+                    <div className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-pulse">
                         <div className="h-32 bg-muted/40 rounded-2xl" />
                         <div className="h-64 bg-muted/30 rounded-2xl" />
                         <div className="h-96 bg-muted/20 rounded-2xl" />
@@ -242,7 +242,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 ) : (
                     <>
                         {activeTab === 'ESTIMATOR' && (
-                            <div key="ESTIMATOR" className="pt-24 px-4 max-w-7xl mx-auto space-y-6 animate-fade-in">
+                            <div key="ESTIMATOR" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
                                 {/* Phase 4: Project Dossier — combobox filters */}
                                 <EstimatorDossierCard
                                     customer={customer}
