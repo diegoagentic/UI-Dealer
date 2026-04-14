@@ -169,6 +169,14 @@ export const JPS_PRODUCT_LIST = 287450
 export const JPS_CONTRACT_DISCOUNT = 0.38
 export const JPS_FREIGHT = 6234
 
+// ── Dual-engine split (Pain #2 — delivery + installation unified) ────────────
+// WRG's AS-IS has delivery (minutes / Section F/G) and installation (man-hours
+// / JPS labor sheet) in two disconnected Excels. Strata's agent runs both in
+// parallel. For the demo we treat the hero's totalHours as the unified bucket
+// and present a fixed visual split so users see both engines without the
+// calculation engine having to actually compute Delivery Pricer minutes.
+export const DELIVERY_HOURS_RATIO = 0.30
+
 // ── AI confidence mapping (per WRG AI readiness assessment) ───────────────────
 // ~85% of BoM items are HIGH (template-parsed), ~15% are LOW (LLM fallback
 // routed to human review). For JPS we hand-label 3 of the 24 items as LOW —

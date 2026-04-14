@@ -8,6 +8,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { ArrowRight, Receipt } from 'lucide-react'
+import { DELIVERY_HOURS_RATIO } from './mockData'
 import type { EstimateResult } from './types'
 
 interface FinancialSummaryHeroProps {
@@ -81,8 +82,18 @@ export default function FinancialSummaryHero({
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground mb-1">Total Hours</p>
-                        <p className="text-lg font-semibold text-foreground">
+                        <p className="text-lg font-semibold text-foreground leading-tight">
                             {formatHours(estimate.totalHours)}
+                        </p>
+                        <p className="text-[9px] text-muted-foreground uppercase tracking-wider mt-0.5 tabular-nums">
+                            {formatHours(String(
+                                (parseFloat(estimate.totalHours) || 0) * (1 - DELIVERY_HOURS_RATIO)
+                            ))}
+                            {' install · '}
+                            {formatHours(String(
+                                (parseFloat(estimate.totalHours) || 0) * DELIVERY_HOURS_RATIO
+                            ))}
+                            {' delivery'}
                         </p>
                     </div>
                     <div>
