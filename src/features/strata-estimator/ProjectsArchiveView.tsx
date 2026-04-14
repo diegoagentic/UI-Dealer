@@ -166,10 +166,10 @@ export default function ProjectsArchiveView({
                                                     <ListboxOption
                                                         key={s}
                                                         value={s}
-                                                        className={({ active }) =>
+                                                        className={({ focus }) =>
                                                             clsx(
                                                                 'relative cursor-pointer select-none py-1.5 pl-8 pr-3 text-[10px] font-bold uppercase tracking-wider transition-colors',
-                                                                active && 'bg-muted/60'
+                                                                focus && 'bg-zinc-100 dark:bg-zinc-900'
                                                             )
                                                         }
                                                     >

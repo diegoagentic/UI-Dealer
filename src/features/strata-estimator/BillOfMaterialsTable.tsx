@@ -73,10 +73,10 @@ function InlineListbox({
                             <ListboxOption
                                 key={option.id}
                                 value={option.id}
-                                className={({ active, selected }) =>
+                                className={({ focus, selected }) =>
                                     clsx(
                                         'relative cursor-pointer select-none py-1.5 pl-8 pr-3 transition-colors',
-                                        active && 'bg-muted/60',
+                                        focus && 'bg-zinc-100 dark:bg-zinc-900',
                                         selected
                                             ? 'text-foreground font-semibold'
                                             : 'text-muted-foreground'
