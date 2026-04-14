@@ -98,6 +98,9 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [scopeBreachActive, setScopeBreachActive] = useState(false)
     const [flaggedRowIds, setFlaggedRowIds] = useState<string[]>([])
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
+    // Dual-engine calculation progress (0 → 1). Default 1 = show real values.
+    const [calcProgress, setCalcProgress] = useState<number>(1)
+    const calcRafRef = useRef<number | null>(null)
 
     // ── Audit trail (Pain #4 — structured data layer proof) ─────────────────
     const [auditLog, setAuditLog] = useState<AuditEvent[]>([])
@@ -156,6 +159,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setImportStatus(null)
         setW21Phase('loading-dossier')
         setMappingResolvedCount(0) // all rows will first appear as chips
+        setCalcProgress(0) // hero starts at $0 and counts up during the calc beat
         setAuditLog([])
         logEvent('System', 'Session opened · JPS Health Network', 'system')
 
@@ -226,8 +230,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
         // t=4900ms — scope breach alert (Pain #6: 119 chairs > 50 limit)
         // Per the doc §3, "scope limit enforcement runs first" — so this
-        // fires after mapping resolves but before any calculation. Phase 7.2
-        // (calc count-up) will hook in right after this beat.
+        // fires after mapping resolves but before any calculation.
         timers.push(
             setTimeout(() => {
                 setW21Phase('scope-breach')
@@ -239,6 +242,39 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'ai'
                 )
             }, 4900)
+        )
+
+        // t=5100 → 6700ms — dual-engine calculation beat (Agent Step 4)
+        // Hero's calcProgress rAFs from 0 → 1 with an easeOutCubic curve so
+        // every visible value counts up live.
+        timers.push(
+            setTimeout(() => {
+                logEvent(
+                    'AI Agent',
+                    'Running dual-engine calculation · installation + delivery',
+                    'ai'
+                )
+                const duration = 1600
+                const start = performance.now()
+                const tick = (now: number) => {
+                    const elapsed = now - start
+                    const p = Math.min(1, elapsed / duration)
+                    // easeOutCubic
+                    const eased = 1 - Math.pow(1 - p, 3)
+                    setCalcProgress(eased)
+                    if (p < 1) {
+                        calcRafRef.current = requestAnimationFrame(tick)
+                    } else {
+                        calcRafRef.current = null
+                        logEvent(
+                            'AI Agent',
+                            'Draft produced · line items + margin + crew',
+                            'ai'
+                        )
+                    }
+                }
+                calcRafRef.current = requestAnimationFrame(tick)
+            }, 5100)
         )
 
         // t=6900ms — flag OFS Serpentine (row 19) + show Escalate banner
@@ -254,7 +290,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             }, 6900)
         )
 
-        return () => timers.forEach(clearTimeout)
+        return () => {
+            timers.forEach(clearTimeout)
+            if (calcRafRef.current !== null) {
+                cancelAnimationFrame(calcRafRef.current)
+                calcRafRef.current = null
+            }
+        }
     }, [stepId])
 
     // ── w2.3 auto-open waterfall ─────────────────────────────────────────────
@@ -412,6 +454,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         // Refinement Phase 7.1: restore mapping to "all resolved" for the
         // next w2.1 entry (the beat effect re-sets it to 0 on its own).
         setMappingResolvedCount(Infinity)
+        // Refinement Phase 7.2: snap calc progress back to 1 so the hero
+        // shows real numbers between runs; the w2.1 beat will drop it to 0.
+        setCalcProgress(1)
+        if (calcRafRef.current !== null) {
+            cancelAnimationFrame(calcRafRef.current)
+            calcRafRef.current = null
+        }
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -536,11 +585,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     readOnly={isProposalReview}
                                 />
 
-                                {/* Phase 5: Financial Summary Hero */}
+                                {/* Phase 5 + Refinement 7.2: Financial Summary Hero with dual-engine calc beat */}
                                 <FinancialSummaryHero
                                     estimate={estimate}
                                     onGenerateProposal={handleGenerateProposal}
                                     hideGenerateCTA={isProposalReview}
+                                    calculationProgress={calcProgress}
                                 />
 
                                 {/* Refinement Phase 2: Scope breach alert (transient) */}

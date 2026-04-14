@@ -7,7 +7,7 @@
 // so the ESTIMATOR tab reads as one coherent stack.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { ArrowRight, Receipt } from 'lucide-react'
+import { ArrowRight, Receipt, Sparkles } from 'lucide-react'
 import { DELIVERY_HOURS_RATIO } from './mockData'
 import type { EstimateResult } from './types'
 
@@ -15,6 +15,13 @@ interface FinancialSummaryHeroProps {
     estimate: EstimateResult
     onGenerateProposal: () => void
     hideGenerateCTA?: boolean
+    /**
+     * Progress multiplier for the dual-engine calculation beat (Agent Step 4).
+     * 0 = $0 across every value · 1 = real values. Values in between are
+     * used while the Shell rAF-animates the count-up on w2.1. Default 1
+     * (no animation).
+     */
+    calculationProgress?: number
 }
 
 function formatMoney(raw: string): string {
@@ -33,10 +40,22 @@ export default function FinancialSummaryHero({
     estimate,
     onGenerateProposal,
     hideGenerateCTA = false,
+    calculationProgress = 1,
 }: FinancialSummaryHeroProps) {
-    const salesPrice = formatMoney(estimate.salesPrice)
-    const baseCost = formatMoney(estimate.totalCost)
-    const margin = formatMoney(estimate.grossMargin)
+    const progress = Math.max(0, Math.min(1, calculationProgress))
+    const isCalculating = progress < 1
+
+    // Every visible number is scaled by the calc progress — rAF in the
+    // Shell drives progress 0 → 1 during the dual-engine beat.
+    const scaledSalesPrice = (parseFloat(estimate.salesPrice) || 0) * progress
+    const scaledBaseCost = (parseFloat(estimate.totalCost) || 0) * progress
+    const scaledMargin = (parseFloat(estimate.grossMargin) || 0) * progress
+    const scaledTotalHours = (parseFloat(estimate.totalHours) || 0) * progress
+    const scaledCrew = Math.round(estimate.crewSize * progress)
+
+    const salesPrice = formatMoney(String(scaledSalesPrice))
+    const baseCost = formatMoney(String(scaledBaseCost))
+    const margin = formatMoney(String(scaledMargin))
     const marginPct = (() => {
         const sp = parseFloat(estimate.salesPrice)
         const gm = parseFloat(estimate.grossMargin)
@@ -50,12 +69,21 @@ export default function FinancialSummaryHero({
 
                 {/* Left: Final Quote Price */}
                 <div className="shrink-0">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                        Final Quote Price
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1 flex items-center gap-1.5">
+                        {isCalculating ? (
+                            <>
+                                <Sparkles className="w-3 h-3 text-indigo-500 dark:text-indigo-400 animate-pulse" />
+                                <span className="text-indigo-600 dark:text-indigo-400">
+                                    Calculating…
+                                </span>
+                            </>
+                        ) : (
+                            'Final Quote Price'
+                        )}
                     </p>
                     <div className="flex items-baseline gap-1">
                         <span className="text-xl text-muted-foreground">$</span>
-                        <span className="text-4xl font-bold tracking-tight text-foreground">
+                        <span className="text-4xl font-bold tracking-tight text-foreground tabular-nums">
                             {salesPrice}
                         </span>
                     </div>
@@ -68,7 +96,7 @@ export default function FinancialSummaryHero({
                 <div className="flex-1 grid grid-cols-4 gap-4">
                     <div>
                         <p className="text-xs text-muted-foreground mb-1">Base Cost</p>
-                        <p className="text-lg font-semibold text-foreground">
+                        <p className="text-lg font-semibold text-foreground tabular-nums">
                             ${baseCost}
                         </p>
                     </div>
@@ -76,23 +104,19 @@ export default function FinancialSummaryHero({
                         <p className="text-xs text-muted-foreground mb-1">
                             Margin ({marginPct}%)
                         </p>
-                        <p className="text-lg font-semibold text-foreground dark:text-primary">
+                        <p className="text-lg font-semibold text-foreground dark:text-primary tabular-nums">
                             ${margin}
                         </p>
                     </div>
                     <div>
                         <p className="text-xs text-muted-foreground mb-1">Total Hours</p>
-                        <p className="text-lg font-semibold text-foreground leading-tight">
-                            {formatHours(estimate.totalHours)}
+                        <p className="text-lg font-semibold text-foreground leading-tight tabular-nums">
+                            {formatHours(String(scaledTotalHours))}
                         </p>
                         <p className="text-[9px] text-muted-foreground uppercase tracking-wider mt-0.5 tabular-nums">
-                            {formatHours(String(
-                                (parseFloat(estimate.totalHours) || 0) * (1 - DELIVERY_HOURS_RATIO)
-                            ))}
+                            {formatHours(String(scaledTotalHours * (1 - DELIVERY_HOURS_RATIO)))}
                             {' install · '}
-                            {formatHours(String(
-                                (parseFloat(estimate.totalHours) || 0) * DELIVERY_HOURS_RATIO
-                            ))}
+                            {formatHours(String(scaledTotalHours * DELIVERY_HOURS_RATIO))}
                             {' delivery'}
                         </p>
                     </div>
@@ -100,8 +124,8 @@ export default function FinancialSummaryHero({
                         <p className="text-xs text-muted-foreground mb-1">
                             Crew Requirement
                         </p>
-                        <p className="text-lg font-semibold text-foreground">
-                            {estimate.crewSize}
+                        <p className="text-lg font-semibold text-foreground tabular-nums">
+                            {scaledCrew}
                             <span className="text-xs font-normal text-muted-foreground ml-1">
                                 installers
                             </span>
