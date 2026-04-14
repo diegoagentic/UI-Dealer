@@ -36,6 +36,7 @@ import VerificationLogCard from './VerificationLogCard'
 import DealerArrivalToast from './DealerArrivalToast'
 import AgentRoutingToast from './AgentRoutingToast'
 import ClientProposalDelivery from './ClientProposalDelivery'
+import DesignerTaskNotification from './DesignerTaskNotification'
 import { ROLE_PROFILES } from './roles'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
@@ -109,6 +110,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [approvedAt, setApprovedAt] = useState<number | null>(null)
     const [dealerToastOpen, setDealerToastOpen] = useState(false)
     const [agentRoutingOpen, setAgentRoutingOpen] = useState(false)
+    const [designerTaskOpened, setDesignerTaskOpened] = useState(false)
     const [mappingResolvedCount, setMappingResolvedCount] = useState<number>(Infinity)
     // Dual-engine calculation progress (0 → 1). Default 1 = show real values.
     const [calcProgress, setCalcProgress] = useState<number>(1)
@@ -363,12 +365,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setDealerToastOpen(true)
     }, [stepId])
 
-    // ── w1.2 scroll-into-view ────────────────────────────────────────────────
-    // When entering w1.2, scroll the BoM so the flagged OFS Serpentine row is
-    // centered — otherwise the designer overlay slides in and the user has
-    // to scroll manually to see the focused row behind it.
+    // ── w1.2 designer task notification ──────────────────────────────────────
+    // When the demo enters w1.2, show a centred task notification on a
+    // dimmed backdrop BEFORE the DesignerVerificationOverlay slides in. The
+    // user has to click 'Open task' to advance — this gives the handoff a
+    // concrete anchor instead of the overlay appearing from nowhere.
     useEffect(() => {
-        if (stepState !== 'estimation-escalated') return
+        if (stepState !== 'estimation-escalated') {
+            setDesignerTaskOpened(false)
+        }
+    }, [stepState])
+
+    // ── w1.2 scroll-into-view ────────────────────────────────────────────────
+    // Only fires after the user clicks the DesignerTaskNotification — that
+    // way the scroll happens in sync with the side panel sliding in, not
+    // while the task-inbox modal is still on top.
+    useEffect(() => {
+        if (stepState !== 'estimation-escalated' || !designerTaskOpened) return
         const timer = setTimeout(() => {
             const row = document.querySelector('tr[data-row-id="li-19"]')
             if (row) {
@@ -376,7 +389,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             }
         }, 350)
         return () => clearTimeout(timer)
-    }, [stepState])
+    }, [stepState, designerTaskOpened])
 
     // ── Handoff banner (fires when step role changes) ────────────────────────
     const prevStepIdRef = useRef<string | undefined>(undefined)
@@ -544,6 +557,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setDealerToastOpen(false)
         // Refinement Phase 7.7: dismiss any lingering agent routing toast
         setAgentRoutingOpen(false)
+        // v7 · reset the designer task notification gate
+        setDesignerTaskOpened(false)
         // Refinement Phase 6d: clear audit log so the new session starts fresh
         setAuditLog([])
         if (goToStep) goToStep(0)
@@ -821,7 +836,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
             {/* Phase 14 + Refinement 7.4: Designer Verification Overlay with provenance */}
             <DesignerVerificationOverlay
-                isOpen={stepState === 'estimation-escalated'}
+                isOpen={stepState === 'estimation-escalated' && designerTaskOpened}
                 onSendBack={() => {
                     logEvent(
                         'Alex Rivera',
@@ -853,6 +868,22 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     if (row) {
                         row.scrollIntoView({ behavior: 'smooth', block: 'center' })
                     }
+                }}
+            />
+
+            {/* v7 · w1.2 preamble · task notification before the overlay opens */}
+            <DesignerTaskNotification
+                isOpen={stepState === 'estimation-escalated' && !designerTaskOpened}
+                fromUser={ROLE_PROFILES.Expert}
+                taskTitle="Verify OFS Serpentine 12-seat curved lounge"
+                taskSummary="Custom product — check connection hardware and confirm the 14 h assembly estimate. 5 modules to validate before sending back."
+                onOpen={() => {
+                    logEvent(
+                        ROLE_PROFILES.Designer.name,
+                        'Opened verification task from inbox',
+                        'edit'
+                    )
+                    setDesignerTaskOpened(true)
                 }}
             />
 
