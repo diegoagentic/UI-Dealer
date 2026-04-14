@@ -12,13 +12,14 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import {
-    Bell,
+    ArrowRight,
     Check,
     CheckCircle2,
     FileText,
     MousePointer2,
+    Search,
+    Send,
     ShieldCheck,
-    Sparkles,
     X,
 } from 'lucide-react'
 import { clsx } from 'clsx'
@@ -150,116 +151,172 @@ export default function ApprovalChainModal({
                 </TransitionChild>
 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    {/* David Park cutaway — "Regional Sales Manager view" */}
+                    {/* David Park cutaway — mimics David's actual Estimator workspace
+                        (mini navbar + inline handoff banner + financial summary) */}
                     {phase === 'cutaway' && (
-                        <div className="w-full max-w-3xl bg-card dark:bg-zinc-900 rounded-2xl border border-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
-                            {/* Role strip */}
-                            <div className="flex items-center gap-3 px-5 py-3 border-b border-border bg-zinc-950 text-white">
-                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/15 text-red-300 text-[9px] font-bold uppercase tracking-wider">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                        <div className="w-full max-w-4xl bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-border shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+                            {/* Mini Strata Estimator navbar */}
+                            <div className="flex items-center gap-3 px-5 py-3 bg-card dark:bg-zinc-800 border-b border-border">
+                                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-500/15 text-red-500 dark:text-red-300 text-[9px] font-bold uppercase tracking-wider">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
                                     Live role view
                                 </span>
-                                <p className="text-[10px] text-zinc-400 uppercase tracking-wider">
-                                    Switching to
-                                </p>
-                                <div className="flex items-center gap-2 ml-auto">
+                                <div className="flex items-center gap-2 pl-2 border-l border-border">
+                                    <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center text-primary-foreground font-black text-[10px]">
+                                        S
+                                    </div>
+                                    <span className="text-xs font-bold text-foreground tracking-tight">
+                                        WRG · Estimator
+                                    </span>
+                                </div>
+                                <div className="hidden sm:flex items-center gap-1.5 ml-4 px-2.5 py-1 rounded-md bg-muted/40 border border-border text-[10px] text-muted-foreground">
+                                    <Search className="w-3 h-3" />
+                                    Search projects…
+                                </div>
+                                <div className="ml-auto flex items-center gap-2 pl-2 border-l border-border">
                                     <img
                                         src={CHAIN[0].photo}
                                         alt={CHAIN[0].name}
                                         className="w-7 h-7 rounded-full object-cover ring-2 ring-primary"
                                     />
-                                    <div>
-                                        <p className="text-xs font-bold text-white leading-tight">
+                                    <div className="hidden sm:block">
+                                        <p className="text-[11px] font-bold text-foreground leading-tight">
                                             {CHAIN[0].name}
                                         </p>
-                                        <p className="text-[10px] text-zinc-400 leading-tight">
+                                        <p className="text-[9px] text-muted-foreground leading-tight">
                                             {CHAIN[0].role}
                                         </p>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Fake Strata app frame · David's inbox */}
-                            <div className="relative px-6 py-6 bg-zinc-50 dark:bg-zinc-800 min-h-[420px]">
-                                {/* Notification toast */}
+                            {/* David's workspace body */}
+                            <div className="p-6 space-y-4 min-h-[460px]">
+
+                                {/* Inline handoff banner — slides in from the top */}
                                 <div
                                     className={clsx(
-                                        'absolute top-4 right-4 w-80 bg-card dark:bg-zinc-900 rounded-xl border border-primary/40 shadow-xl p-4 transition-all duration-500',
+                                        'transition-all duration-500',
                                         cutawayNotifVisible
-                                            ? 'opacity-100 translate-x-0'
-                                            : 'opacity-0 translate-x-6 pointer-events-none'
+                                            ? 'opacity-100 translate-y-0 animate-in slide-in-from-top-4 fade-in'
+                                            : 'opacity-0 -translate-y-2 pointer-events-none'
                                     )}
                                 >
-                                    <div className="flex items-start gap-3">
-                                        <div className="shrink-0 w-9 h-9 rounded-xl bg-primary/15 flex items-center justify-center">
-                                            <Bell className="w-4 h-4 text-foreground dark:text-primary" />
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">
-                                                Strata · New approval
-                                            </p>
-                                            <p className="text-xs font-bold text-foreground leading-tight mt-1">
-                                                JPS Health Network · $202,138
-                                            </p>
-                                            <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-                                                Sent by Sara Chen · awaiting your sign-off
-                                            </p>
+                                    <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden">
+                                        <div className="p-5 bg-primary/5 dark:bg-primary/10 border-l-4 border-primary ring-1 ring-primary/20 rounded-r-2xl">
+                                            <div className="flex items-start gap-4">
+                                                <div className="relative shrink-0">
+                                                    <img
+                                                        src={CHAIN[2].photo}
+                                                        alt={CHAIN[2].name}
+                                                        className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/40"
+                                                    />
+                                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-2 ring-card dark:ring-zinc-800">
+                                                        <Send className="h-2.5 w-2.5 text-primary-foreground" />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="text-sm font-bold text-foreground">
+                                                            Approval request
+                                                        </span>
+                                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-bold animate-pulse">
+                                                            Just now
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        <span className="font-bold text-foreground">
+                                                            {CHAIN[2].name}
+                                                        </span>{' '}
+                                                        ({CHAIN[2].role}) · JPS Health Network proposal · $202,138 awaiting your sign-off
+                                                    </p>
+                                                    <div className="flex items-center gap-2 flex-wrap mt-3">
+                                                        <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1 ring-2 ring-amber-500/20 shadow-sm shadow-amber-500/10 uppercase tracking-wider">
+                                                            <Send className="h-3 w-3" />
+                                                            Account manager
+                                                        </span>
+                                                        <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" aria-hidden />
+                                                        <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30 flex items-center gap-1 uppercase tracking-wider">
+                                                            Regional sales manager
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Proposal approval card */}
+                                {/* Project dossier strip */}
                                 <div
                                     className={clsx(
-                                        'max-w-xl transition-all duration-500',
+                                        'transition-all duration-500',
                                         cutawayCardVisible
                                             ? 'opacity-100 translate-y-0'
-                                            : 'opacity-0 translate-y-4 pointer-events-none'
+                                            : 'opacity-0 translate-y-2 pointer-events-none'
                                     )}
                                 >
-                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-3">
-                                        David's queue · 1 item awaiting approval
-                                    </p>
-                                    <div className="bg-card dark:bg-zinc-900 rounded-xl border border-border shadow-sm overflow-hidden">
-                                        {/* Card header */}
-                                        <div className="flex items-start gap-3 px-5 py-4 border-b border-border">
-                                            <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                                                <FileText className="w-5 h-5 text-foreground dark:text-primary" />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-bold text-foreground leading-tight">
-                                                    JPS Health Network — proposal
-                                                </p>
-                                                <p className="text-[11px] text-muted-foreground leading-tight mt-0.5">
-                                                    24 line items · 4-person chain · routed by Sara Chen
-                                                </p>
-                                            </div>
-                                            <span className="shrink-0 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                                                <Sparkles className="w-3 h-3" />
-                                                Priority
-                                            </span>
+                                    <div className="flex items-center gap-3 px-5 py-4 rounded-2xl bg-card dark:bg-zinc-800 border border-border">
+                                        <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                            <FileText className="w-5 h-5 text-foreground dark:text-primary" />
                                         </div>
-                                        {/* Breakdown */}
-                                        <div className="grid grid-cols-3 gap-3 px-5 py-4 bg-muted/20">
-                                            <div>
-                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Product net</p>
-                                                <p className="text-sm font-black text-foreground tabular-nums">$178,219</p>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none">
+                                                Project dossier
+                                            </p>
+                                            <p className="text-sm font-bold text-foreground leading-tight mt-1">
+                                                JPS Health Network · Health Center for Women
+                                            </p>
+                                            <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
+                                                24 line items · 4-person approval chain · routed by Sara Chen
+                                            </p>
+                                        </div>
+                                        <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                                            Read-only
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Financial summary hero (David's view) */}
+                                <div
+                                    className={clsx(
+                                        'transition-all duration-500 delay-100',
+                                        cutawayCardVisible
+                                            ? 'opacity-100 translate-y-0'
+                                            : 'opacity-0 translate-y-2 pointer-events-none'
+                                    )}
+                                >
+                                    <div className="rounded-2xl bg-card dark:bg-zinc-800 border border-border overflow-hidden">
+                                        <div className="grid grid-cols-3 divide-x divide-border">
+                                            <div className="px-5 py-4">
+                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                    Product net
+                                                </p>
+                                                <p className="text-lg font-black text-foreground tabular-nums mt-1">
+                                                    $178,219
+                                                </p>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Labor + freight</p>
-                                                <p className="text-sm font-black text-foreground tabular-nums">$23,919</p>
+                                            <div className="px-5 py-4">
+                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                    Labor + freight
+                                                </p>
+                                                <p className="text-lg font-black text-foreground tabular-nums mt-1">
+                                                    $23,919
+                                                </p>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">Total</p>
-                                                <p className="text-sm font-black text-foreground tabular-nums">$202,138</p>
+                                            <div className="px-5 py-4 bg-primary/5 dark:bg-primary/10">
+                                                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
+                                                    Total proposal
+                                                </p>
+                                                <p className="text-lg font-black text-foreground tabular-nums mt-1">
+                                                    $202,138
+                                                </p>
                                             </div>
                                         </div>
-                                        {/* Actions */}
-                                        <div className="flex items-center gap-2 px-5 py-3 border-t border-border bg-muted/10">
+                                        <div className="flex items-center gap-2 px-5 py-3 border-t border-border bg-muted/20">
                                             <button
                                                 type="button"
                                                 disabled
-                                                className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                                                className="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition-colors"
                                             >
                                                 Request changes
                                             </button>
@@ -268,28 +325,27 @@ export default function ApprovalChainModal({
                                                     type="button"
                                                     disabled
                                                     className={clsx(
-                                                        'flex items-center gap-1.5 px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-primary text-primary-foreground transition-all duration-200',
+                                                        'flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-[11px] font-bold uppercase tracking-wider bg-primary text-primary-foreground transition-all duration-200',
                                                         cutawayClicked &&
                                                             'scale-95 ring-4 ring-primary/50 shadow-lg shadow-primary/40'
                                                     )}
                                                 >
                                                     {cutawayClicked ? (
                                                         <>
-                                                            <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                                                            <Check className="w-4 h-4" strokeWidth={3} />
                                                             Approved
                                                         </>
                                                     ) : (
                                                         <>
-                                                            <ShieldCheck className="w-3.5 h-3.5" />
+                                                            <ShieldCheck className="w-4 h-4" />
                                                             Approve proposal
                                                         </>
                                                     )}
                                                 </button>
-                                                {/* Simulated cursor */}
                                                 {cutawayPointerShown && (
                                                     <MousePointer2
                                                         className={clsx(
-                                                            'absolute -right-1 -bottom-2 w-5 h-5 text-foreground drop-shadow-lg pointer-events-none transition-all duration-300',
+                                                            'absolute -right-2 -bottom-3 w-5 h-5 text-foreground drop-shadow-lg pointer-events-none transition-all duration-300',
                                                             cutawayClicked
                                                                 ? 'translate-x-0 translate-y-0 scale-90'
                                                                 : 'translate-x-1 translate-y-1 animate-bounce'
@@ -301,7 +357,7 @@ export default function ApprovalChainModal({
                                         </div>
                                     </div>
                                     <p className="text-[10px] text-muted-foreground italic mt-3 text-center">
-                                        Strata auto-stamps David's signature into the approval chain.
+                                        Strata auto-stamps David's signature back into the approval chain.
                                     </p>
                                 </div>
                             </div>
