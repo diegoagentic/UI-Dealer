@@ -717,7 +717,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     />
                                 )}
 
-                                {/* Phase 4: Project Dossier — combobox filters */}
+                                {/* Phase 4: Project Dossier — combobox filters + audit trail slot */}
                                 <EstimatorDossierCard
                                     customer={customer}
                                     onCustomerChange={setCustomer}
@@ -726,6 +726,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     presets={savedEstimates}
                                     onLoadPreset={handleLoadEstimate}
                                     readOnly={isProposalReview}
+                                    rightSlot={
+                                        <AuditTrailPanel
+                                            events={auditLog}
+                                            hidden={stepState === 'estimation-escalated'}
+                                        />
+                                    }
                                 />
 
                                 {/* Phase 5 + Refinement 7.2: Financial Summary Hero with dual-engine calc beat */}
@@ -925,12 +931,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 onContinueToDelivery={handleContinueToDelivery}
             />
 
-            {/* Refinement Phase 6d: Audit trail panel — hidden during w1.2 where
-                the Designer overlay owns the right side of the Shell */}
-            <AuditTrailPanel
-                events={auditLog}
-                hidden={stepState === 'estimation-escalated'}
-            />
+            {/* Refinement Phase 6d · v7 · Audit trail panel lives inside the
+                Dossier card's rightSlot, not as a separate floating element. */}
 
             {/* Refinement Phase 7.3: Role handoff transition — plays between
                 nextStep() calls on every role change */}

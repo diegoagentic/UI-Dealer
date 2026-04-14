@@ -7,7 +7,7 @@
 // into the active project (via onLoadPreset → Shell.handleLoadEstimate).
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ChevronDown, Search, User } from 'lucide-react'
 import { clsx } from 'clsx'
 import type { Customer, SavedEstimate } from './types'
@@ -20,6 +20,8 @@ interface EstimatorDossierCardProps {
     presets?: SavedEstimate[]
     onLoadPreset?: (estimate: SavedEstimate) => void
     readOnly?: boolean
+    /** Optional slot rendered at the far right of the dossier row (audit trail trigger, etc.) */
+    rightSlot?: ReactNode
 }
 
 type Field = 'client' | 'zip' | 'site'
@@ -167,6 +169,7 @@ export default function EstimatorDossierCard({
     presets = [],
     onLoadPreset,
     readOnly = false,
+    rightSlot,
 }: EstimatorDossierCardProps) {
     const [openField, setOpenField] = useState<Field | null>(null)
 
@@ -261,6 +264,13 @@ export default function EstimatorDossierCard({
                     width="flex-1 min-w-[200px]"
                     readOnly={readOnly}
                 />
+
+                {/* Right slot — audit trail trigger, etc. */}
+                {rightSlot && (
+                    <div className="shrink-0 pl-3 ml-1 border-l border-border">
+                        {rightSlot}
+                    </div>
+                )}
             </div>
         </div>
     )
