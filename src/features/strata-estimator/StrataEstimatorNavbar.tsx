@@ -137,6 +137,34 @@ export default function StrataEstimatorNavbar({
                             WRG · Estimator
                         </span>
                     </div>
+
+                    {/* Sync status — icon only, label expands on hover */}
+                    <button
+                        type="button"
+                        title={syncStatus === 'synced' ? 'Recovery Active' : 'Auto-Saving'}
+                        className={clsx(
+                            'group hidden md:flex items-center h-7 px-1.5 rounded-full overflow-hidden transition-all duration-300 cursor-default',
+                            syncStatus === 'synced'
+                                ? 'hover:bg-green-500/10'
+                                : 'hover:bg-blue-500/10'
+                        )}
+                    >
+                        {syncStatus === 'synced' ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        ) : (
+                            <RefreshCw className="h-3.5 w-3.5 text-blue-500 animate-spin shrink-0" />
+                        )}
+                        <span
+                            className={clsx(
+                                'ml-1.5 text-[10px] font-semibold uppercase tracking-wider whitespace-nowrap max-w-0 opacity-0 group-hover:max-w-xs group-hover:opacity-100 transition-all duration-300 ease-in-out',
+                                syncStatus === 'synced'
+                                    ? 'text-green-600 dark:text-green-400'
+                                    : 'text-blue-600 dark:text-blue-400'
+                            )}
+                        >
+                            {syncStatus === 'synced' ? 'Recovery Active' : 'Auto-Saving'}
+                        </span>
+                    </button>
                 </div>
 
                 {/* ── Center: 3 tabs (expand on hover) ────────────────────── */}
@@ -155,29 +183,8 @@ export default function StrataEstimatorNavbar({
                     })}
                 </div>
 
-                {/* ── Right: sync · backup · save · theme · user ──────────── */}
+                {/* ── Right: backup · save · theme · user ────────────────── */}
                 <div className="flex items-center gap-1">
-                    {/* Sync status (Aries parity: synced | saving) */}
-                    <div className="hidden md:flex items-center gap-1.5 px-2">
-                        {syncStatus === 'synced' ? (
-                            <>
-                                <CheckCircle2 className="h-3 w-3 text-green-500" />
-                                <span className="text-[10px] font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider">
-                                    Recovery Active
-                                </span>
-                            </>
-                        ) : (
-                            <>
-                                <RefreshCw className="h-3 w-3 text-blue-500 animate-spin" />
-                                <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-                                    Auto-Saving
-                                </span>
-                            </>
-                        )}
-                    </div>
-
-                    <div className="h-4 w-px bg-border mx-1 hidden md:block" />
-
                     {/* Backup icon buttons */}
                     <button
                         onClick={onExportBackup}
