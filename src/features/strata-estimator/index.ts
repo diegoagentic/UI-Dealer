@@ -38,6 +38,7 @@ export { default as ApprovalChainModal } from './ApprovalChainModal'
 export { default as ReleaseSuccessModal } from './ReleaseSuccessModal'
 export { default as ScopeBreachAlert } from './ScopeBreachAlert'
 export { default as FlaggedItemBanner } from './FlaggedItemBanner'
+export { default as AuditTrailPanel } from './AuditTrailPanel'
 export { default as DesignerVerificationOverlay } from './DesignerVerificationOverlay'
 
 // WRG Demo v6 Origin Splash (Phase 4.6)

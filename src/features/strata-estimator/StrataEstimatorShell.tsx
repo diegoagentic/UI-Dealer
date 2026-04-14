@@ -28,6 +28,8 @@ import ApprovalChainModal from './ApprovalChainModal'
 import ReleaseSuccessModal from './ReleaseSuccessModal'
 import ScopeBreachAlert from './ScopeBreachAlert'
 import FlaggedItemBanner from './FlaggedItemBanner'
+import AuditTrailPanel from './AuditTrailPanel'
+import type { AuditCategory, AuditEvent } from './AuditTrailPanel'
 import { calculateInstall } from './calculations'
 import { getStepRole, getStepState, getStepTab } from './stepStates'
 import {
@@ -95,6 +97,21 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [scopeBreachActive, setScopeBreachActive] = useState(false)
     const [flaggedRowIds, setFlaggedRowIds] = useState<string[]>([])
 
+    // ── Audit trail (Pain #4 — structured data layer proof) ─────────────────
+    const [auditLog, setAuditLog] = useState<AuditEvent[]>([])
+    const logEvent = (actor: string, action: string, category: AuditCategory) => {
+        setAuditLog((prev) => [
+            ...prev,
+            {
+                id: `ev-${Date.now()}-${prev.length}`,
+                timestamp: Date.now(),
+                actor,
+                action,
+                category,
+            },
+        ])
+    }
+
     // Derived: AI confidence map for every line item (mock — HIGH / LOW per
     // the WRG assessment's 85/15 template-vs-fallback split).
     const confidenceMap = useMemo<Record<string, AiConfidence>>(() => {
@@ -136,6 +153,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setFlaggedRowIds([])
         setImportStatus(null)
         setW21Phase('loading-dossier')
+        setAuditLog([])
+        logEvent('System', 'Session opened · JPS Health Network', 'system')
 
         const timers: ReturnType<typeof setTimeout>[] = []
 
@@ -143,6 +162,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         timers.push(
             setTimeout(() => {
                 setCustomer(JPS_CUSTOMER)
+                logEvent('AI Agent', 'Loaded CORE export · ZIP 76104 / Fort Worth', 'ai')
             }, 800)
         )
 
@@ -158,6 +178,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         timers.push(
             setTimeout(() => {
                 setLineItems(JPS_LINE_ITEMS)
+                logEvent(
+                    'AI Agent',
+                    'Imported 24 line items from JPS_specs.pdf (85% template, 15% fallback)',
+                    'ai'
+                )
             }, 1400)
         )
 
@@ -174,6 +199,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 setW21Phase('scope-breach')
                 setScopeBreachOpen(true)
                 setScopeBreachActive(true)
+                logEvent(
+                    'AI Agent',
+                    'Scope override · 119 KD chairs > 50 (Delivery Pricer limit)',
+                    'ai'
+                )
             }, 3900)
         )
 
@@ -182,6 +212,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             setTimeout(() => {
                 setW21Phase('flagged')
                 setFlaggedRowIds(['li-19'])
+                logEvent(
+                    'AI Agent',
+                    'Flagged OFS Serpentine 12-seat lounge for designer review',
+                    'ai'
+                )
             }, 6900)
         )
 
@@ -268,7 +303,14 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
     const handleSendForReview = (dealerId: string) => {
         // Refinement Phase 3: closes the waterfall and advances to w2.4
-        console.log('Proposal sent for review to dealer:', dealerId)
+        const dealer = DEALERS.find((d) => d.id === dealerId)
+        logEvent(
+            'David Park',
+            `Sent $${Number(estimate.salesPrice).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+            })} proposal to ${dealer?.name ?? 'dealer'} for review`,
+            'approval'
+        )
         setIsWaterfallOpen(false)
         if (nextStep) nextStep()
     }
@@ -284,11 +326,24 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     }
 
     const handleApproveRelease = () => {
+        logEvent('Sara Chen', 'Initiated approval chain', 'approval')
         setIsApprovalOpen(true)
     }
 
     const handleApprovalChainComplete = () => {
         // All 4 signatures collected → swap approval modal for the release modal
+        logEvent(
+            'System',
+            'Approval chain complete · David / Alex / Sara / Jordan',
+            'approval'
+        )
+        logEvent(
+            'System',
+            `Released $${Number(estimate.salesPrice).toLocaleString('en-US', {
+                maximumFractionDigits: 0,
+            })} proposal to JPS Health Network`,
+            'release'
+        )
         setIsApprovalOpen(false)
         setIsReleaseOpen(true)
     }
@@ -320,6 +375,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setScopeBreachOpen(false)
         setScopeBreachActive(false)
         setFlaggedRowIds([])
+        // Refinement Phase 6d: clear audit log so the new session starts fresh
+        setAuditLog([])
         if (goToStep) goToStep(0)
     }
 
@@ -487,6 +544,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         itemLabel="OFS Serpentine 12-seat curved lounge"
                                         reason="Custom product · designer verification recommended"
                                         onEscalate={() => {
+                                            logEvent(
+                                                'David Park',
+                                                'Escalated OFS Serpentine to Alex Rivera',
+                                                'edit'
+                                            )
                                             if (nextStep) nextStep()
                                         }}
                                     />
@@ -554,6 +616,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             <DesignerVerificationOverlay
                 isOpen={stepState === 'estimation-escalated'}
                 onSendBack={() => {
+                    logEvent(
+                        'Alex Rivera',
+                        'Verified OFS Serpentine · 14 h install (modular assembly confirmed)',
+                        'edit'
+                    )
                     if (nextStep) nextStep()
                 }}
                 onPreviewPdf={() => console.log('Preview PDF')}
@@ -588,6 +655,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 onDownloadPdf={handleReleaseDownloadPdf}
                 onSendEmail={handleReleaseSendEmail}
                 onRestart={handleRestartDemo}
+            />
+
+            {/* Refinement Phase 6d: Audit trail panel — hidden during w2.2 where
+                the Designer overlay owns the right side of the Shell */}
+            <AuditTrailPanel
+                events={auditLog}
+                hidden={stepState === 'estimation-escalated'}
             />
         </div>
     )
