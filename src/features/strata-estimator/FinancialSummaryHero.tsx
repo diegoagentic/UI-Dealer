@@ -2,9 +2,9 @@
 // Strata Estimator — Financial Summary Hero
 // Phase 5 of WRG Demo v6 implementation
 //
-// Dark hero card: Final Quote Price (left) · 4 metrics (center) · Generate
-// Proposal CTA (right). Numbers come from calculateInstall() — this component
-// is a pure presenter.
+// Hero strip: Final Quote Price (left) · 4 metrics (center) · Generate
+// Proposal CTA (right). Uses the same card surface as every other section
+// so the ESTIMATOR tab reads as one coherent stack.
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { ArrowRight, Receipt } from 'lucide-react'
@@ -42,54 +42,54 @@ export default function FinancialSummaryHero({
     })()
 
     return (
-        <div className="bg-zinc-900 dark:bg-zinc-950 rounded-2xl border-l-4 border-brand-500 shadow-lg p-6 text-white overflow-hidden">
+        <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm p-6 overflow-hidden">
             <div className="flex items-center gap-6">
 
                 {/* Left: Final Quote Price */}
                 <div className="shrink-0">
-                    <p className="text-[10px] font-bold text-brand-400 uppercase tracking-widest mb-1">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                         Final Quote Price
                     </p>
                     <div className="flex items-baseline gap-1">
-                        <span className="text-xl text-zinc-400">$</span>
-                        <span className="text-4xl font-bold tracking-tight text-white">
+                        <span className="text-xl text-muted-foreground">$</span>
+                        <span className="text-4xl font-bold tracking-tight text-foreground">
                             {salesPrice}
                         </span>
                     </div>
                 </div>
 
                 {/* Divider */}
-                <div className="w-px h-16 bg-zinc-800 shrink-0" />
+                <div className="w-px h-16 bg-border shrink-0" />
 
                 {/* Center: 4 metrics */}
                 <div className="flex-1 grid grid-cols-4 gap-4">
                     <div>
-                        <p className="text-xs text-zinc-400 mb-1">Base Cost</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-xs text-muted-foreground mb-1">Base Cost</p>
+                        <p className="text-lg font-semibold text-foreground">
                             ${baseCost}
                         </p>
                     </div>
                     <div>
-                        <p className="text-xs text-zinc-400 mb-1">
+                        <p className="text-xs text-muted-foreground mb-1">
                             Margin ({marginPct}%)
                         </p>
-                        <p className="text-lg font-semibold text-brand-400">
+                        <p className="text-lg font-semibold text-primary">
                             ${margin}
                         </p>
                     </div>
                     <div>
-                        <p className="text-xs text-zinc-400 mb-1">Total Hours</p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-xs text-muted-foreground mb-1">Total Hours</p>
+                        <p className="text-lg font-semibold text-foreground">
                             {formatHours(estimate.totalHours)}
                         </p>
                     </div>
                     <div>
-                        <p className="text-xs text-zinc-400 mb-1">
+                        <p className="text-xs text-muted-foreground mb-1">
                             Crew Requirement
                         </p>
-                        <p className="text-lg font-semibold text-white">
+                        <p className="text-lg font-semibold text-foreground">
                             {estimate.crewSize}
-                            <span className="text-xs font-normal text-zinc-400 ml-1">
+                            <span className="text-xs font-normal text-muted-foreground ml-1">
                                 installers
                             </span>
                         </p>
