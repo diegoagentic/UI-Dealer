@@ -137,10 +137,10 @@ export default function ApprovalChainModal({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <DialogTitle className="text-base font-bold text-foreground">
-                                        Approval Chain
+                                        Internal Release Checklist
                                     </DialogTitle>
                                     <p className="text-xs text-muted-foreground mt-0.5">
-                                        Four-person sign-off required for JPS Health Network
+                                        Four internal sign-offs required before releasing the JPS quote
                                     </p>
                                 </div>
                                 {done && (
@@ -228,20 +228,20 @@ export default function ApprovalChainModal({
                                 {done ? (
                                     <div className="flex items-center gap-2 text-sm text-foreground">
                                         <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                        <span className="font-semibold">All signatures collected.</span>
+                                        <span className="font-semibold">All internal sign-offs collected.</span>
                                         <span className="text-muted-foreground">
-                                            Releasing proposal…
+                                            Publishing quote through CORE…
                                         </span>
                                     </div>
                                 ) : !davidSigned ? (
                                     <p className="text-xs text-muted-foreground">
-                                        Strata is routing the proposal to David Park's
-                                        workspace for the first signature…
+                                        Strata is routing the quote to David Park's (Senior
+                                        Estimator) workspace for the first sign-off…
                                     </p>
                                 ) : (
                                     <p className="text-xs text-muted-foreground">
-                                        Strata is routing the proposal through the approval chain.
-                                        This normally takes a few seconds.
+                                        Strata is routing the quote through the internal release
+                                        checklist. This normally takes a few seconds.
                                     </p>
                                 )}
                             </div>

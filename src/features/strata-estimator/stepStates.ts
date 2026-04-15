@@ -1,7 +1,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // Strata Estimator — Step State Mapping
-// Phase 4.5 of WRG Demo v6 implementation · v7 restructure (2-flow split)
-// Maps WRG demo step IDs (w1.1, w1.2, w2.1, w2.2, w2.3) to Estimator state
+// v8 · BPMN-aligned (see docs/wrg-demo/V8_BPMN_ALIGNMENT_PLAN.md)
+//
+// Visual state names are kept stable for backwards compatibility with the
+// Shell render branches, but their meaning has shifted to reflect the
+// internal WRG process:
+//
+//   · estimation-active    → w1.1 Estimator labor estimation (Expert)
+//   · estimation-escalated → w1.2 Designer verification
+//   · estimation-assembly  → w2.1 Salesperson review (Dealer role = Sara)
+//   · proposal-review      → w2.2 SAC quote assembly & release (Sales Coord)
+//   · pm-handoff           → w2.3 PM execution handoff (NEW)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { getRoleProfile } from './roles'
@@ -15,27 +24,27 @@ export type EstimatorStepState =
     | 'idle'                    // default — JPS pre-loaded, not yet interactive
     | 'estimation-active'       // w1.1 — Hero live, AI stagger import, flag row 19
     | 'estimation-escalated'    // w1.2 — BoM row 19 focused, Designer overlay open
-    | 'estimation-assembly'     // w2.1 — VerificationLogCard + pricing waterfall
-    | 'proposal-review'         // w2.2 — read-only shell + approval chain modal
-    | 'client-delivery'         // w2.3 — email → PDF preview → send to client
+    | 'estimation-assembly'     // w2.1 — Salesperson read-only review, forward to SAC
+    | 'proposal-review'         // w2.2 — SAC quote assembly + internal release checklist
+    | 'pm-handoff'              // w2.3 — PM execution planning + crew/tool assignment
 
 interface StepMapping {
     state: EstimatorStepState
     tab: EstimatorTab
-    role: string // 'Expert' | 'Designer' | 'Dealer' | 'Sales Coordinator'
+    role: string // key into ROLE_PROFILES
 }
 
 /**
  * Map each step ID to the corresponding Estimator state + active tab + role.
  */
 const STEP_MAP: Record<string, StepMapping> = {
-    // Flow 1 — AI Labor Estimation
+    // Flow 1 — AI Labor Estimation (BPMN stages 1-14)
     'w1.1': { state: 'estimation-active',    tab: 'ESTIMATOR', role: 'Expert' },
     'w1.2': { state: 'estimation-escalated', tab: 'ESTIMATOR', role: 'Designer' },
-    // Flow 2 — Proposal Generation
-    'w2.1': { state: 'estimation-assembly',  tab: 'ESTIMATOR', role: 'Expert' },
-    'w2.2': { state: 'proposal-review',      tab: 'ESTIMATOR', role: 'Dealer' },
-    'w2.3': { state: 'client-delivery',      tab: 'ESTIMATOR', role: 'Sales Coordinator' },
+    // Flow 2 — Internal handoff (BPMN stages 15-18)
+    'w2.1': { state: 'estimation-assembly',  tab: 'ESTIMATOR', role: 'Dealer' },
+    'w2.2': { state: 'proposal-review',      tab: 'ESTIMATOR', role: 'Sales Coordinator' },
+    'w2.3': { state: 'pm-handoff',           tab: 'ESTIMATOR', role: 'Project Manager' },
 }
 
 /**

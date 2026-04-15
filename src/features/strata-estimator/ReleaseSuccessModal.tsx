@@ -2,14 +2,14 @@
 // Strata Estimator — Release Success Modal
 // Refinement Phase 1 (w2.2 closure) · v7 re-scoped
 //
-// Fires after the approval chain completes in w2.2 (Dealer). Sober
-// celebration:
+// Fires after the internal release checklist completes in w2.2 (SAC).
+// Sober celebration:
 //   · An SVG checkmark that strokes itself over 600 ms
 //   · A single ring pulse (no confetti)
 //   · Three metrics fade in staggered (8 hrs → 12 min, 4 tools → 1 app,
 //     100 % audit trail)
-//   · Primary CTA: "Hand off to client representative" → advances the demo
-//     profile from w2.2 into w2.3 (Flow 2 · Representative handoff)
+//   · Primary CTA: "Hand off to Project Manager" → advances the demo
+//     profile from w2.2 into w2.3 (Flow 2 · PM execution handoff)
 //   · Secondary: Download PDF (internal audit trail)
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -137,7 +137,7 @@ export default function ReleaseSuccessModal({
                                     Quote released
                                 </h2>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    ${salesPrice} proposal ready for {clientName}'s representative
+                                    ${salesPrice} quote released · {clientName} queued for execution
                                 </p>
                                 <p className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
                                     JPS_proposal.pdf · full audit trail preserved
@@ -187,7 +187,7 @@ export default function ReleaseSuccessModal({
                                     onClick={onContinueToDelivery}
                                     className="flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                                 >
-                                    Hand off to client representative
+                                    Hand off to Project Manager
                                     <ArrowRight className="w-3.5 h-3.5" />
                                 </button>
                             </div>

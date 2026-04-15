@@ -39,7 +39,7 @@ import type { AuditCategory, AuditEvent } from './AuditTrailPanel'
 import RoleHandoffTransition from './RoleHandoffTransition'
 import type { HandoffPerson } from './RoleHandoffTransition'
 import VerificationLogCard from './VerificationLogCard'
-import ClientProposalDelivery from './ClientProposalDelivery'
+import PMExecutionHandoff from './PMExecutionHandoff'
 import DesignerTaskNotification from './DesignerTaskNotification'
 import { ROLE_PROFILES } from './roles'
 import { calculateInstall } from './calculations'
@@ -679,20 +679,20 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         console.log('Download JPS_proposal.pdf')
     }
 
-    const handleContinueToDelivery = () => {
-        // v7 · close the release modal and trigger the Sara → Riley handoff
-        // transition. onComplete fires nextStep() → w2.3 (Client delivery).
+    const handleContinueToPMHandoff = () => {
+        // v8 · close the release modal and trigger the Riley (SAC) → James
+        // (PM) handoff. onComplete fires nextStep() → w2.3 (PM execution).
         setIsReleaseOpen(false)
         setApprovedAt(Date.now())
         logEvent(
             'System',
-            'Proposal routed to Sales Coordinator for client representative handoff',
+            'Quote released · routing execution plan to Senior Project Manager',
             'ai'
         )
         triggerHandoff(
-            ROLE_PROFILES.Dealer,
             ROLE_PROFILES['Sales Coordinator'],
-            'Routing approved proposal to Sales Coordinator for representative handoff'
+            ROLE_PROFILES['Project Manager'],
+            'Handing approved quote to James Ortiz for execution planning'
         )
     }
 
@@ -851,8 +851,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     </div>
                 ) : (
                     <>
-                        {activeTab === 'ESTIMATOR' && stepState === 'client-delivery' && (
-                            <div key="CLIENT-DELIVERY" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
+                        {activeTab === 'ESTIMATOR' && stepState === 'pm-handoff' && (
+                            <div key="PM-HANDOFF" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
                                 {handoff && (
                                     <HandoffBanner
                                         fromUser={handoff.fromUser}
@@ -862,18 +862,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         onDismiss={() => setHandoff(null)}
                                     />
                                 )}
-                                <ClientProposalDelivery
+                                <PMExecutionHandoff
                                     proposalPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
                                         maximumFractionDigits: 0,
                                     })}
                                     clientName={customer.name}
-                                    approvedBy={ROLE_PROFILES.Dealer.name}
+                                    approvedBy={ROLE_PROFILES['Sales Coordinator'].name}
                                     approvedAt={approvedAt ?? Date.now()}
                                     onRestart={handleRestartDemo}
-                                    onSent={() => {
+                                    onAccepted={() => {
                                         logEvent(
-                                            ROLE_PROFILES['Sales Coordinator'].name,
-                                            'Representative-facing PDF sent to JPS Health Network rep',
+                                            ROLE_PROFILES['Project Manager'].name,
+                                            'Accepted execution plan · crews & tools assigned for weeks 8-10',
                                             'edit'
                                         )
                                     }}
@@ -881,7 +881,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                             </div>
                         )}
 
-                        {activeTab === 'ESTIMATOR' && stepState !== 'client-delivery' && (
+                        {activeTab === 'ESTIMATOR' && stepState !== 'pm-handoff' && (
                             <div key="ESTIMATOR" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
 
                                 {/* v7 · inline handoff banner (replaces the former fixed toast) */}
@@ -1241,7 +1241,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 clientName={customer.name}
                 auditLog={auditLog}
                 onDownloadPdf={handleReleaseDownloadPdf}
-                onContinueToDelivery={handleContinueToDelivery}
+                onContinueToDelivery={handleContinueToPMHandoff}
             />
 
             {/* Refinement Phase 6d · v7 · Audit trail panel lives inside the
