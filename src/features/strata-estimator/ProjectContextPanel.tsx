@@ -238,9 +238,9 @@ export default function ProjectContextPanel({
                 />
             </button>
 
-            {/* Body */}
+            {/* Body · uniform card grid */}
             {!collapsed && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 p-3 bg-muted/10 dark:bg-zinc-900/40 auto-rows-fr">
                     {facts.map((fact) => {
                         const Icon = ICON_MAP[fact.icon]
                         const isEditing = editingId === fact.id
@@ -248,86 +248,94 @@ export default function ProjectContextPanel({
                             <div
                                 key={fact.id}
                                 className={clsx(
-                                    'group relative bg-card dark:bg-zinc-800 px-4 py-3 transition-colors',
-                                    fact.aiFlagged && 'bg-primary/[0.04] dark:bg-primary/[0.08]'
+                                    'group relative flex flex-col h-full rounded-xl border p-3 transition-all',
+                                    fact.aiFlagged
+                                        ? 'bg-primary/5 dark:bg-primary/10 border-primary/30 ring-1 ring-primary/20 hover:ring-primary/40'
+                                        : 'bg-card dark:bg-zinc-800 border-border hover:border-border/60'
                                 )}
                             >
-                                <div className="flex items-start gap-3">
+                                {/* Header row · icon + label + AI chip + edit */}
+                                <div className="flex items-center gap-2">
                                     <div
                                         className={clsx(
-                                            'shrink-0 w-8 h-8 rounded-lg flex items-center justify-center',
+                                            'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center',
                                             fact.aiFlagged
-                                                ? 'bg-primary/15 ring-1 ring-primary/30'
-                                                : 'bg-muted/50'
+                                                ? 'bg-primary/20 text-foreground dark:text-primary'
+                                                : 'bg-muted/60 text-muted-foreground'
                                         )}
                                     >
-                                        <Icon
-                                            className={clsx(
-                                                'w-4 h-4',
-                                                fact.aiFlagged
-                                                    ? 'text-foreground dark:text-primary'
-                                                    : 'text-muted-foreground'
-                                            )}
-                                        />
+                                        <Icon className="w-3.5 h-3.5" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-1.5 flex-wrap">
-                                            <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none">
-                                                {fact.label}
-                                            </p>
-                                            {fact.aiFlagged && (
-                                                <span className="text-[8px] font-bold uppercase tracking-wider text-foreground dark:text-primary flex items-center gap-0.5">
-                                                    <Sparkles className="w-2 h-2" />
-                                                    AI
-                                                </span>
-                                            )}
-                                        </div>
-                                        {isEditing ? (
-                                            <input
-                                                type="text"
-                                                autoFocus
-                                                value={draftValue}
-                                                onChange={(e) => setDraftValue(e.target.value)}
-                                                onBlur={saveEdit}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') saveEdit()
-                                                    if (e.key === 'Escape') cancelEdit()
-                                                }}
-                                                className="mt-1 w-full text-xs font-semibold text-foreground bg-card dark:bg-zinc-900 border border-primary/40 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary"
-                                            />
-                                        ) : (
-                                            <p className="text-xs font-semibold text-foreground leading-tight mt-1 truncate">
-                                                {fact.value}
-                                            </p>
-                                        )}
-                                        {fact.detail && !isEditing && (
-                                            <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">
-                                                {fact.detail}
-                                            </p>
-                                        )}
-                                        {fact.aiSuggestion && !isEditing && (
-                                            <button
-                                                type="button"
-                                                onClick={() => acceptSuggestion(fact.id)}
-                                                className="mt-2 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-foreground dark:text-primary px-2 py-1 rounded-md bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
-                                            >
-                                                <Sparkles className="w-2.5 h-2.5" />
-                                                AI suggests: {fact.aiSuggestion}
-                                                <Check className="w-2.5 h-2.5" />
-                                            </button>
-                                        )}
-                                    </div>
+                                    <p className="flex-1 min-w-0 text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">
+                                        {fact.label}
+                                    </p>
+                                    {fact.aiFlagged && (
+                                        <span className="shrink-0 flex items-center gap-0.5 text-[8px] font-bold uppercase tracking-wider text-foreground dark:text-primary">
+                                            <Sparkles className="w-2 h-2" />
+                                            AI
+                                        </span>
+                                    )}
                                     {!isEditing && (
                                         <button
                                             type="button"
                                             onClick={() => startEdit(fact)}
-                                            className="shrink-0 p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 opacity-0 group-hover:opacity-100 transition-all"
+                                            className="shrink-0 p-1 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted opacity-60 group-hover:opacity-100 transition-all"
                                             aria-label={`Edit ${fact.label}`}
                                         >
-                                            <Pencil className="w-3 h-3" />
+                                            <Pencil className="w-2.5 h-2.5" />
                                         </button>
                                     )}
                                 </div>
+
+                                {/* Value · always on its own line, wraps cleanly */}
+                                <div className="mt-2">
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            autoFocus
+                                            value={draftValue}
+                                            onChange={(e) => setDraftValue(e.target.value)}
+                                            onBlur={saveEdit}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') saveEdit()
+                                                if (e.key === 'Escape') cancelEdit()
+                                            }}
+                                            className="w-full text-xs font-bold text-foreground bg-card dark:bg-zinc-900 border border-primary/40 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                                        />
+                                    ) : (
+                                        <p className="text-[13px] font-bold text-foreground leading-snug">
+                                            {fact.value}
+                                        </p>
+                                    )}
+                                </div>
+
+                                {/* Detail */}
+                                {fact.detail && !isEditing && (
+                                    <p className="text-[10px] text-muted-foreground leading-snug mt-1">
+                                        {fact.detail}
+                                    </p>
+                                )}
+
+                                {/* Spacer pushes AI suggestion to the bottom */}
+                                <div className="flex-1" />
+
+                                {/* AI suggestion · bottom-pinned pill button */}
+                                {fact.aiSuggestion && !isEditing && (
+                                    <button
+                                        type="button"
+                                        onClick={() => acceptSuggestion(fact.id)}
+                                        className="mt-2 flex items-center justify-between gap-1.5 text-[9px] font-bold uppercase tracking-wider text-foreground dark:text-primary px-2 py-1.5 rounded-md bg-primary/15 border border-primary/40 hover:bg-primary/25 transition-colors"
+                                        title={`AI suggests: ${fact.aiSuggestion}`}
+                                    >
+                                        <span className="flex items-center gap-1 min-w-0 truncate">
+                                            <Sparkles className="w-2.5 h-2.5 shrink-0" />
+                                            <span className="truncate">
+                                                AI: {fact.aiSuggestion}
+                                            </span>
+                                        </span>
+                                        <Check className="w-2.5 h-2.5 shrink-0" />
+                                    </button>
+                                )}
                             </div>
                         )
                     })}

@@ -1070,6 +1070,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     />
                                 )}
 
+                                {/* v8 · Project Dossier always first on every page */}
+                                <EstimatorDossierCard
+                                    customer={customer}
+                                    onCustomerChange={setCustomer}
+                                    onRateLookup={handleRateLookup}
+                                    isSearchingRates={isSearchingRates}
+                                    presets={savedEstimates}
+                                    onLoadPreset={handleLoadEstimate}
+                                    readOnly={isProposalReview}
+                                    rightSlot={
+                                        <AuditTrailPanel
+                                            events={auditLog}
+                                            hidden={stepState === 'estimation-escalated'}
+                                        />
+                                    }
+                                />
+
                                 {/* v8 Paso B · Project Context Panel — hidden only
                                     during the w1.1 CORE ingestion modal pre-phase. */}
                                 {w21Phase !== 'importing-files' && (
@@ -1185,23 +1202,6 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         }}
                                     />
                                 )}
-
-                                {/* Phase 4: Project Dossier — combobox filters + audit trail slot */}
-                                <EstimatorDossierCard
-                                    customer={customer}
-                                    onCustomerChange={setCustomer}
-                                    onRateLookup={handleRateLookup}
-                                    isSearchingRates={isSearchingRates}
-                                    presets={savedEstimates}
-                                    onLoadPreset={handleLoadEstimate}
-                                    readOnly={isProposalReview}
-                                    rightSlot={
-                                        <AuditTrailPanel
-                                            events={auditLog}
-                                            hidden={stepState === 'estimation-escalated'}
-                                        />
-                                    }
-                                />
 
                                 {/* Refinement Phase 7.5: Verification log card (w2.1 preamble)
                                     — lives ABOVE the hero so it frames the Generate Proposal CTA

@@ -138,14 +138,14 @@ export default function DualEngineCalculation({
 
                     <div className="p-4 space-y-2.5">
                         {/* Line items */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             {DELIVERY_LINES.map((line, i) => {
                                 const visible = engineReveal > i / DELIVERY_LINES.length
                                 return (
                                     <div
                                         key={line.label}
                                         className={clsx(
-                                            'flex items-baseline justify-between gap-2 text-[11px] transition-all duration-300',
+                                            'flex items-center justify-between gap-2 text-[11px] px-2.5 py-1.5 rounded-md bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/15 transition-all duration-300',
                                             visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
                                         )}
                                     >
@@ -157,7 +157,7 @@ export default function DualEngineCalculation({
                                                 {line.section} · {line.display}
                                             </p>
                                         </div>
-                                        <span className="shrink-0 text-muted-foreground tabular-nums">
+                                        <span className="shrink-0 text-blue-700 dark:text-blue-400 font-semibold tabular-nums">
                                             {formatMoney(line.qtyMin * 0.95)}
                                         </span>
                                     </div>
@@ -285,14 +285,14 @@ export default function DualEngineCalculation({
                         </div>
 
                         {/* Line items */}
-                        <div className="space-y-1">
+                        <div className="space-y-1.5">
                             {LABOR_LINES.map((line, i) => {
                                 const visible = engineReveal > i / LABOR_LINES.length
                                 return (
                                     <div
                                         key={line.label}
                                         className={clsx(
-                                            'flex items-baseline justify-between gap-2 text-[11px] transition-all duration-300',
+                                            'flex items-center justify-between gap-2 text-[11px] px-2.5 py-1.5 rounded-md bg-green-500/5 dark:bg-green-500/10 border border-green-500/15 transition-all duration-300',
                                             visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
                                         )}
                                     >
@@ -304,7 +304,7 @@ export default function DualEngineCalculation({
                                                 {line.hours.toFixed(2)} hrs × ${LABOR_RATE}/hr
                                             </p>
                                         </div>
-                                        <span className="shrink-0 text-muted-foreground tabular-nums">
+                                        <span className="shrink-0 text-green-700 dark:text-green-400 font-semibold tabular-nums">
                                             {formatMoney(line.hours * LABOR_RATE)}
                                         </span>
                                     </div>
