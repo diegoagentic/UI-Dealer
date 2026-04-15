@@ -12,6 +12,7 @@ import { DELIVERY_HOURS_RATIO } from './mockData'
 import type { EstimateResult } from './types'
 
 interface FinancialSummaryHeroProps {
+    ctaLabel?: string
     estimate: EstimateResult
     onGenerateProposal: () => void
     hideGenerateCTA?: boolean
@@ -48,6 +49,7 @@ export default function FinancialSummaryHero({
     hideGenerateCTA = false,
     calculationProgress = 1,
     pulseGenerateCTA = false,
+    ctaLabel = 'Generate Proposal',
 }: FinancialSummaryHeroProps) {
     const progress = Math.max(0, Math.min(1, calculationProgress))
     const isCalculating = progress < 1
@@ -152,7 +154,7 @@ export default function FinancialSummaryHero({
                         ].join(' ')}
                     >
                         <Receipt className="w-4 h-4" />
-                        Generate Proposal
+                        {ctaLabel}
                         <ArrowRight className="w-4 h-4" />
                     </button>
                 )}

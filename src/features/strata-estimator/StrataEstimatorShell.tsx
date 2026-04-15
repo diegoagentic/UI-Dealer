@@ -437,26 +437,33 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
     // ── w2.1 auto-open waterfall ─────────────────────────────────────────────
     // The Expert's role in w2.1 is supervisory — they watch the assembly run.
-    // Instead of requiring a manual click on the Generate Proposal CTA, the
-    // Shell simulates a click on the CTA (pulse + ring + scale-95) and then
-    // opens the waterfall. The VerificationLogCard (Phase 7.5) sits above
-    // the hero so the user reads it first.
+    // v8 · w2.1 (Sara/Salesperson) auto-forwards to the SAC.
+    // The hero's CTA ("Forward to SAC") pulses and the Shell then fires
+    // handleForwardToSAC which triggers the handoff and nextStep into w2.2.
     useEffect(() => {
         if (stepId !== 'w2.1') {
             setGenerateCtaPressed(false)
             return
         }
-        // t=1800 ms — simulate the press on Generate Proposal (CTA glows)
-        // t=2600 ms — waterfall modal slides in
-        // t=2900 ms — clear the pressed state so it's ready to replay on restart
         const pressTimer = setTimeout(() => setGenerateCtaPressed(true), 1800)
-        const openTimer = setTimeout(() => setIsWaterfallOpen(true), 2600)
+        const forwardTimer = setTimeout(() => {
+            handleForwardToSAC()
+        }, 2600)
         const clearTimer = setTimeout(() => setGenerateCtaPressed(false), 2900)
         return () => {
             clearTimeout(pressTimer)
-            clearTimeout(openTimer)
+            clearTimeout(forwardTimer)
             clearTimeout(clearTimer)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [stepId])
+
+    // v8 · w2.2 (Riley/SAC) auto-opens the pricing waterfall so the
+    // audience sees the quote assembly math before the approval checklist.
+    useEffect(() => {
+        if (stepId !== 'w2.2') return
+        const openTimer = setTimeout(() => setIsWaterfallOpen(true), 1400)
+        return () => clearTimeout(openTimer)
     }, [stepId])
 
     // ── w1.2 designer task notification ──────────────────────────────────────
@@ -541,29 +548,50 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     }
 
     const handleGenerateProposal = () => {
+        // v8 · In w2.1 Sara presses this CTA (relabelled "Forward to SAC").
+        // handleForwardToSAC handles the Salesperson → SAC transition.
+        // In any other step (not expected in v8), fall back to opening the
+        // waterfall directly.
+        if (stepId === 'w2.1') {
+            handleForwardToSAC()
+            return
+        }
         setIsWaterfallOpen(true)
     }
 
+    const handleForwardToSAC = () => {
+        // v8 · w2.1 → w2.2 · Sara (Salesperson) forwards the approved labor
+        // estimate to Riley (SAC) for quote assembly.
+        const formatted = Number(estimate.salesPrice).toLocaleString('en-US', {
+            maximumFractionDigits: 0,
+        })
+        logEvent(
+            'Sara Chen',
+            `Forwarded $${formatted} labor estimate to Riley Morgan (SAC) for quote assembly`,
+            'approval'
+        )
+        triggerHandoff(
+            ROLE_PROFILES.Dealer,
+            ROLE_PROFILES['Sales Coordinator'],
+            `Forwarding $${formatted} labor estimate to SAC for quote assembly`
+        )
+    }
+
     const handleSendForReview = (dealerId: string) => {
-        // Refinement Phase 3 + 7.3: closes the waterfall, plays a handoff
-        // transition, then advances to w2.2
+        // v8 · w2.2 · Riley picks the internal reviewer from the pricing
+        // waterfall's dealer list. The pick only logs an audit entry and
+        // closes the waterfall — the audience stays in w2.2 where the
+        // ProposalActionBar lets Riley launch the release checklist.
         const dealer = DEALERS.find((d) => d.id === dealerId)
         const formatted = Number(estimate.salesPrice).toLocaleString('en-US', {
             maximumFractionDigits: 0,
         })
         logEvent(
-            'David Park',
-            `Sent $${formatted} proposal to ${dealer?.name ?? 'dealer'} for review`,
+            'Riley Morgan',
+            `Assembled $${formatted} quote · routing to ${dealer?.name ?? 'internal reviewer'}`,
             'approval'
         )
         setIsWaterfallOpen(false)
-        triggerHandoff(
-            ROLE_PROFILES.Expert,
-            dealer
-                ? { name: dealer.name, role: dealer.role, photo: dealer.photo }
-                : ROLE_PROFILES.Dealer,
-            `Sending $${formatted} proposal for review`
-        )
     }
 
     // ── w2.2 — Proposal review handlers ──────────────────────────────────────
@@ -1031,13 +1059,21 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     />
                                 )}
 
-                                {/* Phase 5 + Refinement 7.2: Financial Summary Hero with dual-engine calc beat */}
+                                {/* Phase 5 + Refinement 7.2 + v8: Financial Summary Hero.
+                                    CTA label changes per step: w1.1 "Generate Proposal"
+                                    (David runs calc), w2.1 "Forward to SAC" (Sara forwards
+                                    the labor estimate to Riley). */}
                                 <FinancialSummaryHero
                                     estimate={estimate}
                                     onGenerateProposal={handleGenerateProposal}
                                     hideGenerateCTA={isProposalReview}
                                     calculationProgress={calcProgress}
                                     pulseGenerateCTA={generateCtaPressed}
+                                    ctaLabel={
+                                        stepId === 'w2.1'
+                                            ? 'Forward to SAC'
+                                            : 'Generate Proposal'
+                                    }
                                 />
 
                                 {/* Refinement Phase 2: Scope breach alert (transient) */}
