@@ -409,6 +409,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Strata workspace ready · waiting for data to populate',
                     'system'
                 )
+                // Snap viewport to the top so the audience sees the empty
+                // workspace (dossier, context, constraints, BoM) before
+                // the fill animation starts.
+                if (typeof window !== 'undefined') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                }
             }, OUTLOOK_LEAD + 14800)
         )
 
@@ -426,10 +432,17 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         )
 
         // t=2800ms — AI import indicator appears above the BoM header [was +1100]
+        // Also smooth-scroll the viewport to the BoM so the audience
+        // follows the data streaming in.
         timers.push(
             setTimeout(() => {
                 setW21Phase('importing-bom')
                 setImportStatus('Importing 24 items from JPS_specs.pdf…')
+                if (typeof window !== 'undefined') {
+                    document
+                        .getElementById('wrg-section-bom')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
             }, IMPORT_OFFSET + 2800)
         )
 
@@ -497,6 +510,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         )
 
         // t=9100ms — dual-engine calculation beat (slower: 2200 ms) [was +5100]
+        // Scroll to the dual-engine section so the audience sees the two
+        // engines revealing and merging in view.
         timers.push(
             setTimeout(() => {
                 logEvent(
@@ -504,6 +519,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Running dual-engine calculation · installation + delivery',
                     'ai'
                 )
+                if (typeof window !== 'undefined') {
+                    document
+                        .getElementById('wrg-section-dual-engine')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }
                 const duration = 2200
                 const start = performance.now()
                 const tick = (now: number) => {
@@ -528,6 +548,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         )
 
         // t=11800ms — flag OFS Serpentine (row 19) + show Escalate banner [was +6900]
+        // Scroll to the hero so the final labor summary + Generate
+        // Proposal CTA is visible when the flagged item reveal fires.
         timers.push(
             setTimeout(() => {
                 setW21Phase('flagged')
@@ -537,6 +559,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Flagged OFS Serpentine 12-seat lounge for designer review',
                     'ai'
                 )
+                if (typeof window !== 'undefined') {
+                    document
+                        .getElementById('wrg-section-hero')
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                }
             }, IMPORT_OFFSET + 11800)
         )
 
@@ -1306,6 +1333,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                 )}
 
                                 {/* v8 · Project Dossier always first on every page */}
+                                <div id="wrg-section-dossier" />
                                 <EstimatorDossierCard
                                     customer={customer}
                                     onCustomerChange={setCustomer}
@@ -1345,6 +1373,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                 {/* v8 polish · BoM is the main manipulable input. All
                                     notifications above it have been hoisted to the top
                                     of the page (just below the HandoffBanner). */}
+                                <div id="wrg-section-bom" />
                                 <BillOfMaterialsTable
                                     lineItems={lineItems}
                                     config={config}
@@ -1367,6 +1396,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                 {/* v8 Paso D · Dual-engine calculation (OUTPUT).
                                     Moved below the BoM/constraints so the inputs
                                     read as causes and the calc reads as effect. */}
+                                <div id="wrg-section-dual-engine" />
                                 {(stepId === 'w2.1' ||
                                     (stepId === 'w1.1' &&
                                         (w21Phase === 'scope-breach' ||
@@ -1378,6 +1408,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
                                 {/* Phase 5 + Refinement 7.2 + v8: Financial Summary Hero
                                     (OUTPUT). Final number + step CTA. */}
+                                <div id="wrg-section-hero" />
                                 <FinancialSummaryHero
                                     estimate={estimate}
                                     onGenerateProposal={handleGenerateProposal}
