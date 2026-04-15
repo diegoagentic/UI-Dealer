@@ -212,6 +212,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     useEffect(() => {
         if (stepId !== 'w1.1') return
 
+        // v8 · w1.1 is the first step — always clear any leftover inline
+        // handoff banner (e.g. after a demo restart from a later step)
+        // so the page arrives clean.
+        setHandoff(null)
+
         // Reset the Shell to the "just arrived from CORE" state
         setCustomer({ ...JPS_CUSTOMER, zipCode: '', address: '' })
         setLineItems([])
@@ -941,6 +946,12 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         }
         // Refinement Phase 7.3: dismiss any pending handoff transition
         setHandoff2(null)
+        // v8 · clear the inline handoff banner and the step-tracking ref
+        // so the auto-trigger effect doesn't fire a stale back-handoff
+        // (e.g. Alex -> David with "Labor estimation kickoff") when we
+        // jump back to w1.1 from a later step.
+        setHandoff(null)
+        prevStepIdRef.current = undefined
         // Refinement Phase 7.4 + 7.5 + v7: clear every handoff timestamp
         setEscalatedAt(null)
         setVerifiedAt(null)
