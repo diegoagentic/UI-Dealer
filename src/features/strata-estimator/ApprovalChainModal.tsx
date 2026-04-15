@@ -14,6 +14,7 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { Fragment, useEffect, useState } from 'react'
 import { Check, CheckCircle2, ShieldCheck, X } from 'lucide-react'
 import { clsx } from 'clsx'
+import { useDemo } from '../../context/DemoContext'
 
 interface ApprovalRole {
     name: string
@@ -98,12 +99,15 @@ export default function ApprovalChainModal({
 
     const progressPct = (approvedCount / CHAIN.length) * 100
     const done = approvedCount >= CHAIN.length
+    const { isDemoActive, isSidebarCollapsed } = useDemo()
+    const sidebarExpanded = isDemoActive && !isSidebarCollapsed
+    const offsetClass = sidebarExpanded ? 'lg:left-80' : ''
 
     return (
         <Transition show={isOpen} as={Fragment}>
             <Dialog
                 as="div"
-                className="relative z-[200]"
+                className="relative z-[100]"
                 onClose={done ? onClose : () => {}}
             >
                 <TransitionChild
@@ -115,10 +119,10 @@ export default function ApprovalChainModal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm" />
+                    <div className={clsx('fixed inset-0 bg-zinc-950/70 backdrop-blur-sm', offsetClass)} />
                 </TransitionChild>
 
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className={clsx('fixed inset-0 flex items-center justify-center p-4', offsetClass)}>
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-200"

@@ -25,6 +25,7 @@ import {
 import { Fragment, useEffect, useState } from 'react'
 import { ArrowRight, Check, ChevronDown, ChevronRight, Receipt, X } from 'lucide-react'
 import { clsx } from 'clsx'
+import { useDemo } from '../../context/DemoContext'
 import type { DealerOption } from './mockData'
 
 interface PricingWaterfallProps {
@@ -195,10 +196,13 @@ export default function PricingWaterfall({
     const done = visibleRows >= rows.length
     const selectedDealer =
         dealers.find((d) => d.id === selectedDealerId) ?? dealers[0]
+    const { isDemoActive, isSidebarCollapsed } = useDemo()
+    const sidebarExpanded = isDemoActive && !isSidebarCollapsed
+    const offsetClass = sidebarExpanded ? 'lg:left-80' : ''
 
     return (
         <Transition show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-[200]" onClose={onClose}>
+            <Dialog as="div" className="relative z-[100]" onClose={onClose}>
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-200"
@@ -208,10 +212,10 @@ export default function PricingWaterfall({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm" />
+                    <div className={clsx('fixed inset-0 bg-zinc-950/70 backdrop-blur-sm', offsetClass)} />
                 </TransitionChild>
 
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className={clsx('fixed inset-0 flex items-center justify-center p-4', offsetClass)}>
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-200"

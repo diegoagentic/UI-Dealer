@@ -30,11 +30,22 @@ import {
     X,
 } from 'lucide-react'
 import { clsx } from 'clsx'
+import { useDemo } from '../../context/DemoContext'
 
 interface RequestClarificationModalProps {
     isOpen: boolean
     onClose: () => void
     onSent: (topic: string, message: string) => void
+    /**
+     * If set, the modal waits this many ms on the compose phase and then
+     * auto-fires the send. Used by w2.1 where Sara's clarification is
+     * part of the scripted demo timeline.
+     */
+    autoSendAfter?: number
+    /** Preselects a topic by id on open. */
+    initialTopicId?: string
+    /** Sender name shown in the "sent" state copy (default: "David Park"). */
+    senderName?: string
 }
 
 interface ClarificationTopic {
@@ -87,8 +98,13 @@ export default function RequestClarificationModal({
     isOpen,
     onClose,
     onSent,
+    autoSendAfter,
+    initialTopicId,
+    senderName,
 }: RequestClarificationModalProps) {
-    const [selectedTopicId, setSelectedTopicId] = useState<string>(TOPICS[0].id)
+    const [selectedTopicId, setSelectedTopicId] = useState<string>(
+        initialTopicId ?? TOPICS[0].id
+    )
     const [message, setMessage] = useState<string>(TOPICS[0].template)
     const [phase, setPhase] = useState<Phase>('compose')
 
@@ -98,11 +114,20 @@ export default function RequestClarificationModal({
     useEffect(() => {
         if (!isOpen) {
             setPhase('compose')
-            setSelectedTopicId(TOPICS[0].id)
-            setMessage(TOPICS[0].template)
+            setSelectedTopicId(initialTopicId ?? TOPICS[0].id)
+            setMessage(
+                (TOPICS.find((t) => t.id === initialTopicId) ?? TOPICS[0]).template
+            )
             return
         }
-    }, [isOpen])
+    }, [isOpen, initialTopicId])
+
+    // Auto-send driver (used by w2.1 Sara scripted flow)
+    useEffect(() => {
+        if (!isOpen || phase !== 'compose' || !autoSendAfter) return
+        const timer = setTimeout(() => setPhase('sending'), autoSendAfter)
+        return () => clearTimeout(timer)
+    }, [isOpen, phase, autoSendAfter])
 
     useEffect(() => {
         if (phase !== 'compose') return
@@ -126,12 +151,15 @@ export default function RequestClarificationModal({
     }, [phase, onSent, selectedTopic.label, message, onClose])
 
     const canSend = phase === 'compose' && message.trim().length > 0
+    const { isDemoActive, isSidebarCollapsed } = useDemo()
+    const sidebarExpanded = isDemoActive && !isSidebarCollapsed
+    const offsetClass = sidebarExpanded ? 'lg:left-80' : ''
 
     return (
         <Transition show={isOpen} as={Fragment}>
             <Dialog
                 as="div"
-                className="relative z-[210]"
+                className="relative z-[100]"
                 onClose={phase === 'compose' ? onClose : () => {}}
             >
                 <TransitionChild
@@ -143,10 +171,10 @@ export default function RequestClarificationModal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-zinc-950/70 backdrop-blur-sm" />
+                    <div className={clsx('fixed inset-0 bg-zinc-950/70 backdrop-blur-sm', offsetClass)} />
                 </TransitionChild>
 
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className={clsx('fixed inset-0 flex items-center justify-center p-4', offsetClass)}>
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-200"
@@ -319,7 +347,10 @@ export default function RequestClarificationModal({
                                         Request sent
                                     </p>
                                     <p className="text-[11px] text-muted-foreground text-center max-w-xs">
-                                        David will see this in his Strata queue. You can release the proposal once he replies.
+                                        David will see this in his Strata queue.{' '}
+                                        {senderName
+                                            ? `${senderName} can continue once he replies.`
+                                            : 'You can release the proposal once he replies.'}
                                     </p>
                                 </div>
                             )}

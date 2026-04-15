@@ -102,6 +102,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [isReleaseOpen, setIsReleaseOpen] = useState(false)
     const [isClarificationOpen, setIsClarificationOpen] = useState(false)
     const [isProposalPdfOpen, setIsProposalPdfOpen] = useState(false)
+    const [approveReleasePulsed, setApproveReleasePulsed] = useState(false)
     const [davidApprovalActive, setDavidApprovalActive] = useState(false)
     const [davidSigned, setDavidSigned] = useState(false)
     const [davidCardVisible, setDavidCardVisible] = useState(false)
@@ -537,19 +538,27 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
     // ── w2.1 auto-open waterfall ─────────────────────────────────────────────
     // The Expert's role in w2.1 is supervisory — they watch the assembly run.
-    // v8 · w2.1 (Sara/Salesperson) entry beat + auto-forward to SAC.
-    // Paso E · Gap B adds a ~2.5 s CoreOutlookCard variant="outgoing" at
-    // the top so the audience sees Strata writing back to CORE and CORE
-    // triggering the Outlook notification before Sara's normal view takes
-    // over. The hero's "Forward to SAC" press is then delayed by
-    // OUTGOING_LEAD so the card is readable first.
+    // v8 · w2.1 (Sara/Salesperson) scripted beat — outlook card →
+    // auto-open Request Clarification (scripted send) → auto-forward to SAC.
+    // Sara reviews the labor estimate, flags a question to David about the
+    // custom OFS Serpentine, then forwards. No more static wait.
     useEffect(() => {
         if (stepId !== 'w2.1') {
             setGenerateCtaPressed(false)
             setOutlookOutgoingVisible(false)
+            setIsClarificationOpen(false)
             return
         }
-        const OUTGOING_LEAD = 2500 // ms · outgoing card visible at top
+        // Beat timeline (all ms from step entry):
+        //   0     outlook card visible
+        //   2500  outlook card dismisses
+        //   3200  auto-open Request Clarification modal
+        //     └ modal's internal autoSendAfter=2000 sends the message
+        //     └ modal closes on its own ~4500 ms later
+        //   7700  forward CTA pulse
+        //   8500  handleForwardToSAC fires
+        //   8800  clear pulse
+        const OUTGOING_LEAD = 2500
         setOutlookOutgoingVisible(true)
         logEvent(
             'System',
@@ -560,19 +569,28 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             () => setOutlookOutgoingVisible(false),
             OUTGOING_LEAD
         )
+        const openClarification = setTimeout(() => {
+            logEvent(
+                'Sara Chen',
+                'Opened Request Clarification form · OFS Serpentine assembly',
+                'edit'
+            )
+            setIsClarificationOpen(true)
+        }, OUTGOING_LEAD + 700)
         const pressTimer = setTimeout(
             () => setGenerateCtaPressed(true),
-            OUTGOING_LEAD + 1800
+            OUTGOING_LEAD + 5200
         )
         const forwardTimer = setTimeout(() => {
             handleForwardToSAC()
-        }, OUTGOING_LEAD + 2600)
+        }, OUTGOING_LEAD + 6000)
         const clearTimer = setTimeout(
             () => setGenerateCtaPressed(false),
-            OUTGOING_LEAD + 2900
+            OUTGOING_LEAD + 6300
         )
         return () => {
             clearTimeout(hideCard)
+            clearTimeout(openClarification)
             clearTimeout(pressTimer)
             clearTimeout(forwardTimer)
             clearTimeout(clearTimer)
@@ -580,12 +598,45 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepId])
 
-    // v8 · w2.2 (Riley/SAC) auto-opens the pricing waterfall so the
-    // audience sees the quote assembly math before the approval checklist.
+    // v8 · w2.2 (Riley/SAC) scripted beat — Riley actually interacts now.
+    //   1400  pricing waterfall auto-opens (quote assembly math)
+    //   5200  pricing waterfall closes (Riley "confirmed" the math)
+    //   5700  auto-preview the client PDF
+    //   8200  PDF preview closes
+    //   8900  Approve & Release CTA pulses on the action bar
+    //   9700  handleApproveRelease fires (release checklist + David detour)
     useEffect(() => {
-        if (stepId !== 'w2.2') return
-        const openTimer = setTimeout(() => setIsWaterfallOpen(true), 1400)
-        return () => clearTimeout(openTimer)
+        if (stepId !== 'w2.2') {
+            setApproveReleasePulsed(false)
+            return
+        }
+        const openWaterfall = setTimeout(() => setIsWaterfallOpen(true), 1400)
+        const closeWaterfall = setTimeout(() => {
+            logEvent(
+                'Riley Morgan',
+                'Confirmed quote assembly math · MillerKnoll + discount + markup',
+                'edit'
+            )
+            setIsWaterfallOpen(false)
+        }, 5200)
+        const openPdf = setTimeout(() => {
+            logEvent('Riley Morgan', 'Previewed client PDF before release', 'edit')
+            setIsProposalPdfOpen(true)
+        }, 5700)
+        const closePdf = setTimeout(() => setIsProposalPdfOpen(false), 8200)
+        const pulseApprove = setTimeout(() => setApproveReleasePulsed(true), 8900)
+        const fireApprove = setTimeout(() => handleApproveRelease(), 9700)
+        const clearPulse = setTimeout(() => setApproveReleasePulsed(false), 10200)
+        return () => {
+            clearTimeout(openWaterfall)
+            clearTimeout(closeWaterfall)
+            clearTimeout(openPdf)
+            clearTimeout(closePdf)
+            clearTimeout(pulseApprove)
+            clearTimeout(fireApprove)
+            clearTimeout(clearPulse)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepId])
 
     // ── w1.2 designer task notification ──────────────────────────────────────
@@ -718,13 +769,16 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
     // ── w2.2 — Proposal review handlers ──────────────────────────────────────
     const handleRequestClarification = () => {
-        logEvent('Sara Chen', 'Opened Request Clarification form', 'edit')
+        // v8 · step-aware sender: Sara in w2.1, Riley in w2.2
+        const sender = stepId === 'w2.1' ? 'Sara Chen' : 'Riley Morgan'
+        logEvent(sender, 'Opened Request Clarification form', 'edit')
         setIsClarificationOpen(true)
     }
 
     const handleClarificationSent = (topic: string, _message: string) => {
+        const sender = stepId === 'w2.1' ? 'Sara Chen' : 'Riley Morgan'
         logEvent(
-            'Sara Chen',
+            sender,
             `Clarification request sent to David Park · ${topic}`,
             'edit'
         )
@@ -1405,14 +1459,19 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     onRequestClarification={handleRequestClarification}
                     onPreviewPdf={handlePreviewProposalPdf}
                     onApproveRelease={handleApproveRelease}
+                    pulseApprove={approveReleasePulsed}
                 />
             )}
 
-            {/* v7 · w2.2 — Request Clarification modal (Sara → David) */}
+            {/* v8 · Request Clarification modal. Sara (w2.1) auto-sends with
+                autoSendAfter=2000 ms; Riley (w2.2) uses it manually. */}
             <RequestClarificationModal
                 isOpen={isClarificationOpen}
                 onClose={() => setIsClarificationOpen(false)}
                 onSent={handleClarificationSent}
+                autoSendAfter={stepId === 'w2.1' ? 2000 : undefined}
+                initialTopicId={stepId === 'w2.1' ? 'ofs-serpentine' : undefined}
+                senderName={stepId === 'w2.1' ? 'Sara' : 'Riley'}
             />
 
             {/* v7 · w2.2 — Proposal PDF preview (reused by the Preview PDF CTA) */}

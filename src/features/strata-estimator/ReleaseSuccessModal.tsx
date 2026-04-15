@@ -16,8 +16,10 @@
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { ArrowRight, Download } from 'lucide-react'
+import { clsx } from 'clsx'
 import AuditTrailPdfPreviewModal from './AuditTrailPdfPreviewModal'
 import type { AuditEvent } from './AuditTrailPanel'
+import { useDemo } from '../../context/DemoContext'
 
 interface ReleaseSuccessModalProps {
     isOpen: boolean
@@ -36,7 +38,7 @@ interface MetricCard {
 
 const METRICS: MetricCard[] = [
     { before: '8 hrs', after: '12 min', label: 'Estimator time' },
-    { before: '4 tools', after: '1 app',  label: 'Tools to build a quote' },
+    { before: '4 tools', after: '1 app',  label: 'Tools to build the estimate' },
     { before: '15 %',   after: '100 %',  label: 'Audit trail coverage' },
 ]
 
@@ -51,6 +53,9 @@ export default function ReleaseSuccessModal({
     const [visibleMetrics, setVisibleMetrics] = useState(0)
     const [checkDrawn, setCheckDrawn] = useState(false)
     const [auditPdfOpen, setAuditPdfOpen] = useState(false)
+    const { isDemoActive, isSidebarCollapsed } = useDemo()
+    const sidebarExpanded = isDemoActive && !isSidebarCollapsed
+    const offsetClass = sidebarExpanded ? 'lg:left-80' : ''
 
     useEffect(() => {
         if (!isOpen) {
@@ -75,7 +80,7 @@ export default function ReleaseSuccessModal({
 
     return (
         <Transition show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-[210]" onClose={() => {}}>
+            <Dialog as="div" className="relative z-[100]" onClose={() => {}}>
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -85,10 +90,10 @@ export default function ReleaseSuccessModal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md" />
+                    <div className={clsx('fixed inset-0 bg-zinc-950/80 backdrop-blur-md', offsetClass)} />
                 </TransitionChild>
 
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className={clsx('fixed inset-0 flex items-center justify-center p-4', offsetClass)}>
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
@@ -134,13 +139,13 @@ export default function ReleaseSuccessModal({
                                 </div>
 
                                 <h2 className="mt-5 text-2xl font-bold text-foreground">
-                                    Quote released
+                                    Labor estimate released
                                 </h2>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                    ${salesPrice} quote released · {clientName} queued for execution
+                                    ${salesPrice} labor estimate released into CORE · {clientName} queued for execution
                                 </p>
                                 <p className="text-[11px] text-muted-foreground/80 mt-1 font-mono">
-                                    JPS_proposal.pdf · full audit trail preserved
+                                    JPS_labor_estimate.pdf · full audit trail preserved
                                 </p>
                             </div>
 

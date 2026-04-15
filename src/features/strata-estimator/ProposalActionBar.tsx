@@ -9,12 +9,16 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { CheckCircle2, FileText, MessageSquare } from 'lucide-react'
+import { clsx } from 'clsx'
 
 interface ProposalActionBarProps {
     salesPrice: string
     onRequestClarification: () => void
     onPreviewPdf: () => void
     onApproveRelease: () => void
+    /** When true, the Approve & Release button pulses as if the user
+     *  is about to click it. Used by w2.2's scripted Riley sequence. */
+    pulseApprove?: boolean
 }
 
 export default function ProposalActionBar({
@@ -22,6 +26,7 @@ export default function ProposalActionBar({
     onRequestClarification,
     onPreviewPdf,
     onApproveRelease,
+    pulseApprove = false,
 }: ProposalActionBarProps) {
     return (
         <div
@@ -59,7 +64,11 @@ export default function ProposalActionBar({
 
                 <button
                     onClick={onApproveRelease}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                    className={clsx(
+                        'flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:opacity-90 transition-all',
+                        pulseApprove &&
+                            'scale-95 ring-4 ring-primary/50 shadow-lg shadow-primary/40 animate-pulse'
+                    )}
                 >
                     <CheckCircle2 className="w-4 h-4" />
                     Approve &amp; Release
