@@ -17,6 +17,7 @@ import { useDemo } from '../../context/DemoContext'
 import CoreConnectionModal from './CoreConnectionModal'
 import type { CorePhase, CursorTarget } from './CoreConnectionModal'
 import ProjectContextPanel from './ProjectContextPanel'
+import DualEngineCalculation from './DualEngineCalculation'
 import StrataEstimatorNavbar from './StrataEstimatorNavbar'
 import EstimatorDossierCard from './EstimatorDossierCard'
 import FinancialSummaryHero from './FinancialSummaryHero'
@@ -1140,6 +1141,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         verifiedByName={ROLE_PROFILES.Designer.name}
                                         verifiedByPhoto={ROLE_PROFILES.Designer.photo}
                                         verifiedAt={verifiedAt}
+                                    />
+                                )}
+
+                                {/* v8 Paso D · Dual-engine calculation. Shown once the
+                                    BoM mapping beat finishes so the audience sees the
+                                    two private Excel engines before the final hero. */}
+                                {(stepId === 'w2.1' ||
+                                    (stepId === 'w1.1' &&
+                                        (w21Phase === 'scope-breach' ||
+                                            w21Phase === 'flagged'))) && (
+                                    <DualEngineCalculation
+                                        progress={stepId === 'w1.1' ? calcProgress : 1}
                                     />
                                 )}
 
