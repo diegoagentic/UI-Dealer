@@ -230,53 +230,49 @@ export default function PMExecutionHandoff({
                         </span>
                     </div>
 
-                    {/* Planning rows */}
-                    <div className="divide-y divide-border">
+                    {/* Planning rows · 3-column card grid · shaded cells */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 p-3 bg-muted/10 dark:bg-zinc-900/40 auto-rows-fr">
                         {planningRows.map((row) => {
                             const Icon = row.icon
                             return (
                                 <div
                                     key={row.label}
-                                    className="flex items-start gap-3 px-6 py-3"
+                                    className={clsx(
+                                        'flex flex-col h-full rounded-xl border p-3 transition-all',
+                                        row.aiHighlight
+                                            ? 'bg-primary/5 dark:bg-primary/10 border-primary/30 ring-1 ring-primary/20'
+                                            : 'bg-card dark:bg-zinc-800 border-border'
+                                    )}
                                 >
-                                    <div
-                                        className={clsx(
-                                            'shrink-0 w-9 h-9 rounded-xl flex items-center justify-center',
-                                            row.aiHighlight
-                                                ? 'bg-primary/15 ring-1 ring-primary/30'
-                                                : 'bg-muted/60'
-                                        )}
-                                    >
-                                        <Icon
+                                    <div className="flex items-center gap-2">
+                                        <div
                                             className={clsx(
-                                                'w-4 h-4',
+                                                'shrink-0 w-7 h-7 rounded-lg flex items-center justify-center',
                                                 row.aiHighlight
-                                                    ? 'text-foreground dark:text-primary'
-                                                    : 'text-muted-foreground'
+                                                    ? 'bg-primary/20 text-foreground dark:text-primary'
+                                                    : 'bg-muted/60 text-muted-foreground'
                                             )}
-                                        />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-baseline justify-between gap-3 flex-wrap">
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider leading-none">
-                                                {row.label}
-                                            </p>
-                                            {row.aiHighlight && (
-                                                <span className="text-[9px] font-bold text-foreground dark:text-primary uppercase tracking-wider flex items-center gap-1">
-                                                    <Sparkles className="w-2.5 h-2.5" />
-                                                    AI flagged
-                                                </span>
-                                            )}
+                                        >
+                                            <Icon className="w-3.5 h-3.5" />
                                         </div>
-                                        <p className="text-xs font-semibold text-foreground leading-tight mt-1">
-                                            {row.value}
+                                        <p className="flex-1 min-w-0 text-[9px] font-bold text-muted-foreground uppercase tracking-wider leading-none truncate">
+                                            {row.label}
                                         </p>
-                                        {row.detail && (
-                                            <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">
-                                                {row.detail}
-                                            </p>
+                                        {row.aiHighlight && (
+                                            <span className="shrink-0 flex items-center gap-0.5 text-[8px] font-bold uppercase tracking-wider text-foreground dark:text-primary">
+                                                <Sparkles className="w-2 h-2" />
+                                                AI
+                                            </span>
                                         )}
                                     </div>
+                                    <p className="text-[13px] font-bold text-foreground leading-snug mt-2">
+                                        {row.value}
+                                    </p>
+                                    {row.detail && (
+                                        <p className="text-[10px] text-muted-foreground leading-snug mt-1">
+                                            {row.detail}
+                                        </p>
+                                    )}
                                 </div>
                             )
                         })}
