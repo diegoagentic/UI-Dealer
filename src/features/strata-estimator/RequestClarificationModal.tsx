@@ -143,12 +143,16 @@ export default function RequestClarificationModal({
 
     useEffect(() => {
         if (phase !== 'sent') return
+        // Shorter hold when auto-sending (scripted flow) so the inline
+        // reply card takes over quickly instead of lingering on the
+        // success screen.
+        const holdMs = autoSendAfter ? 600 : 1400
         const t2 = setTimeout(() => {
             onSent(selectedTopic.label, message.trim())
             onClose()
-        }, 1400)
+        }, holdMs)
         return () => clearTimeout(t2)
-    }, [phase, onSent, selectedTopic.label, message, onClose])
+    }, [phase, onSent, selectedTopic.label, message, onClose, autoSendAfter])
 
     const canSend = phase === 'compose' && message.trim().length > 0
     const { isDemoActive, isSidebarCollapsed } = useDemo()

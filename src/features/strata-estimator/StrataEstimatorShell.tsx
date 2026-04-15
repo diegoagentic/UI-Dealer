@@ -30,6 +30,7 @@ import VisionEngineModal from './VisionEngineModal'
 import HandoffBanner from './HandoffBanner'
 import DesignerVerificationOverlay from './DesignerVerificationOverlay'
 import ProposalActionBar from './ProposalActionBar'
+import SalespersonActionBar from './SalespersonActionBar'
 import ApprovalChainModal from './ApprovalChainModal'
 import ReleaseSuccessModal from './ReleaseSuccessModal'
 import RequestClarificationModal from './RequestClarificationModal'
@@ -102,6 +103,14 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [isClarificationOpen, setIsClarificationOpen] = useState(false)
     const [isProposalPdfOpen, setIsProposalPdfOpen] = useState(false)
     const [approveReleasePulsed, setApproveReleasePulsed] = useState(false)
+    // v8 · w2.1 scripted action bar + David reply card state
+    type SalespersonCursor = 'request-clarification' | 'forward' | null
+    const [saraCursorTarget, setSaraCursorTarget] = useState<SalespersonCursor>(null)
+    const [saraCursorClicked, setSaraCursorClicked] = useState(false)
+    const [saraPulseClarify, setSaraPulseClarify] = useState(false)
+    const [saraPulseForward, setSaraPulseForward] = useState(false)
+    const [davidReplyVisible, setDavidReplyVisible] = useState(false)
+    const [davidReplyAccepted, setDavidReplyAccepted] = useState(false)
     const [davidApprovalActive, setDavidApprovalActive] = useState(false)
     const [davidSigned, setDavidSigned] = useState(false)
     const [davidCardVisible, setDavidCardVisible] = useState(false)
@@ -576,28 +585,22 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         }
     }, [stepId])
 
-    // ── w2.1 auto-open waterfall ─────────────────────────────────────────────
-    // The Expert's role in w2.1 is supervisory — they watch the assembly run.
-    // v8 · w2.1 (Sara/Salesperson) scripted beat — outlook card →
-    // auto-open Request Clarification (scripted send) → auto-forward to SAC.
-    // Sara reviews the labor estimate, flags a question to David about the
-    // custom OFS Serpentine, then forwards. No more static wait.
+    // ── w2.1 Sara (Salesperson) fully scripted paced flow ──────────────────
+    // Each action is visibly triggered via SalespersonActionBar with a
+    // simulated cursor click before the next modal or card appears.
     useEffect(() => {
         if (stepId !== 'w2.1') {
             setGenerateCtaPressed(false)
             setOutlookOutgoingVisible(false)
             setIsClarificationOpen(false)
+            setSaraCursorTarget(null)
+            setSaraCursorClicked(false)
+            setSaraPulseClarify(false)
+            setSaraPulseForward(false)
+            setDavidReplyVisible(false)
+            setDavidReplyAccepted(false)
             return
         }
-        // Beat timeline (all ms from step entry):
-        //   0     outlook card visible
-        //   2500  outlook card dismisses
-        //   3200  auto-open Request Clarification modal
-        //     └ modal's internal autoSendAfter=2000 sends the message
-        //     └ modal closes on its own ~4500 ms later
-        //   7700  forward CTA pulse
-        //   8500  handleForwardToSAC fires
-        //   8800  clear pulse
         const OUTGOING_LEAD = 2500
         setOutlookOutgoingVisible(true)
         logEvent(
@@ -605,35 +608,67 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             'CORE · labor estimate + audit trail written back · Outlook notification triggered',
             'system'
         )
-        const hideCard = setTimeout(
-            () => setOutlookOutgoingVisible(false),
-            OUTGOING_LEAD
-        )
-        const openClarification = setTimeout(() => {
+
+        const timers: ReturnType<typeof setTimeout>[] = []
+
+        // outlook card dismisses
+        timers.push(setTimeout(() => setOutlookOutgoingVisible(false), OUTGOING_LEAD))
+
+        // cursor + pulse on Request Clarification button
+        timers.push(setTimeout(() => {
+            setSaraCursorTarget('request-clarification')
+            setSaraPulseClarify(true)
+        }, 3800))
+        timers.push(setTimeout(() => setSaraCursorClicked(true), 4500))
+        timers.push(setTimeout(() => {
             logEvent(
                 'Sara Chen',
                 'Opened Request Clarification form · OFS Serpentine assembly',
                 'edit'
             )
             setIsClarificationOpen(true)
-        }, OUTGOING_LEAD + 700)
-        const pressTimer = setTimeout(
-            () => setGenerateCtaPressed(true),
-            OUTGOING_LEAD + 5200
-        )
-        const forwardTimer = setTimeout(() => {
-            handleForwardToSAC()
-        }, OUTGOING_LEAD + 6000)
-        const clearTimer = setTimeout(
-            () => setGenerateCtaPressed(false),
-            OUTGOING_LEAD + 6300
-        )
+            setSaraCursorTarget(null)
+            setSaraCursorClicked(false)
+            setSaraPulseClarify(false)
+        }, 4700))
+
+        // David's reply slides in after modal closes (compose 2000 +
+        // sending 1100 + sent 600 ≈ 3700 ms after open = ~8400 ms)
+        timers.push(setTimeout(() => {
+            setDavidReplyVisible(true)
+            logEvent(
+                'David Park',
+                'Replied to clarification · OFS Serpentine 14 h confirmed · +2 h buffer for alignment',
+                'edit'
+            )
+        }, 8600))
+
+        // Sara accepts David's reply
+        timers.push(setTimeout(() => setDavidReplyAccepted(true), 11700))
+        timers.push(setTimeout(() => {
+            logEvent(
+                'Sara Chen',
+                "Accepted David's clarification · estimate confirmed",
+                'edit'
+            )
+        }, 11900))
+
+        // dismiss reply card, then cursor + pulse on Forward to SAC
+        timers.push(setTimeout(() => setDavidReplyVisible(false), 13000))
+        timers.push(setTimeout(() => {
+            setSaraCursorTarget('forward')
+            setSaraPulseForward(true)
+        }, 13500))
+        timers.push(setTimeout(() => setSaraCursorClicked(true), 14200))
+        timers.push(setTimeout(() => handleForwardToSAC(), 14400))
+        timers.push(setTimeout(() => {
+            setSaraCursorTarget(null)
+            setSaraCursorClicked(false)
+            setSaraPulseForward(false)
+        }, 14700))
+
         return () => {
-            clearTimeout(hideCard)
-            clearTimeout(openClarification)
-            clearTimeout(pressTimer)
-            clearTimeout(forwardTimer)
-            clearTimeout(clearTimer)
+            timers.forEach(clearTimeout)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [stepId])
@@ -1357,6 +1392,86 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     />
                                 )}
 
+                                {/* w2.1 · David's reply to Sara's clarification.
+                                    Slides in after the Request Clarification
+                                    modal closes; the reply is accepted by the
+                                    scripted flow and the card auto-dismisses. */}
+                                {stepId === 'w2.1' && davidReplyVisible && (
+                                    <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden animate-in fade-in slide-in-from-top-4 duration-500">
+                                        <div className="p-5 bg-indigo-500/5 dark:bg-indigo-500/10 border-l-4 border-indigo-500 ring-1 ring-indigo-500/20 rounded-r-2xl">
+                                            <div className="flex items-start gap-4">
+                                                <div className="relative shrink-0">
+                                                    <img
+                                                        src={ROLE_PROFILES.Expert.photo}
+                                                        alt={ROLE_PROFILES.Expert.name}
+                                                        className="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-500/40"
+                                                    />
+                                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center ring-2 ring-card dark:ring-zinc-800">
+                                                        <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
+                                                    </div>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="text-sm font-bold text-foreground">
+                                                            David Park replied
+                                                        </span>
+                                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-indigo-500 text-white font-bold animate-pulse">
+                                                            Just now
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        <span className="font-bold text-foreground">
+                                                            Senior Estimator
+                                                        </span>{' '}
+                                                        · Reply to your OFS Serpentine clarification
+                                                    </p>
+                                                    <div className="mt-3 p-3 rounded-lg bg-card dark:bg-zinc-900 border border-border">
+                                                        <p className="text-[11px] text-foreground leading-snug italic">
+                                                            "Hi Sara — 14 h install is correct for
+                                                            standard modular assembly. Added a +2 h
+                                                            buffer for the alignment tolerance on
+                                                            the custom radius, so the final line
+                                                            reads 16 h. Everything else stands."
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 mt-3">
+                                                        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-primary/10 text-foreground dark:text-primary border border-primary/30">
+                                                            OFS Serpentine · 14 h → 16 h
+                                                        </span>
+                                                        <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-muted/50 text-muted-foreground">
+                                                            +$114 labor
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div className="shrink-0 self-center">
+                                                    <button
+                                                        type="button"
+                                                        disabled
+                                                        className={clsx(
+                                                            'flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-200',
+                                                            davidReplyAccepted
+                                                                ? 'bg-green-500 text-white scale-95'
+                                                                : 'bg-primary text-primary-foreground ring-2 ring-primary/40'
+                                                        )}
+                                                    >
+                                                        {davidReplyAccepted ? (
+                                                            <>
+                                                                <Check className="w-3 h-3" strokeWidth={3} />
+                                                                Accepted
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <Check className="w-3 h-3" />
+                                                                Accept &amp; update
+                                                            </>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* w2.1 · Verification log card preamble */}
                                 {stepId === 'w2.1' && verifiedAt && (
                                     <VerificationLogCard
@@ -1584,6 +1699,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     onPreviewPdf={handlePreviewProposalPdf}
                     onApproveRelease={handleApproveRelease}
                     pulseApprove={approveReleasePulsed}
+                />
+            )}
+
+            {/* v8 · w2.1 · Salesperson action bar (Sara). Two CTAs driven
+                by the scripted cursor + pulse state so the audience sees
+                every click. */}
+            {stepId === 'w2.1' && (
+                <SalespersonActionBar
+                    salesPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
+                        maximumFractionDigits: 0,
+                    })}
+                    onRequestClarification={handleRequestClarification}
+                    onForwardToSac={handleForwardToSAC}
+                    pulseRequestClarification={saraPulseClarify}
+                    pulseForward={saraPulseForward}
+                    cursorTarget={saraCursorTarget}
+                    cursorClicked={saraCursorClicked}
                 />
             )}
 
