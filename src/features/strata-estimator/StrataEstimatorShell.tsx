@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, MousePointer2, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check, MousePointer2, ShieldCheck } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useDemo } from '../../context/DemoContext'
 import CoreConnectionModal from './CoreConnectionModal'
@@ -887,7 +887,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
         // Phase 2 — after ~2.5 s, close the modal and redirect the Shell
         // to David's real workspace so the audience watches the
-        // notification land in his Estimator view.
+        // notification land in his Estimator view. The David approval
+        // card (rendered below when davidApprovalActive is true) now
+        // carries the handoff direction chips inline, so we no longer
+        // fire a separate HandoffBanner — one unified card instead of
+        // two stacked notifications.
         setTimeout(() => {
             setIsApprovalOpen(false)
             logEvent(
@@ -896,17 +900,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 'approval'
             )
             setDavidApprovalActive(true)
-            setHandoff({
-                fromUser: ROLE_PROFILES.Dealer,
-                toUser: ROLE_PROFILES.Expert,
-                message:
-                    'Approval request · JPS Health Network · $202,138 awaiting your sign-off',
-                // Keep the banner visible for the entire David detour so
-                // the audience can read it at a comfortable pace.
-                duration: 7500,
-            })
-            // Scroll the workspace to the top so the banner + approval
-            // card are both on-screen when the detour lands.
+            // Make sure any stale handoff banner from an earlier step is
+            // dismissed so the David approval card stands alone.
+            setHandoff(null)
+            // Scroll the workspace to the top so the approval card is
+            // on-screen when the detour lands.
             if (typeof window !== 'undefined') {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
             }
@@ -1223,7 +1221,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     the top of the page, above the persistent content.
                                     Each is gated by its own step/state condition. */}
 
-                                {/* w2.2 · David's inline approval card (detour) */}
+                                {/* w2.2 · David's unified approval card · merges
+                                    the previous Role handoff banner and the Your
+                                    approval required card into a single
+                                    notification with sender avatar, direction
+                                    chips, key stats and the Approve CTA. */}
                                 {davidApprovalActive && (
                                     <div
                                         className={clsx(
@@ -1235,22 +1237,49 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     >
                                         <div className="bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-sm overflow-hidden">
                                             <div className="flex items-start gap-4 px-5 py-4 bg-primary/5 dark:bg-primary/10 border-l-4 border-primary ring-1 ring-primary/20 rounded-r-2xl">
-                                                <div className="shrink-0 w-10 h-10 rounded-xl bg-primary/15 flex items-center justify-center">
-                                                    <ShieldCheck className="w-5 h-5 text-foreground dark:text-primary" />
+                                                {/* Sender avatar with send badge */}
+                                                <div className="relative shrink-0">
+                                                    <img
+                                                        src={ROLE_PROFILES.Dealer.photo}
+                                                        alt={ROLE_PROFILES.Dealer.name}
+                                                        className="w-10 h-10 rounded-full object-cover ring-2 ring-primary/40"
+                                                    />
+                                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center ring-2 ring-card dark:ring-zinc-800">
+                                                        <ShieldCheck className="h-2.5 w-2.5 text-primary-foreground" />
+                                                    </div>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-foreground">
-                                                        Your approval required
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="text-sm font-bold text-foreground">
+                                                            Approval request
+                                                        </span>
+                                                        <span className="text-[9px] px-2 py-0.5 rounded-full bg-primary text-primary-foreground font-bold animate-pulse">
+                                                            Just now
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-xs text-muted-foreground mt-1">
+                                                        <span className="font-bold text-foreground">
+                                                            {ROLE_PROFILES.Dealer.name}
+                                                        </span>{' '}
+                                                        ({ROLE_PROFILES.Dealer.role}) · JPS Health Network proposal · $202,138 awaiting your sign-off
                                                     </p>
-                                                    <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
-                                                        Sara Chen sent the JPS Health Network proposal for your sign-off. Review the line items below and approve to move it into the 4-person chain.
-                                                    </p>
-                                                    <div className="flex items-center gap-4 mt-3">
+                                                    {/* Direction chips · Sara → David */}
+                                                    <div className="flex items-center gap-2 flex-wrap mt-2">
+                                                        <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30 uppercase tracking-wider">
+                                                            {ROLE_PROFILES.Dealer.role}
+                                                        </span>
+                                                        <ArrowRight className="w-3 h-3 text-muted-foreground shrink-0" aria-hidden />
+                                                        <span className="text-[8px] font-bold px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
+                                                            {ROLE_PROFILES.Expert.role}
+                                                        </span>
+                                                    </div>
+                                                    {/* Key stats row */}
+                                                    <div className="flex items-center gap-5 mt-3">
                                                         <div>
                                                             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
                                                                 Total proposal
                                                             </p>
-                                                            <p className="text-base font-black text-foreground tabular-nums">
+                                                            <p className="text-sm font-black text-foreground tabular-nums">
                                                                 $202,138
                                                             </p>
                                                         </div>
@@ -1258,7 +1287,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                                             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
                                                                 Line items
                                                             </p>
-                                                            <p className="text-base font-black text-foreground tabular-nums">
+                                                            <p className="text-sm font-black text-foreground tabular-nums">
                                                                 24
                                                             </p>
                                                         </div>
@@ -1266,7 +1295,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                                             <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-wider">
                                                                 Chain
                                                             </p>
-                                                            <p className="text-base font-black text-foreground tabular-nums">
+                                                            <p className="text-sm font-black text-foreground tabular-nums">
                                                                 4 signers
                                                             </p>
                                                         </div>
