@@ -16,6 +16,7 @@ import { clsx } from 'clsx'
 import { useDemo } from '../../context/DemoContext'
 import CoreConnectionModal from './CoreConnectionModal'
 import type { CorePhase, CursorTarget } from './CoreConnectionModal'
+import ProjectContextPanel from './ProjectContextPanel'
 import StrataEstimatorNavbar from './StrataEstimatorNavbar'
 import EstimatorDossierCard from './EstimatorDossierCard'
 import FinancialSummaryHero from './FinancialSummaryHero'
@@ -964,6 +965,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         onDismiss={() => setHandoff(null)}
                                     />
                                 )}
+                                <ProjectContextPanel defaultCollapsed={true} />
                                 <PMExecutionHandoff
                                     proposalPrice={Number(estimate.salesPrice).toLocaleString('en-US', {
                                         maximumFractionDigits: 0,
@@ -994,6 +996,14 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                         message={handoff.message}
                                         duration={handoff.duration}
                                         onDismiss={() => setHandoff(null)}
+                                    />
+                                )}
+
+                                {/* v8 Paso B · Project Context Panel — hidden only
+                                    during the w1.1 CORE ingestion modal pre-phase. */}
+                                {w21Phase !== 'importing-files' && (
+                                    <ProjectContextPanel
+                                        defaultCollapsed={stepState === 'estimation-escalated'}
                                     />
                                 )}
 
