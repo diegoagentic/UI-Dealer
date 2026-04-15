@@ -736,11 +736,16 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
         // Skip the HandoffBanner for steps that already have their own
         // inline arrival surface so we don't duplicate the "role changed"
-        // cue:
+        // cue. Also clear any stale handoff state left over from the
+        // previous step so a backwards navigation (e.g. w2.2 → w2.1) can't
+        // persist an old "Riley → Sara" banner into Sara's own entry.
         //   · w1.2 owns the DesignerTaskNotification
         //   · w2.1 owns the CoreOutlookCard variant="outgoing"
         //   · w2.3 owns the CORE email card inside PMExecutionHandoff
-        if (stepId === 'w1.2' || stepId === 'w2.1' || stepId === 'w2.3') return
+        if (stepId === 'w1.2' || stepId === 'w2.1' || stepId === 'w2.3') {
+            setHandoff(null)
+            return
+        }
 
         setHandoff({
             fromUser: prevRole,
@@ -754,12 +759,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setActiveTab(getStepTab(stepId))
     }, [stepId])
 
-    // ── Close all modals on step change ──────────────────────────────────────
+    // ── Close all modals + transient cards on step change ───────────────────
     // When the user navigates via the demo sidebar (Back/Next) or a step
-    // completion auto-advances, any modal opened by the previous step must
-    // close so processes don't repeat or leak into the new step. The
-    // step-specific effects below will re-open the ones they need after
-    // their own scripted delays, so clearing all of them here is safe.
+    // completion auto-advances, any modal or transient notification
+    // opened by the previous step must close so processes don't repeat or
+    // leak into the new step. The step-specific effects below will re-
+    // set the ones they need after their own scripted delays, so clearing
+    // all of them here is safe.
     useEffect(() => {
         setIsReleaseOpen(false)
         setIsClarificationOpen(false)
@@ -772,6 +778,13 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         // so jumping to another step doesn't keep the navbar avatar
         // stuck on David.
         setDavidApprovalActive(false)
+        // Transient inline cards (CORE → Outlook incoming / outgoing).
+        // These are owned by w1.1 and w2.1 respectively; force-dismiss
+        // them on every step transition so they don't leak into the next
+        // step and confuse the audience (e.g. the outgoing card showing
+        // up on w2.2 next to Riley's handoff banner).
+        setOutlookIncomingVisible(false)
+        setOutlookOutgoingVisible(false)
         // davidSigned persists intentionally so the chain modal re-opens
         // with David pre-approved if the user comes back to w2.2 mid-run;
         // the release complete / restart handlers clear it properly.

@@ -22,12 +22,12 @@ interface ApprovalRole {
     photo: string
 }
 
+// Alex, Sara and Jordan sign off first in the real WRG process (design,
+// sales and VP reviews happen before the senior estimator gets pinged for
+// the final sign-off). David is listed last so when the modal opens
+// Alex / Sara / Jordan render as already approved and only David is
+// pending — matching the stakeholder feedback for a more realistic demo.
 const CHAIN: ApprovalRole[] = [
-    {
-        name: 'David Park',
-        role: 'Regional Sales Manager',
-        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
-    },
     {
         name: 'Alex Rivera',
         role: 'Designer',
@@ -35,7 +35,7 @@ const CHAIN: ApprovalRole[] = [
     },
     {
         name: 'Sara Chen',
-        role: 'Account Manager',
+        role: 'Salesperson',
         photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face',
     },
     {
@@ -43,7 +43,13 @@ const CHAIN: ApprovalRole[] = [
         role: 'VP Sales',
         photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face',
     },
+    {
+        name: 'David Park',
+        role: 'Senior Estimator',
+        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face',
+    },
 ]
+const DAVID_INDEX = CHAIN.length - 1 // David is always last in the chain
 
 const STEP_MS = 800
 
