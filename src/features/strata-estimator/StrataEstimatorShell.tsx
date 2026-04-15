@@ -1095,6 +1095,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     />
                                 )}
 
+                                {/* v8 polish · Operational Constraints sits directly
+                                    below Project Context so the estimator-manipulable
+                                    inputs stack as one block at the top of the page. */}
+                                {w21Phase !== 'importing-files' && (
+                                    <OperationalConstraintsPanel
+                                        variables={variables}
+                                        onVariablesChange={setVariables}
+                                        crewSize={estimate.crewSize}
+                                        readOnly={isProposalReview}
+                                    />
+                                )}
+
                                 {/* v7 · David's inline approval card — only while the
                                     Shell is redirected to David's workspace during the
                                     w2.2 Approve & Release flow. */}
@@ -1269,13 +1281,6 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                                     confidenceMap={confidenceMap}
                                     scopeBreachBadge={scopeBreachBadge}
                                     mappingResolvedCount={mappingResolvedCount}
-                                />
-
-                                <OperationalConstraintsPanel
-                                    variables={variables}
-                                    onVariablesChange={setVariables}
-                                    crewSize={estimate.crewSize}
-                                    readOnly={isProposalReview}
                                 />
 
                                 {/* v8 Paso D · Dual-engine calculation (OUTPUT).

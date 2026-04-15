@@ -19,6 +19,7 @@
 
 import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment } from 'react'
+import { useDemo } from '../../context/DemoContext'
 import {
     Activity,
     Bell,
@@ -158,10 +159,16 @@ export default function CoreConnectionModal({
     cursorClicked,
 }: CoreConnectionModalProps) {
     const isExtracting = phase.startsWith('extracting')
+    const { isDemoActive, isSidebarCollapsed } = useDemo()
+    // When the demo guide sidebar is visible (fixed left-0 top-0 w-80 z-[110]),
+    // offset the modal so the backdrop and the centered panel sit in the
+    // remaining viewport space and never cover the guide.
+    const sidebarExpanded = isDemoActive && !isSidebarCollapsed
+    const offsetClass = sidebarExpanded ? 'lg:left-80' : ''
 
     return (
         <Transition show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-[200]" onClose={() => {}}>
+            <Dialog as="div" className="relative z-[100]" onClose={() => {}}>
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-200"
@@ -171,10 +178,10 @@ export default function CoreConnectionModal({
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                 >
-                    <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-md" />
+                    <div className={clsx('fixed inset-0 bg-zinc-950/80 backdrop-blur-md', offsetClass)} />
                 </TransitionChild>
 
-                <div className="fixed inset-0 flex items-center justify-center p-4">
+                <div className={clsx('fixed inset-0 flex items-center justify-center p-4', offsetClass)}>
                     <TransitionChild
                         as={Fragment}
                         enter="ease-out duration-300"
