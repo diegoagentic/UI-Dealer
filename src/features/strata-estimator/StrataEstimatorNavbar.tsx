@@ -133,10 +133,10 @@ export default function StrataEstimatorNavbar({
 
                     <div className="hidden lg:flex flex-col items-start px-2 py-1.5">
                         <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider leading-none">
-                            Dealer Experience
+                            Estimator
                         </span>
                         <span className="text-sm font-bold text-foreground leading-tight">
-                            WRG · Estimator
+                            WRG
                         </span>
                     </div>
 
