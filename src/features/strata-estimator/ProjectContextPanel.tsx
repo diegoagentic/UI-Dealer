@@ -68,6 +68,7 @@ interface ContextFact {
     detail?: string
     aiFlagged?: boolean
     aiSuggestion?: string
+    options?: string[]
 }
 
 const INITIAL_FACTS: ContextFact[] = [
@@ -78,6 +79,13 @@ const INITIAL_FACTS: ContextFact[] = [
         value: 'Downtown Fort Worth, TX',
         detail: '+$57 downtown surcharge (Section G)',
         aiFlagged: true,
+        options: [
+            'Downtown Fort Worth, TX',
+            'Fort Worth suburbs, TX',
+            'Dallas, TX',
+            'Arlington, TX',
+            'Houston, TX',
+        ],
     },
     {
         id: 'venue',
@@ -86,6 +94,14 @@ const INITIAL_FACTS: ContextFact[] = [
         value: 'Hospital campus',
         detail: '+$114 hospital surcharge (Section G)',
         aiFlagged: true,
+        options: [
+            'Hospital campus',
+            'Medical office building',
+            'Corporate HQ',
+            'Education / campus',
+            'Retail / showroom',
+            'Warehouse / industrial',
+        ],
     },
     {
         id: 'floor',
@@ -93,6 +109,13 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Floor',
         value: '2nd floor',
         detail: '+5% multiplier (Section F · above 2nd floor)',
+        options: [
+            'Ground floor',
+            '2nd floor',
+            '3rd floor',
+            '4th-6th floor',
+            '7th floor or higher',
+        ],
     },
     {
         id: 'access',
@@ -101,6 +124,13 @@ const INITIAL_FACTS: ContextFact[] = [
         value: 'No dock · elevator only',
         detail: '+15% multiplier (Section F · no dock)',
         aiFlagged: true,
+        options: [
+            'Dock + freight elevator',
+            'Dock only · stairs',
+            'No dock · elevator only',
+            'No dock · stairs only',
+            'Ground level drive-up',
+        ],
     },
     {
         id: 'push',
@@ -109,6 +139,14 @@ const INITIAL_FACTS: ContextFact[] = [
         value: '~180 ft',
         detail: 'Truck → install zone',
         aiSuggestion: '~220 ft (re-measured on floor plan)',
+        options: [
+            '~50 ft',
+            '~100 ft',
+            '~180 ft',
+            '~220 ft',
+            '~300 ft',
+            '~500 ft',
+        ],
     },
     {
         id: 'hours',
@@ -116,6 +154,12 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Hours',
         value: 'Standard business hours',
         detail: 'No overtime flag from sales',
+        options: [
+            'Standard business hours',
+            'After hours (+50%)',
+            'Overnight (+50%)',
+            'Weekend (+50%)',
+        ],
     },
     {
         id: 'transport',
@@ -123,6 +167,13 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Transport',
         value: 'Dallas → Fort Worth · 32 mi',
         detail: 'Under 50 mi threshold, no long-haul charge',
+        options: [
+            'Local Dallas (<10 mi)',
+            'Dallas → Fort Worth · 32 mi',
+            'Dallas → Arlington · 20 mi',
+            'Dallas → Austin · 195 mi (+$200)',
+            'Dallas → Houston · 240 mi (+$200)',
+        ],
     },
     {
         id: 'area',
@@ -130,6 +181,13 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Floor area',
         value: '12,400 sq ft · 48 rooms',
         detail: 'Per JPS architectural drawings',
+        options: [
+            '~5,000 sq ft',
+            '~8,000 sq ft',
+            '12,400 sq ft · 48 rooms',
+            '~20,000 sq ft',
+            '~30,000 sq ft',
+        ],
     },
     {
         id: 'crew',
@@ -138,6 +196,13 @@ const INITIAL_FACTS: ContextFact[] = [
         value: '4 installers · 3 days',
         detail: '185 hrs ÷ 3 days ÷ 8 h ≈ 4-person team',
         aiFlagged: true,
+        options: [
+            '2 installers · 1 day',
+            '3 installers · 2 days',
+            '4 installers · 3 days',
+            '6 installers · 4 days',
+            '8 installers · 5 days',
+        ],
     },
     {
         id: 'equipment',
@@ -145,6 +210,13 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Equipment',
         value: 'Dollies, 2-wheelers, lift gate',
         detail: 'PPE kit included',
+        options: [
+            'Basic install kit',
+            'Dollies + 2-wheelers',
+            'Dollies, 2-wheelers, lift gate',
+            'Full kit + floor protection',
+            'Heavy equipment + crane',
+        ],
     },
     {
         id: 'tools',
@@ -152,6 +224,13 @@ const INITIAL_FACTS: ContextFact[] = [
         label: 'Tools',
         value: 'Allen wrench set, cordless drills',
         detail: 'Plus alignment spacers for the OFS serpentine',
+        options: [
+            'Standard Allen wrench set',
+            'Allen wrench set, cordless drills',
+            'Full mechanical kit',
+            'Allen + drills + alignment spacers',
+            'Specialty tools (custom)',
+        ],
     },
     {
         id: 'flags',
@@ -160,6 +239,13 @@ const INITIAL_FACTS: ContextFact[] = [
         value: '119 KD chairs exceed Pricer limit (50)',
         detail: 'Delivery Pricer override required',
         aiFlagged: true,
+        options: [
+            'No scope flags',
+            '119 KD chairs exceed Pricer limit (50)',
+            'Custom OFS Serpentine flagged',
+            'Multiple overrides required',
+            'Spec vs drawing mismatch caught',
+        ],
     },
 ]
 
@@ -192,6 +278,13 @@ export default function ProjectContextPanel({
     }
 
     const cancelEdit = () => setEditingId(null)
+
+    const selectOption = (id: string, option: string) => {
+        setFacts((prev) =>
+            prev.map((f) => (f.id === id ? { ...f, value: option } : f))
+        )
+        setEditingId(null)
+    }
 
     const acceptSuggestion = (id: string) => {
         setFacts((prev) =>
@@ -290,18 +383,58 @@ export default function ProjectContextPanel({
                                 {/* Value · always on its own line, wraps cleanly */}
                                 <div className="mt-2">
                                     {isEditing ? (
-                                        <input
-                                            type="text"
-                                            autoFocus
-                                            value={draftValue}
-                                            onChange={(e) => setDraftValue(e.target.value)}
-                                            onBlur={saveEdit}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') saveEdit()
-                                                if (e.key === 'Escape') cancelEdit()
-                                            }}
-                                            className="w-full text-xs font-bold text-foreground bg-card dark:bg-zinc-900 border border-primary/40 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40"
-                                        />
+                                        <div className="space-y-2">
+                                            {fact.options && fact.options.length > 0 && (
+                                                <div className="flex flex-wrap gap-1">
+                                                    {fact.options.map((opt) => {
+                                                        const isCurrent = opt === fact.value
+                                                        return (
+                                                            <button
+                                                                key={opt}
+                                                                type="button"
+                                                                onClick={() => selectOption(fact.id, opt)}
+                                                                className={clsx(
+                                                                    'text-[10px] px-2 py-1 rounded-md border font-semibold leading-tight transition-colors text-left',
+                                                                    isCurrent
+                                                                        ? 'bg-primary/20 border-primary/50 text-foreground dark:text-primary'
+                                                                        : 'bg-muted/40 dark:bg-zinc-900 border-border text-muted-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-foreground'
+                                                                )}
+                                                            >
+                                                                {opt}
+                                                            </button>
+                                                        )
+                                                    })}
+                                                </div>
+                                            )}
+                                            <div className="flex items-center gap-1">
+                                                <input
+                                                    type="text"
+                                                    autoFocus
+                                                    value={draftValue}
+                                                    onChange={(e) => setDraftValue(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') saveEdit()
+                                                        if (e.key === 'Escape') cancelEdit()
+                                                    }}
+                                                    placeholder="Custom value…"
+                                                    className="flex-1 min-w-0 text-[11px] font-semibold text-foreground bg-card dark:bg-zinc-900 border border-border rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={saveEdit}
+                                                    className="shrink-0 px-2 py-1.5 rounded-md bg-primary text-primary-foreground text-[9px] font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
+                                                >
+                                                    Save
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={cancelEdit}
+                                                    className="shrink-0 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground text-[9px] font-bold uppercase tracking-wider"
+                                                >
+                                                    Esc
+                                                </button>
+                                            </div>
+                                        </div>
                                     ) : (
                                         <p className="text-[13px] font-bold text-foreground leading-snug">
                                             {fact.value}
