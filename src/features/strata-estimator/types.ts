@@ -4,7 +4,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
-export type EstimatorTab = 'ESTIMATOR' | 'PROJECTS' | 'CONFIG'
+export type EstimatorTab = 'ESTIMATOR' | 'PROJECTS'
 
 // ── Status ────────────────────────────────────────────────────────────────────
 // Aries parity: only 2 sync states (synced | saving). No idle/error.

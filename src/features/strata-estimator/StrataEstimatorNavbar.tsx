@@ -17,7 +17,6 @@ import {
     MoonIcon,
     RefreshCw,
     Save,
-    Settings,
     SunIcon,
     UploadCloud,
 } from 'lucide-react'
@@ -48,7 +47,6 @@ interface StrataEstimatorNavbarProps {
 const TABS: Array<{ id: EstimatorTab; label: string; icon: typeof LayoutDashboard }> = [
     { id: 'ESTIMATOR', label: 'Estimator', icon: LayoutDashboard },
     { id: 'PROJECTS', label: 'Projects', icon: Archive },
-    { id: 'CONFIG', label: 'Config', icon: Settings },
 ]
 
 // Expand-on-hover nav item (mirrors NavItem in src/components/Navbar.tsx)

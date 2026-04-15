@@ -25,7 +25,6 @@ import FinancialSummaryHero from './FinancialSummaryHero'
 import BillOfMaterialsTable from './BillOfMaterialsTable'
 import OperationalConstraintsPanel from './OperationalConstraintsPanel'
 import ProjectsArchiveView from './ProjectsArchiveView'
-import EstimatorAdminView from './EstimatorAdminView'
 import PricingWaterfall from './PricingWaterfall'
 import VisionEngineModal from './VisionEngineModal'
 import HandoffBanner from './HandoffBanner'
@@ -1391,14 +1390,6 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                             </div>
                         )}
 
-                        {activeTab === 'CONFIG' && (
-                            <div key="CONFIG" className="animate-fade-in">
-                                <EstimatorAdminView
-                                    config={config}
-                                    onConfigChange={setConfig}
-                                />
-                            </div>
-                        )}
                     </>
                 )}
             </main>
