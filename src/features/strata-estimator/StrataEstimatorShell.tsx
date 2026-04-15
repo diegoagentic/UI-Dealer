@@ -256,7 +256,11 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         // subsequent w1.1 timers are offset by IMPORT_OFFSET so the rest
         // of the narrative plays with the extra 1.8 s shift.
         const OUTLOOK_LEAD = 1800 // ms · outlook card + import pulse overlap
-        const IMPORT_OFFSET = 11200 // ms (= 9400 legacy + 1800 outlook lead)
+        // v8 · slower pacing · each CORE phase gets more breathing room and
+        // the workspace starts with an explicit empty beat before filling.
+        //   modal runtime  ≈ 14.8 s (was 9.4 s)
+        //   empty pause    ≈ 1.8 s after modal closes before dossier fills
+        const IMPORT_OFFSET = 16600 // ms (= 14800 modal + 1800 outlook lead)
 
         // t=0 — outlook card is already visible (set above)
         logEvent(
@@ -286,36 +290,36 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
             }, OUTLOOK_LEAD + 500)
         )
 
-        // Cursor lands on "Connect to CORE" card
-        timers.push(setTimeout(() => setImportCursorTarget('connect-core'), OUTLOOK_LEAD + 900))
-        // "Click" the card
-        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 1500))
+        // Cursor lands on "Connect to CORE" card (slower: was +900)
+        timers.push(setTimeout(() => setImportCursorTarget('connect-core'), OUTLOOK_LEAD + 1500))
+        // "Click" the card (was +1500)
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 2500))
 
-        // Transition to CORE login, reset cursor
+        // Transition to CORE login, reset cursor (was +2000)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-login')
                 setImportCursorTarget(null)
                 setImportCursorClicked(false)
-            }, OUTLOOK_LEAD + 2000)
+            }, OUTLOOK_LEAD + 3200)
         )
 
-        // Cursor lands on Authenticate button
-        timers.push(setTimeout(() => setImportCursorTarget('core-authenticate'), OUTLOOK_LEAD + 2500))
-        // "Click" authenticate
-        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 3100))
+        // Cursor lands on Authenticate button (was +2500)
+        timers.push(setTimeout(() => setImportCursorTarget('core-authenticate'), OUTLOOK_LEAD + 4200))
+        // "Click" authenticate (was +3100)
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 5000))
 
-        // Transition to connecting spinner
+        // Transition to connecting spinner (was +3500)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-connecting')
                 setImportCursorTarget(null)
                 setImportCursorClicked(false)
                 logEvent('System', 'CORE · secure session established', 'system')
-            }, OUTLOOK_LEAD + 3500)
+            }, OUTLOOK_LEAD + 5700)
         )
 
-        // Transition to CORE dashboard (estimating queue)
+        // Transition to CORE dashboard (estimating queue) (was +4500)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-dashboard')
@@ -324,15 +328,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Browsing CORE estimating queue · 5 projects pending',
                     'edit'
                 )
-            }, OUTLOOK_LEAD + 4500)
+            }, OUTLOOK_LEAD + 7500)
         )
 
-        // Cursor lands on JPS row
-        timers.push(setTimeout(() => setImportCursorTarget('project-jps'), OUTLOOK_LEAD + 5100))
-        // "Click" JPS
-        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 5700))
+        // Cursor lands on JPS row (was +5100)
+        timers.push(setTimeout(() => setImportCursorTarget('project-jps'), OUTLOOK_LEAD + 8500))
+        // "Click" JPS (was +5700)
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 9500))
 
-        // Transition to project detail
+        // Transition to project detail (was +6100)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-project-detail')
@@ -343,15 +347,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Opened JPS Health Network project · 24 items · 3 attachments',
                     'edit'
                 )
-            }, OUTLOOK_LEAD + 6100)
+            }, OUTLOOK_LEAD + 10200)
         )
 
-        // Cursor lands on "Pull into Strata"
-        timers.push(setTimeout(() => setImportCursorTarget('pull-project'), OUTLOOK_LEAD + 6700))
-        // "Click" pull
-        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 7200))
+        // Cursor lands on "Pull into Strata" (was +6700)
+        timers.push(setTimeout(() => setImportCursorTarget('pull-project'), OUTLOOK_LEAD + 11500))
+        // "Click" pull (was +7200)
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 12300))
 
-        // Transition to extracting · uploading
+        // Transition to extracting · uploading (was +7500)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-uploading')
@@ -363,18 +367,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'CORE · downloading JPS_PSS_ANCILLARY.pdf, JPS_Spec_Sheet.pdf, JPS_Contract.pdf',
                     'system'
                 )
-            }, OUTLOOK_LEAD + 7500)
+            }, OUTLOOK_LEAD + 12800)
         )
 
-        // Parsing
+        // Parsing (was +8000)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-parsing')
                 setImportModalProgress(50)
-            }, OUTLOOK_LEAD + 8000)
+            }, OUTLOOK_LEAD + 13500)
         )
 
-        // Extracting
+        // Extracting (was +8500)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-extracting')
@@ -384,42 +388,52 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Extracting 24 line items from the CORE attachments…',
                     'ai'
                 )
-            }, OUTLOOK_LEAD + 8500)
+            }, OUTLOOK_LEAD + 14000)
         )
 
-        // Done
+        // Done (was +9000)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-done')
                 setImportModalProgress(100)
-            }, OUTLOOK_LEAD + 9000)
+            }, OUTLOOK_LEAD + 14500)
         )
 
-        // Close modal and hand off to the existing narrative
+        // Close modal and hand off to the existing narrative (was +9400)
         timers.push(
             setTimeout(() => {
                 setImportModalOpen(false)
                 setW21Phase('loading-dossier')
-            }, OUTLOOK_LEAD + 9400)
+                logEvent(
+                    'System',
+                    'Strata workspace ready · waiting for data to populate',
+                    'system'
+                )
+            }, OUTLOOK_LEAD + 14800)
         )
 
-        // t=800ms  — dossier filled in (ZIP + address land) [offset]
+        // ─── Empty workspace beat ────────────────────────────────────────
+        // The workspace is visible but empty for ~1.8 s after the modal
+        // closes so the audience sees the before-state (empty dossier,
+        // empty BoM, empty context) and then watches the data stream in.
+
+        // t=1800ms — dossier fills in (ZIP + address land) [was +800]
         timers.push(
             setTimeout(() => {
                 setCustomer(JPS_CUSTOMER)
                 logEvent('AI Agent', 'Loaded CORE export · ZIP 76104 / Fort Worth', 'ai')
-            }, IMPORT_OFFSET + 800)
+            }, IMPORT_OFFSET + 1800)
         )
 
-        // t=1100ms — AI import indicator appears above the BoM header
+        // t=2800ms — AI import indicator appears above the BoM header [was +1100]
         timers.push(
             setTimeout(() => {
                 setW21Phase('importing-bom')
                 setImportStatus('Importing 24 items from JPS_specs.pdf…')
-            }, IMPORT_OFFSET + 1100)
+            }, IMPORT_OFFSET + 2800)
         )
 
-        // t=1400ms — populate BoM, stagger animation plays
+        // t=3400ms — populate BoM, stagger animation plays [was +1400]
         timers.push(
             setTimeout(() => {
                 setLineItems(JPS_LINE_ITEMS)
@@ -428,12 +442,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Imported 24 line items from JPS_specs.pdf (85% template, 15% fallback)',
                     'ai'
                 )
-            }, IMPORT_OFFSET + 1400)
+            }, IMPORT_OFFSET + 3400)
         )
 
-        // t=3600ms — stagger finishes (24 × 80ms), enter the mapping beat.
-        // Every row is now showing its TEMPLATE / FALLBACK chip; we resolve
-        // them to the real category sequentially, 40ms apart.
+        // t=6200ms — stagger finishes, enter the mapping beat [was +3600]
         timers.push(
             setTimeout(() => {
                 setW21Phase('mapping-bom')
@@ -443,21 +455,22 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Mapping products to labor categories',
                     'ai'
                 )
-            }, IMPORT_OFFSET + 3600)
+            }, IMPORT_OFFSET + 6200)
         )
 
-        // t=3700 → 3700 + 24×40 = 4660ms — chips resolve one by one
+        // Mapping chips resolve one by one [was +3700 + i*40 → +6400 + i*70]
+        // Slower stagger so each chip resolution is readable
         const itemCount = JPS_LINE_ITEMS.length
         for (let i = 0; i < itemCount; i++) {
             timers.push(
                 setTimeout(
                     () => setMappingResolvedCount(i + 1),
-                    IMPORT_OFFSET + 3700 + i * 40
+                    IMPORT_OFFSET + 6400 + i * 70
                 )
             )
         }
 
-        // t=4700ms — mapping complete, drop the import status
+        // t=8200ms — mapping complete, drop the import status [was +4700]
         timers.push(
             setTimeout(() => {
                 setImportStatus(null)
@@ -466,12 +479,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Mapped 24 items · 21 template, 3 fallback',
                     'ai'
                 )
-            }, IMPORT_OFFSET + 4700)
+            }, IMPORT_OFFSET + 8200)
         )
 
-        // t=4900ms — scope breach alert (Pain #6: 119 chairs > 50 limit)
-        // Per the doc §3, "scope limit enforcement runs first" — so this
-        // fires after mapping resolves but before any calculation.
+        // t=8700ms — scope breach alert [was +4900]
         timers.push(
             setTimeout(() => {
                 setW21Phase('scope-breach')
@@ -482,12 +493,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Scope override · 119 KD chairs > 50 (Delivery Pricer limit)',
                     'ai'
                 )
-            }, IMPORT_OFFSET + 4900)
+            }, IMPORT_OFFSET + 8700)
         )
 
-        // t=5100 → 6700ms — dual-engine calculation beat (Agent Step 4)
-        // Hero's calcProgress rAFs from 0 → 1 with an easeOutCubic curve so
-        // every visible value counts up live.
+        // t=9100ms — dual-engine calculation beat (slower: 2200 ms) [was +5100]
         timers.push(
             setTimeout(() => {
                 logEvent(
@@ -495,7 +504,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Running dual-engine calculation · installation + delivery',
                     'ai'
                 )
-                const duration = 1600
+                const duration = 2200
                 const start = performance.now()
                 const tick = (now: number) => {
                     const elapsed = now - start
@@ -515,10 +524,10 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     }
                 }
                 calcRafRef.current = requestAnimationFrame(tick)
-            }, IMPORT_OFFSET + 5100)
+            }, IMPORT_OFFSET + 9100)
         )
 
-        // t=6900ms — flag OFS Serpentine (row 19) + show Escalate banner
+        // t=11800ms — flag OFS Serpentine (row 19) + show Escalate banner [was +6900]
         timers.push(
             setTimeout(() => {
                 setW21Phase('flagged')
@@ -528,7 +537,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Flagged OFS Serpentine 12-seat lounge for designer review',
                     'ai'
                 )
-            }, IMPORT_OFFSET + 6900)
+            }, IMPORT_OFFSET + 11800)
         )
 
         return () => {
