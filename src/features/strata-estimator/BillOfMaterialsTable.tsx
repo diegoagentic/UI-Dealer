@@ -229,10 +229,10 @@ export default function BillOfMaterialsTable({
                 )}
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
+            {/* Table · constrained height with internal scroll, sticky header */}
+            <div className="max-h-[420px] overflow-y-auto overflow-x-auto scrollbar-minimal">
                 <table className="w-full">
-                    <thead>
+                    <thead className="sticky top-0 z-10 bg-card dark:bg-zinc-800 shadow-[0_1px_0_0] shadow-border">
                         <tr className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/40">
                             <th className="text-left px-6 py-3 w-[18%]">Group</th>
                             <th className="text-left px-4 py-3 w-[22%]">Product Line</th>
