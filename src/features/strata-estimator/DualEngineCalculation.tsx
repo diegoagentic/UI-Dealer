@@ -374,6 +374,17 @@ export default function DualEngineCalculation({
                                 Excel silos · every line is queryable and auditable.
                             </span>
                         </div>
+                        {/* v8 Paso E · Gap A · Bid scenario gateway call-out */}
+                        <div className="px-5 py-2.5 border-t border-primary/20 bg-amber-500/5 dark:bg-amber-500/10 flex items-center gap-2 text-[10px] text-muted-foreground">
+                            <span className="shrink-0 flex items-center gap-1 text-[9px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 px-1.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/30">
+                                Legacy
+                            </span>
+                            <span>
+                                WRG used to ship ~85% of quotes as lump-sum only and
+                                only ~15% as per-piece breakdowns. Strata always
+                                produces a full breakdown.
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

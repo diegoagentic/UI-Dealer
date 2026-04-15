@@ -18,6 +18,7 @@ import CoreConnectionModal from './CoreConnectionModal'
 import type { CorePhase, CursorTarget } from './CoreConnectionModal'
 import ProjectContextPanel from './ProjectContextPanel'
 import DualEngineCalculation from './DualEngineCalculation'
+import CoreOutlookCard from './CoreOutlookCard'
 import StrataEstimatorNavbar from './StrataEstimatorNavbar'
 import EstimatorDossierCard from './EstimatorDossierCard'
 import FinancialSummaryHero from './FinancialSummaryHero'
@@ -126,6 +127,9 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [importCursorTarget, setImportCursorTarget] = useState<CursorTarget>(null)
     const [importCursorClicked, setImportCursorClicked] = useState(false)
     const [highlightImportButton, setHighlightImportButton] = useState(false)
+    // v8 Paso E · Gap F + B · CORE ↔ Outlook beat cards
+    const [outlookIncomingVisible, setOutlookIncomingVisible] = useState(false)
+    const [outlookOutgoingVisible, setOutlookOutgoingVisible] = useState(false)
     const [importStatus, setImportStatus] = useState<string | null>(null)
     const [scopeBreachOpen, setScopeBreachOpen] = useState(false)
     const [scopeBreachActive, setScopeBreachActive] = useState(false)
@@ -216,12 +220,14 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setFlaggedRowIds([])
         setImportStatus(null)
         setW21Phase('importing-files')
-        setHighlightImportButton(true)
+        setHighlightImportButton(false) // stays false while outlook card shows
         setImportModalOpen(false)
         setImportModalPhase('source-picker')
         setImportModalProgress(0)
         setImportCursorTarget(null)
         setImportCursorClicked(false)
+        setOutlookIncomingVisible(true) // v8 Paso E · Gap F — CORE → Outlook
+        setOutlookOutgoingVisible(false)
         setMappingResolvedCount(0) // all rows will first appear as chips
         setCalcProgress(0) // hero starts at $0 and counts up during the calc beat
         setEscalatedAt(null) // drop any stale escalation context
@@ -237,54 +243,74 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
         const timers: ReturnType<typeof setTimeout>[] = []
 
-        // ─── Pre-phase · CORE connection simulation (v8 Paso A) ──────────
-        // Navbar Import button pulses → CoreConnectionModal opens with 9
-        // phases: source picker → CORE login → connecting → dashboard →
-        // project detail → uploading → parsing → extracting → done. All
-        // existing w1.1 timers below are offset by IMPORT_OFFSET so the
-        // rest of the narrative plays unchanged.
-        const IMPORT_OFFSET = 9400 // ms (longer than v7 due to CORE phases)
+        // ─── Pre-phase · CORE ↔ Outlook + connection flow ────────────────
+        // v8 Paso E · Gap F adds a 1.8 s beat at t=0 where the CORE →
+        // Outlook incoming card explains why David is opening CORE. After
+        // that, the original Paso A flow runs unchanged (navbar Import
+        // button pulse → CoreConnectionModal with 9 phases). All
+        // subsequent w1.1 timers are offset by IMPORT_OFFSET so the rest
+        // of the narrative plays with the extra 1.8 s shift.
+        const OUTLOOK_LEAD = 1800 // ms · outlook card + import pulse overlap
+        const IMPORT_OFFSET = 11200 // ms (= 9400 legacy + 1800 outlook lead)
 
-        // t=500ms — "click" navbar Import button · modal opens on source picker
+        // t=0 — outlook card is already visible (set above)
+        logEvent(
+            'System',
+            'CORE → Outlook · new estimating request assigned to David Park',
+            'system'
+        )
+
+        // t=1500ms — navbar Import button starts pulsing (outlook card
+        // still visible for the last 300 ms)
+        timers.push(
+            setTimeout(() => setHighlightImportButton(true), 1500)
+        )
+
+        // t=1800ms — outlook card auto-dismisses
+        timers.push(
+            setTimeout(() => setOutlookIncomingVisible(false), OUTLOOK_LEAD)
+        )
+
+        // t=2300ms — "click" navbar Import button · modal opens on source picker
         timers.push(
             setTimeout(() => {
                 setHighlightImportButton(false)
                 setImportModalOpen(true)
                 setImportModalPhase('source-picker')
                 logEvent('David Park', 'Opened new project ingestion dialog', 'edit')
-            }, 500)
+            }, OUTLOOK_LEAD + 500)
         )
 
-        // t=900ms — cursor lands on "Connect to CORE" card
-        timers.push(setTimeout(() => setImportCursorTarget('connect-core'), 900))
-        // t=1500ms — "click" the card
-        timers.push(setTimeout(() => setImportCursorClicked(true), 1500))
+        // Cursor lands on "Connect to CORE" card
+        timers.push(setTimeout(() => setImportCursorTarget('connect-core'), OUTLOOK_LEAD + 900))
+        // "Click" the card
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 1500))
 
-        // t=2000ms — transition to CORE login, reset cursor
+        // Transition to CORE login, reset cursor
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-login')
                 setImportCursorTarget(null)
                 setImportCursorClicked(false)
-            }, 2000)
+            }, OUTLOOK_LEAD + 2000)
         )
 
-        // t=2500ms — cursor lands on Authenticate button
-        timers.push(setTimeout(() => setImportCursorTarget('core-authenticate'), 2500))
-        // t=3100ms — "click" authenticate
-        timers.push(setTimeout(() => setImportCursorClicked(true), 3100))
+        // Cursor lands on Authenticate button
+        timers.push(setTimeout(() => setImportCursorTarget('core-authenticate'), OUTLOOK_LEAD + 2500))
+        // "Click" authenticate
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 3100))
 
-        // t=3500ms — transition to connecting spinner
+        // Transition to connecting spinner
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-connecting')
                 setImportCursorTarget(null)
                 setImportCursorClicked(false)
                 logEvent('System', 'CORE · secure session established', 'system')
-            }, 3500)
+            }, OUTLOOK_LEAD + 3500)
         )
 
-        // t=4500ms — transition to CORE dashboard (estimating queue)
+        // Transition to CORE dashboard (estimating queue)
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-dashboard')
@@ -293,15 +319,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Browsing CORE estimating queue · 5 projects pending',
                     'edit'
                 )
-            }, 4500)
+            }, OUTLOOK_LEAD + 4500)
         )
 
-        // t=5100ms — cursor lands on JPS row
-        timers.push(setTimeout(() => setImportCursorTarget('project-jps'), 5100))
-        // t=5700ms — "click" JPS
-        timers.push(setTimeout(() => setImportCursorClicked(true), 5700))
+        // Cursor lands on JPS row
+        timers.push(setTimeout(() => setImportCursorTarget('project-jps'), OUTLOOK_LEAD + 5100))
+        // "Click" JPS
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 5700))
 
-        // t=6100ms — transition to project detail
+        // Transition to project detail
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('core-project-detail')
@@ -312,15 +338,15 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Opened JPS Health Network project · 24 items · 3 attachments',
                     'edit'
                 )
-            }, 6100)
+            }, OUTLOOK_LEAD + 6100)
         )
 
-        // t=6700ms — cursor lands on "Pull into Strata"
-        timers.push(setTimeout(() => setImportCursorTarget('pull-project'), 6700))
-        // t=7200ms — "click" pull
-        timers.push(setTimeout(() => setImportCursorClicked(true), 7200))
+        // Cursor lands on "Pull into Strata"
+        timers.push(setTimeout(() => setImportCursorTarget('pull-project'), OUTLOOK_LEAD + 6700))
+        // "Click" pull
+        timers.push(setTimeout(() => setImportCursorClicked(true), OUTLOOK_LEAD + 7200))
 
-        // t=7500ms — transition to extracting · uploading
+        // Transition to extracting · uploading
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-uploading')
@@ -332,18 +358,18 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'CORE · downloading JPS_PSS_ANCILLARY.pdf, JPS_Spec_Sheet.pdf, JPS_Contract.pdf',
                     'system'
                 )
-            }, 7500)
+            }, OUTLOOK_LEAD + 7500)
         )
 
-        // t=8000ms — parsing
+        // Parsing
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-parsing')
                 setImportModalProgress(50)
-            }, 8000)
+            }, OUTLOOK_LEAD + 8000)
         )
 
-        // t=8500ms — extracting
+        // Extracting
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-extracting')
@@ -353,23 +379,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                     'Extracting 24 line items from the CORE attachments…',
                     'ai'
                 )
-            }, 8500)
+            }, OUTLOOK_LEAD + 8500)
         )
 
-        // t=9000ms — done
+        // Done
         timers.push(
             setTimeout(() => {
                 setImportModalPhase('extracting-done')
                 setImportModalProgress(100)
-            }, 9000)
+            }, OUTLOOK_LEAD + 9000)
         )
 
-        // t=9400ms — close modal and hand off to the existing narrative
+        // Close modal and hand off to the existing narrative
         timers.push(
             setTimeout(() => {
                 setImportModalOpen(false)
                 setW21Phase('loading-dossier')
-            }, 9400)
+            }, OUTLOOK_LEAD + 9400)
         )
 
         // t=800ms  — dossier filled in (ZIP + address land) [offset]
@@ -511,20 +537,42 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
     // ── w2.1 auto-open waterfall ─────────────────────────────────────────────
     // The Expert's role in w2.1 is supervisory — they watch the assembly run.
-    // v8 · w2.1 (Sara/Salesperson) auto-forwards to the SAC.
-    // The hero's CTA ("Forward to SAC") pulses and the Shell then fires
-    // handleForwardToSAC which triggers the handoff and nextStep into w2.2.
+    // v8 · w2.1 (Sara/Salesperson) entry beat + auto-forward to SAC.
+    // Paso E · Gap B adds a ~2.5 s CoreOutlookCard variant="outgoing" at
+    // the top so the audience sees Strata writing back to CORE and CORE
+    // triggering the Outlook notification before Sara's normal view takes
+    // over. The hero's "Forward to SAC" press is then delayed by
+    // OUTGOING_LEAD so the card is readable first.
     useEffect(() => {
         if (stepId !== 'w2.1') {
             setGenerateCtaPressed(false)
+            setOutlookOutgoingVisible(false)
             return
         }
-        const pressTimer = setTimeout(() => setGenerateCtaPressed(true), 1800)
+        const OUTGOING_LEAD = 2500 // ms · outgoing card visible at top
+        setOutlookOutgoingVisible(true)
+        logEvent(
+            'System',
+            'CORE · labor estimate + audit trail written back · Outlook notification triggered',
+            'system'
+        )
+        const hideCard = setTimeout(
+            () => setOutlookOutgoingVisible(false),
+            OUTGOING_LEAD
+        )
+        const pressTimer = setTimeout(
+            () => setGenerateCtaPressed(true),
+            OUTGOING_LEAD + 1800
+        )
         const forwardTimer = setTimeout(() => {
             handleForwardToSAC()
-        }, 2600)
-        const clearTimer = setTimeout(() => setGenerateCtaPressed(false), 2900)
+        }, OUTGOING_LEAD + 2600)
+        const clearTimer = setTimeout(
+            () => setGenerateCtaPressed(false),
+            OUTGOING_LEAD + 2900
+        )
         return () => {
+            clearTimeout(hideCard)
             clearTimeout(pressTimer)
             clearTimeout(forwardTimer)
             clearTimeout(clearTimer)
@@ -812,6 +860,8 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
         setImportCursorTarget(null)
         setImportCursorClicked(false)
         setHighlightImportButton(false)
+        setOutlookIncomingVisible(false)
+        setOutlookOutgoingVisible(false)
         setCustomer(JPS_CUSTOMER)
         setLineItems(JPS_LINE_ITEMS)
         setVariables(INITIAL_VARIABLES)
@@ -988,6 +1038,26 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
 
                         {activeTab === 'ESTIMATOR' && stepState !== 'pm-handoff' && (
                             <div key="ESTIMATOR" className="pt-24 px-6 lg:px-10 max-w-7xl mx-auto space-y-6 animate-fade-in">
+
+                                {/* v8 Paso E · Gap F · CORE → Outlook incoming
+                                    (start of w1.1, before the CORE modal) */}
+                                {outlookIncomingVisible && stepId === 'w1.1' && (
+                                    <CoreOutlookCard
+                                        variant="incoming"
+                                        duration={1800}
+                                        onDismiss={() => setOutlookIncomingVisible(false)}
+                                    />
+                                )}
+
+                                {/* v8 Paso E · Gap B · Strata → CORE → Outlook outgoing
+                                    (start of w2.1, before Sara's forward press) */}
+                                {outlookOutgoingVisible && stepId === 'w2.1' && (
+                                    <CoreOutlookCard
+                                        variant="outgoing"
+                                        duration={2500}
+                                        onDismiss={() => setOutlookOutgoingVisible(false)}
+                                    />
+                                )}
 
                                 {/* v7 · inline handoff banner (replaces the former fixed toast) */}
                                 {handoff && (

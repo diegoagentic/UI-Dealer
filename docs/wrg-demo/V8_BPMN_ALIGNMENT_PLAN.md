@@ -280,13 +280,158 @@ Separate delivery + labor engines lado-a-lado with merge animation. Medium compl
 
 ---
 
-## 7 · Pre-flight checklist (before Paso C)
+## 7 · Pre-flight checklist
 
 - [x] Diagram reviewed (18 stages)
 - [x] Consolidated reference read (pain points + characters + rates)
 - [x] Reusable components identified (Explore agent report)
 - [x] Role matrix drafted
-- [x] Step structure finalized (6 steps)
+- [x] Step structure finalized (6 steps → implemented as 5)
 - [x] New modules scoped
-- [ ] **Diego approves this doc** ← we are here
-- [ ] Start Paso C
+- [x] Paso C committed (`80b8f76`, `b9da29c`)
+- [x] Paso A committed (`91b1868`)
+- [x] Paso B committed (`6035844`)
+- [x] Paso D committed (`a778884`)
+
+---
+
+## 8 · Post-v8 coverage audit (vs BPMN + consolidated reference)
+
+After Paso C/A/B/D were shipped, we re-audited the BPMN diagram and the
+consolidated reference against the live demo. Most of the flow is
+covered, but 6 gaps remain.
+
+### BPMN etapas · cobertura actual
+
+| # | Etapa BPMN | Cobertura | Dónde |
+|---|---|---|---|
+| 1 | Quote assigned in CORE | ✅ | CORE dashboard queue + audit log |
+| 2 | Outlook email triggered by CORE | ⚠️ Implícito | No hay beat visible |
+| 3 | Estimator receives email in Outlook | ⚠️ Implícito | No se ve el email llegando |
+| 4 | Logs into CORE + reads scope | ✅ | CoreConnectionModal |
+| 5 | Opens Product Selection Sheet | ⚠️ Implícito | En attached files list |
+| 6 | Opens Product Spec Sheet | ⚠️ Implícito | Idem |
+| 7 | Reads each line of PDF | ✅ | BoM stagger |
+| 8 | Maps to delivery + installation category | ✅ | Mapping beat |
+| 9 | Opens Delivery Pricer Excel | ✅ | DualEngineCalculation Engine 1 |
+| 10 | Enters qty by category | ✅ | Engine 1 lines |
+| 11 | Applies Section F + G | ✅ | Engine 1 multipliers + charges |
+| 12 | Calculates delivery subtotal | ✅ | Engine 1 total |
+| 13 | Opens Labor Worksheet Excel | ✅ | Engine 2 with "Private Excel" chip |
+| 14 | Assigns man-hours from memory | ⚠️ Parcial | TK pain no es explícito |
+| 15 | Rate applied $57/hr | ✅ | Engine 2 rate row |
+| 16 | Totals by area or floor | ❌ Falta | Total agregado, no por área |
+| 17 | Bid scenario? (85% lump / 15% breakdown) | ❌ Falta | No se representa la decisión |
+| 18 | Submit lump sum to CORE / attach breakdown | ❌ Falta | No hay beat explícito del write-back |
+| 19 | CORE notifies salesperson | ⚠️ Implícito | Sara ve email pero no se ve CORE enviándolo |
+
+### Pain points · cobertura actual
+
+| Pain | Cobertura | Nota |
+|---|---|---|
+| 🧠 TK Tribal Knowledge | ⚠️ Parcial | Mapping fallback chips lo sugieren pero no se nombra |
+| ✋ MAN Manual | ✅ | Stagger + DualEngine |
+| ⚡ SILO Two disconnected Excels | ✅ | DualEngine merge animation |
+| ⚠ ERR Wrong category / mismatch | ⚠️ Parcial | Solo scope breach. **Mismatch drawing vs spec NO** |
+| ⏱ TIME Hours on large projects | ✅ | ReleaseSuccessModal metrics |
+| 💾 No structured data layer | ⚠️ Parcial | DualEngine hint but no before/after |
+
+---
+
+## 9 · Paso E · Gap closure
+
+Surgical fixes to cover the 4 highest-impact gaps without restructuring
+the step count. Stays within the 5-step demo.
+
+### Gap A · Bid scenario gateway (BPMN stage 17)
+
+**Problem:** The diagram's gateway says ~85% of quotes go as lump sum
+only and ~15% need a per-piece breakdown. Currently the demo produces a
+full breakdown every time but does not call out that this is itself the
+value unlock.
+
+**Fix:** Add a chip or note on the DualEngineCalculation combined total
+card:
+`"⚡ Strata always produces a full breakdown · legacy process shipped
+85% of quotes as lump sum only"`.
+
+**Files:** `DualEngineCalculation.tsx`
+
+### Gap B · Submit to CORE (BPMN stage 18)
+
+**Problem:** There is no explicit beat where the estimator/agent writes
+the labor estimate back into CORE. The demo jumps from w1.2 (designer
+verification) to w2.1 (Sara review) without showing the hand-off
+artifact: "labor estimate + audit trail + breakdown written to CORE,
+Outlook email triggered to salesperson".
+
+**Fix:** Render an inline `CoreOutlookCard` variant=`outgoing` at the
+top of the w2.1 workspace for 2.5 s when the step enters, before Sara's
+normal view reveals. Card shows:
+- "Writing labor estimate back to CORE" spinner + progress
+- "CORE → Outlook: notification sent to Sara Chen" line
+- Auto-dismisses after 2.5 s
+
+**Files:** `CoreOutlookCard.tsx` (new), `StrataEstimatorShell.tsx`
+
+### Gap D · Mismatch risk (BPMN ERR annotation)
+
+**Problem:** The BPMN's biggest ERR annotation is:
+*"mismatch risk between typed scope quantities and the quantities
+shown on the drawing · Estimator must cross-check both manually ·
+no system check."*
+The demo does not visualise this at all.
+
+**Fix:** Extend `ScopeBreachAlert` to show a second compact line
+explicitly calling out a mismatch the AI caught. Example:
+`"⚠ Drawing shows 115 KD chairs · spec PDF lists 119 · AI flagged
+mismatch automatically (no manual cross-check needed)"`.
+
+**Files:** `ScopeBreachAlert.tsx`
+
+### Gap F · CORE → Outlook trigger (BPMN stages 2-3)
+
+**Problem:** Flow 1 starts with David opening CORE but the audience
+never sees **why** David is opening CORE in the first place. The
+trigger — "CORE assigned you a new estimating request" — is missing.
+
+**Fix:** Render an inline `CoreOutlookCard` variant=`incoming` at the
+very top of the w1.1 workspace for the first 1.8 s before the Import
+button pulse + CoreConnectionModal kick in. Card shows:
+- "📧 CORE → Outlook: new estimating request assigned"
+- Customer preview: JPS Health Network · 24 items · Healthcare
+- Auto-dismisses at 1.8 s, then the existing Import button pulse + CORE
+  connection flow starts with all timers shifted by +1800 ms
+
+**Files:** `CoreOutlookCard.tsx` (new), `StrataEstimatorShell.tsx`
+(shift IMPORT_OFFSET from 9400 → 11200 ms)
+
+### Paso E scope summary
+
+| Gap | Effort | Impact |
+|---|---|---|
+| F · CORE → Outlook incoming | small | 🔴 High — opens the story |
+| B · Write-back to CORE | small | 🔴 High — closes Flow 1 |
+| A · Bid scenario note | tiny | 🟡 Medium — pain point surfaced |
+| D · Mismatch alert extension | small | 🟡 Medium — pain point #3 surfaced |
+
+Deferred to post-E:
+- Gap C · Tribal Knowledge chip on DualEngine labor engine
+- Gap E · Totals by area/floor breakdown
+- Gap · Salesperson + Design pre-stages (1-8) as a backstory timeline
+
+### Implementation plan (single commit)
+
+1. New `CoreOutlookCard.tsx` component with `variant: 'incoming' | 'outgoing'`
+   and phase handling (intro / body / fade-out)
+2. `StrataEstimatorShell.tsx`:
+   - Add `outlookCardVariant` + `outlookCardVisible` state
+   - w1.1 timeline: render incoming card at t=0-1800, shift all CORE
+     modal timers by +1800, bump IMPORT_OFFSET to 11200
+   - w2.1 entry effect: render outgoing card at t=0-2500, delay Sara's
+     auto-forward press to start at t=2500
+3. `DualEngineCalculation.tsx`: add bid-scenario chip on the combined
+   total card footer
+4. `ScopeBreachAlert.tsx`: append a second "mismatch detected" line to
+   the alert body
+5. Build + commit + push
