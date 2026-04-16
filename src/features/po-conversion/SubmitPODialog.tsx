@@ -13,7 +13,6 @@ import { useState } from 'react'
 import { clsx } from 'clsx'
 import {
     AlertTriangle,
-    Check,
     CheckCircle2,
     Globe,
     Loader2,
@@ -132,7 +131,8 @@ export default function SubmitPODialog({
                         leaveFrom="opacity-100 scale-100"
                         leaveTo="opacity-0 scale-95"
                     >
-                        <DialogPanel className="w-full max-w-lg bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-2xl overflow-hidden">
+                        {/* FE-15: full-screen on mobile (<768px), card on desktop */}
+                        <DialogPanel className="w-full max-w-lg bg-card dark:bg-zinc-800 rounded-2xl md:rounded-2xl border border-border shadow-2xl overflow-hidden max-md:fixed max-md:inset-0 max-md:rounded-none max-md:max-w-none max-md:border-0">
 
                             {/* Header */}
                             <div className="flex items-start gap-4 px-6 py-5 border-b border-border">

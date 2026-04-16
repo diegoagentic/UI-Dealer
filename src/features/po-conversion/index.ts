@@ -19,5 +19,9 @@ export { default as SubmissionHistory } from './SubmissionHistory'
 export { default as RevisionHistory } from './RevisionHistory'
 export { default as ArtifactDownloads } from './ArtifactDownloads'
 
+// Sprint 2.5 · Gap closure
+export { useToast, ToastContainer } from './Toast'
+export type { Toast, ToastType } from './Toast'
+
 export * from './hooks'
 export * from './types'

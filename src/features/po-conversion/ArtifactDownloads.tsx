@@ -6,8 +6,10 @@
  * Single click triggers download via the artifact's downloadUrl.
  */
 
+import { useState, Fragment } from 'react'
 import { clsx } from 'clsx'
-import { Download, File, FileSpreadsheet, FileText, Code } from 'lucide-react'
+import { Download, Eye, File, FileSpreadsheet, FileText, Code, X } from 'lucide-react'
+import { Dialog, DialogPanel, Transition, TransitionChild } from '@headlessui/react'
 import type { POArtifact } from './types'
 
 interface ArtifactDownloadsProps {
@@ -46,6 +48,8 @@ export default function ArtifactDownloads({
     artifacts,
     loading = false,
 }: ArtifactDownloadsProps) {
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+    const [previewName, setPreviewName] = useState('')
     if (loading) {
         return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -123,13 +127,105 @@ export default function ArtifactDownloads({
                                 {artifact.type.replace(/_/g, ' ')}
                             </p>
                         </div>
-                        <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-1 transition-colors" />
+                        <div className="flex flex-col gap-1 shrink-0 mt-1">
+                            {artifact.format === 'pdf' && (
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        setPreviewUrl(artifact.downloadUrl)
+                                        setPreviewName(artifact.fileName)
+                                    }}
+                                    className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors"
+                                    title="Preview PDF"
+                                >
+                                    <Eye className="w-3.5 h-3.5" />
+                                </button>
+                            )}
+                            <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </div>
                     </a>
                 )
                         })}
                     </div>
                 </div>
             ))}
+
+            {/* PDF Preview Modal (FE-09 requirement) */}
+            <Transition show={previewUrl !== null} as={Fragment}>
+                <Dialog
+                    as="div"
+                    className="relative z-[100]"
+                    onClose={() => setPreviewUrl(null)}
+                >
+                    <TransitionChild
+                        as={Fragment}
+                        enter="ease-out duration-200"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-150"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-zinc-950/80 backdrop-blur-sm" />
+                    </TransitionChild>
+                    <div className="fixed inset-0 flex items-center justify-center p-4">
+                        <TransitionChild
+                            as={Fragment}
+                            enter="ease-out duration-200"
+                            enterFrom="opacity-0 scale-95"
+                            enterTo="opacity-100 scale-100"
+                            leave="ease-in duration-150"
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95"
+                        >
+                            <DialogPanel className="w-full max-w-4xl h-[85vh] bg-card dark:bg-zinc-800 rounded-2xl border border-border shadow-2xl overflow-hidden flex flex-col">
+                                <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-muted/30 shrink-0">
+                                    <div className="flex items-center gap-2">
+                                        <FileText className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                        <span className="text-sm font-bold text-foreground">
+                                            {previewName}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <a
+                                            href={previewUrl ?? '#'}
+                                            download={previewName}
+                                            className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-[10px] font-bold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                        >
+                                            <Download className="w-3 h-3" />
+                                            Download
+                                        </a>
+                                        <button
+                                            onClick={() => setPreviewUrl(null)}
+                                            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="flex-1 flex items-center justify-center bg-zinc-100 dark:bg-zinc-900 p-8">
+                                    {/* In production this would embed the S3 presigned URL
+                                        in an iframe. For the mock we show a placeholder. */}
+                                    <div className="text-center space-y-3">
+                                        <FileText className="w-16 h-16 text-red-500/30 mx-auto" />
+                                        <p className="text-sm font-semibold text-foreground">
+                                            PDF Preview
+                                        </p>
+                                        <p className="text-xs text-muted-foreground max-w-xs">
+                                            In production this panel embeds the PDF from the S3
+                                            presigned URL. The mock shows this placeholder.
+                                        </p>
+                                        <p className="text-[10px] font-mono text-muted-foreground/60 truncate max-w-sm">
+                                            {previewUrl}
+                                        </p>
+                                    </div>
+                                </div>
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </Dialog>
+            </Transition>
         </div>
     )
 }
