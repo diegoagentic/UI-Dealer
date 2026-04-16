@@ -14,5 +14,10 @@ export { default as FinalizePOButton } from './FinalizePOButton'
 export { default as SubmitPODialog } from './SubmitPODialog'
 export { default as SnapshotComparisonView } from './SnapshotComparisonView'
 
+// Sprint 2 · SDB-1315
+export { default as SubmissionHistory } from './SubmissionHistory'
+export { default as RevisionHistory } from './RevisionHistory'
+export { default as ArtifactDownloads } from './ArtifactDownloads'
+
 export * from './hooks'
 export * from './types'
