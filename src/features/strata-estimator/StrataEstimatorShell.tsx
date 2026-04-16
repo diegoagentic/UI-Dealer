@@ -11,7 +11,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowRight, Check, MousePointer2, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Check, CheckCircle2, MousePointer2, ShieldCheck, X } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useDemo } from '../../context/DemoContext'
 import CoreConnectionModal from './CoreConnectionModal'
@@ -897,9 +897,23 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
     const [sifExportOpen, setSifExportOpen] = useState(false)
     const [sifPreviewOpen, setSifPreviewOpen] = useState(false)
 
+    const [sifDownloadToast, setSifDownloadToast] = useState(false)
+
     const handleExportBackup = () => {
         logEvent('System', 'SIF export initiated · converting project to Strata Interchange Format', 'system')
         setSifExportOpen(true)
+    }
+
+    const handleSifDownload = () => {
+        logEvent(
+            'System',
+            `SIF file downloaded · ${customer.name || 'JPS'}_Health_Center.sif`,
+            'system'
+        )
+        setSifExportOpen(false)
+        setSifPreviewOpen(false)
+        setSifDownloadToast(true)
+        setTimeout(() => setSifDownloadToast(false), 4000)
     }
 
     const handleImportBackup = () => {
@@ -1878,14 +1892,7 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 isOpen={sifExportOpen}
                 projectName={customer.name ? `${customer.name} · Health Center for Women` : 'JPS Health Network'}
                 itemCount={lineItems.length || 24}
-                onClose={() => {
-                    setSifExportOpen(false)
-                    logEvent(
-                        'System',
-                        `SIF export complete · ${customer.name || 'JPS'}_Health_Center.sif downloaded`,
-                        'system'
-                    )
-                }}
+                onClose={handleSifDownload}
                 onPreview={() => {
                     setSifExportOpen(false)
                     setSifPreviewOpen(true)
@@ -1898,15 +1905,32 @@ export default function StrataEstimatorShell({ onExit: _onExit }: StrataEstimato
                 totalAmount={Number(estimate.salesPrice).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                 itemCount={lineItems.length || 24}
                 onClose={() => setSifPreviewOpen(false)}
-                onDownload={() => {
-                    logEvent(
-                        'System',
-                        `SIF file downloaded · ${customer.name || 'JPS'}_Health_Center.sif`,
-                        'system'
-                    )
-                    setSifPreviewOpen(false)
-                }}
+                onDownload={handleSifDownload}
             />
+
+            {/* SIF download confirmation toast */}
+            {sifDownloadToast && (
+                <div className="fixed bottom-6 right-6 z-[200] w-80 max-w-[calc(100vw-3rem)] animate-in slide-in-from-bottom-4 fade-in duration-300">
+                    <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-green-500/10 dark:bg-green-500/15 border border-green-500/30 shadow-lg backdrop-blur-sm">
+                        <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-foreground">
+                                SIF file downloaded
+                            </p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5">
+                                {customer.name || 'JPS'}_Health_Center_for_Women.sif saved to your downloads folder.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setSifDownloadToast(false)}
+                            className="shrink-0 p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                            <X className="w-3.5 h-3.5" />
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* v7 · legacy DealerArrivalToast + AgentRoutingToast were removed —
                 HandoffBanner (inline) now covers every role transition on its own. */}
