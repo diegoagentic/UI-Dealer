@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, Transition, TransitionChild, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Fragment } from 'react'
-import { AlertCircle, AlertTriangle, ArrowRight, BadgeCheck, BarChart3, Bell, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudUpload, Copy, DollarSign, Eye, FilePlus, FileText, Filter, LayoutGrid, List, LogOut, Mail, MapPin, MoreHorizontal, Pencil, Plus, Search, ShoppingBag, ShoppingCart, Sparkles, SquarePen, Trash2, TrendingUp, Truck, User, Wrench } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ArrowRight, BadgeCheck, BarChart3, Bell, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudUpload, Copy, DollarSign, Eye, FilePlus, FileText, Filter, LayoutGrid, List, LogOut, Mail, MapPin, MoreHorizontal, Package, Pencil, Plus, Search, ShoppingBag, ShoppingCart, Sparkles, SquarePen, Trash2, TrendingUp, Truck, User, Wrench } from 'lucide-react';
 import { useState, useMemo, useEffect, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
@@ -10,6 +10,7 @@ import Select from './components/Select'
 import CreateOrderModal from './components/CreateOrderModal'
 import SmartQuoteHub from './components/widgets/SmartQuoteHub'
 import BatchAckModal from './components/BatchAckModal'
+import { PODraftsListPage, FeatureFlagGuard } from './features/po-conversion'
 import Breadcrumbs from './components/Breadcrumbs'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -309,7 +310,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [selectedSeverity, setSelectedSeverity] = useState('All Severity')
 
     const [activeTab, setActiveTab] = useState<'metrics' | 'active' | 'completed' | 'all'>('active')
-    const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments'>('orders')
+    const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments' | 'purchase-orders'>('orders')
     const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
 
     useEffect(() => {
@@ -523,6 +524,18 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <ClipboardCheck className="w-4 h-4" />
                             Acknowledgments
                         </button>
+                        <button
+                            onClick={() => setLifecycleTab('purchase-orders')}
+                            className={cn(
+                                "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all",
+                                lifecycleTab === 'purchase-orders'
+                                    ? "bg-brand-300 dark:bg-brand-500 text-zinc-900 shadow-sm"
+                                    : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
+                            )}
+                        >
+                            <Package className="w-4 h-4" />
+                            Purchase Orders
+                        </button>
                     </div>
                 </div>
 
@@ -554,6 +567,16 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             ]} />
                         </div>
                     </>
+                )}
+
+                {/* Purchase Orders Tab Content (SDB-1315) */}
+                {lifecycleTab === 'purchase-orders' && (
+                    <FeatureFlagGuard>
+                        <PODraftsListPage onNavigateToDetail={(poId) => {
+                            // Navigate to PO detail via the parent App's state
+                            if (typeof onNavigate === 'function') onNavigate('po-detail')
+                        }} />
+                    </FeatureFlagGuard>
                 )}
 
                 {/* Orders Content (Existing) */}
