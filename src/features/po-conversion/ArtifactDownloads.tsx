@@ -73,9 +73,28 @@ export default function ArtifactDownloads({
         )
     }
 
+    // FE-09: group by artifact type
+    const TYPE_LABELS: Record<string, string> = {
+        submission_payload: 'Submission Payloads',
+        confirmation: 'Confirmations',
+        revision_snapshot: 'Revision Snapshots',
+    }
+    const grouped = artifacts.reduce<Record<string, typeof artifacts>>((acc, a) => {
+        const key = a.type
+        if (!acc[key]) acc[key] = []
+        acc[key].push(a)
+        return acc
+    }, {})
+
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {artifacts.map((artifact) => {
+        <div className="space-y-6">
+            {Object.entries(grouped).map(([type, items]) => (
+                <div key={type}>
+                    <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                        {TYPE_LABELS[type] ?? type.replace(/_/g, ' ')}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {items.map((artifact) => {
                 const Icon = FORMAT_ICON[artifact.format] ?? File
                 const colorClass = FORMAT_COLOR[artifact.format] ?? 'bg-muted/50 text-muted-foreground'
                 return (
@@ -107,7 +126,10 @@ export default function ArtifactDownloads({
                         <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary shrink-0 mt-1 transition-colors" />
                     </a>
                 )
-            })}
+                        })}
+                    </div>
+                </div>
+            ))}
         </div>
     )
 }

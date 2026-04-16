@@ -122,6 +122,42 @@ export default function SnapshotComparisonView({
                 </span>
             </div>
 
+            {/* FE-17 Summary banner — counts by type */}
+            <div className="flex items-center gap-2 flex-wrap px-5 py-3 bg-muted/20 border-b border-border">
+                {(() => {
+                    const counts = {
+                        price_change: discrepancies.filter(d => d.type === 'price_change').length,
+                        quantity_change: discrepancies.filter(d => d.type === 'quantity_change').length,
+                        item_added: discrepancies.filter(d => d.type === 'item_added').length,
+                        item_removed: discrepancies.filter(d => d.type === 'item_removed').length,
+                    }
+                    return (
+                        <>
+                            {counts.price_change > 0 && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                                    {counts.price_change} price change{counts.price_change !== 1 ? 's' : ''}
+                                </span>
+                            )}
+                            {counts.quantity_change > 0 && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30">
+                                    {counts.quantity_change} qty change{counts.quantity_change !== 1 ? 's' : ''}
+                                </span>
+                            )}
+                            {counts.item_added > 0 && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/30">
+                                    {counts.item_added} added
+                                </span>
+                            )}
+                            {counts.item_removed > 0 && (
+                                <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-red-500/10 text-red-700 dark:text-red-400 border border-red-500/30">
+                                    {counts.item_removed} removed
+                                </span>
+                            )}
+                        </>
+                    )
+                })()}
+            </div>
+
             {/* Discrepancy rows */}
             <div className="divide-y divide-border">
                 {discrepancies.map((d, i) => {

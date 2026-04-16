@@ -24,12 +24,15 @@ import { useFinalizePO } from './hooks'
 interface FinalizePOButtonProps {
     poNumber: string
     status: POStatus
+    /** Whether the current user has the dealer_admin role. Default true for demo. */
+    hasDealerAdminRole?: boolean
     onFinalized?: () => void
 }
 
 export default function FinalizePOButton({
     poNumber,
     status,
+    hasDealerAdminRole = true,
     onFinalized,
 }: FinalizePOButtonProps) {
     const [dialogOpen, setDialogOpen] = useState(false)
@@ -37,6 +40,8 @@ export default function FinalizePOButton({
     const [showError, setShowError] = useState(false)
 
     if (status === 'SUBMITTED') return null
+    // FE-05: only visible when DRAFT + dealer_admin role
+    if (!hasDealerAdminRole) return null
 
     const isFinalized = status === 'FINALIZED'
     const isDraft = status === 'DRAFT'
