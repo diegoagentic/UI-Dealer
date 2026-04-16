@@ -310,7 +310,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [selectedSeverity, setSelectedSeverity] = useState('All Severity')
 
     const [activeTab, setActiveTab] = useState<'metrics' | 'active' | 'completed' | 'all'>('active')
-    const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments' | 'purchase-orders'>('orders')
+    const [lifecycleTab, setLifecycleTab] = useState<'quotes' | 'orders' | 'acknowledgments'>('orders')
     const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
 
     useEffect(() => {
@@ -524,18 +524,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             <ClipboardCheck className="w-4 h-4" />
                             Acknowledgments
                         </button>
-                        <button
-                            onClick={() => setLifecycleTab('purchase-orders')}
-                            className={cn(
-                                "flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all",
-                                lifecycleTab === 'purchase-orders'
-                                    ? "bg-brand-300 dark:bg-brand-500 text-zinc-900 shadow-sm"
-                                    : "text-muted-foreground hover:bg-brand-300 dark:hover:bg-brand-600/50 hover:text-zinc-900 dark:hover:text-white"
-                            )}
-                        >
-                            <Package className="w-4 h-4" />
-                            Purchase Orders
-                        </button>
+                        {/* PO Conversion tab removed — integrated into Orders tab below */}
                     </div>
                 </div>
 
@@ -569,17 +558,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                     </>
                 )}
 
-                {/* Purchase Orders Tab Content (SDB-1315) */}
-                {lifecycleTab === 'purchase-orders' && (
-                    <FeatureFlagGuard>
-                        <PODraftsListPage onNavigateToDetail={(poId) => {
-                            // Navigate to PO detail via the parent App's state
-                            if (typeof onNavigate === 'function') onNavigate('po-detail')
-                        }} />
-                    </FeatureFlagGuard>
-                )}
-
-                {/* Orders Content (Existing) */}
+                {/* Orders Content (Existing) + integrated PO Conversion */}
                 {lifecycleTab === 'orders' && (
                     <>
                         <MetricGrid metrics={ordersSummary} />
@@ -592,8 +571,17 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                             ]} />
                         </div>
 
-
-
+                        {/* SDB-1315 · PO Conversion — integrated into Orders tab.
+                            Shows vendor-split PO drafts generated from converted
+                            orders. Wrapped in FeatureFlagGuard so it hides when
+                            the flag is off. */}
+                        <FeatureFlagGuard fallback={null}>
+                            <div className="mt-6">
+                                <PODraftsListPage onNavigateToDetail={() => {
+                                    if (typeof onNavigate === 'function') onNavigate('po-detail')
+                                }} />
+                            </div>
+                        </FeatureFlagGuard>
                     </>
                 )}
 
