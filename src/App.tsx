@@ -15,7 +15,7 @@ import Transactions from "./Transactions"
 import CRM from "./CRM"
 import Pricing from "./Pricing"
 import Navbar from "./components/Navbar"
-import { PODraftsListPage, PODetailPage, ConversionReviewPage, FeatureFlagGuard } from './features/po-conversion'
+import { ConversionReviewPage, FeatureFlagGuard } from './features/po-conversion'
 import DemoGuide from "./components/DemoGuide"
 import SessionExpiryModal from "./components/SessionExpiryModal"
 import logoLightBrand from './assets/logo-light-brand.png'
@@ -118,14 +118,7 @@ function App() {
           <FeatureFlagGuard>
             <ConversionReviewPage onBack={() => setCurrentPage('transactions')} onApprove={() => setCurrentPage('po-drafts')} />
           </FeatureFlagGuard>
-        ) : currentPage === 'po-drafts' ? (
-          <FeatureFlagGuard>
-            <PODraftsListPage onNavigateToDetail={() => setCurrentPage('po-detail')} />
-          </FeatureFlagGuard>
-        ) : currentPage === 'po-detail' ? (
-          <FeatureFlagGuard>
-            <PODetailPage onBack={() => setCurrentPage('po-drafts')} />
-          </FeatureFlagGuard>
+
         ) : currentPage === 'workspace' ? (
           <Workspace onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} />
         ) : null}

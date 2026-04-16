@@ -10,7 +10,8 @@ import Select from './components/Select'
 import CreateOrderModal from './components/CreateOrderModal'
 import SmartQuoteHub from './components/widgets/SmartQuoteHub'
 import BatchAckModal from './components/BatchAckModal'
-import { PODraftsListPage, FeatureFlagGuard } from './features/po-conversion'
+import { FeatureFlagGuard } from './features/po-conversion'
+import ConversionStatusBadge from './features/po-conversion/ConversionStatusBadge'
 import Breadcrumbs from './components/Breadcrumbs'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -42,6 +43,9 @@ const trackingSteps = [
 ]
 
 const recentOrders = [
+    { id: "PO-2026-0047", isPO: true, poStatus: 'DRAFT', customer: "Steelcase", client: "Steelcase", project: "Office Renovation", amount: "$53,525", status: "PO Draft", date: "Apr 08, 2026", initials: "ST", statusColor: "bg-zinc-100 text-zinc-700", location: "Grand Rapids" },
+    { id: "PO-2026-0048", isPO: true, poStatus: 'FINALIZED', customer: "Herman Miller", client: "Herman Miller", project: "HQ Upgrade", amount: "$34,110", status: "PO Finalized", date: "Apr 07, 2026", initials: "HM", statusColor: "bg-blue-50 text-blue-700", location: "Zeeland" },
+    { id: "PO-2026-0049", isPO: true, poStatus: 'SUBMITTED', customer: "Knoll", client: "Knoll", project: "East Wing", amount: "$34,500", status: "PO Submitted", date: "Apr 05, 2026", initials: "KN", statusColor: "bg-green-50 text-green-700", location: "New York" },
     { id: "#ORD-2055", customer: "AutoManfacture Co.", client: "AutoManfacture Co.", project: "Office Renovation", amount: "$385,000", status: "Order Received", date: "Dec 20, 2025", initials: "AC", statusColor: "bg-zinc-100 text-zinc-700", location: "New York" },
     { id: "#ORD-2054", customer: "TechDealer Solutions", client: "TechDealer Solutions", project: "HQ Upgrade", amount: "$62,500", status: "In Production", date: "Nov 15, 2025", initials: "TS", statusColor: "bg-brand-50 text-brand-700 ring-brand-600/20", location: "London" },
     { id: "#ORD-2053", customer: "Urban Living Inc.", client: "Urban Living Inc.", project: "Lobby Refresh", amount: "$112,000", status: "Ready to Ship", date: "Oct 30, 2025", initials: "UL", statusColor: "bg-green-50 text-green-700 ring-green-600/20", location: "Austin" },
@@ -82,7 +86,7 @@ const recentAcknowledgments = [
 ]
 
 // Pipeline stages
-const pipelineStages = ['Order Received', 'In Production', 'Ready to Ship', 'In Transit', 'Delivered']
+const pipelineStages = ['Order Received', 'PO Draft', 'PO Finalized', 'PO Submitted', 'In Production', 'Ready to Ship', 'In Transit', 'Delivered']
 const quoteStages = ['Ingesting', 'Draft', 'Validation', 'Approval', 'Send']
 
 const quoteStagesMeta: Record<string, { dot: string; subtitle: string }> = {
@@ -570,18 +574,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 { icon: <Mail className="w-4 h-4" />, label: "Send Email" },
                             ]} />
                         </div>
-
-                        {/* SDB-1315 · PO Conversion — integrated into Orders tab.
-                            Shows vendor-split PO drafts generated from converted
-                            orders. Wrapped in FeatureFlagGuard so it hides when
-                            the flag is off. */}
-                        <FeatureFlagGuard fallback={null}>
-                            <div className="mt-6">
-                                <PODraftsListPage onNavigateToDetail={() => {
-                                    if (typeof onNavigate === 'function') onNavigate('po-detail')
-                                }} />
-                            </div>
-                        </FeatureFlagGuard>
                     </>
                 )}
 
@@ -870,7 +862,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             <table className="w-full text-left">
                                                 <thead className="bg-muted/50 border-b border-border">
                                                     <tr>
-                                                        <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">{lifecycleTab === 'acknowledgments' ? 'Vendor' : 'Details'}</th>
+                                                        <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">{lifecycleTab === 'acknowledgments' || lifecycleTab === 'orders' ? 'Partner / Entity' : 'Details'}</th>
                                                         <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">{lifecycleTab === 'acknowledgments' ? 'PO & Location' : 'Project & Location'}</th>
                                                         <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">{lifecycleTab === 'acknowledgments' ? 'Discrepancy' : 'Amount'}</th>
                                                         <th className="p-4 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
@@ -917,9 +909,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                     </span>
                                                                 </td>
                                                                 <td className="p-4">
-                                                                    <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
-                                                                        {order.status}
-                                                                    </span>
+                                                                    {order.isPO ? (
+                                                                        <ConversionStatusBadge status={order.poStatus} size="sm" />
+                                                                    ) : (
+                                                                        <span className={cn("inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset", order.statusColor)}>
+                                                                            {order.status}
+                                                                        </span>
+                                                                    )}
                                                                 </td>
                                                                 <td className="p-4 text-sm text-muted-foreground">
                                                                     {lifecycleTab === 'quotes' ? (order.validUntil || order.date) : order.date}
@@ -927,7 +923,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                 <td className="p-4 text-right">
                                                                     <div className="flex items-center justify-end gap-1">
                                                                         <button
-                                                                            onClick={(e) => { e.stopPropagation(); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
+                                                                            onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
                                                                             className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
                                                                         >
                                                                             <FileText className="h-4 w-4" />
@@ -1026,11 +1022,11 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                 <div className="p-4">
                                                                     <div className="flex items-center justify-between mb-3">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-ai to-ai text-white flex items-center justify-center text-xs font-bold shadow-sm ring-2 ring-white dark:ring-zinc-900">
+                                                                            <div className={cn("h-8 w-8 rounded-full text-white flex items-center justify-center text-[10px] font-bold shadow-sm ring-2 ring-white dark:ring-zinc-900 tracking-wider", order.isPO ? (order.customer === 'Steelcase' ? 'bg-[#FF6B35]' : order.customer === 'Herman Miller' ? 'bg-[#297C46]' : 'bg-[#CC3333]') : "bg-gradient-to-br from-ai to-ai text-xs")}>
                                                                                 {order.initials}
                                                                             </div>
                                                                             <div className="space-y-0.5">
-                                                                                <h4 className="text-sm font-semibold text-foreground transition-colors">
+                                                                                <h4 className="text-sm font-semibold text-foreground transition-colors leading-tight">
                                                                                     {lifecycleTab === 'acknowledgments' ? (order as any).vendor : (order as any).customer}
                                                                                 </h4>
                                                                                 <div className="flex items-center gap-1">
@@ -1043,21 +1039,37 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+                                                                        {order.isPO && <ConversionStatusBadge status={order.poStatus} size="sm" />}
                                                                     </div>
 
                                                                     <div className="space-y-2">
-                                                                        <div className="flex justify-between items-center text-xs">
-                                                                            <span className="text-muted-foreground">
-                                                                                {lifecycleTab === 'acknowledgments' ? 'Discrepancy' : 'Amount'}
-                                                                            </span>
-                                                                            <span className={cn("font-semibold text-foreground", lifecycleTab === 'acknowledgments' && (order as any).discrepancy !== 'None' ? 'text-red-500' : '')}>
-                                                                                {lifecycleTab === 'acknowledgments' ? (order as any).discrepancy : (order as any).amount}
-                                                                            </span>
-                                                                        </div>
-                                                                        <div className="flex justify-between items-center text-xs">
-                                                                            <span className="text-muted-foreground">Date</span>
-                                                                            <span className="text-foreground">{order.date}</span>
-                                                                        </div>
+                                                                        {order.isPO ? (
+                                                                            <div className="flex items-center gap-5 border-t border-border pt-3 mt-1">
+                                                                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                                                                                    <Package className="h-3.5 w-3.5 text-zinc-400" />
+                                                                                    {order.id === 'PO-2026-0047' ? '6 items' : order.id === 'PO-2026-0049' ? '12 items' : '8 items'}
+                                                                                </div>
+                                                                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-medium">
+                                                                                    <DollarSign className="h-3.5 w-3.5 text-zinc-400" />
+                                                                                    <span className="font-semibold text-foreground">{order.amount}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <>
+                                                                                <div className="flex justify-between items-center text-xs">
+                                                                                    <span className="text-muted-foreground">
+                                                                                        {lifecycleTab === 'acknowledgments' ? 'Discrepancy' : 'Amount'}
+                                                                                    </span>
+                                                                                    <span className={cn("font-semibold text-foreground", lifecycleTab === 'acknowledgments' && (order as any).discrepancy !== 'None' ? 'text-red-500' : '')}>
+                                                                                        {lifecycleTab === 'acknowledgments' ? (order as any).discrepancy : (order as any).amount}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className="flex justify-between items-center text-xs">
+                                                                                    <span className="text-muted-foreground">Date</span>
+                                                                                    <span className="text-foreground">{order.date}</span>
+                                                                                </div>
+                                                                            </>
+                                                                        )}
 
                                                                         {/* Quote tags */}
                                                                         {lifecycleTab === 'quotes' && (order as any).tags?.length > 0 && (
@@ -1116,11 +1128,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                         {/* Inline Actions Row */}
                                                                         <div className="flex items-center justify-between">
                                                                             {/* Status Badge */}
-                                                                            <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
-                                                                                colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-muted text-muted-foreground border-border"
-                                                                            )}>
-                                                                                {order.status}
-                                                                            </span>
+                                                                            {order.isPO ? (
+                                                                                <ConversionStatusBadge status={order.poStatus} size="sm" />
+                                                                            ) : (
+                                                                                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
+                                                                                    colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-muted text-muted-foreground border-border"
+                                                                                )}>
+                                                                                    {order.status}
+                                                                                </span>
+                                                                            )}
 
                                                                             <div className="flex items-center gap-1">
                                                                                 <button
@@ -1130,7 +1146,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     {expandedIds.has(order.id) ? 'Close' : 'Details'}
                                                                                 </button>
                                                                                 <button
-                                                                                    onClick={(e) => { e.stopPropagation(); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
+                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail(lifecycleTab === 'quotes' ? 'quote-detail' : lifecycleTab === 'acknowledgments' ? 'ack-detail' : 'order-detail'); }}
                                                                                     className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
                                                                                     title="View Full Details"
                                                                                 >

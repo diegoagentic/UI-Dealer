@@ -16,6 +16,12 @@ import ItemActionsPopover from './components/ItemActionsPopover'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import AddItemSlideOver from './components/AddItemSlideOver'
 import FilterPopover from './components/FilterPopover'
+import FinalizePOButton from './features/po-conversion/FinalizePOButton'
+import SubmitPODialog from './features/po-conversion/SubmitPODialog'
+import SubmissionHistory from './features/po-conversion/SubmissionHistory'
+import RevisionHistory from './features/po-conversion/RevisionHistory'
+import ArtifactDownloads from './features/po-conversion/ArtifactDownloads'
+import { MOCK_PO_DRAFTS, MOCK_SUBMISSIONS, MOCK_REVISIONS, MOCK_ARTIFACTS } from './features/po-conversion/mockData'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -350,15 +356,27 @@ interface DetailProps {
 
 export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, onNavigate }: DetailProps) {
     const [isDemoOrder, setIsDemoOrder] = useState(false);
+    const [isPOContext, setIsPOContext] = useState(false);
+    const [isSubmitPOOpen, setIsSubmitPOOpen] = useState(false);
+    const [poData, setPoData] = useState(MOCK_PO_DRAFTS[0]);
 
     useEffect(() => {
         const demoId = localStorage.getItem('demo_view_order_id');
         const urlParams = new URLSearchParams(window.location.search);
         const urlId = urlParams.get('id');
+        
+        const resolvedId = urlId || demoId;
 
-        if ((demoId === 'ORD-7829') || (urlId === 'ORD-7829')) {
+        if (resolvedId === 'ORD-7829') {
             setIsDemoOrder(true);
             setSelectedItem(demoItems[0]);
+        }
+        
+        if (resolvedId?.startsWith('PO-') || resolvedId?.startsWith('#PO-')) {
+            setIsPOContext(true);
+            const sanitizedId = resolvedId.replace('#', '');
+            const foundReq = MOCK_PO_DRAFTS.find(p => p.id === sanitizedId || p.poNumber === sanitizedId);
+            if (foundReq) setPoData(foundReq);
         }
     }, []);
 
@@ -450,11 +468,28 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                         items={[
                             { label: 'Dashboard', onClick: onBack },
                             { label: 'Transactions', onClick: onBack },
-                            { label: `Order ${orderId}`, active: true }
+                            { label: isPOContext ? `Purchase Order ${poData.poNumber}` : `Order ${orderId}`, active: true }
                         ]}
                     />
                 </div>
                 <div className="flex items-center gap-3">
+                    {isPOContext && poData.orderStatus !== 'SUBMITTED' && (
+                        <>
+                            <FinalizePOButton 
+                                poNumber={poData.poNumber} 
+                                status={poData.orderStatus} 
+                                onFinalized={() => setPoData(prev => ({ ...prev, orderStatus: 'FINALIZED' }))} 
+                            />
+                            {poData.orderStatus === 'FINALIZED' && (
+                                <Button 
+                                    className="gap-2 px-3 py-1.5 text-sm font-medium bg-brand-300 dark:bg-brand-500 text-zinc-900 border-none hover:bg-brand-400" 
+                                    onClick={() => setIsSubmitPOOpen(true)}
+                                >
+                                    <Send className="h-4 w-4" /> Submit to Vendor
+                                </Button>
+                            )}
+                        </>
+                    )}
                     <FilterPopover onApply={(filters) => triggerToast('Filters Applied', `${filters.statuses.length + filters.categories.length} filters active`, 'info')} />
                     <Button variant="outline" className="gap-2 px-3 py-1.5 text-sm font-medium text-foreground bg-background border-input hover:bg-primary hover:text-zinc-900 group" onClick={() => { triggerToast('Preparing Export', 'Generating CSV file...', 'info'); setTimeout(() => triggerToast('Export Complete', 'Order_ORD-2055_items.csv downloaded', 'success'), 1500); }}>
                         <Download className="h-4 w-4 text-muted-foreground group-hover:text-zinc-900" /> Export
@@ -607,7 +642,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         )
                                     }
                                 >
-                                    Order Items
+                                    {isPOContext ? 'PO Items' : 'Order Items'}
                                 </Tab>
                                 <Tab
                                     className={({ selected }) =>
@@ -621,6 +656,13 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 >
                                     Tracking & Activity
                                 </Tab>
+                                {isPOContext && (
+                                    <>
+                                        <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors px-4", selected ? "border-zinc-500 text-zinc-900 dark:border-primary dark:text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}>Submissions</Tab>
+                                        <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors px-4", selected ? "border-zinc-500 text-zinc-900 dark:border-primary dark:text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}>Revisions</Tab>
+                                        <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors px-4", selected ? "border-zinc-500 text-zinc-900 dark:border-primary dark:text-foreground" : "border-transparent text-muted-foreground hover:text-foreground")}>Artifacts</Tab>
+                                    </>
+                                )}
                             </TabList>
                         </div>
                         <TabPanels className="">
@@ -1231,10 +1273,35 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
                                 </div>
                             </TabPanel>
+                        {isPOContext && (
+                                <>
+                                    <TabPanel className="focus:outline-none p-6 bg-card border-t border-border">
+                                        <SubmissionHistory attempts={MOCK_SUBMISSIONS} />
+                                    </TabPanel>
+                                    <TabPanel className="focus:outline-none p-6 bg-card border-t border-border">
+                                        <RevisionHistory revisions={MOCK_REVISIONS} />
+                                    </TabPanel>
+                                    <TabPanel className="focus:outline-none p-6 bg-card border-t border-border">
+                                        <ArtifactDownloads artifacts={MOCK_ARTIFACTS} />
+                                    </TabPanel>
+                                </>
+                            )}
                         </TabPanels>
                     </TabGroup>
                 </div>
             </div>
+
+            <SubmitPODialog
+                isOpen={isSubmitPOOpen}
+                poNumber={poData.poNumber}
+                vendorName={poData.vendor.vendorName}
+                totalAmount={poData.financial.poTotalAmount}
+                onClose={() => setIsSubmitPOOpen(false)}
+                onSubmitted={() => {
+                    setPoData(prev => ({ ...prev, orderStatus: 'SUBMITTED' }));
+                    triggerToast('PO Submitted', 'Purchase Order successfully submitted to vendor', 'success');
+                }}
+            />
 
             <Transition show={isDocumentModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-50" onClose={setIsDocumentModalOpen}>

@@ -9,7 +9,7 @@ import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
 import { QuickActions } from './components/QuickActions'
-import { PODraftsListPage, ConversionReviewPage } from './features/po-conversion'
+import { ConversionReviewPage } from './features/po-conversion'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -953,7 +953,21 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                             </TabPanel >
                             {showPOTab && (
                                 <TabPanel className="flex flex-col focus:outline-none p-6">
-                                    <PODraftsListPage onNavigateToDetail={() => onNavigate('po-detail')} />
+                                    <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-border mt-4">
+                                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                                            <CheckCircle2 className="h-6 w-6 text-primary" />
+                                        </div>
+                                        <h3 className="text-lg font-bold text-foreground mb-2">Purchase Orders Created</h3>
+                                        <p className="text-sm text-muted-foreground text-center mb-6 max-w-sm">
+                                            The vendor purchase orders for this quote have been generated and are now managed centrally.
+                                        </p>
+                                        <button 
+                                            onClick={() => onNavigate('orders')} 
+                                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-bold shadow-sm"
+                                        >
+                                            View in Orders Hub
+                                        </button>
+                                    </div>
                                 </TabPanel>
                             )}
                         </TabPanels >
