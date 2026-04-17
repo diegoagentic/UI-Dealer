@@ -1302,7 +1302,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                         className="w-full flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors mt-1"
                                                                                     >
                                                                                         <AlertTriangle className="h-3 w-3" />
-                                                                                        Compare PO vs ACK
+                                                                                        Request Expert Review
                                                                                     </button>
                                                                                 )}
                                                                             </>
@@ -1426,26 +1426,23 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        localStorage.setItem('demo_view_order_id', order.id)
-                                                                                        localStorage.setItem('demo_open_reconciliation', 'true')
-                                                                                        onNavigateToDetail('ack-detail')
+                                                                                        triggerToast('Expert Review Requested', `${order.customer} — ACK reconciliation sent to Expert Hub`, 'info')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-500/20 transition-colors whitespace-nowrap"
                                                                                 >
-                                                                                    Compare →
+                                                                                    Request Review →
                                                                                 </button>
                                                                             )}
-                                                                            {/* ACK Comparison Button */}
+                                                                            {/* Request Expert Review for PO ACK comparison */}
                                                                             {order.isPO && (order as any).poStatus !== 'DRAFT' && (
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        setAckReviewPoId(order.id)
-                                                                                        setIsAckReviewOpen(true)
+                                                                                        triggerToast('Expert Review Requested', `${order.customer} — PO vs ACK comparison sent to Expert Hub`, 'info')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
                                                                                 >
-                                                                                    Compare ACK →
+                                                                                    Request Review →
                                                                                 </button>
                                                                             )}
 
@@ -1504,7 +1501,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     className="w-full py-3 text-sm font-bold text-zinc-950 bg-brand-400 hover:bg-brand-300 rounded-lg shadow-sm hover:shadow transition-all flex items-center justify-center gap-2"
                                                                                 >
                                                                                     <MapPin className="h-4 w-4" />
-                                                                                    {lifecycleTab === 'quotes' ? 'Analyze Quote' : lifecycleTab === 'acknowledgments' ? 'Resolve Discrepancy' : 'Track Shipment'}
+                                                                                    {lifecycleTab === 'quotes' ? 'Analyze Quote' : lifecycleTab === 'acknowledgments' ? 'Request Expert Review' : 'Track Shipment'}
                                                                                 </button>
                                                                             </div>
                                                                         </div>

@@ -636,11 +636,8 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
     const [customValue, setCustomValue] = useState('')
 
     useEffect(() => {
-        const shouldOpen = localStorage.getItem('demo_open_reconciliation')
-        if (shouldOpen === 'true') {
-            setIsReconciliationOpen(true)
-            localStorage.removeItem('demo_open_reconciliation')
-        }
+        // Reconciliation moved to Expert Hub — clean up any stale flags
+        localStorage.removeItem('demo_open_reconciliation')
     }, [])
 
     const toggleSection = (key: keyof typeof sections) => {
@@ -823,7 +820,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 <QuickActions actions={[
                     { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
-                    { icon: <FileSearch className="w-4 h-4" />, label: "PO vs ACK Comparison", action: () => setIsReconciliationOpen(true) },
+                    { icon: <FileSearch className="w-4 h-4" />, label: "Request Expert Review", action: () => triggerToast('Expert Review Requested', 'ACK-3099 — PO vs ACK reconciliation sent to Expert Hub for resolution', 'info') },
                     { icon: <Check className="w-4 h-4" />, label: "Confirm ACK", action: () => triggerToast('ACK Confirmed', 'Acknowledgement confirmed and logged', 'success') },
                 ]} />
 
@@ -1620,12 +1617,6 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                     </div>
                 </Dialog>
             </Transition>
-            {/* PO vs ACK Reconciliation Modal */}
-            <AckReconciliationModal
-                isOpen={isReconciliationOpen}
-                onClose={() => setIsReconciliationOpen(false)}
-                triggerToast={triggerToast}
-            />
 
             {/* SlideOvers & Toast */}
             <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="ack" transactionId="ACK-3099" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />

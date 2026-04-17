@@ -652,7 +652,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     { icon: <Copy className="w-4 h-4" />, label: "Duplicate Order", action: () => triggerToast('Order Duplicated', 'Copy of ORD-2055 created as draft', 'success') },
                     ...(isPOContext ? [
                         { icon: <FileText className="w-4 h-4" />, label: "Finalize PO", action: () => triggerToast('PO Finalized', `${poData.poNumber} locked and ready to submit`, 'success') },
-                        { icon: <Search className="w-4 h-4" />, label: "Review ACK", action: () => setIsAckReviewOpen(true) },
+                        { icon: <Search className="w-4 h-4" />, label: "Request Expert Review", action: () => triggerToast('Expert Review Requested', `${poData.poNumber} — ACK comparison sent to Expert Hub`, 'info') },
                     ] : []),
                 ]} />
 
