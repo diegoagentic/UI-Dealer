@@ -264,6 +264,41 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false);
 
+    // Local card state overrides — simulate action outcomes in the funnel
+    // without mutating the static mock arrays.
+    const [localCardOverrides, setLocalCardOverrides] = useState<
+        Record<string, Partial<{ status: string; poStatus: string; actionLabel: string }>>
+    >({})
+
+    // Merge static data with any local overrides produced by quick actions.
+    const applyOverrides = <T extends { id: string }>(data: T[]): T[] =>
+        data.map(item =>
+            localCardOverrides[item.id] ? { ...item, ...localCardOverrides[item.id] } : item
+        )
+
+    // Friendly label for internal actionLabel values shown on cards.
+    const formatActionLabel = (label: string) => {
+        if (label === 'READY_TO_SEND') return 'Ready to send'
+        return label
+    }
+
+    // Simulate a 2-step async action (processing → success) and update card state.
+    const simulateCardAction = (
+        orderId: string,
+        customer: string,
+        processingMsg: string,
+        successTitle: string,
+        successMsg: string,
+        newState: Partial<{ status: string; poStatus: string; actionLabel: string }>
+    ) => {
+        triggerToast(processingMsg, customer, 'info')
+        setTimeout(() => {
+            setLocalCardOverrides(prev => ({ ...prev, [orderId]: newState }))
+            localStorage.setItem(`demo_po_status_${orderId}`, JSON.stringify(newState))
+            triggerToast(successTitle, successMsg, 'success')
+        }, 1500)
+    }
+
     // Toast State
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState({ title: '', description: '', type: 'success' }); // success | error | info
@@ -331,7 +366,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     }, []);
 
     const currentDataSet = useMemo(() => {
-        if (lifecycleTab === 'quotes') return recentQuotes;
+        if (lifecycleTab === 'quotes') return applyOverrides(recentQuotes as any[]) as typeof recentQuotes;
         if (lifecycleTab === 'acknowledgments') return recentAcknowledgments;
 
         let orders = [...recentOrders];
@@ -350,8 +385,9 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 location: "New York"
             });
         }
-        return orders;
-    }, [lifecycleTab]);
+        return applyOverrides(orders);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [lifecycleTab, localCardOverrides]);
 
     const statuses = useMemo(() => ['All Statuses', ...Array.from(new Set(currentDataSet.map(o => o.status)))], [currentDataSet]);
     const locations = useMemo(() => ['All Locations', ...Array.from(new Set(currentDataSet.map(o => o.location || ''))).filter(Boolean)], [currentDataSet]);
@@ -432,10 +468,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     }, [selectedStatus, selectedLocation, currentDataSet, lifecycleTab])
 
     const filteredData = useMemo(() => {
-        let currentData = [];
-        if (lifecycleTab === 'quotes') currentData = recentQuotes;
+        let currentData: any[] = [];
+        if (lifecycleTab === 'quotes') currentData = applyOverrides(recentQuotes as any[]);
         else if (lifecycleTab === 'acknowledgments') currentData = recentAcknowledgments;
-        else currentData = recentOrders;
+        else currentData = applyOverrides(recentOrders);
 
         return currentData.filter(item => {
             const searchString = JSON.stringify(item).toLowerCase();
@@ -460,7 +496,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
             return matchesSearch && matchesStatus && matchesLocation && matchesTab && matchesSeverity
         })
-    }, [searchQuery, selectedStatus, selectedLocation, activeTab, lifecycleTab, selectedSeverity])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchQuery, selectedStatus, selectedLocation, activeTab, lifecycleTab, selectedSeverity, localCardOverrides])
 
     const counts = useMemo(() => {
         return {
@@ -1114,14 +1151,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                         {lifecycleTab === 'quotes' && (order as any).actionLabel && (
                                                                             <div className={cn("text-[10px] font-semibold px-2.5 py-1 rounded-lg border text-center",
                                                                                 (order as any).actionLabel.includes('STALE') || (order as any).actionLabel.includes('re-validate') ? 'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 border-red-200 dark:border-red-500/20' :
-                                                                                (order as any).actionLabel.includes('READY') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
-                                                                                (order as any).actionLabel.includes('Delivered') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
+                                                                                (order as any).actionLabel.includes('READY') || (order as any).actionLabel === 'Ready to send' || (order as any).actionLabel.includes('Approved') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
+                                                                                (order as any).actionLabel.includes('Delivered') || (order as any).actionLabel.includes('Sent') ? 'bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 border-green-200 dark:border-green-500/20' :
                                                                                 (order as any).actionLabel.includes('Sending') || (order as any).actionLabel.includes('extracting') ? 'bg-ai/10 text-ai border-ai/20' :
                                                                                 (order as any).actionLabel.includes('warning') || (order as any).actionLabel.includes('pending') ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' :
                                                                                 (order as any).actionLabel.includes('fields') ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-500/20' :
                                                                                 'bg-muted text-muted-foreground border-border'
                                                                             )}>
-                                                                                {(order as any).actionLabel}
+                                                                                {formatActionLabel((order as any).actionLabel)}
                                                                             </div>
                                                                         )}
 
@@ -1141,7 +1178,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             {/* Contextual quick action — depends on card type/status */}
                                                                             {order.isPO && order.poStatus === 'DRAFT' && (
                                                                                 <button
-                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('order-detail'); }}
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        simulateCardAction(
+                                                                                            order.id, order.customer,
+                                                                                            'Finalizing PO…', 'PO Finalizado ✓', `${order.customer} — PO listo para enviar`,
+                                                                                            { status: 'PO Finalized', poStatus: 'FINALIZED' }
+                                                                                        )
+                                                                                    }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
                                                                                 >
                                                                                     Finalize →
@@ -1149,7 +1193,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             )}
                                                                             {order.isPO && order.poStatus === 'FINALIZED' && (
                                                                                 <button
-                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('order-detail'); }}
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        simulateCardAction(
+                                                                                            order.id, order.customer,
+                                                                                            'Submitting PO…', 'PO Enviado ✓', `${order.customer} — proveedor notificado vía EDI`,
+                                                                                            { status: 'PO Submitted', poStatus: 'SUBMITTED' }
+                                                                                        )
+                                                                                    }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
                                                                                 >
                                                                                     Submit →
@@ -1157,7 +1208,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             )}
                                                                             {!order.isPO && lifecycleTab === 'quotes' && (order as any).actionLabel === 'READY_TO_SEND' && (
                                                                                 <button
-                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('quote-detail'); }}
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        simulateCardAction(
+                                                                                            order.id, order.customer,
+                                                                                            'Sending quote…', 'Quote Enviada ✓', `${order.customer} — cotización enviada al cliente`,
+                                                                                            { status: 'Sent', actionLabel: 'SENT' }
+                                                                                        )
+                                                                                    }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
                                                                                 >
                                                                                     Send →
@@ -1165,7 +1223,14 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             )}
                                                                             {!order.isPO && lifecycleTab === 'quotes' && (order as any).status === 'Approval' && (
                                                                                 <button
-                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('quote-detail'); }}
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        simulateCardAction(
+                                                                                            order.id, order.customer,
+                                                                                            'Processing approval…', 'Quote Aprobada ✓', `${order.customer} — lista para convertir a PO`,
+                                                                                            { status: 'Approved', actionLabel: 'APPROVED' }
+                                                                                        )
+                                                                                    }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
                                                                                 >
                                                                                     Approve →

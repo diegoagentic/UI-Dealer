@@ -376,7 +376,21 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
             setIsPOContext(true);
             const sanitizedId = resolvedId.replace('#', '');
             const foundReq = MOCK_PO_DRAFTS.find(p => p.id === sanitizedId || p.poNumber === sanitizedId);
-            if (foundReq) setPoData(foundReq);
+            if (foundReq) {
+                // Apply any simulated status override from the funnel quick actions
+                const overrideRaw = localStorage.getItem(`demo_po_status_${resolvedId}`)
+                    || localStorage.getItem(`demo_po_status_${sanitizedId}`);
+                if (overrideRaw) {
+                    try {
+                        const override = JSON.parse(overrideRaw);
+                        setPoData({ ...foundReq, orderStatus: override.poStatus ?? foundReq.orderStatus });
+                    } catch {
+                        setPoData(foundReq);
+                    }
+                } else {
+                    setPoData(foundReq);
+                }
+            }
         }
     }, []);
 
