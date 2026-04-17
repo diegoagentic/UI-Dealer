@@ -15,7 +15,7 @@ import SendItemSlideOver from './components/SendItemSlideOver'
 import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import ItemActionsPopover from './components/ItemActionsPopover'
-import AddItemSlideOver from './components/AddItemSlideOver'
+import AddItemModal from './components/AddItemModal'
 import FilterPopover from './components/FilterPopover'
 import { QuickActions } from './components/QuickActions'
 
@@ -818,6 +818,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                 {/* Quick Actions Bar */}
                 <QuickActions actions={[
+                    { icon: <Plus className="w-4 h-4" />, label: "Add Item", action: () => setIsAddItemOpen(true) },
                     { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
                     { icon: <FileSearch className="w-4 h-4" />, label: "Request Expert Review", action: () => triggerToast('Expert Review Requested', 'ACK-3099 — PO vs ACK reconciliation sent to Expert Hub for resolution', 'info') },
@@ -1622,7 +1623,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="ack" transactionId="ACK-3099" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="ack" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="ack" transactionId="ACK-3099" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
-            <AddItemSlideOver open={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="ack" onAdd={() => triggerToast('Item Added', 'New line item added to Acknowledgement ACK-3099', 'success')} />
+            <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="ack" transactionId="ACK-3099" onAdd={() => triggerToast('Item Added', 'New line item added to Acknowledgement ACK-3099', 'success')} />
             <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )

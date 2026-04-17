@@ -17,7 +17,7 @@ import SendItemSlideOver from './components/SendItemSlideOver'
 import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import ItemActionsPopover from './components/ItemActionsPopover'
-import AddItemSlideOver from './components/AddItemSlideOver'
+import AddItemModal from './components/AddItemModal'
 import FilterPopover from './components/FilterPopover'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -286,10 +286,10 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                 {/* Quick Actions Bar — all actions including stage advance + Convert to PO */}
                 <QuickActions actions={[
+                    { icon: <Plus className="w-4 h-4" />, label: "Add Item", action: () => setIsAddItemOpen(true) },
                     { icon: <SquarePen className="w-4 h-4" />, label: "Edit Quote", action: () => setIsEditOpen(true) },
                     { icon: <Download className="w-4 h-4" />, label: "Download PDF", action: () => { triggerToast('Preparing Download', 'Generating PDF...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send to Customer", action: () => setIsSendOpen(true) },
-                    { icon: <Copy className="w-4 h-4" />, label: "Duplicate", action: () => triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success') },
                     ...(canAdvance ? [{ icon: <ChevronRight className="w-4 h-4" />, label: `Advance to ${QUOTE_STAGES[stageIndex + 1]}`, action: () => setIsAdvanceDialogOpen(true) }] : []),
                     { icon: <FileText className="w-4 h-4" />, label: "Convert to PO", action: () => setIsConvertDialogOpen(true) },
                 ]} />
@@ -1372,7 +1372,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="quote" transactionId="QT-1025" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="quote" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="quote" transactionId="QT-1025" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
-            <AddItemSlideOver open={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="quote" onAdd={() => triggerToast('Item Added', 'New line item added to Quote QT-1025', 'success')} />
+            <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="quote" transactionId="QT-1025" onAdd={() => triggerToast('Item Added', 'New line item added to Quote QT-1025', 'success')} />
             <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )
