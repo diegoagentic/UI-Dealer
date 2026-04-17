@@ -378,18 +378,6 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 >
                                     Quote Items
                                 </Tab>
-                                <Tab
-                                    className={({ selected }) =>
-                                        cn(
-                                            "py-4 text-sm font-medium border-b-2 outline-none transition-colors",
-                                            selected
-                                                ? "border-zinc-500 text-zinc-900 dark:border-primary dark:text-foreground"
-                                                : "border-transparent text-muted-foreground hover:text-foreground"
-                                        )
-                                    }
-                                >
-                                    Activity Stream
-                                </Tab>
                                 {showPOTab && (
                                     <Tab
                                         className={({ selected }) =>
@@ -520,26 +508,6 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
-                                            <div className="flex gap-1">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <FileBarChart className="h-4 w-4" title="Preview Document" />
-                                                </button>
-                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <SquarePen className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => { triggerToast('Preparing Download...', `Generating PDF for ${selectedItem.name}`, 'info'); setTimeout(() => triggerToast('Download Complete', `Quote_QT-1025_${selectedItem.id}.pdf`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Download className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Send className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-ai hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Sparkles className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-ai ring-2 ring-white dark:ring-zinc-900" />
-                                                </button>
-                                                <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <ItemActionsPopover transactionType="quote" onAction={(action) => triggerToast(action, `Action applied to ${selectedItem.name}`, 'success')} />
-                                            </div>
                                         </div>
 
                                         <div className="p-4 space-y-6">
@@ -798,7 +766,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
                                 </div>
                             </TabPanel>
-                            <TabPanel className="flex focus:outline-none min-h-[800px]">
+                            {false && <TabPanel className="flex focus:outline-none min-h-[800px]">
                                 <div className="flex flex-col min-w-0 bg-muted/10 w-full">
                                     {/* Chat Header */}
                                     <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
@@ -985,7 +953,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         </button>
                                     </div>
                                 </div>
-                            </TabPanel >
+                            </TabPanel>}
                             {showPOTab && (
                                 <TabPanel className="flex flex-col focus:outline-none p-6">
                                     <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-border mt-4">
