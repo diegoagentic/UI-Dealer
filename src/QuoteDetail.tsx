@@ -9,7 +9,8 @@ import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
 import { QuickActions } from './components/QuickActions'
-import { ConversionReviewPage } from './features/po-conversion'
+import { ConversionReviewPage, RevisionHistory, SubmissionHistory, ArtifactDownloads } from './features/po-conversion'
+import { MOCK_REVISIONS, MOCK_SUBMISSIONS, MOCK_ARTIFACTS } from './features/po-conversion/mockData'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -540,6 +541,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     }
                                 >
                                     Quote Items
+                                </Tab>
+                                <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors", selected ? "border-green-500 text-green-700 dark:border-green-400 dark:text-green-400" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                                    Submissions
+                                </Tab>
+                                <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors", selected ? "border-green-500 text-green-700 dark:border-green-400 dark:text-green-400" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                                    Revisions
+                                </Tab>
+                                <Tab className={({ selected }) => cn("py-4 text-sm font-medium border-b-2 outline-none transition-colors", selected ? "border-green-500 text-green-700 dark:border-green-400 dark:text-green-400" : "border-transparent text-muted-foreground hover:text-foreground")}>
+                                    Artifacts
                                 </Tab>
                                 {showPOTab && (
                                     <Tab
@@ -1133,6 +1143,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </div>
                                 </div>
                             </TabPanel>}
+                            <TabPanel className="flex flex-col focus:outline-none p-6">
+                                <SubmissionHistory attempts={MOCK_SUBMISSIONS} />
+                            </TabPanel>
+                            <TabPanel className="flex flex-col focus:outline-none p-6">
+                                <RevisionHistory revisions={MOCK_REVISIONS} />
+                            </TabPanel>
+                            <TabPanel className="flex flex-col focus:outline-none p-6">
+                                <ArtifactDownloads artifacts={MOCK_ARTIFACTS} />
+                            </TabPanel>
                             {showPOTab && (
                                 <TabPanel className="flex flex-col focus:outline-none p-6">
                                     <div className="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-border mt-4">

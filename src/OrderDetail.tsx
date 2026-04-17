@@ -23,6 +23,7 @@ import SubmissionHistory from './features/po-conversion/SubmissionHistory'
 import RevisionHistory from './features/po-conversion/RevisionHistory'
 import ArtifactDownloads from './features/po-conversion/ArtifactDownloads'
 import { MOCK_PO_DRAFTS, MOCK_SUBMISSIONS, MOCK_REVISIONS, MOCK_ARTIFACTS } from './features/po-conversion/mockData'
+import AckReviewSlideOver from './components/AckReviewSlideOver'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -455,6 +456,8 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
+    const [isAckReviewOpen, setIsAckReviewOpen] = useState(false)
+    const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
     const [isManualFixMode, setIsManualFixMode] = useState(false)
@@ -644,12 +647,12 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                 {/* Quick Actions Bar */}
                 <QuickActions actions={[
-                    { icon: <Download className="w-4 h-4" />, label: "Download Invoice", action: () => { triggerToast('Preparing Download', 'Generating invoice PDF...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Invoice_ORD-2055.pdf downloaded', 'success'), 1500); } },
-                    { icon: <Send className="w-4 h-4" />, label: "Send to Vendor", action: () => setIsSendOpen(true) },
-                    { icon: <RefreshCw className="w-4 h-4" />, label: "Request Update", action: () => triggerToast('Update Requested', 'Vendor notified to provide status update', 'info') },
+                    { icon: <Mail className="w-4 h-4" />, label: "Email Client", action: () => triggerToast('Opening Email Client', 'Drafting tracking update...', 'info') },
+                    { icon: <Download className="w-4 h-4" />, label: "Download Order", action: () => triggerToast('Download Started', 'ORD-2055.pdf is downloading', 'success') },
                     { icon: <Copy className="w-4 h-4" />, label: "Duplicate Order", action: () => triggerToast('Order Duplicated', 'Copy of ORD-2055 created as draft', 'success') },
                     ...(isPOContext ? [
                         { icon: <FileText className="w-4 h-4" />, label: "Finalize PO", action: () => triggerToast('PO Finalized', `${poData.poNumber} locked and ready to submit`, 'success') },
+                        { icon: <Search className="w-4 h-4" />, label: "Review ACK", action: () => setIsAckReviewOpen(true) },
                     ] : []),
                 ]} />
 
@@ -1324,8 +1327,9 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 </Dialog>
             </Transition>
-            {/* SlideOvers & Toast */}
-            <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="order" transactionId="ORD-2055" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
+            {/* Modals & Slideovers */}
+            <AckReviewSlideOver open={isAckReviewOpen} onClose={() => setIsAckReviewOpen(false)} poId={poData.poNumber} />
+            <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="order" transactionId={orderId} itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="order" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="order" transactionId="ORD-2055" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
             <AddItemSlideOver open={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="order" onAdd={() => triggerToast('Item Added', 'New line item added to Order ORD-2055', 'success')} />

@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
 import { ArrowRight, Check, Copy, ExternalLink, FileText, SquarePen, X } from 'lucide-react';
 interface CreateOrderModalProps {
     isOpen: boolean;
@@ -192,9 +192,9 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
     }
 
     return (
-        <Transition.Root show={isOpen} as={Fragment}>
+        <Transition show={isOpen} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={onClose}>
-                <Transition.Child
+                <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
                     enterFrom="opacity-0"
@@ -204,11 +204,11 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                     leaveTo="opacity-0"
                 >
                     <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm transition-opacity" />
-                </Transition.Child>
+                </TransitionChild>
 
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full items-center justify-center p-4 text-center">
-                        <Transition.Child
+                        <TransitionChild
                             as={Fragment}
                             enter="ease-out duration-300"
                             enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -217,7 +217,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className={`relative transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 text-left shadow-2xl transition-all border border-border w-full ${getModalSize()}`}>
+                            <DialogPanel className={`relative transform overflow-hidden rounded-2xl bg-white dark:bg-zinc-950 text-left shadow-2xl transition-all border border-border w-full ${getModalSize()}`}>
                                 {/* Close Button logic - Hide in sub-flows that have their own navigation */}
                                 {step === 'selection' && (
                                     <div className="absolute right-6 top-6 z-10">
@@ -234,9 +234,9 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                 {step === 'selection' ? (
                                     <div className="p-8">
                                         <div className="max-w-2xl">
-                                            <Dialog.Title as="h3" className="text-2xl font-brand font-bold text-foreground mb-2">
+                                            <DialogTitle as="h3" className="text-2xl font-brand font-bold text-foreground mb-2">
                                                 Create New Order
-                                            </Dialog.Title>
+                                            </DialogTitle>
                                             <p className="text-sm text-muted-foreground mb-6">
                                                 Choose how you would like to start this order. Select the option that best fits your current workflow.
                                             </p>
@@ -283,9 +283,9 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                                 <ArrowRight className="h-5 w-5 rotate-180 text-muted-foreground" />
                                             </button>
                                             <div>
-                                                <Dialog.Title as="h3" className="text-2xl font-brand font-bold text-foreground">
+                                                <DialogTitle as="h3" className="text-2xl font-brand font-bold text-foreground">
                                                     Select a Template
-                                                </Dialog.Title>
+                                                </DialogTitle>
                                                 <p className="text-sm text-muted-foreground">
                                                     Choose from your saved templates to quickly create a new order.
                                                 </p>
@@ -353,11 +353,11 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                         onCancel={() => setStep('selection')} // Always go back to selection if cancelled from main form
                                     />
                                 )}
-                            </Dialog.Panel>
-                        </Transition.Child>
+                            </DialogPanel>
+                        </TransitionChild>
                     </div>
                 </div>
             </Dialog>
-        </Transition.Root>
+        </Transition>
     )
 }
