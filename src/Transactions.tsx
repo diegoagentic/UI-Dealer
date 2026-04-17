@@ -1327,18 +1327,22 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                         )}
 
                                                                         {/* Inline Actions Row */}
-                                                                        <div className="flex items-center justify-between gap-2">
-                                                                            {/* Status Badge */}
-                                                                            {order.isPO ? (
-                                                                                <ConversionStatusBadge status={order.poStatus} size="sm" />
-                                                                            ) : (
-                                                                                <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
-                                                                                    colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-muted text-muted-foreground border-border"
-                                                                                )}>
-                                                                                    {order.status}
-                                                                                </span>
-                                                                            )}
+                                                                        <div className="space-y-2">
+                                                                            {/* Status Badge row */}
+                                                                            <div className="flex items-center justify-between">
+                                                                                {order.isPO ? (
+                                                                                    <ConversionStatusBadge status={order.poStatus} size="sm" />
+                                                                                ) : (
+                                                                                    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border shadow-sm",
+                                                                                        colorStyles[order.statusColor?.split('-')[1]?.replace('text', '').trim()] || "bg-muted text-muted-foreground border-border"
+                                                                                    )}>
+                                                                                        {order.status}
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
 
+                                                                            {/* Action buttons row */}
+                                                                            <div className="flex items-center justify-end gap-1.5 flex-wrap">
                                                                             {/* Contextual quick action — depends on card type/status */}
                                                                             {order.isPO && order.poStatus === 'DRAFT' && (
                                                                                 <button
@@ -1459,6 +1463,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 >
                                                                                     <ArrowRight className="h-4 w-4" />
                                                                                 </button>
+                                                                            </div>
                                                                             </div>
                                                                         </div>
                                                                     </div>
