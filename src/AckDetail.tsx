@@ -655,7 +655,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate || (() => { })} />
 
             {/* Page Header (moved from original header, adjusted for floating nav) */}
-            <div className="pt-24 px-6 pb-4 flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
+            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
                         <ChevronRight className="h-4 w-4 rotate-180" />
@@ -679,7 +679,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 </div>
             </div>
 
-            <div className="flex flex-col p-6 gap-6">
+            <div className="flex flex-col px-4 py-6 max-w-7xl mx-auto gap-6">
                 {/* Collapsible Summary */}
                 {isSummaryExpanded ? (
                     <>
