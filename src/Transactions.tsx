@@ -13,6 +13,7 @@ import BatchAckModal from './components/BatchAckModal'
 import { FeatureFlagGuard } from './features/po-conversion'
 import ConversionStatusBadge from './features/po-conversion/ConversionStatusBadge'
 import Breadcrumbs from './components/Breadcrumbs'
+import AckReviewSlideOver from './components/AckReviewSlideOver'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -374,6 +375,10 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         order: any
     } | null>(null)
     const [pendingActionStep, setPendingActionStep] = useState<'confirm' | 'processing' | 'done'>('confirm')
+    
+    const [isAckReviewOpen, setIsAckReviewOpen] = useState(false)
+    const [ackReviewPoId, setAckReviewPoId] = useState<string | undefined>()
+
     // Inline approval chain for convertToPO in ActionConfirmDialog
     const [convertApprovalSteps, setConvertApprovalSteps] = useState<Array<'pending' | 'approved'>>(['pending', 'pending', 'pending'])
     const [convertApprovalStarted, setConvertApprovalStarted] = useState(false)
@@ -895,7 +900,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                     </div>
                                 </div>
                             </div>
-                            <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
 
                             {/* Smart Quote Hub Modal */}
                             <Transition appear show={isQuoteWidgetOpen} as={Fragment}>
@@ -1386,6 +1390,20 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     Convert to PO →
                                                                                 </button>
                                                                             )}
+                                                                            
+                                                                            {/* ACK Comparison Button */}
+                                                                            {order.isPO && (order as any).poStatus !== 'DRAFT' && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        setAckReviewPoId(order.id)
+                                                                                        setIsAckReviewOpen(true)
+                                                                                    }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Compare ACK →
+                                                                                </button>
+                                                                            )}
 
                                                                             <div className="flex items-center gap-1">
                                                                                 <button
@@ -1653,9 +1671,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                     </div>
                 </Dialog>
             </Transition>
-            <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
             <AcknowledgementUploadModal isOpen={isAckModalOpen} onClose={() => setIsAckModalOpen(false)} />
-            <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} />
             <CreateQuoteModal isOpen={isQuoteWidgetOpen} onClose={() => setIsQuoteWidgetOpen(false)} onNavigate={onNavigate} />
 
             {/* Action Confirm Dialog */}
@@ -1781,7 +1797,11 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                     </div>
                 </div>
             )}
-
+            
+            {/* Global Modals and Slideovers */}
+            <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
+            <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} onNavigateToAck={() => onNavigateToDetail('ack-detail')} />
+            <AckReviewSlideOver open={isAckReviewOpen} onClose={() => setIsAckReviewOpen(false)} poId={ackReviewPoId} />
         </div >
     )
 }
