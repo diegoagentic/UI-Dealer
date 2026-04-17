@@ -1391,6 +1391,19 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 </button>
                                                                             )}
                                                                             
+                                                                            {lifecycleTab === 'acknowledgments' && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        localStorage.setItem('demo_view_order_id', order.id)
+                                                                                        localStorage.setItem('demo_open_reconciliation', 'true')
+                                                                                        onNavigateToDetail('ack-detail')
+                                                                                    }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Compare →
+                                                                                </button>
+                                                                            )}
                                                                             {/* ACK Comparison Button */}
                                                                             {order.isPO && (order as any).poStatus !== 'DRAFT' && (
                                                                                 <button

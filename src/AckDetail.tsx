@@ -1,6 +1,6 @@
-import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileSearch, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -8,8 +8,7 @@ import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
-import ComparisonSummaryPanel from './components/ack-comparison/ComparisonSummaryPanel'
-import type { AckComparisonReport } from './components/ack-comparison/ComparisonSummaryPanel'
+import AckReconciliationModal from './components/AckReconciliationModal'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -166,27 +165,6 @@ function DiscrepancyResolverView({ onClose, triggerToast }: {
             </div>
         </div>
     )
-}
-
-const mockComparisonReport: AckComparisonReport = {
-    ackId: 'ACK-3099',
-    poId: '#ORD-2055',
-    vendor: 'AIS — Affordable Interior Systems',
-    comparisonStatus: 'PARTIAL_MATCH',
-    comparedAt: 'Apr 10, 2026 08:42 AM',
-    fields: [
-        { field: 'Vendor Name', category: 'header', poValue: 'AIS', ackValue: 'AIS', status: 'match' },
-        { field: 'PO Number', category: 'header', poValue: '#ORD-2055', ackValue: '#ORD-2055', status: 'match' },
-        { field: 'Ship-To Address', category: 'logistics', poValue: '1200 Commerce Dr, Dallas TX', ackValue: '1200 Commerce Dr, Dallas TX', status: 'match' },
-        { field: 'Line 1: Qty (Rec Table)', category: 'line-item', poValue: '4', ackValue: '4', status: 'match' },
-        { field: 'Line 5: Finish (Lounge)', category: 'line-item', poValue: 'Ocean Blue', ackValue: 'Azure Blue', status: 'partial', autoFixSuggestion: 'Manufacturer substituted Ocean Blue with Azure — same fabric grade. No price impact.', confidence: 95, severity: 'low' },
-        { field: 'Line 5: Qty (Lounge 2-Seat)', category: 'line-item', poValue: '2', ackValue: '0', status: 'mismatch', autoFixSuggestion: 'Item backordered. Vendor confirmed separate shipment ETA Nov 27, 2025.', confidence: 92, severity: 'high' },
-        { field: 'Line 7: Qty (Triple Locker)', category: 'line-item', poValue: '8', ackValue: '6', status: 'mismatch', autoFixSuggestion: '2 units on allocation — ETA +3 weeks. Suggest partial acceptance.', confidence: 88, severity: 'high' },
-        { field: 'Estimated Ship Date', category: 'logistics', poValue: 'Nov 15, 2025', ackValue: 'Nov 27, 2025', status: 'partial', autoFixSuggestion: 'Ship date pushed 12 days due to backorder. Within tolerance.', confidence: 90, severity: 'medium' },
-        { field: 'Freight Terms', category: 'terms', poValue: 'Prepaid & Add', ackValue: 'Prepaid & Add', status: 'match' },
-        { field: 'Payment Terms', category: 'terms', poValue: 'Net 30', ackValue: 'Net 30', status: 'match' },
-        { field: 'Total Amount', category: 'pricing', poValue: '$27,494.11', ackValue: '$25,398.72', status: 'mismatch', autoFixSuggestion: 'Delta -$2,095.39 driven by backordered items. Will reconcile on second shipment.', confidence: 96, severity: 'high' },
-    ]
 }
 
 const DiscrepancyResolutionFlow = () => {
@@ -649,13 +627,21 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
-    const [isResolverOpen, setIsResolverOpen] = useState(false)
+    const [isReconciliationOpen, setIsReconciliationOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
     const [isManualFixMode, setIsManualFixMode] = useState(false)
     const [resolutionMethod, setResolutionMethod] = useState<'local' | 'remote' | 'custom'>('remote')
     const [customValue, setCustomValue] = useState('')
+
+    useEffect(() => {
+        const shouldOpen = localStorage.getItem('demo_open_reconciliation')
+        if (shouldOpen === 'true') {
+            setIsReconciliationOpen(true)
+            localStorage.removeItem('demo_open_reconciliation')
+        }
+    }, [])
 
     const toggleSection = (key: keyof typeof sections) => {
         setSections(prev => ({ ...prev, [key]: !prev[key] }))
@@ -833,14 +819,11 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
 
 
-                {/* PO vs ACK Comparison Summary */}
-                <ComparisonSummaryPanel report={mockComparisonReport} />
-
                 {/* Quick Actions Bar */}
                 <QuickActions actions={[
                     { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
-                    { icon: <AlertTriangle className="w-4 h-4" />, label: "Resolve Discrepancy", action: () => setIsResolverOpen(true) },
+                    { icon: <FileSearch className="w-4 h-4" />, label: "PO vs ACK Comparison", action: () => setIsReconciliationOpen(true) },
                     { icon: <Check className="w-4 h-4" />, label: "Confirm ACK", action: () => triggerToast('ACK Confirmed', 'Acknowledgement confirmed and logged', 'success') },
                 ]} />
 
@@ -1653,33 +1636,12 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                     </div>
                 </Dialog>
             </Transition>
-            {/* Discrepancy Resolver Dialog */}
-            <Transition show={isResolverOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={() => setIsResolverOpen(false)}>
-                    <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
-                        <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
-                    </TransitionChild>
-                    <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
-                        <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
-                            <DialogPanel className="w-full max-w-lg bg-card rounded-2xl border border-border shadow-2xl p-6">
-                                <div className="flex items-start justify-between mb-5">
-                                    <div>
-                                        <DialogTitle className="text-base font-bold text-foreground">PO vs ACK Discrepancy Resolver</DialogTitle>
-                                        <p className="text-xs text-muted-foreground mt-1">ACK-3099 · PO #ORD-2055 · AIS — Affordable Interior Systems</p>
-                                    </div>
-                                    <button onClick={() => setIsResolverOpen(false)} className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                </div>
-                                <DiscrepancyResolverView
-                                    onClose={() => setIsResolverOpen(false)}
-                                    triggerToast={triggerToast}
-                                />
-                            </DialogPanel>
-                        </TransitionChild>
-                    </div>
-                </Dialog>
-            </Transition>
+            {/* PO vs ACK Reconciliation Modal */}
+            <AckReconciliationModal
+                isOpen={isReconciliationOpen}
+                onClose={() => setIsReconciliationOpen(false)}
+                triggerToast={triggerToast}
+            />
 
             {/* SlideOvers & Toast */}
             <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="ack" transactionId="ACK-3099" itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
