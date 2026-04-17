@@ -18,6 +18,7 @@ import EditItemSlideOver from './components/EditItemSlideOver'
 import ItemActionsPopover from './components/ItemActionsPopover'
 import AddItemSlideOver from './components/AddItemSlideOver'
 import FilterPopover from './components/FilterPopover'
+import { QuickActions } from './components/QuickActions'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -710,6 +711,14 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 {/* PO vs ACK Comparison Summary */}
                 <ComparisonSummaryPanel report={mockComparisonReport} />
 
+                {/* Quick Actions Bar */}
+                <QuickActions actions={[
+                    { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
+                    { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
+                    { icon: <Check className="w-4 h-4" />, label: "Confirm ACK", action: () => triggerToast('ACK Confirmed', 'Acknowledgement confirmed and logged', 'success') },
+                    { icon: <AlertTriangle className="w-4 h-4" />, label: "Flag Exception", action: () => triggerToast('Exception Flagged', 'Item flagged for expert review', 'info') },
+                ]} />
+
                 {/* Main Content Area */}
                 <div className="flex flex-col">
                     <TabGroup className="flex flex-col" defaultIndex={initialTab || 0}>
@@ -867,10 +876,6 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                                 </button>
                                                 <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
                                                     <Send className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsAiDiagnosisOpen(true)} className="relative p-1 text-ai hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Sparkles className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-ai ring-2 ring-white dark:ring-zinc-900" />
                                                 </button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
                                                 <ItemActionsPopover transactionType="ack" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />

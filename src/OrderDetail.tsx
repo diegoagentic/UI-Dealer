@@ -1,4 +1,4 @@
-import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
+import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Copy, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
 import { Fragment } from 'react'
 import { useState, useEffect } from 'react'
@@ -16,6 +16,7 @@ import ItemActionsPopover from './components/ItemActionsPopover'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import AddItemSlideOver from './components/AddItemSlideOver'
 import FilterPopover from './components/FilterPopover'
+import { QuickActions } from './components/QuickActions'
 import FinalizePOButton from './features/po-conversion/FinalizePOButton'
 import SubmitPODialog from './features/po-conversion/SubmitPODialog'
 import SubmissionHistory from './features/po-conversion/SubmissionHistory'
@@ -641,6 +642,17 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
 
 
+                {/* Quick Actions Bar */}
+                <QuickActions actions={[
+                    { icon: <Download className="w-4 h-4" />, label: "Download Invoice", action: () => { triggerToast('Preparing Download', 'Generating invoice PDF...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Invoice_ORD-2055.pdf downloaded', 'success'), 1500); } },
+                    { icon: <Send className="w-4 h-4" />, label: "Send to Vendor", action: () => setIsSendOpen(true) },
+                    { icon: <RefreshCw className="w-4 h-4" />, label: "Request Update", action: () => triggerToast('Update Requested', 'Vendor notified to provide status update', 'info') },
+                    { icon: <Copy className="w-4 h-4" />, label: "Duplicate Order", action: () => triggerToast('Order Duplicated', 'Copy of ORD-2055 created as draft', 'success') },
+                    ...(isPOContext ? [
+                        { icon: <FileText className="w-4 h-4" />, label: "Finalize PO", action: () => triggerToast('PO Finalized', `${poData.poNumber} locked and ready to submit`, 'success') },
+                    ] : []),
+                ]} />
+
                 {/* Main Content Area */}
                 <div className="flex flex-col">
                     <TabGroup className="flex flex-col">
@@ -657,18 +669,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     }
                                 >
                                     {isPOContext ? 'PO Items' : 'Order Items'}
-                                </Tab>
-                                <Tab
-                                    className={({ selected }) =>
-                                        cn(
-                                            "py-4 text-sm font-medium border-b-2 outline-none transition-colors",
-                                            selected
-                                                ? "border-zinc-500 text-zinc-900 dark:border-primary dark:text-foreground"
-                                                : "border-transparent text-muted-foreground hover:text-foreground"
-                                        )
-                                    }
-                                >
-                                    Tracking & Activity
                                 </Tab>
                                 {isPOContext && (
                                     <>
@@ -813,10 +813,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                 </Button>
                                                 <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" onClick={() => setIsSendOpen(true)}>
                                                     <Send className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" onClick={() => setIsAiDiagnosisOpen(true)} className="relative h-auto p-1 text-ai hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Sparkles className="h-4 w-4" />
-                                                    <span className="absolute top-1 right-1 block h-1.5 w-1.5 rounded-full bg-ai ring-2 ring-white dark:ring-zinc-900" />
                                                 </Button>
                                                 <div className="w-px h-4 bg-border mx-1 self-center" />
                                                 <ItemActionsPopover transactionType="order" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />
@@ -1091,203 +1087,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     </Card>
                                 </div>
                             </TabPanel>
-                            <TabPanel className="flex focus:outline-none min-h-[800px]">
-                                <div className="flex flex-col min-w-0 bg-muted/10 w-full">
-                                    {/* Chat Header */}
-                                    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-background">
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="text-lg font-semibold text-foreground">Activity Stream</h3>
-                                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">#ORD-2055</span>
-                                            </div>
-                                            <p className="text-sm text-muted-foreground">Real-time updates and collaboration</p>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex -space-x-2">
-                                                {collaborators.map((c, i) => (
-                                                    <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background">
-                                                        {c.avatar === 'AI' ? (
-                                                            <div className="h-full w-full rounded-full bg-ai flex items-center justify-center text-xs font-bold text-white">AI</div>
-                                                        ) : (
-                                                            <img className="h-full w-full rounded-full object-cover" src={c.avatar} alt={c.name} />
-                                                        )}
-                                                        <span className={cn(
-                                                            "absolute bottom-0 right-0 block h-2.5 w-2.5 rounded-full ring-2 ring-background",
-                                                            c.status === 'online' ? "bg-green-400" : "bg-zinc-300"
-                                                        )} />
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <Button variant="ghost" className="h-8 w-8 p-0 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                                                <Plus className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-
-                                    {/* Messages Area */}
-                                    <div className="p-6 space-y-6">
-                                        {messages.map((msg) => (
-                                            <div key={msg.id} className={cn("flex gap-4 max-w-3xl", msg.type === 'user' ? "ml-auto flex-row-reverse" : "")}>
-                                                <div className="flex-shrink-0">
-                                                    {msg.type === 'action_processing' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 animate-pulse">
-                                                            <FileText className="h-5 w-5 text-zinc-900 dark:text-primary" />
-                                                        </div>
-                                                    ) : msg.type === 'action_success' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center border border-green-200 dark:border-green-800">
-                                                            <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                                                        </div>
-                                                    ) : msg.avatar === 'AI' ? (
-                                                        <div className="h-10 w-10 rounded-full bg-ai-light dark:bg-ai/10 flex items-center justify-center border border-ai/20 dark:border-ai/30">
-                                                            <Sparkles className="h-5 w-5 text-ai" />
-                                                        </div>
-                                                    ) : msg.avatar ? (
-                                                        <img className="h-10 w-10 rounded-full object-cover" src={msg.avatar} alt={msg.sender} />
-                                                    ) : (
-                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
-                                                            <AlertTriangle className="h-5 w-5 text-zinc-900 dark:text-primary" />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex-1 space-y-2">
-                                                    <div className="flex items-baseline justify-between">
-                                                        <span className="text-sm font-semibold text-foreground">{msg.sender}</span>
-                                                        <span className="text-xs text-muted-foreground">{msg.time}</span>
-                                                    </div>
-
-                                                    {msg.type === 'action_success' ? (
-                                                        <DiscrepancyActionCard msg={msg} />
-                                                    ) : (
-                                                        <div className={cn(
-                                                            "p-4 rounded-2xl text-sm leading-relaxed shadow-sm",
-                                                            msg.type === 'user'
-                                                                ? "bg-brand-300 dark:bg-brand-500 text-primary-foreground rounded-tr-sm"
-                                                                : "bg-card border border-border rounded-tl-sm text-foreground"
-                                                        )}>
-                                                            {msg.content}
-                                                            {msg.type === 'action_processing' && (
-                                                                <div className="mt-3 flex items-center gap-2 text-zinc-900 dark:text-primary font-medium">
-                                                                    <RefreshCw className="h-4 w-4 animate-spin" />
-                                                                    <span>Processing request...</span>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="sticky bottom-4 mx-4 p-4 bg-background border border-border rounded-2xl shadow-lg z-10 transition-all duration-200">
-                                        <div className="flex gap-4">
-                                            <div className="flex-1 relative">
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Type a message or use @ to mention..."
-                                                    className="w-full pl-4 pr-12 py-3 bg-muted/50 border-0 rounded-xl text-foreground placeholder-muted-foreground focus:ring-primary transition-shadow shadow-none focus:shadow-md"
-                                                />
-                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                                                    <Button variant="ghost" className="h-auto w-auto p-1.5 text-muted-foreground hover:text-foreground rounded-full hover:bg-muted">
-                                                        <Paperclip className="h-5 w-5" />
-                                                    </Button>
-                                                </div>
-                                            </div>
-                                            <Button variant="primary" className="h-auto w-auto p-3 rounded-xl hover:opacity-90 transition-opacity shadow-sm bg-primary text-primary-foreground">
-                                                <Send className="h-5 w-5" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Contextual Quick Actions Sidebar */}
-                                <div className="w-80 border-l border-border bg-muted/30 flex flex-col h-full animate-in slide-in-from-right duration-500">
-                                    <div className="p-5 border-b border-border bg-background/50">
-                                        <div className="flex items-center justify-between mb-2">
-                                            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Context</h3>
-                                            <span className="flex h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center border border-amber-200 dark:border-amber-500/30">
-                                                <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-bold text-foreground">Pending Review</p>
-                                                <p className="text-xs text-muted-foreground">Waiting for Final Approval (2/3)</p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex-1 p-5 space-y-6 overflow-y-auto">
-                                        <div>
-                                            <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Suggested Actions</h4>
-                                            <div className="space-y-3">
-                                                <Button
-                                                    onClick={() => setIsDocumentModalOpen(true)}
-                                                    variant="ghost"
-                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all text-left"
-                                                >
-                                                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors text-zinc-900 dark:text-primary">
-                                                        <FileText className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-foreground group-hover:text-zinc-900 dark:group-hover:text-primary transition-colors">Process Quote</p>
-                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Analyze PDF & Extract Data</p>
-                                                    </div>
-                                                </Button>
-
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-green-500/50 hover:shadow-md transition-all text-left"
-                                                >
-                                                    <div className="h-8 w-8 rounded-lg bg-green-50 dark:bg-green-500/10 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-colors text-green-600 dark:text-green-400">
-                                                        <Check className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-foreground group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">Approve Order</p>
-                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Move to Production</p>
-                                                    </div>
-                                                </Button>
-
-                                                <Button
-                                                    variant="ghost"
-                                                    className="w-full h-auto justify-start group relative flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:shadow-md transition-all text-left"
-                                                >
-                                                    <div className="h-8 w-8 rounded-lg bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-colors text-amber-600 dark:text-amber-400">
-                                                        <Pencil className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-sm font-medium text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">Request Changes</p>
-                                                        <p className="text-[10px] text-muted-foreground font-normal normal-case">Send feedback to vendor</p>
-                                                    </div>
-                                                </Button>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">Live Updates</h4>
-                                            <div className="p-3 rounded-xl bg-primary/5 border border-primary/10">
-                                                <div className="flex gap-2">
-                                                    <div className="h-6 w-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                                                        <span className="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-primary opacity-75"></span>
-                                                        <div className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></div>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs font-medium text-zinc-900 dark:text-primary">AI Assistant is processing the new quote...</p>
-                                                        <p className="text-[10px] text-zinc-700 dark:text-primary/80 mt-1">Estimated completion: 30s</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="p-4 border-t border-border bg-muted/50">
-                                        <Button variant="ghost" className="w-full h-auto py-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1">
-                                            View Activity Log <LogOut className="h-3 w-3" />
-                                        </Button>
-                                    </div>
-                                </div>
-                            </TabPanel>
-                        {isPOContext && (
+                            {isPOContext && (
                                 <>
                                     <TabPanel className="focus:outline-none p-6 bg-card border-t border-border">
                                         <SubmissionHistory attempts={MOCK_SUBMISSIONS} />
