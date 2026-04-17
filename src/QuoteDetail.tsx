@@ -684,8 +684,8 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         </div>
 
                                         <div className="p-4 space-y-6">
-                                            {/* AI Side Panel Section */}
-                                            {selectedItem.aiStatus && (
+                                            {/* AI Side Panel Section — hidden for this version */}
+                                            {false && selectedItem.aiStatus && (
                                                 <div>
                                                     <button
                                                         onClick={() => toggleSection('aiSuggestions')}
