@@ -1228,6 +1228,33 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                     <span className="font-semibold text-foreground">{order.amount}</span>
                                                                                 </div>
                                                                             </div>
+                                                                        ) : order.status === 'Ingesting' ? (
+                                                                            <div className="border-t border-border pt-3 mt-1 space-y-2.5">
+                                                                                <div className="flex items-center gap-2">
+                                                                                    <RefreshCw className="h-3.5 w-3.5 text-amber-500 animate-spin" />
+                                                                                    <span className="text-[11px] font-semibold text-amber-600 dark:text-amber-400">Validating & Processing</span>
+                                                                                </div>
+                                                                                <div className="space-y-1.5">
+                                                                                    {[
+                                                                                        { label: 'Document parsing', done: true },
+                                                                                        { label: 'Field extraction', done: (order as any).actionLabel?.includes('review') },
+                                                                                        { label: 'Pricing validation', done: false },
+                                                                                    ].map((step, i) => (
+                                                                                        <div key={i} className="flex items-center gap-2">
+                                                                                            {step.done
+                                                                                                ? <CheckCircle2 className="h-3 w-3 text-green-500 shrink-0" />
+                                                                                                : i === 1 && !(order as any).actionLabel?.includes('review')
+                                                                                                    ? <RefreshCw className="h-3 w-3 text-amber-500 animate-spin shrink-0" />
+                                                                                                    : <div className="h-3 w-3 rounded-full border border-border shrink-0" />
+                                                                                            }
+                                                                                            <span className={cn("text-[10px]", step.done ? "text-green-600 dark:text-green-400" : "text-muted-foreground")}>{step.label}</span>
+                                                                                        </div>
+                                                                                    ))}
+                                                                                </div>
+                                                                                <div className="w-full bg-muted rounded-full h-1 overflow-hidden">
+                                                                                    <div className="h-full bg-amber-500 rounded-full animate-pulse" style={{ width: (order as any).actionLabel?.includes('review') ? '66%' : '33%' }} />
+                                                                                </div>
+                                                                            </div>
                                                                         ) : (
                                                                             <>
                                                                                 <div className="flex justify-between items-center text-xs">
