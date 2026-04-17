@@ -681,22 +681,6 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
-                                            <div className="flex gap-1">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <FileBarChart className="h-4 w-4" title="Preview Document" />
-                                                </button>
-                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <SquarePen className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => { triggerToast('Preparing Download...', `Generating PDF for ${selectedItem.name}`, 'info'); setTimeout(() => triggerToast('Download Complete', `Quote_QT-1025_${selectedItem.id}.pdf`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Download className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Send className="h-4 w-4" />
-                                                </button>
-                                                <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <ItemActionsPopover transactionType="quote" onAction={(action) => triggerToast(action, `Action applied to ${selectedItem.name}`, 'success')} />
-                                            </div>
                                         </div>
 
                                         <div className="p-4 space-y-6">

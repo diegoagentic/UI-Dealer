@@ -972,22 +972,6 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
-                                            <div className="flex gap-1">
-                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Preview Document">
-                                                    <FileBarChart className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <SquarePen className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', `ACK_ACK-3099_${selectedItem.id}.pdf downloaded`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Download className="h-4 w-4" />
-                                                </button>
-                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
-                                                    <Send className="h-4 w-4" />
-                                                </button>
-                                                <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <ItemActionsPopover transactionType="ack" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />
-                                            </div>
                                         </div>
 
                                         <div className="p-4 space-y-6">

@@ -804,22 +804,6 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
-                                            <div className="flex gap-1">
-                                                <Button variant="ghost" onClick={() => setIsDocumentModalOpen(true)} className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Preview Document">
-                                                    <BarChart3 className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" onClick={() => setIsEditOpen(true)} className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
-                                                    <SquarePen className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" onClick={() => { triggerToast('Preparing Download', 'Generating PDF document...', 'info'); setTimeout(() => triggerToast('Download Complete', `PO_ORD-2055_${selectedItem.id}.pdf downloaded`, 'success'), 1500); }}>
-                                                    <Download className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" className="h-auto p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" onClick={() => setIsSendOpen(true)}>
-                                                    <Send className="h-4 w-4" />
-                                                </Button>
-                                                <div className="w-px h-4 bg-border mx-1 self-center" />
-                                                <ItemActionsPopover transactionType="order" onAction={(action) => triggerToast(action, `${action} completed for ${selectedItem.name}`, 'success')} />
-                                            </div>
                                         </div>
 
                                         <div className="p-4 space-y-6">
