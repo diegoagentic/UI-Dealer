@@ -1126,7 +1126,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                         )}
 
                                                                         {/* Inline Actions Row */}
-                                                                        <div className="flex items-center justify-between">
+                                                                        <div className="flex items-center justify-between gap-2">
                                                                             {/* Status Badge */}
                                                                             {order.isPO ? (
                                                                                 <ConversionStatusBadge status={order.poStatus} size="sm" />
@@ -1136,6 +1136,40 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 )}>
                                                                                     {order.status}
                                                                                 </span>
+                                                                            )}
+
+                                                                            {/* Contextual quick action — depends on card type/status */}
+                                                                            {order.isPO && order.poStatus === 'DRAFT' && (
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('order-detail'); }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Finalize →
+                                                                                </button>
+                                                                            )}
+                                                                            {order.isPO && order.poStatus === 'FINALIZED' && (
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('order-detail'); }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Submit →
+                                                                                </button>
+                                                                            )}
+                                                                            {!order.isPO && lifecycleTab === 'quotes' && (order as any).actionLabel === 'READY_TO_SEND' && (
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('quote-detail'); }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Send →
+                                                                                </button>
+                                                                            )}
+                                                                            {!order.isPO && lifecycleTab === 'quotes' && (order as any).status === 'Approval' && (
+                                                                                <button
+                                                                                    onClick={(e) => { e.stopPropagation(); localStorage.setItem('demo_view_order_id', order.id); onNavigateToDetail('quote-detail'); }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Approve →
+                                                                                </button>
                                                                             )}
 
                                                                             <div className="flex items-center gap-1">

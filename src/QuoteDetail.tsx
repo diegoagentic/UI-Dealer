@@ -114,6 +114,12 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [resolutionMethod, setResolutionMethod] = useState<'local' | 'remote' | 'custom'>('remote')
     const [customValue, setCustomValue] = useState('')
 
+    // Quote workflow stages — dynamic so "Advance Stage" updates the progress bar
+    const QUOTE_STAGES = ['Draft Created', 'Internal Review', 'Sent to Client', 'Negotiating', 'Approved']
+    const [stageIndex, setStageIndex] = useState(3) // starts at Negotiating
+    const isApproved = stageIndex === QUOTE_STAGES.length - 1
+    const canAdvance = stageIndex < QUOTE_STAGES.length - 1
+
     const toggleSection = (key: keyof typeof sections) => {
         setSections(prev => ({ ...prev, [key]: !prev[key] }))
     }
@@ -182,13 +188,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                 <div className="relative pb-2">
                                     <div className="absolute top-3 left-0 w-full h-0.5 bg-zinc-200 dark:bg-zinc-700" />
                                     <div className="relative z-10 flex justify-between w-full max-w-4xl mx-auto px-4">
-                                        {[
-                                            { name: 'Draft Created', status: 'completed' },
-                                            { name: 'Internal Review', status: 'completed' },
-                                            { name: 'Sent to Client', status: 'completed' },
-                                            { name: 'Negotiating', status: 'current' },
-                                            { name: 'Approved', status: 'pending' }
-                                        ].map((step, i) => {
+                                        {QUOTE_STAGES.map((name, i) => {
+                                            const step = {
+                                                name,
+                                                status: i < stageIndex ? 'completed' : i === stageIndex ? 'current' : 'pending'
+                                            }
                                             const isCompleted = step.status === 'completed';
                                             const isCurrent = step.status === 'current';
                                             // Matching Dashboard logic: Completed & Current (active) use primary/brand colors. 
@@ -275,15 +279,46 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     </div>
                 )}
 
-                {/* Quick Actions Bar — uses shared QuickActions component */}
+                {/* Quick Actions Bar — secondary actions only */}
                 <QuickActions actions={[
-                    { icon: <Copy className="w-4 h-4" />, label: "Duplicate", action: () => triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success') },
-                    { icon: <Printer className="w-4 h-4" />, label: "Print", action: () => triggerToast('Preparing Print', 'Opening print preview...', 'info') },
-                    { icon: <SquarePen className="w-4 h-4" />, label: "Edit", action: () => setIsEditOpen(true) },
+                    { icon: <SquarePen className="w-4 h-4" />, label: "Edit Quote", action: () => setIsEditOpen(true) },
                     { icon: <Download className="w-4 h-4" />, label: "Download PDF", action: () => { triggerToast('Preparing Download', 'Generating PDF...', 'info'); setTimeout(() => triggerToast('Download Complete', 'Quote_QT-1025.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send to Customer", action: () => setIsSendOpen(true) },
-                    { icon: <FileText className="w-4 h-4" />, label: "Convert to PO", action: () => setIsConvertDialogOpen(true) },
+                    { icon: <Copy className="w-4 h-4" />, label: "Duplicate", action: () => triggerToast('Quote Duplicated', 'Copy of QT-1025 created as draft', 'success') },
                 ]} />
+
+                {/* Primary CTA section — stage advance + Convert to PO */}
+                <div className="flex gap-3">
+                    {canAdvance && (
+                        <button
+                            onClick={() => {
+                                setStageIndex(i => i + 1)
+                                triggerToast(
+                                    'Stage Advanced',
+                                    `Quote moved to "${QUOTE_STAGES[stageIndex + 1]}"`,
+                                    'success'
+                                )
+                            }}
+                            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border bg-background hover:bg-muted text-sm font-semibold text-foreground transition-all"
+                        >
+                            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                            Advance to {QUOTE_STAGES[stageIndex + 1]}
+                        </button>
+                    )}
+                    <button
+                        onClick={() => setIsConvertDialogOpen(true)}
+                        className={twMerge(
+                            'flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold transition-all',
+                            isApproved
+                                ? 'flex-1 bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm'
+                                : 'flex-1 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20'
+                        )}
+                    >
+                        <FileText className="h-4 w-4" />
+                        Convert to PO
+                        {isApproved && <ChevronRight className="h-4 w-4" />}
+                    </button>
+                </div>
 
                 {/* Convert to PO Confirmation Dialog */}
                 <Transition show={isConvertDialogOpen} as={Fragment}>
