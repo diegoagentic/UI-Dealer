@@ -32,18 +32,6 @@ const creationOptions = [
         darkBgColor: 'dark:bg-blue-900/30'
     },
     {
-        id: 'template',
-        title: 'From Template',
-        description: 'Use a pre-configured template or previous order as a starting point. Perfect for recurring orders.',
-        icon: Copy,
-        actionLabel: 'Browse Templates',
-        estimatedTime: '5-8 minutes',
-        color: 'text-ai',
-        bgColor: 'bg-ai-light',
-        darkColor: 'dark:text-ai',
-        darkBgColor: 'dark:bg-ai/10'
-    },
-    {
         id: 'manual',
         title: 'Manual Creation',
         description: 'Create an order from scratch by entering all details manually. Best for custom or unique orders.',
