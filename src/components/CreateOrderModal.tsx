@@ -230,7 +230,7 @@ export default function CreateOrderModal({ isOpen, onClose }: CreateOrderModalPr
                                             </p>
                                         </div>
 
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             {creationOptions.map((option) => (
                                                 <div
                                                     key={option.id}
