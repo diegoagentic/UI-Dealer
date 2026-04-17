@@ -21,5 +21,8 @@ export { default as ArtifactDownloads } from './ArtifactDownloads'
 export { useToast, ToastContainer } from './Toast'
 export type { Toast, ToastType } from './Toast'
 
+// FE-12 · URL-based route configuration
+export { POConversionRoutes, PO_ROUTES } from './routes'
+
 export * from './hooks'
 export * from './types'

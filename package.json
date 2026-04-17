@@ -21,6 +21,7 @@
     "lucide-react": "^1.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-router-dom": "^7.14.1",
     "recharts": "^3.6.0",
     "strata-design-system": "file:./packages/strata-ds",
     "tailwind-merge": "^3.4.0"

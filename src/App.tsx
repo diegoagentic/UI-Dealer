@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
 import { GenUIProvider } from './context/GenUIContext'
 import { useAuth } from './context/AuthContext'
 import Login from "./Login"
@@ -16,6 +17,7 @@ import CRM from "./CRM"
 import Pricing from "./Pricing"
 import Navbar from "./components/Navbar"
 import { ConversionReviewPage, FeatureFlagGuard } from './features/po-conversion'
+import { POConversionRoutes } from './features/po-conversion/routes'
 import DemoGuide from "./components/DemoGuide"
 import SessionExpiryModal from "./components/SessionExpiryModal"
 import logoLightBrand from './assets/logo-light-brand.png'
@@ -65,70 +67,100 @@ function App() {
   // Authenticated: show app
   return (
     <GenUIProvider onNavigate={handleNavigate}>
-      {/* Session Expiry Modal */}
       <SessionExpiryModal
         isOpen={showSessionWarning}
         onExtend={refreshSession}
         onLogout={handleLogout}
       />
 
-      {currentPage !== 'detail' && currentPage !== 'workspace' && (
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <Navbar
-            onLogout={handleLogout}
-            onNavigateToWorkspace={() => setCurrentPage('workspace')}
-            onOpenDemoGuide={() => setIsDemoGuideOpen(true)}
-            activeTab={currentPage}
-            onNavigate={handleNavigate}
-          />
-        </div>
-      )}
+      <Routes>
+        {/* ── PO Conversion — URL-based routes (FE-12) ────────────────────
+            Rendered with a Navbar locked to the Transactions tab so the
+            user keeps their orientation. Navigation inside the PO section
+            is handled by react-router-dom (useNavigate in route wrappers). */}
+        <Route
+          path="/po-conversion/*"
+          element={
+            <>
+              <div className="fixed top-0 left-0 right-0 z-50">
+                <Navbar
+                  onLogout={handleLogout}
+                  onNavigateToWorkspace={() => setCurrentPage('workspace')}
+                  activeTab="transactions"
+                  onNavigate={handleNavigate}
+                />
+              </div>
+              <div className="pt-24">
+                <POConversionRoutes />
+              </div>
+            </>
+          }
+        />
 
-      <div className={currentPage !== 'detail' && currentPage !== 'workspace' ? 'pt-24' : ''}>
-        {currentPage === 'dashboard' ? (
-          <Dashboard onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'inventory' ? (
-          <Inventory onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'catalogs' ? (
-          <Catalogs onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'mac' ? (
-          <MAC onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'transactions' ? (
-          <Transactions
-            onLogout={handleLogout}
-            onNavigateToDetail={(type) => setCurrentPage(type as any)}
-            onNavigateToWorkspace={() => setCurrentPage('workspace')}
-            onNavigate={handleNavigate}
-          />
-        ) : currentPage === 'crm' ? (
-          <CRM onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'pricing' ? (
-          <Pricing onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'detail' ? (
-          <Detail onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'quote-detail' ? (
-          <QuoteDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'order-detail' ? (
-          <OrderDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'ack-detail' ? (
-          <AckDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'ack-detail-ai' ? (
-          <AckDetail initialTab={1} onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
-        ) : currentPage === 'conversion-review' ? (
-          <FeatureFlagGuard>
-            <ConversionReviewPage onBack={() => setCurrentPage('transactions')} onApprove={() => setCurrentPage('po-drafts')} />
-          </FeatureFlagGuard>
+        {/* ── Everything else — existing state-based navigation ────────── */}
+        <Route
+          path="/*"
+          element={
+            <>
+              {currentPage !== 'detail' && currentPage !== 'workspace' && (
+                <div className="fixed top-0 left-0 right-0 z-50">
+                  <Navbar
+                    onLogout={handleLogout}
+                    onNavigateToWorkspace={() => setCurrentPage('workspace')}
+                    activeTab={currentPage}
+                    onNavigate={handleNavigate}
+                  />
+                </div>
+              )}
 
-        ) : currentPage === 'workspace' ? (
-          <Workspace onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} />
-        ) : null}
-      </div>
+              <div className={currentPage !== 'detail' && currentPage !== 'workspace' ? 'pt-24' : ''}>
+                {currentPage === 'dashboard' ? (
+                  <Dashboard onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'inventory' ? (
+                  <Inventory onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'catalogs' ? (
+                  <Catalogs onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'mac' ? (
+                  <MAC onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'transactions' ? (
+                  <Transactions
+                    onLogout={handleLogout}
+                    onNavigateToDetail={(type) => setCurrentPage(type as any)}
+                    onNavigateToWorkspace={() => setCurrentPage('workspace')}
+                    onNavigate={handleNavigate}
+                  />
+                ) : currentPage === 'crm' ? (
+                  <CRM onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'pricing' ? (
+                  <Pricing onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'detail' ? (
+                  <Detail onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'quote-detail' ? (
+                  <QuoteDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'order-detail' ? (
+                  <OrderDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'ack-detail' ? (
+                  <AckDetail onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'ack-detail-ai' ? (
+                  <AckDetail initialTab={1} onBack={() => setCurrentPage('transactions')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'conversion-review' ? (
+                  <FeatureFlagGuard>
+                    <ConversionReviewPage onBack={() => setCurrentPage('transactions')} onApprove={() => setCurrentPage('po-drafts')} />
+                  </FeatureFlagGuard>
+                ) : currentPage === 'workspace' ? (
+                  <Workspace onBack={() => setCurrentPage('dashboard')} onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} />
+                ) : null}
+              </div>
 
-      <DemoGuide
-        isOpen={isDemoGuideOpen}
-        onClose={() => setIsDemoGuideOpen(false)}
-        onNavigate={handleNavigate}
-      />
+              <DemoGuide
+                isOpen={isDemoGuideOpen}
+                onClose={() => setIsDemoGuideOpen(false)}
+                onNavigate={handleNavigate}
+              />
+            </>
+          }
+        />
+      </Routes>
     </GenUIProvider>
   )
 }
