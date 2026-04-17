@@ -104,8 +104,9 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false)
-    const [isConvertDialogStep, setIsConvertDialogStep] = useState<'review' | 'approval' | 'processing'>('review')
+    const [isConvertDialogStep, setIsConvertDialogStep] = useState<'review' | 'scanning' | 'discrepancy' | 'approval' | 'processing'>('review')
     const [approvalSteps, setApprovalSteps] = useState<Array<'pending' | 'approved'>>(['pending', 'pending', 'pending'])
+    const [discrepancyAcknowledged, setDiscrepancyAcknowledged] = useState<Record<string, boolean>>({})
     const [isConversionReviewOpen, setIsConversionReviewOpen] = useState(false)
     const [isAdvanceDialogOpen, setIsAdvanceDialogOpen] = useState(false)
     const [showPOTab, setShowPOTab] = useState(false)
@@ -295,10 +296,11 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 {/* Convert to PO Confirmation Dialog */}
                 <Transition show={isConvertDialogOpen} as={Fragment}>
                     <Dialog as="div" className="relative z-50" onClose={() => {
-                        if (isConvertDialogStep !== 'processing') {
+                        if (isConvertDialogStep !== 'processing' && isConvertDialogStep !== 'scanning') {
                             setIsConvertDialogOpen(false)
                             setIsConvertDialogStep('review')
                             setApprovalSteps(['pending', 'pending', 'pending'])
+                            setDiscrepancyAcknowledged({})
                         }
                     }}>
                         <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
@@ -312,25 +314,132 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                     {isConvertDialogStep === 'review' && (
                                         <>
                                             <p className="text-sm text-muted-foreground mb-4">
-                                                This will create a frozen snapshot of Quote <span className="font-semibold text-foreground">QT-1025</span> and generate vendor-specific PO drafts. You'll have 72 hours to review before auto-cancellation.
+                                                This will create a frozen snapshot of Quote <span className="font-semibold text-foreground">QT-1025</span> and generate vendor-specific PO drafts. A pre-conversion scan will run first to catch any pricing or availability issues.
                                             </p>
-                                            <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl p-3 mb-5 flex items-start gap-2">
-                                                <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                                                <p className="text-xs text-muted-foreground">The quote will be locked during conversion. Any pending changes will be included in the snapshot.</p>
+                                            <div className="space-y-2 mb-5">
+                                                {[
+                                                    { label: '6 line items across 3 vendors', icon: <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> },
+                                                    { label: '$121,935 total PO value', icon: <CheckCircle2 className="h-3.5 w-3.5 text-green-500" /> },
+                                                    { label: 'Quote locked for 72h review window', icon: <AlertTriangle className="h-3.5 w-3.5 text-amber-500" /> },
+                                                ].map((item, i) => (
+                                                    <div key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                                                        {item.icon}
+                                                        <span>{item.label}</span>
+                                                    </div>
+                                                ))}
                                             </div>
                                             <div className="flex gap-3 justify-end">
-                                                <button onClick={() => { setIsConvertDialogOpen(false); setIsConvertDialogStep('review'); setApprovalSteps(['pending', 'pending', 'pending']); }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                                <button onClick={() => { setIsConvertDialogOpen(false); setIsConvertDialogStep('review'); setApprovalSteps(['pending', 'pending', 'pending']); setDiscrepancyAcknowledged({}) }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
                                                     Cancel
                                                 </button>
                                                 <button
-                                                    onClick={() => setIsConvertDialogStep('approval')}
+                                                    onClick={() => {
+                                                        setIsConvertDialogStep('scanning')
+                                                        setTimeout(() => setIsConvertDialogStep('discrepancy'), 2000)
+                                                    }}
                                                     className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg transition-colors flex items-center gap-1"
                                                 >
-                                                    Start Conversion <ChevronRight className="h-4 w-4" />
+                                                    Run Pre-flight Scan <ChevronRight className="h-4 w-4" />
                                                 </button>
                                             </div>
                                         </>
                                     )}
+
+                                    {isConvertDialogStep === 'scanning' && (
+                                        <div className="py-6 space-y-4">
+                                            <p className="text-sm text-muted-foreground">Scanning quote against live catalog and vendor data…</p>
+                                            <div className="space-y-3">
+                                                {[
+                                                    { label: 'Checking line item pricing vs. current catalog', delay: 0 },
+                                                    { label: 'Validating vendor availability & lead times', delay: 400 },
+                                                    { label: 'Cross-referencing approved vendor contracts', delay: 900 },
+                                                ].map((check, i) => (
+                                                    <div key={i} className="flex items-center gap-3 animate-in fade-in slide-in-from-left-4" style={{ animationDelay: `${check.delay}ms`, animationFillMode: 'both' }}>
+                                                        <RefreshCw className="h-3.5 w-3.5 text-primary animate-spin shrink-0" />
+                                                        <span className="text-xs text-muted-foreground">{check.label}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {isConvertDialogStep === 'discrepancy' && (() => {
+                                        const issues = [
+                                            {
+                                                id: 'price-hm',
+                                                severity: 'error' as const,
+                                                vendor: 'Herman Miller',
+                                                sku: 'HM-AER-RB',
+                                                description: 'Catalog price updated since quoting',
+                                                detail: 'Quoted $1,195 · Current $1,275 · 20 units → +$1,600 impact',
+                                            },
+                                            {
+                                                id: 'lead-kn',
+                                                severity: 'warning' as const,
+                                                vendor: 'Knoll',
+                                                sku: 'KN-GEN-EX',
+                                                description: 'Lead time extended by vendor',
+                                                detail: 'Was 4 weeks · Now 6–8 weeks — may affect delivery commitment',
+                                            },
+                                        ]
+                                        const allAcknowledged = issues.every(i => discrepancyAcknowledged[i.id])
+                                        return (
+                                            <>
+                                                <p className="text-sm text-muted-foreground mb-4">
+                                                    Pre-flight scan found <span className="font-semibold text-foreground">2 issues</span> that require your review before proceeding.
+                                                </p>
+                                                <div className="space-y-3 mb-5">
+                                                    {issues.map(issue => (
+                                                        <div key={issue.id} className={`rounded-xl border p-3 transition-all ${discrepancyAcknowledged[issue.id]
+                                                            ? 'border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 opacity-70'
+                                                            : issue.severity === 'error'
+                                                                ? 'border-red-200 dark:border-red-500/30 bg-red-50/50 dark:bg-red-500/5'
+                                                                : 'border-amber-200 dark:border-amber-500/30 bg-amber-50/50 dark:bg-amber-500/5'
+                                                        }`}>
+                                                            <div className="flex items-start gap-3">
+                                                                <div className="mt-0.5 shrink-0">
+                                                                    {discrepancyAcknowledged[issue.id]
+                                                                        ? <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                                                        : issue.severity === 'error'
+                                                                            ? <AlertCircle className="h-4 w-4 text-red-500" />
+                                                                            : <AlertTriangle className="h-4 w-4 text-amber-500" />
+                                                                    }
+                                                                </div>
+                                                                <div className="flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                                        <span className="text-xs font-bold text-foreground">{issue.vendor}</span>
+                                                                        <span className="text-[10px] text-muted-foreground font-mono">{issue.sku}</span>
+                                                                    </div>
+                                                                    <p className="text-xs font-medium text-foreground mt-0.5">{issue.description}</p>
+                                                                    <p className="text-[10px] text-muted-foreground mt-0.5">{issue.detail}</p>
+                                                                </div>
+                                                                {!discrepancyAcknowledged[issue.id] && (
+                                                                    <button
+                                                                        onClick={() => setDiscrepancyAcknowledged(prev => ({ ...prev, [issue.id]: true }))}
+                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-foreground text-background hover:opacity-80 transition-opacity shrink-0"
+                                                                    >
+                                                                        Accept
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="flex gap-3 justify-end">
+                                                    <button onClick={() => { setIsConvertDialogOpen(false); setIsConvertDialogStep('review'); setDiscrepancyAcknowledged({}) }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                                        Cancel
+                                                    </button>
+                                                    <button
+                                                        disabled={!allAcknowledged}
+                                                        onClick={() => setIsConvertDialogStep('approval')}
+                                                        className="px-4 py-2 text-sm font-bold rounded-lg transition-colors flex items-center gap-1 disabled:opacity-40 disabled:cursor-not-allowed bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white"
+                                                    >
+                                                        Proceed to Approval <ChevronRight className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            </>
+                                        )
+                                    })()}
 
                                     {isConvertDialogStep === 'approval' && (
                                         <ApprovalChainStep
