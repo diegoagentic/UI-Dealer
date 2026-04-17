@@ -1,7 +1,7 @@
 import { Menu, MenuButton, MenuItem, MenuItems, Dialog, DialogPanel, Transition, TransitionChild, Popover, PopoverButton, PopoverPanel } from '@headlessui/react'
 import { Fragment } from 'react'
 import { AlertCircle, AlertTriangle, ArrowRight, BadgeCheck, BarChart3, Bell, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, CloudUpload, Copy, DollarSign, Eye, FilePlus, FileText, Filter, LayoutGrid, List, LogOut, Mail, MapPin, MoreHorizontal, Package, Pencil, Plus, Search, ShoppingBag, ShoppingCart, Sparkles, SquarePen, Trash2, TrendingUp, Truck, User, Wrench } from 'lucide-react';
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect, useRef, Dispatch, SetStateAction } from 'react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, Line, CartesianGrid } from 'recharts'
 
 import { useTheme } from 'strata-design-system'
@@ -148,6 +148,102 @@ import { MetricGrid } from './components/MetricCard'
 import ComparisonStatusBadge from './components/ack-comparison/ComparisonStatusBadge'
 import { QuickActions } from './components/QuickActions'
 
+// ── Inline Approval Chain for Convert to PO in ActionConfirmDialog ──
+function InlineConvertApprovalChain({
+    approvalSteps, setApprovalSteps,
+    financeApproved, setFinanceApproved,
+    dealerStarted, setDealerStarted,
+    onAllApproved
+}: {
+    approvalSteps: Array<'pending' | 'approved'>
+    setApprovalSteps: Dispatch<SetStateAction<Array<'pending' | 'approved'>>>
+    financeApproved: boolean
+    setFinanceApproved: Dispatch<SetStateAction<boolean>>
+    dealerStarted: boolean
+    setDealerStarted: Dispatch<SetStateAction<boolean>>
+    onAllApproved: () => void
+}) {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setApprovalSteps(prev => { const s = [...prev]; s[0] = 'approved'; return s })
+        }, 1500)
+        return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const handleFinanceApprove = () => {
+        setFinanceApproved(true)
+        setApprovalSteps(prev => { const s = [...prev]; s[1] = 'approved'; return s })
+        setDealerStarted(true)
+        setTimeout(() => {
+            setApprovalSteps(prev => { const s = [...prev]; s[2] = 'approved'; return s })
+            setTimeout(onAllApproved, 400)
+        }, 1000)
+    }
+
+    const aiApproved = approvalSteps[0] === 'approved'
+    const financeApprovedState = approvalSteps[1] === 'approved'
+    const dealerApproved = approvalSteps[2] === 'approved'
+
+    return (
+        <div className="space-y-2">
+            {aiApproved ? (
+                <div className="p-2.5 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center shrink-0"><CheckCircle2 className="h-4 w-4 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">AI Compliance Agent</p><p className="text-[10px] text-muted-foreground">Policy & limits verified</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : (
+                <div className="p-2.5 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center shrink-0"><div className="animate-spin rounded-full h-3 w-3 border-2 border-muted-foreground border-t-transparent" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">AI Compliance Agent</p><p className="text-[10px] text-muted-foreground">Checking policy…</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Processing</span>
+                </div>
+            )}
+
+            {financeApprovedState ? (
+                <div className="p-2.5 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center shrink-0"><CheckCircle2 className="h-4 w-4 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorized</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : aiApproved ? (
+                <div className="p-2.5 rounded-xl border border-primary/40 bg-primary/5 ring-2 ring-primary/20 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center shrink-0"><span className="text-xs font-bold">2</span></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorization required</p></div>
+                    <button onClick={handleFinanceApprove} className="px-2.5 py-1 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold">Approve</button>
+                </div>
+            ) : (
+                <div className="p-2.5 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center shrink-0"><Clock className="h-3.5 w-3.5 text-muted-foreground" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorization required</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Waiting</span>
+                </div>
+            )}
+
+            {dealerApproved ? (
+                <div className="p-2.5 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center shrink-0"><CheckCircle2 className="h-4 w-4 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Final sign-off granted</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : dealerStarted ? (
+                <div className="p-2.5 rounded-xl border border-border bg-muted/20 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center shrink-0"><div className="animate-spin rounded-full h-3 w-3 border-2 border-muted-foreground border-t-transparent" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Auto-approving…</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Processing</span>
+                </div>
+            ) : (
+                <div className="p-2.5 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-2">
+                    <div className="h-7 w-7 rounded-full bg-muted flex items-center justify-center shrink-0"><Clock className="h-3.5 w-3.5 text-muted-foreground" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Final sign-off</p></div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Waiting</span>
+                </div>
+            )}
+        </div>
+    )
+}
+
 // ── Discrepancy Resolver View (inline in modal) ──
 function DiscrepancyResolverView({ onClose, triggerToast }: { onClose: () => void; triggerToast: (t: string, d: string, type: 'success' | 'error' | 'info') => void }) {
     const [selected, setSelected] = useState<'po' | 'ack' | null>(null)
@@ -270,6 +366,20 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
         Record<string, Partial<{ status: string; poStatus: string; actionLabel: string }>>
     >({})
 
+    // Pending action confirmation state
+    const [pendingAction, setPendingAction] = useState<{
+        orderId: string
+        customer: string
+        action: 'finalize' | 'submit' | 'send' | 'approve' | 'advance' | 'convertToPO'
+        order: any
+    } | null>(null)
+    const [pendingActionStep, setPendingActionStep] = useState<'confirm' | 'processing' | 'done'>('confirm')
+    // Inline approval chain for convertToPO in ActionConfirmDialog
+    const [convertApprovalSteps, setConvertApprovalSteps] = useState<Array<'pending' | 'approved'>>(['pending', 'pending', 'pending'])
+    const [convertApprovalStarted, setConvertApprovalStarted] = useState(false)
+    const [convertFinanceApproved, setConvertFinanceApproved] = useState(false)
+    const [convertDealerStarted, setConvertDealerStarted] = useState(false)
+
     // Merge static data with any local overrides produced by quick actions.
     const applyOverrides = <T extends { id: string }>(data: T[]): T[] =>
         data.map(item =>
@@ -296,6 +406,29 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             setLocalCardOverrides(prev => ({ ...prev, [orderId]: newState }))
             localStorage.setItem(`demo_po_status_${orderId}`, JSON.stringify(newState))
             triggerToast(successTitle, successMsg, 'success')
+        }, 1500)
+    }
+
+    const handlePendingActionConfirm = () => {
+        if (!pendingAction) return
+        const { orderId, customer, action, order } = pendingAction
+        setPendingActionStep('processing')
+        setTimeout(() => {
+            if (action === 'finalize') {
+                simulateCardAction(orderId, customer, 'Finalizing PO…', 'PO Finalizado ✓', `${customer} — PO listo para enviar`, { status: 'PO Finalized', poStatus: 'FINALIZED' })
+            } else if (action === 'submit') {
+                simulateCardAction(orderId, customer, 'Submitting PO…', 'PO Enviado ✓', `${customer} — proveedor notificado vía EDI`, { status: 'PO Submitted', poStatus: 'SUBMITTED' })
+            } else if (action === 'send') {
+                simulateCardAction(orderId, customer, 'Sending quote…', 'Quote Enviada ✓', `${customer} — cotización enviada al cliente`, { status: 'Sent', actionLabel: 'SENT' })
+            } else if (action === 'approve') {
+                simulateCardAction(orderId, customer, 'Processing approval…', 'Quote Aprobada ✓', `${customer} — lista para convertir a PO`, { status: 'Approved', actionLabel: 'APPROVED' })
+            } else if (action === 'advance') {
+                simulateCardAction(orderId, customer, 'Advancing stage…', 'Stage Advanced ✓', `${customer} — moved to next stage`, { status: 'Validation', actionLabel: undefined })
+            } else if (action === 'convertToPO') {
+                simulateCardAction(orderId, customer, 'Converting to PO…', 'Converted to PO ✓', `${customer} — PO draft created`, { status: 'PO Draft', poStatus: 'DRAFT', isPO: true } as any)
+            }
+            setPendingAction(null)
+            setPendingActionStep('confirm')
         }, 1500)
     }
 
@@ -1180,11 +1313,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        simulateCardAction(
-                                                                                            order.id, order.customer,
-                                                                                            'Finalizing PO…', 'PO Finalizado ✓', `${order.customer} — PO listo para enviar`,
-                                                                                            { status: 'PO Finalized', poStatus: 'FINALIZED' }
-                                                                                        )
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'finalize', order })
+                                                                                        setPendingActionStep('confirm')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
                                                                                 >
@@ -1195,11 +1325,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        simulateCardAction(
-                                                                                            order.id, order.customer,
-                                                                                            'Submitting PO…', 'PO Enviado ✓', `${order.customer} — proveedor notificado vía EDI`,
-                                                                                            { status: 'PO Submitted', poStatus: 'SUBMITTED' }
-                                                                                        )
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'submit', order })
+                                                                                        setPendingActionStep('confirm')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
                                                                                 >
@@ -1210,11 +1337,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        simulateCardAction(
-                                                                                            order.id, order.customer,
-                                                                                            'Sending quote…', 'Quote Enviada ✓', `${order.customer} — cotización enviada al cliente`,
-                                                                                            { status: 'Sent', actionLabel: 'SENT' }
-                                                                                        )
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'send', order })
+                                                                                        setPendingActionStep('confirm')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-green-500/10 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-500/30 hover:bg-green-500/20 transition-colors whitespace-nowrap"
                                                                                 >
@@ -1225,15 +1349,41 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 <button
                                                                                     onClick={(e) => {
                                                                                         e.stopPropagation()
-                                                                                        simulateCardAction(
-                                                                                            order.id, order.customer,
-                                                                                            'Processing approval…', 'Quote Aprobada ✓', `${order.customer} — lista para convertir a PO`,
-                                                                                            { status: 'Approved', actionLabel: 'APPROVED' }
-                                                                                        )
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'approve', order })
+                                                                                        setPendingActionStep('confirm')
                                                                                     }}
                                                                                     className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
                                                                                 >
                                                                                     Approve →
+                                                                                </button>
+                                                                            )}
+                                                                            {!order.isPO && lifecycleTab === 'quotes' &&
+                                                                             (order as any).actionLabel !== 'READY_TO_SEND' &&
+                                                                             (order as any).actionLabel !== 'APPROVED' &&
+                                                                             (order as any).status !== 'Approval' &&
+                                                                             (order as any).status !== 'Approved' && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'advance', order })
+                                                                                        setPendingActionStep('confirm')
+                                                                                    }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-muted text-muted-foreground border border-border hover:bg-muted/80 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Advance →
+                                                                                </button>
+                                                                            )}
+                                                                            {!order.isPO && lifecycleTab === 'quotes' &&
+                                                                             ((order as any).actionLabel === 'APPROVED' || (order as any).status === 'Approved') && (
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.stopPropagation()
+                                                                                        setPendingAction({ orderId: order.id, customer: order.customer, action: 'convertToPO', order })
+                                                                                        setPendingActionStep('confirm')
+                                                                                    }}
+                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-colors whitespace-nowrap"
+                                                                                >
+                                                                                    Convert to PO →
                                                                                 </button>
                                                                             )}
 
@@ -1507,6 +1657,103 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             <AcknowledgementUploadModal isOpen={isAckModalOpen} onClose={() => setIsAckModalOpen(false)} />
             <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} />
             <CreateQuoteModal isOpen={isQuoteWidgetOpen} onClose={() => setIsQuoteWidgetOpen(false)} onNavigate={onNavigate} />
+
+            {/* Action Confirm Dialog */}
+            <Transition show={pendingAction !== null} as={Fragment}>
+                <Dialog as="div" className="relative z-50" onClose={() => { if (pendingActionStep !== 'processing') { setPendingAction(null); setConvertApprovalSteps(['pending', 'pending', 'pending']); setConvertApprovalStarted(false); setConvertFinanceApproved(false); setConvertDealerStarted(false); } }}>
+                    <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                        <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
+                    </TransitionChild>
+                    <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
+                        <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                            <DialogPanel className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-2xl p-6">
+                                {pendingAction && pendingActionStep === 'confirm' && pendingAction.action !== 'convertToPO' && (() => {
+                                    const configs: Record<string, { title: string; checks: string[] }> = {
+                                        finalize: {
+                                            title: 'Finalize Purchase Order',
+                                            checks: ['Line items reviewed and confirmed', 'Quantities match vendor catalog', 'Pricing within approved limits'],
+                                        },
+                                        submit: {
+                                            title: 'Submit PO to Vendor',
+                                            checks: ['PO finalized and locked', 'Vendor EDI connection verified', 'Delivery terms accepted'],
+                                        },
+                                        send: {
+                                            title: 'Send Quote to Customer',
+                                            checks: ['All line items priced correctly', 'Customer contact info verified', 'Quote validity period set'],
+                                        },
+                                        approve: {
+                                            title: 'Approve Quote for Conversion',
+                                            checks: ['Margin within policy (29.2% ✓)', 'Customer credit limit verified', 'Manager review completed'],
+                                        },
+                                        advance: {
+                                            title: 'Advance to Next Stage',
+                                            checks: ['Current stage requirements met', 'No blocking issues found', 'Stakeholders notified'],
+                                        },
+                                    }
+                                    const cfg = configs[pendingAction.action]
+                                    return (
+                                        <>
+                                            <h3 className="text-base font-bold text-foreground mb-1">{cfg.title}</h3>
+                                            <p className="text-xs text-muted-foreground mb-4">{pendingAction.customer}</p>
+                                            <div className="space-y-2 mb-5">
+                                                {cfg.checks.map((check, i) => (
+                                                    <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20 animate-in fade-in slide-in-from-top-1 duration-200" style={{ animationDelay: `${i * 60}ms` }}>
+                                                        <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                                                        <span className="text-xs font-medium text-foreground">{check}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <div className="flex gap-3 justify-end">
+                                                <button onClick={() => { setPendingAction(null); setPendingActionStep('confirm'); }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                                    Cancel
+                                                </button>
+                                                <button onClick={handlePendingActionConfirm} className="px-4 py-2 text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors">
+                                                    Confirm
+                                                </button>
+                                            </div>
+                                        </>
+                                    )
+                                })()}
+
+                                {pendingAction && pendingActionStep === 'confirm' && pendingAction.action === 'convertToPO' && (
+                                    <>
+                                        <h3 className="text-base font-bold text-foreground mb-1">Convert to Purchase Order</h3>
+                                        <p className="text-xs text-muted-foreground mb-4">{pendingAction.customer} — Approval required</p>
+                                        <InlineConvertApprovalChain
+                                            approvalSteps={convertApprovalSteps}
+                                            setApprovalSteps={setConvertApprovalSteps}
+                                            financeApproved={convertFinanceApproved}
+                                            setFinanceApproved={setConvertFinanceApproved}
+                                            dealerStarted={convertDealerStarted}
+                                            setDealerStarted={setConvertDealerStarted}
+                                            onAllApproved={() => {
+                                                handlePendingActionConfirm()
+                                                setConvertApprovalSteps(['pending', 'pending', 'pending'])
+                                                setConvertApprovalStarted(false)
+                                                setConvertFinanceApproved(false)
+                                                setConvertDealerStarted(false)
+                                            }}
+                                        />
+                                        <div className="flex gap-3 justify-end mt-3">
+                                            <button onClick={() => { setPendingAction(null); setPendingActionStep('confirm'); setConvertApprovalSteps(['pending', 'pending', 'pending']); setConvertApprovalStarted(false); setConvertFinanceApproved(false); setConvertDealerStarted(false); }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+
+                                {pendingActionStep === 'processing' && (
+                                    <div className="flex flex-col items-center justify-center py-8 gap-3">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+                                        <p className="text-sm font-medium text-foreground">Processing…</p>
+                                        <p className="text-xs text-muted-foreground">{pendingAction?.customer}</p>
+                                    </div>
+                                )}
+                            </DialogPanel>
+                        </TransitionChild>
+                    </div>
+                </Dialog>
+            </Transition>
 
             {/* Toast Notification */}
             {showToast && (

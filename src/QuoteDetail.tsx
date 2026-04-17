@@ -1,6 +1,6 @@
 import { AlertCircle, AlertTriangle, BarChart3, Box, Calendar, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, ClipboardList, Clock, Copy, Download, FileBarChart, FileText, Filter, ImageIcon, LayoutGrid, LogOut, Mail, MessageSquare, MoreHorizontal, Paperclip, Pencil, Plus, Printer, RefreshCw, Search, Send, Sparkles, SquarePen, TrendingUp, User, X } from 'lucide-react';
 import { Transition, TransitionChild, Popover, PopoverButton, PopoverPanel, Tab, TabGroup, TabList, TabPanel, TabPanels, Dialog, DialogPanel, DialogTitle } from '@headlessui/react'
-import { Fragment } from 'react'
+import { Fragment, useEffect, Dispatch, SetStateAction } from 'react'
 import { useState } from 'react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
@@ -104,7 +104,10 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false)
+    const [isConvertDialogStep, setIsConvertDialogStep] = useState<'review' | 'approval' | 'processing'>('review')
+    const [approvalSteps, setApprovalSteps] = useState<Array<'pending' | 'approved'>>(['pending', 'pending', 'pending'])
     const [isConversionReviewOpen, setIsConversionReviewOpen] = useState(false)
+    const [isAdvanceDialogOpen, setIsAdvanceDialogOpen] = useState(false)
     const [showPOTab, setShowPOTab] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
@@ -291,14 +294,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 <div className="flex gap-3">
                     {canAdvance && (
                         <button
-                            onClick={() => {
-                                setStageIndex(i => i + 1)
-                                triggerToast(
-                                    'Stage Advanced',
-                                    `Quote moved to "${QUOTE_STAGES[stageIndex + 1]}"`,
-                                    'success'
-                                )
-                            }}
+                            onClick={() => setIsAdvanceDialogOpen(true)}
                             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-border bg-background hover:bg-muted text-sm font-semibold text-foreground transition-all"
                         >
                             <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -322,7 +318,13 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
                 {/* Convert to PO Confirmation Dialog */}
                 <Transition show={isConvertDialogOpen} as={Fragment}>
-                    <Dialog as="div" className="relative z-50" onClose={() => setIsConvertDialogOpen(false)}>
+                    <Dialog as="div" className="relative z-50" onClose={() => {
+                        if (isConvertDialogStep !== 'processing') {
+                            setIsConvertDialogOpen(false)
+                            setIsConvertDialogStep('review')
+                            setApprovalSteps(['pending', 'pending', 'pending'])
+                        }
+                    }}>
                         <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
                             <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
                         </TransitionChild>
@@ -330,29 +332,105 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                             <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
                                 <DialogPanel className="w-full max-w-md bg-card rounded-2xl border border-border shadow-2xl p-6">
                                     <DialogTitle className="text-lg font-bold text-foreground mb-2">Convert Quote to Purchase Order</DialogTitle>
-                                    <p className="text-sm text-muted-foreground mb-4">
-                                        This will create a frozen snapshot of Quote <span className="font-semibold text-foreground">QT-1025</span> and generate vendor-specific PO drafts. You'll have 72 hours to review before auto-cancellation.
-                                    </p>
-                                    <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl p-3 mb-5 flex items-start gap-2">
-                                        <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                                        <p className="text-xs text-muted-foreground">The quote will be locked during conversion. Any pending changes will be included in the snapshot.</p>
+
+                                    {isConvertDialogStep === 'review' && (
+                                        <>
+                                            <p className="text-sm text-muted-foreground mb-4">
+                                                This will create a frozen snapshot of Quote <span className="font-semibold text-foreground">QT-1025</span> and generate vendor-specific PO drafts. You'll have 72 hours to review before auto-cancellation.
+                                            </p>
+                                            <div className="bg-amber-50 dark:bg-amber-500/5 border border-amber-200 dark:border-amber-500/20 rounded-xl p-3 mb-5 flex items-start gap-2">
+                                                <AlertTriangle className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
+                                                <p className="text-xs text-muted-foreground">The quote will be locked during conversion. Any pending changes will be included in the snapshot.</p>
+                                            </div>
+                                            <div className="flex gap-3 justify-end">
+                                                <button onClick={() => { setIsConvertDialogOpen(false); setIsConvertDialogStep('review'); setApprovalSteps(['pending', 'pending', 'pending']); }} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                                    Cancel
+                                                </button>
+                                                <button
+                                                    onClick={() => setIsConvertDialogStep('approval')}
+                                                    className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg transition-colors flex items-center gap-1"
+                                                >
+                                                    Start Conversion <ChevronRight className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {isConvertDialogStep === 'approval' && (
+                                        <ApprovalChainStep
+                                            approvalSteps={approvalSteps}
+                                            setApprovalSteps={setApprovalSteps}
+                                            onAllApproved={() => {
+                                                setIsConvertDialogStep('processing')
+                                                setTimeout(() => {
+                                                    setIsConvertDialogOpen(false)
+                                                    setIsConvertDialogStep('review')
+                                                    setApprovalSteps(['pending', 'pending', 'pending'])
+                                                    triggerToast('Conversion Complete', 'Opening review...', 'success')
+                                                    setIsConversionReviewOpen(true)
+                                                }, 1500)
+                                            }}
+                                        />
+                                    )}
+
+                                    {isConvertDialogStep === 'processing' && (
+                                        <div className="flex flex-col items-center justify-center py-8 gap-3">
+                                            <RefreshCw className="h-8 w-8 text-primary animate-spin" />
+                                            <p className="text-sm font-medium text-foreground">Creating PO drafts…</p>
+                                            <p className="text-xs text-muted-foreground">This will only take a moment</p>
+                                        </div>
+                                    )}
+                                </DialogPanel>
+                            </TransitionChild>
+                        </div>
+                    </Dialog>
+                </Transition>
+
+                {/* Advance Stage Dialog */}
+                <Transition show={isAdvanceDialogOpen} as={Fragment}>
+                    <Dialog as="div" className="relative z-50" onClose={() => setIsAdvanceDialogOpen(false)}>
+                        <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="ease-in duration-200" leaveFrom="opacity-100" leaveTo="opacity-0">
+                            <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm" />
+                        </TransitionChild>
+                        <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
+                            <TransitionChild as={Fragment} enter="ease-out duration-300" enterFrom="opacity-0 scale-95" enterTo="opacity-100 scale-100" leave="ease-in duration-200" leaveFrom="opacity-100 scale-100" leaveTo="opacity-0 scale-95">
+                                <DialogPanel className="w-full max-w-sm bg-card rounded-2xl border border-border shadow-2xl p-6">
+                                    <DialogTitle className="text-base font-bold text-foreground mb-1">
+                                        Advance to {QUOTE_STAGES[stageIndex + 1]}
+                                    </DialogTitle>
+                                    <p className="text-xs text-muted-foreground mb-4">Review the requirements before advancing this quote.</p>
+
+                                    <div className="space-y-2 mb-4">
+                                        {[
+                                            'All required fields completed',
+                                            'No pending approvals blocking advancement',
+                                            `Stage: ${QUOTE_STAGES[stageIndex]} requirements met`,
+                                        ].map((req, i) => (
+                                            <div key={i} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
+                                                <CheckCircle2 className="h-4 w-4 text-green-600 shrink-0" />
+                                                <span className="text-xs font-medium text-foreground">{req}</span>
+                                            </div>
+                                        ))}
                                     </div>
+
+                                    <div className="bg-muted/50 border border-border rounded-xl p-3 mb-5 flex items-start gap-2">
+                                        <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+                                        <p className="text-xs text-muted-foreground">This will move the quote to the next stage. Team members will be notified.</p>
+                                    </div>
+
                                     <div className="flex gap-3 justify-end">
-                                        <button onClick={() => setIsConvertDialogOpen(false)} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
+                                        <button onClick={() => setIsAdvanceDialogOpen(false)} className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors">
                                             Cancel
                                         </button>
                                         <button
                                             onClick={() => {
-                                                setIsConvertDialogOpen(false);
-                                                triggerToast('Conversion Started', 'Creating PO drafts from Quote QT-1025...', 'info');
-                                                setTimeout(() => {
-                                                    triggerToast('Conversion Complete', 'Opening review...', 'success');
-                                                    setIsConversionReviewOpen(true);
-                                                }, 2000);
+                                                setIsAdvanceDialogOpen(false)
+                                                setStageIndex(i => i + 1)
+                                                triggerToast('Stage Advanced', `Quote moved to "${QUOTE_STAGES[stageIndex + 1]}"`, 'success')
                                             }}
-                                            className="px-4 py-2 text-sm font-bold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 rounded-lg transition-colors"
+                                            className="px-4 py-2 text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors"
                                         >
-                                            Start Conversion
+                                            Confirm Advance
                                         </button>
                                     </div>
                                 </DialogPanel>
@@ -508,6 +586,22 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                         {/* Details Header */}
                                         <div className="flex items-center justify-between p-4 border-b border-border">
                                             <h3 className="text-lg font-semibold text-foreground">Item Details</h3>
+                                            <div className="flex gap-1">
+                                                <button onClick={() => setIsDocumentModalOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                    <FileBarChart className="h-4 w-4" title="Preview Document" />
+                                                </button>
+                                                <button onClick={() => setIsEditOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors" title="Edit Item">
+                                                    <SquarePen className="h-4 w-4" />
+                                                </button>
+                                                <button onClick={() => { triggerToast('Preparing Download...', `Generating PDF for ${selectedItem.name}`, 'info'); setTimeout(() => triggerToast('Download Complete', `Quote_QT-1025_${selectedItem.id}.pdf`, 'success'), 1500); }} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                    <Download className="h-4 w-4" />
+                                                </button>
+                                                <button onClick={() => setIsSendOpen(true)} className="p-1 text-muted-foreground hover:text-zinc-900 rounded hover:bg-primary transition-colors">
+                                                    <Send className="h-4 w-4" />
+                                                </button>
+                                                <div className="w-px h-4 bg-border mx-1 self-center" />
+                                                <ItemActionsPopover transactionType="quote" onAction={(action) => triggerToast(action, `Action applied to ${selectedItem.name}`, 'success')} />
+                                            </div>
                                         </div>
 
                                         <div className="p-4 space-y-6">
@@ -1198,6 +1292,106 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
 
 
 
+
+function ApprovalChainStep({
+    approvalSteps,
+    setApprovalSteps,
+    onAllApproved,
+}: {
+    approvalSteps: Array<'pending' | 'approved'>
+    setApprovalSteps: Dispatch<SetStateAction<Array<'pending' | 'approved'>>>
+    onAllApproved: () => void
+}) {
+    const [financeApproved, setFinanceApproved] = useState(false)
+    const [dealerStarted, setDealerStarted] = useState(false)
+
+    // Step 0: AI auto-approves after 1.5s on mount
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setApprovalSteps(prev => { const s = [...prev]; s[0] = 'approved'; return s })
+        }, 1500)
+        return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    // Step 2: Dealer auto-approves after Finance approves
+    const handleFinanceApprove = () => {
+        setFinanceApproved(true)
+        setApprovalSteps(prev => { const s = [...prev]; s[1] = 'approved'; return s })
+        setDealerStarted(true)
+        setTimeout(() => {
+            setApprovalSteps(prev => { const s = [...prev]; s[2] = 'approved'; return s })
+            setTimeout(onAllApproved, 400)
+        }, 1000)
+    }
+
+    const aiApproved = approvalSteps[0] === 'approved'
+    const financeApprovedState = approvalSteps[1] === 'approved'
+    const dealerApproved = approvalSteps[2] === 'approved'
+
+    return (
+        <div className="space-y-3 mt-2 mb-5">
+            <p className="text-xs text-muted-foreground mb-3">Approval required before conversion can proceed.</p>
+
+            {/* Step 1: AI */}
+            {aiApproved ? (
+                <div className="p-3 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">AI Compliance Agent</p><p className="text-[10px] text-muted-foreground">Policy &amp; limits verified</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : (
+                <div className="p-3 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">AI Compliance Agent</p><p className="text-[10px] text-muted-foreground">Checking policy &amp; limits…</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Processing</span>
+                </div>
+            )}
+
+            {/* Step 2: Finance Manager */}
+            {financeApprovedState ? (
+                <div className="p-3 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorized</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : aiApproved ? (
+                <div className="p-3 rounded-xl border border-primary/40 bg-primary/5 ring-2 ring-primary/20 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center"><span className="text-xs font-bold">2</span></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorization required</p></div>
+                    <button onClick={handleFinanceApprove} className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[10px] font-bold">Approve</button>
+                </div>
+            ) : (
+                <div className="p-3 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><Clock className="h-4 w-4 text-muted-foreground" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Finance Manager</p><p className="text-[10px] text-muted-foreground">Budget authorization required</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Waiting</span>
+                </div>
+            )}
+
+            {/* Step 3: Dealer Principal */}
+            {dealerApproved ? (
+                <div className="p-3 rounded-xl border border-green-200 dark:border-green-500/20 bg-green-50/50 dark:bg-green-500/5 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-500/20 flex items-center justify-center"><CheckCircle2 className="h-5 w-5 text-green-600" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Final sign-off granted</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-500/20 text-green-700 font-bold">Approved</span>
+                </div>
+            ) : dealerStarted ? (
+                <div className="p-3 rounded-xl border border-border bg-muted/20 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><RefreshCw className="h-4 w-4 text-muted-foreground animate-spin" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Auto-approving…</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Processing</span>
+                </div>
+            ) : (
+                <div className="p-3 rounded-xl border border-border bg-muted/20 opacity-60 flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center"><Clock className="h-4 w-4 text-muted-foreground" /></div>
+                    <div className="flex-1"><p className="text-xs font-bold">Dealer Principal</p><p className="text-[10px] text-muted-foreground">Final sign-off</p></div>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Waiting</span>
+                </div>
+            )}
+        </div>
+    )
+}
 
 function NavItem({ icon, label, active = false }: { icon: React.ReactNode, label: string, active?: boolean }) {
     return (
