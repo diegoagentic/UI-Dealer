@@ -18,6 +18,7 @@ import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import ItemActionsPopover from './components/ItemActionsPopover'
 import AddItemModal from './components/AddItemModal'
+import ItemDiscountModal from './components/ItemDiscountModal'
 import FilterPopover from './components/FilterPopover'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
@@ -112,6 +113,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isAdvanceDialogOpen, setIsAdvanceDialogOpen] = useState(false)
     const [showPOTab, setShowPOTab] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
+    const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
@@ -610,6 +612,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Properties</th>
                                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Stock Level</th>
                                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                                        <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider w-16">Edit</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="bg-card divide-y divide-border">
@@ -668,6 +671,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                 )}>
                                                                     {item.status}
                                                                 </span>
+                                                            </td>
+                                                            <td className="px-6 py-4 whitespace-nowrap text-right">
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsDiscountModalOpen(true); }}
+                                                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                                                    title="Edit item"
+                                                                >
+                                                                    <Pencil className="h-4 w-4" />
+                                                                </button>
                                                             </td>
                                                         </tr>
                                                     ))}
@@ -1373,6 +1385,15 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="quote" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="quote" transactionId="QT-1025" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
             <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="quote" transactionId="QT-1025" onAdd={() => triggerToast('Item Added', 'New line item added to Quote QT-1025', 'success')} />
+            <ItemDiscountModal
+                isOpen={isDiscountModalOpen}
+                onClose={() => setIsDiscountModalOpen(false)}
+                itemName={selectedItem.name}
+                itemId={selectedItem.id}
+                unitPrice={selectedItem.stock > 200 ? 1195 : selectedItem.stock > 100 ? 895 : 485}
+                quantity={selectedItem.stock > 200 ? 20 : selectedItem.stock > 100 ? 15 : 8}
+                onApply={() => triggerToast('Discount Applied', `Discount updated for ${selectedItem.name}`, 'success')}
+            />
             <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )

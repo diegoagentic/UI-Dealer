@@ -15,6 +15,7 @@ import AIDiagnosisSlideOver from './components/AIDiagnosisSlideOver'
 import ItemActionsPopover from './components/ItemActionsPopover'
 import EditItemSlideOver from './components/EditItemSlideOver'
 import AddItemModal from './components/AddItemModal'
+import ItemDiscountModal from './components/ItemDiscountModal'
 import FilterPopover from './components/FilterPopover'
 import { QuickActions } from './components/QuickActions'
 import FinalizePOButton from './features/po-conversion/FinalizePOButton'
@@ -455,6 +456,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isAiDiagnosisOpen, setIsAiDiagnosisOpen] = useState(false)
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
+    const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isAckReviewOpen, setIsAckReviewOpen] = useState(false)
     const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false)
@@ -725,6 +727,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                         <TableHead>Properties</TableHead>
                                                         <TableHead>Stock Level</TableHead>
                                                         <TableHead>Status</TableHead>
+                                                        <TableHead className="text-right w-16">Edit</TableHead>
                                                     </TableRow>
                                                 </TableHeader>
                                                 <TableBody>
@@ -791,6 +794,15 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                                                                 >
                                                                     {item.status}
                                                                 </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="px-6 py-4 whitespace-nowrap text-right">
+                                                                <button
+                                                                    onClick={(e) => { e.stopPropagation(); setSelectedItem(item); setIsDiscountModalOpen(true); }}
+                                                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                                                                    title="Edit item"
+                                                                >
+                                                                    <Pencil className="h-4 w-4" />
+                                                                </button>
                                                             </TableCell>
                                                         </TableRow>
                                                     ))}
@@ -1317,6 +1329,15 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="order" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="order" transactionId="ORD-2055" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
             <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="order" transactionId="ORD-2055" onAdd={() => triggerToast('Item Added', 'New line item added to Order ORD-2055', 'success')} />
+            <ItemDiscountModal
+                isOpen={isDiscountModalOpen}
+                onClose={() => setIsDiscountModalOpen(false)}
+                itemName={selectedItem.name}
+                itemId={selectedItem.id}
+                unitPrice={selectedItem.stock > 200 ? 1195 : selectedItem.stock > 100 ? 895 : 485}
+                quantity={selectedItem.stock > 200 ? 20 : selectedItem.stock > 100 ? 15 : 8}
+                onApply={() => triggerToast('Discount Applied', `Discount updated for ${selectedItem.name}`, 'success')}
+            />
             <ToastNotification show={showToast} message={toastMessage} onDismiss={dismissToast} />
         </div >
     )
