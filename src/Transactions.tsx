@@ -1300,11 +1300,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 </div>
                                                                                 {(order as any).severity && (
                                                                                     <button
-                                                                                        onClick={(e) => { e.stopPropagation(); onNavigateToDetail('ack-detail'); }}
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation()
+                                                                                            setAckReviewPoId((order as any).relatedPo ?? order.id)
+                                                                                            setIsAckReviewOpen(true)
+                                                                                        }}
                                                                                         className="w-full flex items-center justify-center gap-1.5 py-2 text-[10px] font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors mt-1"
                                                                                     >
                                                                                         <AlertTriangle className="h-3 w-3" />
-                                                                                        Request Expert Review
+                                                                                        Compare PO vs ACK
                                                                                     </button>
                                                                                 )}
                                                                             </>
@@ -1424,29 +1428,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                                 </button>
                                                                             )}
                                                                             
-                                                                            {lifecycleTab === 'acknowledgments' && (
-                                                                                <>
-                                                                                    <button
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation()
-                                                                                            setAckReviewPoId((order as any).relatedPo ?? order.id)
-                                                                                            setIsAckReviewOpen(true)
-                                                                                        }}
-                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors whitespace-nowrap"
-                                                                                    >
-                                                                                        Compare →
-                                                                                    </button>
-                                                                                    <button
-                                                                                        onClick={(e) => {
-                                                                                            e.stopPropagation()
-                                                                                            triggerToast('Expert Review Requested', `${order.customer} — ACK reconciliation sent to Expert Hub`, 'info')
-                                                                                        }}
-                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-500/20 transition-colors whitespace-nowrap"
-                                                                                    >
-                                                                                        Request Review →
-                                                                                    </button>
-                                                                                </>
-                                                                            )}
+                                                                            {/* ACK action: compare lives in the prominent CTA above; nothing to render here */}
                                                                             {/* PO comparison + conversion actions */}
                                                                             {order.isPO && (order as any).poStatus !== 'DRAFT' && (
                                                                                 <>
