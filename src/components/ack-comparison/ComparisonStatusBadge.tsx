@@ -24,37 +24,37 @@ const STATUS_CONFIG: Record<ComparisonStatus, {
         label: 'Confirmed',
         icon: CheckCircle2,
         ariaLabel: 'Comparison status: all fields match',
-        colors: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-500/10 dark:text-green-400 dark:border-green-500/20',
+        colors: 'bg-success/10 text-success border-success/30',
     },
     PARTIAL_MATCH: {
         label: 'Partial Match',
         icon: AlertTriangle,
         ariaLabel: 'Comparison status: some fields differ',
-        colors: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20',
+        colors: 'bg-warning/10 text-warning border-warning/30',
     },
     MISMATCH: {
         label: 'Discrepancies Found',
         icon: XCircle,
         ariaLabel: 'Comparison status: discrepancies found',
-        colors: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20',
+        colors: 'bg-error/10 text-error border-error/30',
     },
     UNLINKED: {
         label: 'No PO Linked',
         icon: Unlink,
         ariaLabel: 'Comparison status: no purchase order linked',
-        colors: 'bg-zinc-100 text-zinc-600 border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700',
+        colors: 'bg-muted text-muted-foreground border-border',
     },
     PENDING_SEMANTIC: {
         label: 'Analysis Pending',
         icon: Clock,
         ariaLabel: 'Comparison status: semantic analysis pending',
-        colors: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+        colors: 'bg-info/10 text-info border-info/30',
     },
     IN_PROGRESS: {
         label: 'Comparing...',
         icon: Loader2,
         ariaLabel: 'Comparison status: comparison in progress',
-        colors: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20',
+        colors: 'bg-info/10 text-info border-info/30',
     },
 }
 

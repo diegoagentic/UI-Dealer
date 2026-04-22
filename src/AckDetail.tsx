@@ -9,6 +9,8 @@ import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
 import AckReviewSlideOver from './components/AckReviewSlideOver'
+import ComparisonSummaryPanel from './components/ack-comparison/ComparisonSummaryPanel'
+import { getMockComparisonReport } from './components/ack-comparison/mockReports'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -817,6 +819,13 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 )}
 
 
+
+                {/* PO vs ACK comparison panel — embedded inline per UI-02 spec */}
+                {(() => {
+                    const inlineReport = getMockComparisonReport('ACK-3099')
+                    if (!inlineReport || inlineReport.comparisonStatus === 'MATCH') return null
+                    return <ComparisonSummaryPanel report={inlineReport} />
+                })()}
 
                 {/* Quick Actions Bar */}
                 <QuickActions actions={[

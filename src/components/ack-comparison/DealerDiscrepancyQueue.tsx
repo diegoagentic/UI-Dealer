@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { AlertTriangle, Calendar, ChevronLeft, ChevronRight, ExternalLink, Filter, Search } from 'lucide-react'
+import { AlertTriangle, Calendar, ChevronLeft, ChevronRight, ExternalLink, Search } from 'lucide-react'
 import ComparisonStatusBadge, { type ComparisonStatus } from './ComparisonStatusBadge'
 
 // ── Types ──
@@ -41,15 +41,27 @@ const PAGE_SIZE = 20
 export default function DealerDiscrepancyQueue({ onNavigateToAck }: DealerDiscrepancyQueueProps) {
     const [search, setSearch] = useState('')
     const [severityFilter, setSeverityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
+    const [dateRange, setDateRange] = useState<'all' | '7d' | '30d' | '90d'>('all')
     const [page, setPage] = useState(0)
 
     const filtered = useMemo(() => {
+        const now = new Date('2026-04-22').getTime() // demo "today"
+        const dayMs = 24 * 60 * 60 * 1000
+        const cutoff = dateRange === '7d' ? now - 7 * dayMs
+            : dateRange === '30d' ? now - 30 * dayMs
+                : dateRange === '90d' ? now - 90 * dayMs
+                    : null
+
         return MOCK_DISCREPANCY_ACKS.filter(ack => {
             if (severityFilter !== 'all' && ack.highestSeverity !== severityFilter) return false
+            if (cutoff !== null) {
+                const t = new Date(ack.comparedAt).getTime()
+                if (Number.isFinite(t) && t < cutoff) return false
+            }
             if (search && !ack.ackId.toLowerCase().includes(search.toLowerCase()) && !ack.vendor.toLowerCase().includes(search.toLowerCase()) && !ack.poId.toLowerCase().includes(search.toLowerCase())) return false
             return true
         })
-    }, [search, severityFilter])
+    }, [search, severityFilter, dateRange])
 
     const paginated = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
     const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
@@ -99,6 +111,16 @@ export default function DealerDiscrepancyQueue({ onNavigateToAck }: DealerDiscre
                         <option value="high">High</option>
                         <option value="medium">Medium</option>
                         <option value="low">Low</option>
+                    </select>
+                    <select
+                        value={dateRange}
+                        onChange={e => { setDateRange(e.target.value as any); setPage(0); }}
+                        className="px-3 py-1.5 text-xs bg-background border border-border rounded-lg focus:ring-1 ring-primary outline-none text-foreground"
+                    >
+                        <option value="all">All Dates</option>
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                        <option value="90d">Last 90 days</option>
                     </select>
                 </div>
             </div>

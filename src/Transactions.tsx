@@ -147,6 +147,7 @@ import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 import CreateQuoteModal from './components/CreateQuoteModal'
 import { MetricGrid } from './components/MetricCard'
 import ComparisonStatusBadge from './components/ack-comparison/ComparisonStatusBadge'
+import DealerDiscrepancyQueue from './components/ack-comparison/DealerDiscrepancyQueue'
 import { QuickActions } from './components/QuickActions'
 
 // ── Inline Approval Chain for Convert to PO in ActionConfirmDialog ──
@@ -735,6 +736,15 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                 { icon: <Mail className="w-4 h-4" />, label: "Email Vendor" },
                                 { icon: <BadgeCheck className="w-4 h-4" />, label: "Approve Orders", action: () => setIsBatchAckOpen(true) },
                             ]} />
+                        </div>
+                        {/* SDB-1408 UI-03 — Dealer review queue (MISMATCH + PARTIAL_MATCH ACKs). */}
+                        <div className="mt-4">
+                            <DealerDiscrepancyQueue
+                                onNavigateToAck={(ackId) => {
+                                    localStorage.setItem('demo_view_order_id', ackId)
+                                    onNavigateToDetail('ack-detail')
+                                }}
+                            />
                         </div>
                     </>
                 )}
