@@ -19,7 +19,7 @@ interface DealerDiscrepancyQueueProps {
 }
 
 // ── Mock Data ──
-const MOCK_DISCREPANCY_ACKS: DiscrepancyAck[] = [
+export const MOCK_DISCREPANCY_ACKS: DiscrepancyAck[] = [
     { ackId: 'ACK-3099', poId: '#ORD-2055', vendor: 'AIS Furniture', initials: 'AI', discrepancyCount: 3, highestSeverity: 'high', comparisonStatus: 'MISMATCH', comparedAt: 'Apr 10, 2026' },
     { ackId: 'ACK-3095', poId: '#ORD-2051', vendor: 'Steelcase', initials: 'SC', discrepancyCount: 5, highestSeverity: 'high', comparisonStatus: 'MISMATCH', comparedAt: 'Apr 09, 2026' },
     { ackId: 'ACK-3091', poId: '#ORD-2049', vendor: 'Herman Miller', initials: 'HM', discrepancyCount: 1, highestSeverity: 'medium', comparisonStatus: 'PARTIAL_MATCH', comparedAt: 'Apr 08, 2026' },
