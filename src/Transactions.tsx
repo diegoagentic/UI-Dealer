@@ -1238,7 +1238,7 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                         onMouseLeave={handleFunnelMouseUpOrLeave}
                                         onClickCapture={handleFunnelClickCapture}
                                         onWheel={handleFunnelWheel}
-                                        className="flex gap-6 overflow-x-auto pb-3 scrollbar-funnel funnel-grab select-none"
+                                        className="flex gap-6 overflow-x-auto pb-2 scrollbar-micro funnel-grab select-none"
                                     >
                                         {(lifecycleTab === 'quotes' ? quoteStages : lifecycleTab === 'acknowledgments' ? ackStages : pipelineStages).map((stage) => {
                                             const stageOrders = filteredData.filter((o: any) => o.status === stage);
