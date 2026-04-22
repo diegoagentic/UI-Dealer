@@ -1244,12 +1244,6 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                                             <div>
                                                 <h4 className="text-sm font-medium text-foreground mb-2">Action Required</h4>
                                                 <div className="pl-4 border-l border-border ml-2 space-y-3">
-                                                    <button
-                                                        onClick={() => setIsPOModalOpen(true)}
-                                                        className="w-full py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-lg shadow-sm transition-colors"
-                                                    >
-                                                        Create Purchase Order
-                                                    </button>
                                                     <button className="w-full py-1.5 bg-background hover:bg-muted text-muted-foreground text-xs font-semibold rounded-lg border border-border transition-colors">
                                                         Send Acknowledgment
                                                     </button>
