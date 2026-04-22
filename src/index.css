@@ -68,4 +68,40 @@
     .scrollbar-micro::-webkit-scrollbar-thumb:hover {
         @apply bg-zinc-400 dark:bg-zinc-600;
     }
+
+    /* Funnel/kanban scrollbar — chunky enough to grab without dominating */
+    .scrollbar-funnel::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+    }
+
+    .scrollbar-funnel::-webkit-scrollbar-track {
+        @apply bg-muted/30 rounded-full;
+        margin: 0 8px;
+    }
+
+    .scrollbar-funnel::-webkit-scrollbar-thumb {
+        @apply bg-zinc-400 dark:bg-zinc-600 rounded-full transition-colors;
+        border: 3px solid transparent;
+        background-clip: padding-box;
+        min-width: 80px;
+    }
+
+    .scrollbar-funnel::-webkit-scrollbar-thumb:hover {
+        @apply bg-primary;
+    }
+
+    .scrollbar-funnel::-webkit-scrollbar-thumb:active {
+        @apply bg-primary;
+    }
+
+    /* Firefox */
+    .scrollbar-funnel {
+        scrollbar-color: rgb(from var(--color-zinc-400) r g b) transparent;
+        scrollbar-width: auto;
+    }
+
+    /* Drag-to-scroll affordance */
+    .funnel-grab { cursor: grab; }
+    .funnel-grab:active { cursor: grabbing; }
 }

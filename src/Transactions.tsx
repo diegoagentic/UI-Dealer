@@ -447,6 +447,45 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [toastMessage, setToastMessage] = useState({ title: '', description: '', type: 'success' }); // success | error | info
     const toastTimerRef = useRef<any>(null);
 
+    // Funnel drag-to-scroll — stakeholders love the kanban but the native scrollbar
+    // is hard to grab. Holding mouse down anywhere in the canvas drags the funnel.
+    const funnelRef = useRef<HTMLDivElement>(null)
+    const funnelDragRef = useRef({ isDown: false, startX: 0, startScrollLeft: 0, hasDragged: false })
+    const handleFunnelMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!funnelRef.current) return
+        funnelDragRef.current = {
+            isDown: true,
+            startX: e.pageX,
+            startScrollLeft: funnelRef.current.scrollLeft,
+            hasDragged: false,
+        }
+    }
+    const handleFunnelMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const s = funnelDragRef.current
+        if (!s.isDown || !funnelRef.current) return
+        const delta = e.pageX - s.startX
+        if (Math.abs(delta) > 5) s.hasDragged = true
+        // Multiplier > 1 makes the funnel feel more responsive than a 1:1 drag.
+        funnelRef.current.scrollLeft = s.startScrollLeft - delta * 1.4
+    }
+    const handleFunnelMouseUpOrLeave = () => {
+        funnelDragRef.current.isDown = false
+    }
+    const handleFunnelClickCapture = (e: React.MouseEvent) => {
+        if (funnelDragRef.current.hasDragged) {
+            e.stopPropagation()
+            e.preventDefault()
+            funnelDragRef.current.hasDragged = false
+        }
+    }
+    // Shift+wheel → horizontal scroll. Plain wheel keeps page scroll.
+    const handleFunnelWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+        if (!funnelRef.current) return
+        if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+            funnelRef.current.scrollLeft += (e.deltaX || e.deltaY)
+        }
+    }
+
     const triggerToast = (title: string, description: string, type: 'success' | 'error' | 'info' = 'success') => {
         setToastMessage({ title, description, type });
         setShowToast(true);
@@ -1191,7 +1230,16 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                             <span className="text-muted-foreground/60">Click any card to see the full column definition</span>
                                         </div>
                                     )}
-                                    <div className="flex gap-6 overflow-x-auto pb-2 scrollbar-micro">
+                                    <div
+                                        ref={funnelRef}
+                                        onMouseDown={handleFunnelMouseDown}
+                                        onMouseMove={handleFunnelMouseMove}
+                                        onMouseUp={handleFunnelMouseUpOrLeave}
+                                        onMouseLeave={handleFunnelMouseUpOrLeave}
+                                        onClickCapture={handleFunnelClickCapture}
+                                        onWheel={handleFunnelWheel}
+                                        className="flex gap-6 overflow-x-auto pb-3 scrollbar-funnel funnel-grab select-none"
+                                    >
                                         {(lifecycleTab === 'quotes' ? quoteStages : lifecycleTab === 'acknowledgments' ? ackStages : pipelineStages).map((stage) => {
                                             const stageOrders = filteredData.filter((o: any) => o.status === stage);
                                             return (
