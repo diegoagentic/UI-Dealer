@@ -657,7 +657,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate || (() => { })} />
 
             {/* Page Header (moved from original header, adjusted for floating nav) */}
-            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-between border-b border-border bg-transparent transition-colors duration-200">
+            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
                         <ChevronRight className="h-4 w-4 rotate-180" />
@@ -761,49 +761,48 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                         </div>
                     </>
                 ) : (
-                    <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
-                        <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide">
+                    <div className="bg-white dark:bg-zinc-800 p-4 rounded-xl shadow-sm ring-1 ring-zinc-900/5 dark:ring-white/10 flex flex-col md:flex-row md:items-stretch justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-300">
+                        {/* Left: 4 primary stats — label on top, value below */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-3 flex-1 min-w-0">
                             {[
                                 { label: 'Match Rate', value: '95%' },
                                 { label: 'Est. Delivery', value: 'Nov 27, 2025' },
                                 { label: 'Exceptions', value: '2', color: 'text-amber-600 dark:text-amber-400' },
                                 { label: 'Status', value: 'Review Needed', color: 'text-amber-600 dark:text-amber-400' },
                             ].map((stat, i) => (
-                                <Fragment key={i}>
-                                    <div className="flex items-center gap-2 whitespace-nowrap">
-                                        <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{stat.label}:</span>
-                                        <span className={cn("text-lg font-bold leading-none mt-1", stat.color || "text-zinc-900 dark:text-white")}>{stat.value}</span>
-                                    </div>
-                                    {i < 3 && <div className="w-px h-8 bg-zinc-200 dark:bg-zinc-700 hidden sm:block"></div>}
-                                </Fragment>
+                                <div key={i} className="min-w-0">
+                                    <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">{stat.label}</p>
+                                    <p className={cn("text-base font-bold leading-tight mt-0.5 truncate", stat.color || "text-zinc-900 dark:text-white")}>{stat.value}</p>
+                                </div>
                             ))}
                         </div>
 
-                        <div className="flex items-center gap-4 ml-auto">
-                            {/* Resolution Time Indicator */}
-                            <div className="hidden lg:flex flex-col items-end">
-                                <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolution Time</span>
+                        {/* Right: meta + show-details */}
+                        <div className="flex items-stretch gap-4 md:border-l md:border-zinc-200 md:dark:border-zinc-700 md:pl-4">
+                            {/* Resolution Time */}
+                            <div className="hidden lg:block min-w-0">
+                                <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Resolution Time</p>
                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                    <Clock className="w-4 h-4 text-primary" />
+                                    <Clock className="w-4 h-4 text-primary shrink-0" />
                                     <span className="text-sm font-bold text-zinc-900 dark:text-white">Under 10 mins</span>
-                                    <span className="text-[10px] text-muted-foreground ml-1">(Industry Avg: 2-3 days)</span>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground mt-0.5">Industry Avg: 2-3 days</p>
+                            </div>
+
+                            <div className="w-px bg-zinc-200 dark:bg-zinc-700 hidden lg:block"></div>
+
+                            {/* Current Phase */}
+                            <div className="hidden md:flex items-center gap-2 min-w-0">
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Current Phase</p>
+                                    <p className="text-sm font-bold text-zinc-900 dark:text-white truncate mt-0.5">Reviewing Exceptions</p>
+                                </div>
+                                <div className="relative flex items-center justify-center w-7 h-7 rounded-full border-2 border-zinc-900 dark:border-white bg-white dark:bg-zinc-800 shrink-0">
+                                    <div className="w-2 h-2 rounded-full bg-zinc-900 dark:bg-white" />
                                 </div>
                             </div>
 
-                            <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden lg:block mx-2"></div>
-
-                            {/* Current Phase Indicator */}
-                            <div className="flex items-center gap-3 hidden md:flex">
-                                <div className="flex flex-col items-end">
-                                    <span className="text-[10px] font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Current Phase</span>
-                                    <span className="text-sm font-bold text-zinc-900 dark:text-white">Reviewing Exceptions</span>
-                                </div>
-                                <div className="relative flex items-center justify-center w-8 h-8 rounded-full border-2 border-zinc-900 dark:border-white bg-white dark:bg-zinc-800">
-                                    <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 dark:bg-white" />
-                                </div>
-                            </div>
-
-                            <div className="w-px h-12 bg-zinc-200 dark:bg-zinc-700 hidden xl:block mx-2"></div>
+                            <div className="w-px bg-zinc-200 dark:bg-zinc-700 hidden xl:block"></div>
 
                             <button
                                 onClick={() => setIsSummaryExpanded(true)}
