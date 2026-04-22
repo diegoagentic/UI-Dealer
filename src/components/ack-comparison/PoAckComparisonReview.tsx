@@ -12,9 +12,14 @@
  */
 
 import { useState, useEffect } from 'react'
-import { AlertTriangle, FileSearch, FileText } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, FileSearch, FileText } from 'lucide-react'
 import ComparisonStatusBadge from './ComparisonStatusBadge'
 import { type AckComparisonReport, type ComparisonField } from './ComparisonSummaryPanel'
+
+// Demo simulation: pre-fill the textarea with a realistic note so stakeholders
+// can see the end-to-end flow without having to type during a presentation.
+const SIMULATED_DEALER_NOTE =
+    "Triple Locker shortage is the blocker for our Dec 1 install at the Dallas site. Backorder split is acceptable if Lounge 2-Seat ships before Nov 30. Please confirm vendor's revised ETA and let me know if the $2,095 delta needs a change order from the customer."
 
 interface PoAckComparisonReviewProps {
     report: AckComparisonReport
@@ -35,11 +40,48 @@ export default function PoAckComparisonReview({
     showHeading = true,
     resetKey,
 }: PoAckComparisonReviewProps) {
-    const [note, setNote] = useState('')
-    useEffect(() => { setNote('') }, [resetKey])
+    const [note, setNote] = useState(SIMULATED_DEALER_NOTE)
+    const [sent, setSent] = useState(false)
+    const [sentNote, setSentNote] = useState('')
+    useEffect(() => {
+        setNote(SIMULATED_DEALER_NOTE)
+        setSent(false)
+        setSentNote('')
+    }, [resetKey])
+
+    const handleSend = () => {
+        const trimmed = note.trim()
+        setSentNote(trimmed)
+        setSent(true)
+        onSendToExpert?.(trimmed)
+    }
 
     const mismatchCount = report.fields.filter(f => f.status === 'mismatch').length
     const partialCount = report.fields.filter(f => f.status === 'partial').length
+
+    if (sent) {
+        return (
+            <div className="bg-card dark:bg-zinc-800 border border-success/30 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-6 sm:p-8 flex items-start gap-4">
+                    <div className="h-10 w-10 shrink-0 rounded-full bg-success/10 text-success flex items-center justify-center">
+                        <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-bold text-foreground">Sent to Expert Hub</h3>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                            <span className="font-semibold text-foreground">{report.ackId}</span> escalated for resolution.
+                            The expert will respond inside Expert Hub — you'll be notified when the comparison is updated.
+                        </p>
+                        {sentNote && (
+                            <div className="mt-3 bg-muted/30 dark:bg-zinc-900/40 border border-border rounded-lg px-3 py-2 text-[12px] text-foreground italic">
+                                "{sentNote}"
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="bg-card dark:bg-zinc-800 border border-border rounded-2xl shadow-sm overflow-hidden">
@@ -104,7 +146,7 @@ export default function PoAckComparisonReview({
                             </p>
                             <button
                                 type="button"
-                                onClick={() => onSendToExpert(note.trim())}
+                                onClick={handleSend}
                                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors"
                             >
                                 <FileSearch className="h-4 w-4" />
