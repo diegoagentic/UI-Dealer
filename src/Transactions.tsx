@@ -378,6 +378,8 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     
     const [isAckReviewOpen, setIsAckReviewOpen] = useState(false)
     const [ackReviewPoId, setAckReviewPoId] = useState<string | undefined>()
+    const [isAckConvertOpen, setIsAckConvertOpen] = useState(false)
+    const [ackConvertPoId, setAckConvertPoId] = useState<string | undefined>()
 
     // Inline approval chain for convertToPO in ActionConfirmDialog
     const [convertApprovalSteps, setConvertApprovalSteps] = useState<Array<'pending' | 'approved'>>(['pending', 'pending', 'pending'])
@@ -1423,27 +1425,63 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                                                                             )}
                                                                             
                                                                             {lifecycleTab === 'acknowledgments' && (
-                                                                                <button
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation()
-                                                                                        triggerToast('Expert Review Requested', `${order.customer} — ACK reconciliation sent to Expert Hub`, 'info')
-                                                                                    }}
-                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-500/20 transition-colors whitespace-nowrap"
-                                                                                >
-                                                                                    Request Review →
-                                                                                </button>
+                                                                                <>
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation()
+                                                                                            setAckReviewPoId((order as any).relatedPo ?? order.id)
+                                                                                            setIsAckReviewOpen(true)
+                                                                                        }}
+                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors whitespace-nowrap"
+                                                                                    >
+                                                                                        Compare →
+                                                                                    </button>
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation()
+                                                                                            triggerToast('Expert Review Requested', `${order.customer} — ACK reconciliation sent to Expert Hub`, 'info')
+                                                                                        }}
+                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 hover:bg-indigo-500/20 transition-colors whitespace-nowrap"
+                                                                                    >
+                                                                                        Request Review →
+                                                                                    </button>
+                                                                                </>
                                                                             )}
-                                                                            {/* Request Expert Review for PO ACK comparison */}
+                                                                            {/* PO comparison + conversion actions */}
                                                                             {order.isPO && (order as any).poStatus !== 'DRAFT' && (
-                                                                                <button
-                                                                                    onClick={(e) => {
-                                                                                        e.stopPropagation()
-                                                                                        triggerToast('Expert Review Requested', `${order.customer} — PO vs ACK comparison sent to Expert Hub`, 'info')
-                                                                                    }}
-                                                                                    className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
-                                                                                >
-                                                                                    Request Review →
-                                                                                </button>
+                                                                                <>
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation()
+                                                                                            setAckReviewPoId(order.id)
+                                                                                            setIsAckReviewOpen(true)
+                                                                                        }}
+                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-colors whitespace-nowrap"
+                                                                                    >
+                                                                                        Compare ACK →
+                                                                                    </button>
+                                                                                    {(order as any).poStatus === 'SUBMITTED' && (
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.stopPropagation()
+                                                                                                setAckConvertPoId(order.id)
+                                                                                                setIsAckConvertOpen(true)
+                                                                                            }}
+                                                                                            className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-ai/10 text-ai border border-ai/30 hover:bg-ai/20 transition-colors whitespace-nowrap"
+                                                                                        >
+                                                                                            Convert to ACK →
+                                                                                        </button>
+                                                                                    )}
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation()
+                                                                                            triggerToast('Expert Review Requested', `${order.customer} — PO vs ACK comparison sent to Expert Hub`, 'info')
+                                                                                        }}
+                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30 hover:bg-amber-500/20 transition-colors whitespace-nowrap"
+                                                                                    >
+                                                                                        Request Review →
+                                                                                    </button>
+                                                                                </>
                                                                             )}
 
                                                                             <div className="flex items-center gap-1">
@@ -1843,7 +1881,18 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
             {/* Global Modals and Slideovers */}
             <CreateOrderModal isOpen={isCreateOrderOpen} onClose={() => setIsCreateOrderOpen(false)} />
             <BatchAckModal isOpen={isBatchAckOpen} onClose={() => setIsBatchAckOpen(false)} onNavigateToAck={() => onNavigateToDetail('ack-detail')} />
-            <AckReviewSlideOver open={isAckReviewOpen} onClose={() => setIsAckReviewOpen(false)} poId={ackReviewPoId} />
+            <AckReviewSlideOver
+                open={isAckReviewOpen}
+                onClose={() => setIsAckReviewOpen(false)}
+                poId={ackReviewPoId}
+                onRequestExpertReview={() => triggerToast('Expert Review Requested', `${ackReviewPoId ?? 'PO'} — PO vs ACK comparison sent to Expert Hub`, 'info')}
+            />
+            <AcknowledgementUploadModal
+                isOpen={isAckConvertOpen}
+                onClose={() => setIsAckConvertOpen(false)}
+                defaultStep="order"
+                defaultOrderId={ackConvertPoId}
+            />
         </div >
     )
 }

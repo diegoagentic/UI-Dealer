@@ -8,7 +8,7 @@ import { useTheme } from 'strata-design-system'
 import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
-import AckReconciliationModal from './components/AckReconciliationModal'
+import AckReviewSlideOver from './components/AckReviewSlideOver'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
 import SendItemSlideOver from './components/SendItemSlideOver'
@@ -629,7 +629,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
     const [isSendOpen, setIsSendOpen] = useState(false)
     const [isAddItemOpen, setIsAddItemOpen] = useState(false)
     const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false)
-    const [isReconciliationOpen, setIsReconciliationOpen] = useState(false)
+    const [isCompareOpen, setIsCompareOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
@@ -820,10 +820,10 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
                 {/* Quick Actions Bar */}
                 <QuickActions actions={[
+                    { icon: <FileSearch className="w-4 h-4" />, label: "Compare PO vs ACK", action: () => setIsCompareOpen(true) },
                     { icon: <Plus className="w-4 h-4" />, label: "Add Item", action: () => setIsAddItemOpen(true) },
                     { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
-                    { icon: <FileSearch className="w-4 h-4" />, label: "Request Expert Review", action: () => triggerToast('Expert Review Requested', 'ACK-3099 — PO vs ACK reconciliation sent to Expert Hub for resolution', 'info') },
                     { icon: <Check className="w-4 h-4" />, label: "Confirm ACK", action: () => triggerToast('ACK Confirmed', 'Acknowledgement confirmed and logged', 'success') },
                 ]} />
 
@@ -1636,6 +1636,13 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="ack" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="ack" transactionId="ACK-3099" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />
             <AddItemModal isOpen={isAddItemOpen} onClose={() => setIsAddItemOpen(false)} transactionType="ack" transactionId="ACK-3099" onAdd={() => triggerToast('Item Added', 'New line item added to Acknowledgement ACK-3099', 'success')} />
+            <AckReviewSlideOver
+                open={isCompareOpen}
+                onClose={() => setIsCompareOpen(false)}
+                ackId="ACK-3099"
+                poId="#ORD-2055"
+                onRequestExpertReview={() => triggerToast('Expert Review Requested', 'ACK-3099 — PO vs ACK reconciliation sent to Expert Hub for resolution', 'info')}
+            />
             <ItemDiscountModal
                 isOpen={isDiscountModalOpen}
                 onClose={() => setIsDiscountModalOpen(false)}

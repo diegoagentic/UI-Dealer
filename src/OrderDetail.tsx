@@ -25,6 +25,7 @@ import RevisionHistory from './features/po-conversion/RevisionHistory'
 import ArtifactDownloads from './features/po-conversion/ArtifactDownloads'
 import { MOCK_PO_DRAFTS, MOCK_SUBMISSIONS, MOCK_REVISIONS, MOCK_ARTIFACTS } from './features/po-conversion/mockData'
 import AckReviewSlideOver from './components/AckReviewSlideOver'
+import AcknowledgementUploadModal from './components/AcknowledgementUploadModal'
 
 function cn(...inputs: (string | undefined | null | false)[]) {
     return twMerge(clsx(inputs))
@@ -459,6 +460,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
     const [isDiscountModalOpen, setIsDiscountModalOpen] = useState(false)
     const [isEditOpen, setIsEditOpen] = useState(false)
     const [isAckReviewOpen, setIsAckReviewOpen] = useState(false)
+    const [isAckConvertOpen, setIsAckConvertOpen] = useState(false)
     const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false)
     const { showToast, toastMessage, triggerToast, dismissToast } = useToast()
     const [isSummaryExpanded, setIsSummaryExpanded] = useState(false)
@@ -654,7 +656,10 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                     { icon: <Download className="w-4 h-4" />, label: "Download Order", action: () => triggerToast('Download Started', 'ORD-2055.pdf is downloading', 'success') },
                     ...(isPOContext ? [
                         { icon: <FileText className="w-4 h-4" />, label: "Finalize PO", action: () => triggerToast('PO Finalized', `${poData.poNumber} locked and ready to submit`, 'success') },
-                        { icon: <Search className="w-4 h-4" />, label: "Request Expert Review", action: () => triggerToast('Expert Review Requested', `${poData.poNumber} — ACK comparison sent to Expert Hub`, 'info') },
+                        { icon: <Search className="w-4 h-4" />, label: "Compare with ACK", action: () => setIsAckReviewOpen(true) },
+                        ...(poData.orderStatus === 'SUBMITTED' ? [
+                            { icon: <Check className="w-4 h-4" />, label: "Convert to ACK", action: () => setIsAckConvertOpen(true) },
+                        ] : []),
                     ] : []),
                 ]} />
 
@@ -1324,7 +1329,18 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 </Dialog>
             </Transition>
             {/* Modals & Slideovers */}
-            <AckReviewSlideOver open={isAckReviewOpen} onClose={() => setIsAckReviewOpen(false)} poId={poData.poNumber} />
+            <AckReviewSlideOver
+                open={isAckReviewOpen}
+                onClose={() => setIsAckReviewOpen(false)}
+                poId={poData.poNumber}
+                onRequestExpertReview={() => triggerToast('Expert Review Requested', `${poData.poNumber} — ACK comparison sent to Expert Hub`, 'info')}
+            />
+            <AcknowledgementUploadModal
+                isOpen={isAckConvertOpen}
+                onClose={() => setIsAckConvertOpen(false)}
+                defaultStep="order"
+                defaultOrderId={poData.poNumber}
+            />
             <SendItemSlideOver open={isSendOpen} onClose={() => setIsSendOpen(false)} transactionType="order" transactionId={orderId} itemName={selectedItem.name} itemId={selectedItem.id} onSend={() => triggerToast('Item Sent', `Details for ${selectedItem.name} sent successfully`, 'success')} />
             <AIDiagnosisSlideOver open={isAiDiagnosisOpen} onClose={() => setIsAiDiagnosisOpen(false)} transactionType="order" selectedItem={selectedItem} onApply={() => triggerToast('AI Recommendation Applied', `Optimization applied to ${selectedItem.name}`, 'success')} />
             <EditItemSlideOver open={isEditOpen} onClose={() => setIsEditOpen(false)} transactionType="order" transactionId="ORD-2055" selectedItem={selectedItem} onSave={() => triggerToast('Changes Saved', `${selectedItem.name} updated successfully`, 'success')} />

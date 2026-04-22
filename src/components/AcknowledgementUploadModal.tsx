@@ -4,6 +4,10 @@ import { ArrowRight, ExternalLink, FileSearch, Link2, SquarePen, X } from 'lucid
 interface AcknowledgementUploadModalProps {
     isOpen: boolean;
     onClose: () => void;
+    /** Skip the option-picker and land directly on a sub-step (e.g. open from a PO's Convert to ACK action). */
+    defaultStep?: 'selection' | 'upload' | 'order' | 'manual';
+    /** Pre-select an order id when opening on the 'order' step. */
+    defaultOrderId?: string;
 }
 
 const ackOptions = [
@@ -50,9 +54,17 @@ const mockOrders = [
     { id: '#ORD-2051', client: 'City Builders', project: 'City Center', date: 'Jan 05, 2026', amount: '$120,000' },
 ]
 
-export default function AcknowledgementUploadModal({ isOpen, onClose }: AcknowledgementUploadModalProps) {
-    const [step, setStep] = useState<'selection' | 'upload' | 'order' | 'manual'>('selection')
-    const [selectedOrder, setSelectedOrder] = useState<string | null>(null)
+export default function AcknowledgementUploadModal({ isOpen, onClose, defaultStep = 'selection', defaultOrderId }: AcknowledgementUploadModalProps) {
+    const [step, setStep] = useState<'selection' | 'upload' | 'order' | 'manual'>(defaultStep)
+    const [selectedOrder, setSelectedOrder] = useState<string | null>(defaultOrderId ?? null)
+
+    // Sync entry props when the modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setStep(defaultStep)
+            setSelectedOrder(defaultOrderId ?? null)
+        }
+    }, [isOpen, defaultStep, defaultOrderId])
 
     // Reset step when modal closes
     useEffect(() => {
