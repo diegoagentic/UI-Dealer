@@ -1,7 +1,9 @@
-import { X, FileSearch } from 'lucide-react'
+import { X } from 'lucide-react'
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react'
 import { Fragment } from 'react'
-import ComparisonSummaryPanel, { type AckComparisonReport } from './ack-comparison/ComparisonSummaryPanel'
+import { type AckComparisonReport } from './ack-comparison/ComparisonSummaryPanel'
+import ComparisonStatusBadge from './ack-comparison/ComparisonStatusBadge'
+import PoAckComparisonReview from './ack-comparison/PoAckComparisonReview'
 import { MOCK_AIS_REPORT } from './ack-comparison/mockReports'
 
 interface AckReviewSlideOverProps {
@@ -9,15 +11,13 @@ interface AckReviewSlideOverProps {
     onClose: () => void
     poId?: string
     ackId?: string
-    onRequestExpertReview?: () => void
+    /** Sends the dealer's note to Expert Hub. The note may be empty. */
+    onRequestExpertReview?: (note: string) => void
 }
 
 export default function AckReviewSlideOver({ open, onClose, poId, ackId, onRequestExpertReview }: AckReviewSlideOverProps) {
-    // In a real app we'd fetch the report matching the poId or ackId
-    // For the demo, we use the detailed MOCK_AIS_REPORT
     const reportToUse: AckComparisonReport = {
         ...MOCK_AIS_REPORT,
-        // Override with passed IDs if available
         ...(poId && { poId }),
         ...(ackId && { ackId })
     }
@@ -49,60 +49,56 @@ export default function AckReviewSlideOver({ open, onClose, poId, ackId, onReque
                                 leaveFrom="translate-x-0"
                                 leaveTo="translate-x-full"
                             >
-                                <DialogPanel className="pointer-events-auto w-screen max-w-2xl flex flex-col h-full bg-background border-l border-border shadow-2xl">
+                                <DialogPanel className="pointer-events-auto w-screen max-w-6xl flex flex-col h-full bg-background border-l border-border shadow-2xl">
                                     {/* Header */}
-                                    <div className="px-6 py-6 sm:px-8 border-b border-border bg-card">
-                                        <div className="flex items-start justify-between">
-                                            <DialogTitle className="text-xl font-bold text-foreground">
-                                                Review Acknowledgment
-                                            </DialogTitle>
-                                            <div className="ml-3 flex h-7 items-center">
-                                                <button
-                                                    type="button"
-                                                    className="rounded-md bg-background text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                                                    onClick={onClose}
-                                                >
-                                                    <span className="sr-only">Close panel</span>
-                                                    <X className="h-6 w-6" aria-hidden="true" />
-                                                </button>
+                                    <div className="px-6 py-5 sm:px-8 border-b border-border bg-card">
+                                        <div className="flex items-start justify-between gap-4">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center gap-3 flex-wrap">
+                                                    <DialogTitle className="text-xl font-bold text-foreground">
+                                                        Review Acknowledgment
+                                                    </DialogTitle>
+                                                    <ComparisonStatusBadge status={reportToUse.comparisonStatus} size="md" />
+                                                </div>
+                                                <p className="mt-1.5 text-sm text-muted-foreground">
+                                                    Side-by-side preview of <span className="font-semibold text-foreground">{reportToUse.poId}</span> vs{' '}
+                                                    <span className="font-semibold text-foreground">{reportToUse.ackId}</span>. Add a note and escalate to Expert Hub —
+                                                    resolution happens there.
+                                                </p>
                                             </div>
+                                            <button
+                                                type="button"
+                                                className="shrink-0 rounded-md bg-background text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                                                onClick={onClose}
+                                            >
+                                                <span className="sr-only">Close panel</span>
+                                                <X className="h-6 w-6" aria-hidden="true" />
+                                            </button>
                                         </div>
-                                        <p className="mt-2 text-sm text-muted-foreground">
-                                            Compare the vendor acknowledgment against your original Purchase Order and resolve discrepancies.
-                                        </p>
                                     </div>
 
                                     {/* Content (Scrollable) */}
-                                    <div className="flex-1 overflow-y-auto bg-muted/20 p-6 sm:p-8 scrollbar-hide">
-                                        <div className="mx-auto max-w-full">
-                                            <ComparisonSummaryPanel report={reportToUse} />
-                                        </div>
+                                    <div className="flex-1 overflow-y-auto bg-muted/20 p-6 sm:p-8 scrollbar-micro">
+                                        <PoAckComparisonReview
+                                            report={reportToUse}
+                                            showHeading={false}
+                                            resetKey={open ? `${reportToUse.ackId}-open` : 'closed'}
+                                            onSendToExpert={onRequestExpertReview
+                                                ? (note) => { onRequestExpertReview(note); onClose(); }
+                                                : undefined
+                                            }
+                                        />
                                     </div>
-                                    
-                                    {/* Footer */}
-                                    <div className="px-6 py-4 border-t border-border bg-card flex justify-between items-center gap-3">
-                                        <p className="text-[11px] text-muted-foreground">
-                                            Resolve discrepancies inline, or escalate to Expert Hub for review.
-                                        </p>
-                                        <div className="flex items-center gap-3">
-                                            <button
-                                                type="button"
-                                                className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors"
-                                                onClick={onClose}
-                                            >
-                                                Close
-                                            </button>
-                                            {onRequestExpertReview && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => { onRequestExpertReview(); onClose(); }}
-                                                    className="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-zinc-900 bg-brand-300 dark:bg-brand-500 hover:bg-brand-400 dark:hover:bg-brand-600 rounded-lg transition-colors"
-                                                >
-                                                    <FileSearch className="h-4 w-4" />
-                                                    Send to Expert Hub
-                                                </button>
-                                            )}
-                                        </div>
+
+                                    {/* Footer — close-only; the primary CTA lives next to the note inside the review */}
+                                    <div className="px-6 py-4 border-t border-border bg-card flex justify-end items-center gap-3">
+                                        <button
+                                            type="button"
+                                            className="px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-muted transition-colors"
+                                            onClick={onClose}
+                                        >
+                                            Close
+                                        </button>
                                     </div>
                                 </DialogPanel>
                             </TransitionChild>

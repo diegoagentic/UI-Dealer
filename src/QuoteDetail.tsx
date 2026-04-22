@@ -140,7 +140,7 @@ export default function QuoteDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate || (() => { })} />
 
             {/* Page Header (moved from original header, adjusted for floating nav) */}
-            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
+            <div className="pt-24 px-4 pb-4 w-full max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
                         <ChevronRight className="h-4 w-4 rotate-180" />

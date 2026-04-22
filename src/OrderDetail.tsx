@@ -481,7 +481,7 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
             <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate || (() => { })} />
 
             {/* Page Header (moved from original header, adjusted for floating nav) */}
-            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
+            <div className="pt-24 px-4 pb-4 w-full max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Button variant="ghost" onClick={onBack} className="p-1 h-auto text-muted-foreground hover:text-zinc-900 dark:hover:text-zinc-900">
                         <ChevronRight className="h-4 w-4 rotate-180" />
@@ -1333,7 +1333,13 @@ export default function OrderDetail({ onBack, onLogout, onNavigateToWorkspace, o
                 open={isAckReviewOpen}
                 onClose={() => setIsAckReviewOpen(false)}
                 poId={poData.poNumber}
-                onRequestExpertReview={() => triggerToast('Expert Review Requested', `${poData.poNumber} — ACK comparison sent to Expert Hub`, 'info')}
+                onRequestExpertReview={(note) => triggerToast(
+                    'Sent to Expert Hub',
+                    note
+                        ? `${poData.poNumber} escalated · "${note.length > 60 ? note.slice(0, 60) + '…' : note}"`
+                        : `${poData.poNumber} escalated for ACK reconciliation`,
+                    'success'
+                )}
             />
             <AcknowledgementUploadModal
                 isOpen={isAckConvertOpen}

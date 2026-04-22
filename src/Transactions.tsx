@@ -358,7 +358,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
     const [viewMode, setViewMode] = useState<'list' | 'pipeline'>('pipeline');
     const [showMetrics, setShowMetrics] = useState(false);
     const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
-    const [isAckModalOpen, setIsAckModalOpen] = useState(false);
     const [isBatchAckOpen, setIsBatchAckOpen] = useState(false);
     const [isQuoteWidgetOpen, setIsQuoteWidgetOpen] = useState(false);
 
@@ -775,7 +774,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                         <MetricGrid metrics={acksSummary} />
                         <div className="mt-4">
                             <QuickActions actions={[
-                                { icon: <CloudUpload className="w-4 h-4" />, label: "Upload Ack", action: () => setIsAckModalOpen(true) },
                                 {
                                     icon: <AlertTriangle className="w-4 h-4" />,
                                     label: `Review Discrepancies (${MOCK_DISCREPANCY_ACKS.length})`,
@@ -943,25 +941,23 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
 
                                             <div className="w-px h-8 bg-border hidden xl:block mx-1"></div>
 
-                                            <button
-                                                onClick={() => {
-                                                    if (lifecycleTab === 'quotes') {
-                                                        setIsQuoteWidgetOpen(true);
-                                                    } else if (lifecycleTab === 'acknowledgments') {
-                                                        setIsAckModalOpen(true);
-                                                        /* @ts-ignore */
-                                                        if (onNavigate) onNavigate('order-detail');
-                                                    } else {
-                                                        setIsCreateOrderOpen(true);
-                                                    }
-                                                }}
-                                                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
-                                            >
-                                                <Plus className="w-4 h-4" />
-                                                <span>
-                                                    {lifecycleTab === 'quotes' ? 'Create Quote' : lifecycleTab === 'acknowledgments' ? 'Upload Ack' : 'Create Order'}
-                                                </span>
-                                            </button>
+                                            {lifecycleTab !== 'acknowledgments' && (
+                                                <button
+                                                    onClick={() => {
+                                                        if (lifecycleTab === 'quotes') {
+                                                            setIsQuoteWidgetOpen(true);
+                                                        } else {
+                                                            setIsCreateOrderOpen(true);
+                                                        }
+                                                    }}
+                                                    className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                    <span>
+                                                        {lifecycleTab === 'quotes' ? 'Create Quote' : 'Create Order'}
+                                                    </span>
+                                                </button>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -1806,7 +1802,6 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                     </div>
                 </Dialog>
             </Transition>
-            <AcknowledgementUploadModal isOpen={isAckModalOpen} onClose={() => setIsAckModalOpen(false)} />
             <CreateQuoteModal isOpen={isQuoteWidgetOpen} onClose={() => setIsQuoteWidgetOpen(false)} onNavigate={onNavigate} />
 
             {/* SDB-1408 UI-03 — Dealer review queue, opened from the Acknowledgments quick action. */}
@@ -2014,7 +2009,13 @@ export default function Transactions({ onLogout, onNavigateToDetail, onNavigateT
                 open={isAckReviewOpen}
                 onClose={() => setIsAckReviewOpen(false)}
                 poId={ackReviewPoId}
-                onRequestExpertReview={() => triggerToast('Expert Review Requested', `${ackReviewPoId ?? 'PO'} — PO vs ACK comparison sent to Expert Hub`, 'info')}
+                onRequestExpertReview={(note) => triggerToast(
+                    'Sent to Expert Hub',
+                    note
+                        ? `${ackReviewPoId ?? 'PO'} escalated · "${note.length > 60 ? note.slice(0, 60) + '…' : note}"`
+                        : `${ackReviewPoId ?? 'PO'} escalated for PO vs ACK reconciliation`,
+                    'success'
+                )}
             />
             <AcknowledgementUploadModal
                 isOpen={isAckConvertOpen}

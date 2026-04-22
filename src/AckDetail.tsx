@@ -9,7 +9,7 @@ import { useTenant } from './TenantContext'
 import Navbar from './components/Navbar'
 import Breadcrumbs from './components/Breadcrumbs'
 import AckReviewSlideOver from './components/AckReviewSlideOver'
-import ComparisonSummaryPanel from './components/ack-comparison/ComparisonSummaryPanel'
+import PoAckComparisonReview from './components/ack-comparison/PoAckComparisonReview'
 import { getMockComparisonReport } from './components/ack-comparison/mockReports'
 import { useToast } from './hooks/useToast'
 import ToastNotification from './components/ToastNotification'
@@ -657,7 +657,7 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
             <Navbar onLogout={onLogout} activeTab="Inventory" onNavigateToWorkspace={onNavigateToWorkspace} onNavigate={onNavigate || (() => { })} />
 
             {/* Page Header (moved from original header, adjusted for floating nav) */}
-            <div className="pt-24 px-4 pb-4 max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
+            <div className="pt-24 px-4 pb-4 w-full max-w-7xl mx-auto flex items-center justify-end gap-6 border-b border-border bg-transparent transition-colors duration-200">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <button onClick={onBack} className="p-1 hover:bg-primary hover:text-zinc-900 dark:hover:text-zinc-900 rounded-md transition-colors">
                         <ChevronRight className="h-4 w-4 rotate-180" />
@@ -819,21 +819,32 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
 
 
 
-                {/* PO vs ACK comparison panel — embedded inline per UI-02 spec */}
-                {(() => {
-                    const inlineReport = getMockComparisonReport('ACK-3099')
-                    if (!inlineReport || inlineReport.comparisonStatus === 'MATCH') return null
-                    return <ComparisonSummaryPanel report={inlineReport} />
-                })()}
-
-                {/* Quick Actions Bar */}
+                {/* Quick Actions Bar — Add Item is intentionally absent on ACK detail
+                    because the dealer cannot modify a vendor acknowledgement here. */}
                 <QuickActions actions={[
                     { icon: <FileSearch className="w-4 h-4" />, label: "Compare PO vs ACK", action: () => setIsCompareOpen(true) },
-                    { icon: <Plus className="w-4 h-4" />, label: "Add Item", action: () => setIsAddItemOpen(true) },
                     { icon: <Download className="w-4 h-4" />, label: "Download ACK", action: () => { triggerToast('Preparing Download', 'Generating ACK document...', 'info'); setTimeout(() => triggerToast('Download Complete', 'ACK_document.pdf downloaded', 'success'), 1500); } },
                     { icon: <Send className="w-4 h-4" />, label: "Send Response", action: () => triggerToast('Response Sent', 'ACK response sent to vendor', 'success') },
                     { icon: <Check className="w-4 h-4" />, label: "Confirm ACK", action: () => triggerToast('ACK Confirmed', 'Acknowledgement confirmed and logged', 'success') },
                 ]} />
+
+                {/* PO vs ACK side-by-side review (view-only · escalates to Expert Hub) */}
+                {(() => {
+                    const inlineReport = getMockComparisonReport('ACK-3099')
+                    if (!inlineReport || inlineReport.comparisonStatus === 'MATCH') return null
+                    return (
+                        <PoAckComparisonReview
+                            report={inlineReport}
+                            onSendToExpert={(note) => triggerToast(
+                                'Sent to Expert Hub',
+                                note
+                                    ? `${inlineReport.ackId} escalated · "${note.length > 60 ? note.slice(0, 60) + '…' : note}"`
+                                    : `${inlineReport.ackId} escalated for resolution`,
+                                'success'
+                            )}
+                        />
+                    )
+                })()}
 
                 {/* Main Content Area */}
                 <div className="flex flex-col">
@@ -1649,7 +1660,13 @@ export default function AckDetail({ onBack, onLogout, onNavigateToWorkspace, onN
                 onClose={() => setIsCompareOpen(false)}
                 ackId="ACK-3099"
                 poId="#ORD-2055"
-                onRequestExpertReview={() => triggerToast('Expert Review Requested', 'ACK-3099 — PO vs ACK reconciliation sent to Expert Hub for resolution', 'info')}
+                onRequestExpertReview={(note) => triggerToast(
+                    'Sent to Expert Hub',
+                    note
+                        ? `ACK-3099 escalated · "${note.length > 60 ? note.slice(0, 60) + '…' : note}"`
+                        : 'ACK-3099 escalated for resolution',
+                    'success'
+                )}
             />
             <ItemDiscountModal
                 isOpen={isDiscountModalOpen}
