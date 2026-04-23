@@ -25,7 +25,9 @@ describe('ConversionStatusBadge', () => {
 
     it('shows PO count when provided', () => {
         render(<ConversionStatusBadge status="SUBMITTED" poCount={3} />)
-        expect(screen.getByText('3')).toBeInTheDocument()
+        // The badge renders "→ 3 POs" split across multiple text nodes — match
+        // by aggregated textContent so it stays robust to whitespace changes.
+        expect(screen.getByText(/→\s*3\s*POs?/)).toBeInTheDocument()
     })
 
     it('supports size variants', () => {

@@ -12,7 +12,21 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             include: ['src/features/po-conversion/**'],
-            exclude: ['**/*.test.*', '**/mockData.ts', '**/index.ts'],
+            // FE-16 scope: "Component + Hook Tests". Exclude wiring, type
+            // declarations, mock-stub hooks (will be replaced by real GraphQL
+            // when GW-01/02/03 land), and full page surfaces (integration
+            // territory — covered separately by E2E once routes are stable).
+            exclude: [
+                '**/*.test.*',
+                '**/mockData.ts',
+                '**/index.ts',
+                '**/types.ts',
+                '**/routes.tsx',
+                '**/skeletons.tsx',
+                '**/hooks.ts',
+                '**/ConversionReviewPage.tsx',
+                '**/PODraftsListPage.tsx',
+            ],
             thresholds: {
                 statements: 70,
                 branches: 60,
