@@ -13,7 +13,7 @@ import Inventory from "./Inventory"
 import Catalogs from "./Catalogs"
 import MAC from "./MAC"
 import Transactions from "./Transactions"
-import CRM from "./CRM"
+import { PDtoSIF } from "./features/pd-to-sif"
 import Pricing from "./Pricing"
 import Navbar from "./components/Navbar"
 import { ConversionReviewPage, FeatureFlagGuard } from './features/po-conversion'
@@ -25,7 +25,7 @@ import logoDarkBrand from './assets/logo-dark-brand.png'
 
 function App() {
   const { user, initialLoading, signOut, showSessionWarning, refreshSession } = useAuth()
-  const [currentPage, setCurrentPage] = useState<'dashboard' | 'detail' | 'quote-detail' | 'order-detail' | 'ack-detail' | 'ack-detail-ai' | 'workspace' | 'inventory' | 'catalogs' | 'mac' | 'transactions' | 'crm' | 'pricing' | 'po-drafts' | 'po-detail' | 'conversion-review'>('dashboard')
+  const [currentPage, setCurrentPage] = useState<'dashboard' | 'detail' | 'quote-detail' | 'order-detail' | 'ack-detail' | 'ack-detail-ai' | 'workspace' | 'inventory' | 'catalogs' | 'mac' | 'transactions' | 'pd-to-sif' | 'pricing' | 'po-drafts' | 'po-detail' | 'conversion-review'>('dashboard')
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false)
 
   const handleNavigate = (page: string) => {
@@ -129,8 +129,8 @@ function App() {
                     onNavigateToWorkspace={() => setCurrentPage('workspace')}
                     onNavigate={handleNavigate}
                   />
-                ) : currentPage === 'crm' ? (
-                  <CRM onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
+                ) : currentPage === 'pd-to-sif' ? (
+                  <PDtoSIF onLogout={handleLogout} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
                 ) : currentPage === 'pricing' ? (
                   <Pricing onLogout={handleLogout} onNavigateToDetail={() => setCurrentPage('detail')} onNavigateToWorkspace={() => setCurrentPage('workspace')} onNavigate={handleNavigate} />
                 ) : currentPage === 'detail' ? (
