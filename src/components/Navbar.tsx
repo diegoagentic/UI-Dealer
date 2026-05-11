@@ -11,7 +11,7 @@ import logoLightBrand from '../assets/logo-light-brand.png';
 import logoDarkBrand from '../assets/logo-dark-brand.png';
 
 // Update supported tabs
-export type NavTab = 'Overview' | 'Inventory' | 'Catalogs' | 'MAC' | 'Transactions' | 'CRM' | 'Pricing';
+export type NavTab = 'Overview' | 'Inventory' | 'Catalogs' | 'MAC' | 'Transactions' | 'PDtoSIF' | 'Pricing';
 
 function NavItem({ icon, label, active = false, onClick }: { icon: React.ReactNode, label: string, active?: boolean, onClick: () => void }) {
     return (
@@ -49,7 +49,7 @@ export default function Navbar({ onLogout, activeTab = 'Overview', onNavigateToW
         { name: 'Inventory', page: 'inventory', icon: BoxSelect },
         { name: 'MAC', page: 'mac', icon: RefreshCcw },
         { name: 'Transactions', page: 'transactions', icon: Banknote },
-        { name: 'CRM', page: 'crm', icon: Users },
+        { name: 'PD to SIF', page: 'pd-to-sif', icon: FileText },
         { name: 'Pricing', page: 'pricing', icon: DollarSign },
     ];
 
